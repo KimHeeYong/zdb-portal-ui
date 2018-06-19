@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko">
+<head>
+	
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+    <title>서비스 목록</title>
+
+
+	<!-- alopexui_theme default -->
+	<link rel="stylesheet" href="/styles/css/alopex/alopex-ui-default.css">
+	<!-- end alopexui_theme -->
+		
+	<!-- alopexui_basic -->
+	<link rel="stylesheet" href="/styles/css/alopex/src/alopex-ext.css">
+	<link rel="stylesheet" href="/styles/css/alopex/alopex-grid.css" />
+	<!-- end alopexui_basic -->
+
+	<link rel="stylesheet" href="/styles/css/cloudzdb-grid.css">
+	<link rel="stylesheet" href="/styles/css/cloudzdb-layout.css">
+	<link rel="stylesheet" href="/styles/css/cloudzdb-ui.css">
+
+	
+</head>
+
+<body>
+<div class="db-wrapper">
+	<!-- header -->
+	<header class="db-header">
+		<h1 class="logo"><img src="/styles/images/cloudzlogo.png" alt="CLOUD Z Database"></h1>
+		<!-- utils -->
+		<div class="header-utils">
+			<a class="user">skccux01@sk.com</a>
+			<!-- user click 시 하단의 user-menus 가 오픈되고 close class 가 추가됩니다. -->
+			<div class="user-menus">
+				<ul class="dropmenu-list">
+					<li class="selected">나의 정보</li>
+					<li>비밀번호 변경</li>
+					<li>Admin</li>
+					<li>로그아웃</li>
+				</ul>
+			</div>
+		</div>
+		<!-- /utils -->
+	</header>
+	<!-- //header -->
+	<!-- main-contents -->
+	<div class="db-container">
+		<!-- lnb
+			서브 메뉴가 있는 경우 : expandable
+			서브 메뉴를 클릭하고 오픈한 경우 : expanded
+			로 class가 추가되고 삭제됩니다.
+		-->
+		<div class="lnb-wrap">
+			<nav>
+				<ul>
+					<li><a href="#"><img class="icon-img" src="/styles/images/ico-lnbname.png"><span class="lnb-name">ZDB</span></a></li>
+					<li><a href="#"><p class="Icon db-plus"></p><span>서비스 생성하기</span></a></li>
+					<li class="selected"><a href="/zdb/zdb0200">서비스 목록</a></li>
+					<li><a href="#">모니터링</a></li>
+					<li><a href="/zdb/zdb0400">이벤트</a></li>
+					<li><a href="/zdb/zdb0500">공지사항</a></li>
+					<li><a href="#">지원</a>
+						<ul class="lnb-sub">
+							<li class="selected"><a href="#">- 시작하기</a></li>
+							<li><a href="#">- 권한</a></li>
+							<li><a href="#">- 문서</a></li>
+							<li><a href="#">- 지원</a></li>
+						</ul>
+					</li>
+					<li>
+						<button class="Button btn-toggle lnb-close">접기</button>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<!-- //lnb -->
+		<!-- contents -->
+		
+<!-- location -->
+<div class="locations-area">
+	<div class="prj-list">
+		<strong>Namespace : </strong>
+		<button id="namespaces" class="Dropdownbutton namespace">전체</button>
+		<ul class="dropmenu-list">
+		</ul>
+	</div>
+</div>
+<div class="contents-box" data-bind="html:data">
+<div class="top-area">
+	<h2 class="title">서비스목록</h2>
+	<div class="tag-wrap">
+		<span class="tag">태그:</span>
+		<span class="Label Default">모든태그</span>
+		<span class="Label Default">Tworld</span>
+		<span class="Label Default">html,css</span>
+		<span class="Label Default">CloudZ, FaaS</span>
+	</div>
+	<div class="filter-wrap">
+		<input id="txtServiceFilter" class="Textinput filter-input" placeholder="Keyword 입력">
+		<!--오름차순 내림차순 아이콘이 있고 select만 하는 기능이라 dropdownbutton으로 적용함 -->
+		<button class="Dropdownbutton filter-select serviceFilter">이름순</button>
+		<ul class="dropmenu-list">
+			<li class="dsc">
+				<a>이름순</a>
+			</li>
+			<li class="asc">
+				<a>서비스 종류순</a>
+			</li>
+			<li class="asc">
+				<a>구동일시순</a>
+			</li>
+			<li class="dsc">
+				<a>생성일시순</a>
+			</li>
+		</ul>
+	</div>
+</div>
+<!-- accordion wrap-->
+<ul class="Accordion db-accordion" id="serviceList">
+
+</ul>
+<script type="text/javascript">
+	var gSelectedNamespace = '';
+	var gNamespaces = null;
+	
+	$a.page(function() {
+		var serviceList = [];
+		this.init = function() {
+			$a.convert($('.db-accordion'));
+
+			fn_getServices();
+			//namespace 변경시 이벤트
+			gNamespaces = $('#namespaces');
+			gNamespaces.addHandler(function(e){
+				gSelectedNamespace = e.currentTarget.id;
+				fn_displayServices();
+			}).setDataSource([]);
+			  .select(gSelectedNamespace);
+			
+			$('#txtServiceFilter').on('input propertychange',function(){
+				fn_displayServices();
+			});
+			
+			$('body').on('click','.Panel-content[link]',function(evt){
+				var data = gCommon.getDataFromAttrs($(this));
+				gCommon.setContents('/zdb02/zdb0210',data);
+			});
+			
+			fn_displayServices();
+		};
+		
+		function fn_getServices(){
+			$a.request('zdb0200List',{
+				url: '/zdb02/zdb0200List',
+				async:false,
+				success: function(res){
+					serviceList = res.serviceoverviews;
+				}
+			});
+		};
+		
+		//서비스 목록 display
+		function fn_displayServices(){
+			gCommon.overlay();
+			var serviceListDiv = $('#serviceList');
+			var dispServiceDiv = $('<div/>');
+			
+			var namespaces = fn_getViewNamespaces();
+			var filterList = getFilterAndSortServices(serviceList);
+			
+			for(var i = 0; i < namespaces.length; i++){
+				var namespace = namespaces[i];
+				dispServiceDiv.append('<li id="service'+namespace.id+'"><a>Namespace : <span>'+namespace.id+'</span></a><div class="accor-contents__wrap"></div></li>');
+				var list = filterList[namespace.id];
+				if(list){
+					for(var j = 0; j < list.length;j++){
+						var ob = list[j]
+						var tDiv = fn_getServiceTemplate(ob);
+						dispServiceDiv.find('#service'+ob.namespace+" div.accor-contents__wrap").append(tDiv);
+					};
+				}
+				dispServiceDiv.find('#service'+namespace.id+" div.accor-contents__wrap").append(fn_getMakeServiceTemplate(namespace));
+			};
+
+			serviceListDiv.html('');
+			serviceListDiv.html(dispServiceDiv.html());
+			serviceListDiv.refresh();
+			//serviceListDiv.expand(0);
+			serviceListDiv.expandAll();
+			gCommon.removeOverlay();
+		}
+		
+		function getFilterAndSortServices(serviceList){
+			var selectedNamespace = gSelectedNamespace;
+			var list = [];
+			for(var i = 0;i < serviceList.length;i++){
+				var ob = serviceList[i];
+				if(selectedNamespace !== '' && selectedNamespace !== ob.namespace){
+					continue;
+				};
+				if($("#txtServiceFilter").val()!=''){
+					if(ob.serviceName.toLowerCase().indexOf($("#txtServiceFilter").val().toLowerCase()) < 0){
+						continue;
+					};	
+				};
+				if(!list[ob.namespace]){
+					list[ob.namespace] = [];
+				}
+				list[ob.namespace].push(ob);
+			};				
+			return list;
+			list.sort(function(a,b){
+		          var val1 =$(a).text().toUpperCase(); // 배열의 엘리먼트들을 대문자로 변경
+		          var val2 =$(b).text().toUpperCase();
+		          return(val1<val2)?-1:(val1>val2)?1:0; //★ 
+			});
+		}
+		//서비스 템플릿
+		function fn_getServiceTemplate(ob){    
+			var template = '' 
+					+'	<div class="Panel service-panel">                                                        '
+					+'		<div class="Panel-content" namespace="{{namespace}}" serviceType="{{serviceType}}" serviceName="{{serviceName}}" link>'
+					+'			<div class="state {{status}}"></div>                                              '
+					+'			<div class="service-logo">                                                       '
+					+'				<img src="/styles/images/service-img.png" class="service-img">               '
+					+'				<p class="ver-info">{{version}}</p>                                              '
+					+'			</div>                                                                           '
+					+'			<dl class="service-info">                                                        '
+					+'				<dt>{{serviceName}}</dt>                                                          '
+					+'				<dd>                                                                         '
+					+'					<div class="tag-wrap">                                                   '
+					+'						<span class="Label Default">Tworld</span>                            '
+					+'						<span class="Label Default">html,css</span>                          '
+					+'						<span class="Label Default">html,css</span>                          '
+					+'					</div>                                                                   '
+					+'				</dd>                                                                        '
+					+'				<dd class="time-info">                                                       '
+					+'					<strong>Uptime</strong> :                                                '
+					+'					<span>00 hours ago</span>                                                '
+					+'				</dd>                                                                        '
+					+'			</dl>                                                                            '
+					+'			<div class="service-btn__wrap">                                                  '
+					+'				<button class="Button nobg-btn btn-refresh">새로고침</button>                '
+					+'				<button class="Button nobg-btn btn-viewdetail">상세보기</button>             '
+					+'			</div>                                                                           '
+					+'		</div>                                                                               '
+					+'	</div> 		                                                                             ';
+			template = template.replaceAll('{{namespace}}',ob.namespace)
+					.replaceAll('{{serviceType}}',ob.serviceType)		
+					.replaceAll('{{serviceName}}',ob.serviceName)		
+					.replaceAll('{{status}}',ob.status.toLowerCase())		
+					.replaceAll('{{version}}',ob.version);		
+			return template;		
+		}
+		//생성 서비스 템플릿
+		function fn_getMakeServiceTemplate(ob){
+			var template = '' 
+		            +'<div class="Panel service-panel make-box" namespace="{{namespace}}" link>												'
+			        +'	<div class="Panel-content">                                                             '
+			        +'		<a href="#" class="new-make">서비스생성 <span class="Icon make-plus"></span></a>    '
+			        +'	</div>                                                                                  '
+			        +'</div>                                                                                    ';
+			 return template;
+		}
+		
+		function fn_getViewNamespaces(){
+			var list = [];
+			var namespaces = $('#namespaces').getDataSource();
+			if(gNamespaces.val() === ''){
+				list = namespaces.filter(function(ob){
+					return ob.id !== '';
+				});
+			}else{
+				list = namespaces.filter(function(ob){
+					return ob.id === gSelectedNamespace;
+				});
+			};
+			return list;
+		}
+	});
+</script>
+</div>
+	<!-- //contents -->
+
+	</div>
+</div>	
+<script src="/script/libs/jquery/jquery-1.12.4.min.js"></script>
+<script src="/script/libs/alopex/alopex-ui.min.js"></script>
+<script src="/script/libs/alopex/src/alopex-ext.min.js"></script>
+<script src="/script/libs/alopex/src/alopex-ext-setup.js"></script>	
+<script src="/script/libs/alopex/alopex-grid.min.js"></script>
+<script src="/script/libs/alopex/alopex-grid-excel.min.js"></script>
+<script src="/script/app/common/alopex-common.js"></script>
+<script src="/script/app/common/cloudzdb-ui.js"></script>
+
+</body>
+</html>

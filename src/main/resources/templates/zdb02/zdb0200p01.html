@@ -1,0 +1,36 @@
+<div class="popup-wrap">
+	<div class="popup-contents">
+		<div class="popup-text">
+			태그명
+			<input type="text" id="popTagName" name="popTagName"></input>
+		</div>
+	</div>
+	<!--button-->
+	<div class="popup-btn__wrap">
+		<button class="Button btn popSave">저장</button>
+		<button class="Button btn popClose">닫기</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+$a.page(function() {
+    this.init = function(id, param) {
+	    
+    	$('.popSave').on('click',function(){
+    		var data = $.extend({},param,{releaseName:param.serviceName,tagName:$('#popTagName').val()});
+			$a.ajax({
+				url: '/zdb/createTag',
+				data: data, 
+				success: function(res){
+		    		gCommon.alert(gMessage.saveSuccess);
+		    		$a.close('success');
+				}
+			});
+    	});
+    	
+    	$('.popClose').on('click',function(){
+    		$a.close();
+    	});
+    }
+});
+</script>

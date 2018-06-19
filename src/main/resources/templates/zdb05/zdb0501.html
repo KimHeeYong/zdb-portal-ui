@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<!-- 화면별 헤드 -->
+<th:block layout:fragment="page_head">
+    <title>TachyonTech Info</title>
+</th:block>
+<th:block layout:fragment="content">
+	<!-- contents -->
+	<div class="contents-wrap">
+		<!-- location -->
+		<div class="locations-area">
+			<div class="prj-list">
+				<strong>Org :</strong> <span>ORG</span> <span class="line-color">/</span>
+				<strong>Namespace : </strong>
+				<button class="Dropdownbutton namespace">ONM</button>
+				<ul class="dropmenu-list">
+					<li><a>ONM (Default)</a></li>
+					<li><a>ICN</a></li>
+					<li><a>NMM</a></li>
+					<li><a>전체</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="contents-box">
+			<!-- service top area-->
+			<div class="top-area">
+                   <h2 class="title">공지사항</h2>
+                   <div class="tag-wrap">
+                   	<span class="tag">Cloud Z DB 관리자가 작성한 공지사항 안내입니다.</span>
+                   </div>
+			</div>
+			<!-- notice detail -->
+			<table class="Table notice-view">
+			    <colgroup>
+			        <col style="width: 50px;">
+			        <col style="width: 120px;">
+			        <col>
+			        <col style="width: 120px;">
+				    </colgroup>
+				    <tbody>
+				        <tr>
+				            <td>1</td>
+				            <td>Redis</td>
+				            <td><button class="Button btn-noti">긴급</button> Maria DB 서비스 설정된 안내 입니다.</td>
+				            <td>2018-01-01</td>
+				        </tr>
+				        <tr>
+				            <td colspan="4" class="view-detail">수사단은 “수사 내용에 대해 객관적 검증을 받기 위해 문 총장에게 검찰수사심의위원회' 소집을 요구했으나 문 총장이 부정적 의견을 피력했다”면서 “(수사심의위) 소집 요청을 철회하고 수사단의 책임 하에 처리하겠다고 했으나 문 총장은 승낙하지 않았다”고 했다. 이어 수사단은 “문 총장은 당초 공언한 것과 달리 이달 1일부터 수사지휘권을 행사했다”며 “수사 결과는 대검에서 가칭 ‘전문자문단’을 꾸려 심의를 받기로 한 상황”이라고 했다.
+
+권성동 자유한국당 의원에 대한 구속영장 청구와 관련해서도 수사단은 “문 총장이 수사지휘권을 행사했다”고 주장했다. 수사단은 "지난달 1일 권 의원에 대해 구속영장을 청구할 예정이라고 알리자 문 총장이 전문자문단을 대검에 구성해 심의를 거쳐 청구여부를 결정하라고 지시했다"고 했다.
+
+출처 : http://news.chosun.com/site/data/html_dir/2018/05/15/2018051501697.html</td>
+				        </tr>
+				    </tbody>
+				</table>
+				<table class="Table notice-list">
+					<colgroup>
+				        <col style="width: 110px;">
+			        <col style="width: 110px;">
+			        <col>
+			        <col style="width: 120px;">
+			    </colgroup>
+				<tbody>
+			        <tr>
+			        	<td class="prev">이전글</td>
+			        	<td>Mango DB</td>
+			        	<td><button class="Button btn-noti">긴급</button>패치 안내</td>
+			        	<td>2018-01-01</td>
+			        </tr>
+			        <tr>
+			        	<td class="next">다음글</td>
+			        	<td>ManB</td>
+			        	<td><button class="Button btn-noti">긴급</button>패치 안내</td>
+			        	<td>2018-01-01</td>
+			        </tr>
+			    </tbody>
+			</table>
+			<div class="btn-wrap__right">
+	        	<button class="Button btn">목록</button>
+	        </div>
+		</div>
+	</div>
+	<!-- //contents -->
+	<!-- //contents -->
+</th:block>
+</html>

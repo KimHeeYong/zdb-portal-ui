@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<th:block layout:fragment="page_head">
+    <title>서비스 상세</title>
+</th:block>
+<th:block layout:fragment="page_css">
+	<link rel="stylesheet" href="/styles/css/nouislider.min.css">
+</th:block>
+<th:block layout:fragment="page_js">
+	<script type="text/javascript" src="/script/app/common/cloudzdb-ui-z0200.js"></script>
+	<script type="text/javascript" src="/script/libs/etc/nouislider.min.js"></script>
+</th:block>
+<th:block layout:fragment="content">
+<!-- location -->
+<div class="locations-area">
+	<div class="prj-list">
+		<strong>Namespace : </strong>
+		<button id="namespaces" class="Dropdownbutton namespace"></button>
+		<ul class="dropmenu-list hide">
+		</ul>
+	</div>
+	<div class="back-list" id="backServices">
+		<a href="#"><span>목록으로 돌아가기</span></a>
+	</div>
+</div>
+<div class="contents-box info-box">
+	<!-- contents-titie-->
+	<div class="top-area info-area">
+		<!-- service 각 항목에 대한 상세 panel-->
+		<div class="Panel service-panel" id="divService">
+
+		</div>
+		<div class="Panel service-panel">
+			<div class="Panel-content">
+				<div class="config-wrap">
+					<button class="Dropdownbutton Button btn-ico btn-config">환경설정</button>
+					<ul class="dropmenu-list config">
+						<li class="selected">서비스 환경설정</li>
+						<li>서비스 삭제</li>
+						<li>서비스 수정</li>
+					</ul>
+				</div>
+				<ul class="config-info" id="configInfo">
+					<li>
+						<strong>할당 CPU : </strong>
+						<span data="cpu"></span>
+					</li>
+					<li>
+						<strong>할당 메모리 : </strong>
+						<span data="memory"></span>
+					</li>
+					<li>
+						<strong>스토리지 : </strong>
+						<span data="disk"></span>
+					</li>
+					<li>
+						<button class="Button nobg-btn btn-scale">스케일보기</button>
+					</li>
+					<li>
+						<button class="Button line-btn" id="deleteService">삭제</button>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- tab wrap -->
+	<div class="Tabs db-tabs" id="zdbServiceTabs">
+		<ul>
+			<li data-content="#tab1">서비스 정보</li>
+			<li data-content="#tab2">스케일</li>
+			<li data-content="#tab3">모니터링</li>
+			<li data-content="#tab4">환경설정</li>
+			<li data-content="#tab5">백업</li>
+			<li data-content="#tab6">이벤트</li>
+		</ul>
+		<!-- 서비스 정보 PageID: ZDB-02-10R -->
+		<div id="tab1">
+			<!-- accordion wrap-->
+			<ul class="Accordion db-accordion">
+				<li>
+					<a>Connection</a>
+					<div class="accor-contents__wrap">
+						<table id="connectionInfoTable" class="Table Form-type">
+							<colgroup>
+								<col style="width: 150px;"> </col>
+								<col style="width: 200px;"> </col>
+								<col></col>
+							</colgroup>
+							<tbody>
+								<tr>
+									<th colspan="2" class="tcenter">Credential</th>
+									<td><input id="credential" name="credential" class="Textinput" type="password"/>
+										<span class="input-pw"></span>
+										<button class="Button line-btn" id="togglePwd">보기</button>
+										<button class="Button line-btn connectionInfoCopy">복사</button>
+										<button class="Button line-btn" id="credentialUpdate">변경</button>
+										<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
+									</td>	
+								</tr>
+								<tr>
+									<th colspan="2" class="tcenter"> 접속포트</th>
+									<td data="port"></td>
+								</tr>
+								<tr>                                                                                                 
+					               	<th rowspan="2">Private</th>                                                                       
+					               	<th>Master</th>                                                                        
+					               	<td>                                                                                              
+					               		<input class="Textinput Width-70" name="privatemasterConnectionString" readonly="readonly"></input>     
+					               		<button class="Button line-btn connectionInfoCopy">복사</button>                          
+					               		<input type="text" class="Textinput Width-70 hide" name="privateslaveConnectionLine" readonly="readonly"></input>     
+					               		<button class="Button line-btn connectionInfoCopy">복사2</button>                          
+					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
+					               	</td>                                                                                         
+				                </tr>
+				                <tr>
+      						       	<th>Slave</th>                                                                        
+					               	<td>                                                                                              
+					               		<input class="Textinput Width-70" name="privateslaveConnectionString" readonly="readonly"></input>     
+					               		<button class="Button line-btn connectionInfoCopy">복사</button>                          
+					               		<input type="text" class="Textinput Width-70 hide" name="privateslaveConnectionLine" readonly="readonly"></input>     
+					               		<button class="Button line-btn connectionInfoCopy">복사2</button>                          
+					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
+					               	</td>                  
+				                </tr>
+								<tr class="publicConnectionInfo">                                                                                                 
+					               	<th rowspan="2">Public</th>                                                                       
+					               	<th>Master</th>                                                                        
+					               	<td>                                                                                              
+					               		<input class="Textinput Width-70" name="publicmasterConnectionString" readonly="readonly"></input>     
+					               		<button class="Button line-btn connectionInfoCopy">복사</button>                          
+					               		<input type="text" class="Textinput Width-70 hide" name="publicmasterConnectionLine" readonly="readonly"></input>     
+					               		<button class="Button line-btn connectionInfoCopy">복사2</button>                          
+					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
+					               	</td>                                                                                         
+				                </tr>
+				                <tr>
+      						       	<th>Slave</th>                                                                        
+					               	<td>                                                                                              
+					               		<input class="Textinput Width-70" name="publicslaveConnectionString" readonly="readonly"></input>     
+					               		<button class="Button line-btn connectionInfoCopy">복사</button>                          
+					               		<input type="text" class="Textinput Width-70 hide" name="publicslaveConnectionLine" readonly="readonly"></input>     
+					               		<button class="Button line-btn connectionInfoCopy">복사2</button>                          
+					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
+					               	</td>                  
+				                </tr>
+							</tbody>
+						</table>
+					</div>
+				</li>
+				<li>
+					<a>Resources</a>
+					<div class="accor-contents__wrap">
+						<div id="gridResource" ></div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<!--스케일 PageID: ZDB-02-20R -->
+		<div id="tab2">
+			<!-- accordion wrap-->
+			<ul class="Accordion db-accordion">
+				<li>
+					<a>스케일</a>
+					<div class="accor-contents__wrap">
+						<table class="Table Form-type">
+							<colgroup>
+								<col style="width: 200px;">
+								<col>
+							</colgroup>
+							<tbody>
+								<tr>
+									<th class="Valign-top">할당메모리</th>
+									<td>
+										<div class="info-wrap">
+											<p class="memory-title">메모리</p>
+											<div class="info-wrap ht60">
+												<div class="memory-info" id="memoryInfo">1GB</div>
+												<div class="progress-wrap full-width">
+													<div class="memory-bar" id="memorySlider"></div>
+												</div>
+											</div>
+										</div>
+									</td>
+								</tr>
+								<tr th:if="${#request.getParameter('serviceType')} != 'mariadb'">
+									<th class="Valign-top" >Read-Only Slave 수</th>
+									<td>
+										<div class="Divselect" style="width: 200px">
+											<select>
+												<option value="korea">3</option>
+												<option value="usa">2</option>
+												<option value="japan">1</option>
+											</select>
+											<span></span>
+										</div>
+										<p class="info-text Padding-bottom-20">적용하면 서비스 정보의 Resources에 반영됩니다. </p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="btn-wrap__right">
+							<button class="Button btn bg-red" id="updateScale">적용하기</button>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div id="tab4">
+			<form name="dbConfig" method="post">
+			<ul class="Accordion db-accordion">
+				<li th:if="${#request.getParameter('serviceType')=='redis'}">
+					<div class="accor-contents__wrap">
+					<a>Network</a>
+						<table class="Table Form-type">
+							<colgroup>
+								<col style="width: 150px;"> </col>
+								<col style="width: 200px;"> </col>
+								<col> </col>
+							</colgroup>
+							<tbody>
+								<tr>
+									<th rowspan="2">NETWORK</th>
+									<th>timeout</th>
+									<td> 
+										<input type="text" id="timeout" name="timeout" class="Textinput"/>
+										<span class="info-text">범위 : 0 ~ 3,600</span>
+										<p data-for="timeout" class="warn-text"></p>
+									</td>
+								</tr>
+								<tr>
+									<th>tcp-keepalive</th>
+									<td> 
+										<input type="text" id="tcpKeepalive" name="tcpKeepalive" class="Textinput"/>
+										<span class="info-text">범위 : 0 ~ 3,600</span>
+										<p data-for="tcpKeepalive" class="warn-text"></p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					<a>Memory</a>
+						<table class="Table Form-type">
+							<colgroup>
+								<col style="width: 150px;"> </col>
+								<col style="width: 200px;"> </col>
+								<col> </col>
+							</colgroup>
+							<tbody>
+								<tr>
+									<th rowspan="2">MEMORY MANAGEMENT</th>
+									<th>maxmemory-policy</th>
+									<td> 
+										<div class="Divselect" style="width: 150px">
+										<select id="maxmemoryPolicy" name="maxmemoryPolicy">
+											<option value="noeviction">noeviction</option>
+											<option value="allkeys-lru">allkeys-lru</option>
+											<option value="volatile-lru">volatile-lru</option>
+											<option value="allkeys-random">allkeys-random</option>
+											<option value="volatile-random">volatile-random</option>
+											<option value="volatile-ttl">volatile-ttl</option>
+										</select>
+										<span></span>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<th>maxmemory-samples</th>
+									<td>
+										<input type="text" id="maxmemorySamples" name="maxmemorySamples" class="Textinput"/>
+										<span class="info-text">범위 : 1 ~ 10</span>
+										<p data-for="maxmemorySamples" class="warn-text"></p>
+									</td>
+								</tr>	
+							</tbody>
+						</table>
+					<a>Slow Log</a>		
+						<table class="Table Form-type">
+							<colgroup>
+								<col style="width: 150px;"> </col>
+								<col style="width: 200px;"> </col>
+								<col> </col>
+							</colgroup>
+							<tbody>	
+								<tr>
+									<th rowspan="2">SLOW LOG</th>
+									<th>slowlog-log-slower-than</th>
+									<td>
+										<input type="text" id="slowlogLogSlowerThan" name="slowlogLogSlowerThan" class="Textinput"/>
+										<span class="info-text">범위 : -1 ~ 12000</span>
+										<p data-for="slowlogLogSlowerThan" class="warn-text"></p>
+									</td>
+								</tr>
+								<tr>
+									<th>slowlog-max-len</th>
+									<td>
+										<input type="text" id="slowlogMaxLen" name="slowlogMaxLen" class="Textinput"/>
+										<span class="info-text">범위 : 1 ~ 256</span>
+										<p data-for="slowlogMaxLen" class="warn-text"></p>
+									</td>
+								</tr>	
+							</tbody>
+						</table>
+					<a>Event Notification</a>	
+						<table class="Table Form-type">
+							<colgroup>
+								<col style="width: 150px;"> </col>
+								<col style="width: 200px;"> </col>
+								<col> </col>
+							</colgroup>
+							<tbody>									
+								<tr>
+									<th>EVENT NOTIFICATION</th>
+									<th>notify-keyspace-events</th>
+									<td>
+										<input type="text" id="notifyKeyspaceEvents" name="notifyKeyspaceEvents" class="Textinput"/>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					<a>Advanced Config </a>
+						<table class="Table Form-type">
+							<colgroup>
+								<col style="width: 150px;"> </col>
+								<col style="width: 200px;"> </col>
+								<col> </col>
+							</colgroup>
+							<tbody>		
+								<tr>
+									<th rowspan="5">ADVANCED CONFIG</th>
+									<th>hash-max-ziplist-entries</th>
+									<td>	
+										<input type="text" id="hashMaxZiplistEntries" name="hashMaxZiplistEntries" class="Textinput"/>
+										<span class="info-text">범위 : 0 ~ 65536</span>
+										<p data-for="hashMaxZiplistEntries" class="warn-text"></p>
+									</td>
+								</tr>
+								<tr>	
+									<th>hash-max-ziplist-value</th>
+									<td>
+										<input type="text" id="hashMaxZiplistValue" name="hashMaxZiplistValue" class="Textinput"/>
+										<span class="info-text">범위 : 0 ~ 65535</span>
+										<p data-for="hashMaxZiplistValue" class="warn-text"></p>
+									</td>
+								</tr>	
+								<tr>	
+									<th>list-max-ziplist-size</th>
+									<td>
+										<input type="text" id="listMaxZiplistSize" name="listMaxZiplistSize" class="Textinput"/>
+										<span class="info-text">범위 : -5 ~ 5</span>
+										<p data-for="listMaxZiplistSize" class="warn-text"></p>
+									</td>
+								</tr>	
+								<tr>	
+									<th>zset-max-ziplist-entries</th>
+									<td>
+										<input type="text" id="zsetMaxZiplistEntries" name="zsetMaxZiplistEntries" class="Textinput"/>
+										<span class="info-text">범위 : 0 ~ 65536</span>
+										<p data-for="zsetMaxZiplistEntries" class="warn-text"></p>
+									</td>
+								</tr>	
+								<tr>	
+									<th>zset-max-ziplist-value</th>
+									<td>
+										<input type="text" id="zsetMaxZiplistValue" name="zsetMaxZiplistValue" class="Textinput"/>
+										<span class="info-text">범위 : 0 ~ 65536</span>
+										<p data-for="zsetMaxZiplistValue" class="warn-text"></p>
+									</td>
+								</tr>	
+							</tbody>
+						</table>
+			            <div class="btn-wrap__right">
+				        	<button class="Button btn bg-red" id="saveVariables">적용하기</button>
+				        </div>
+					</div>
+				</li>
+				
+				<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
+					<a>Parameter</a>
+					<div class="accor-contents__wrap">	
+						<table id="serviceConfigTable" class="Table Form-type">
+							<colgroup>
+								<col style="width: 200px;"> </col>
+								<col> </col>
+							</colgroup>							
+							<tbody>
+				
+								
+							</tbody>
+						</table>
+			            <div class="btn-wrap__right">
+				        	<button class="Button btn bg-red" id="saveVariables">적용하기</button>
+				        </div>						
+					</div>
+				</li>
+			</ul>
+			</form>
+		</div>
+		<div id="tab6">
+			<ul class="Accordion db-accordion">
+				<li>
+					<a>이벤트 목록</a>
+		            <div class="accor-contents__wrap">
+		            	<!-- tab contents info detail-->
+		            	<div class="ctn-info__wrap">
+		            		<form name="eventForm" method="post">
+		            		<div class="ctn-info__left">
+								<div class="info-list select-date Daterange">
+									<div class="Startdate Dateinput">
+									    <input id="eventStartDate" name="eventStartDate" type="text" readonly="readonly">
+									    <div class="Calendar" id="eventStartDate"></div>
+									</div>
+									<div class="Spinner Time" data-locale="en" id="eventStartTime" data-bind="time: date">
+									    <input data-hour>
+									    <span data-seperator>:</span>
+									    <input data-minute>
+									    <input data-ampm>
+									    <a class="Up"></a>
+									    <a class="Down"></a>
+									</div>
+									<span class="date-line">~</span>
+									<div class="Enddate Dateinput">
+									    <input id="eventEndDate" name="eventEndDate" type="text" readonly="readonly">
+									    <div class="Calendar" id="eventEndDate"></div>
+									</div>
+									<div class="Spinner Time" data-locale="en" id="eventEndTime" data-bind="time: date">
+									    <input data-hour>
+									    <span data-seperator>:</span>
+									    <input data-minute>
+									    <input data-ampm>
+									    <a class="Up"></a>
+									    <a class="Down"></a>
+									</div>
+								</div>
+								<div class="info-list">
+									<div class="Divselect">
+									    <select name="kind">
+											<option value="StatefulSet">StatefulSet</option>
+											<option value="Service">Service</option>
+											<option value="ReplicaSet">ReplicaSet</option>
+											<option value="PodDisruptionBudget">PodDisruptionBudget</option>
+											<option value="Pod">Pod</option>
+											<option value="PersistentVolumeClaim">PersistentVolumeClaim</option>
+											<option value="PersistentVolume">PersistentVolume</option>
+											<option value="Node">Node</option>
+											<option value="Ingress">Ingress</option>
+											<option value="Deployment">Deployment</option>
+											<option value="DaemonSet">DaemonSet</option>
+											<option value="ConfigMap">ConfigMap</option>
+											<option value="Cluster">Cluster</option>
+											<option value="-">전체</option> 
+									    </select>
+									    <span></span>
+									</div>
+									<input class="Textinput srcinput" placeholder="검색어를 입력하세요."/><button class="Button btn-search" id="searchEvent">검색</button>
+								</div>
+		            		</div>
+		            		</form>
+		            	</div>
+		            	<!-- grid -->
+		                <div id="gridEvent"></div>
+		            </div>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	var gSelectedNamespace = '';
+	var gNamespaces = null;
+	var gService = null;
+	$a.page(function() {
+		
+		this.init = function() {
+			//namespace 변경시 이벤트
+			gSelectedNamespace = gParam.selectedNamespace||G_NAMESPACE_ALL;
+			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
+								 .select({id:gSelectedNamespace})
+								 .addHandler(function(e) {
+									  gSelectedNamespace = e.currentTarget.id;
+									  gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
+		   						  });
+			$('.Accordion').expandAll();
+			var data = {
+					namespace:gParam.namespace,
+					serviceType:gParam.serviceType,
+					serviceName:gParam.serviceName
+				};
+
+			//탭 변경 시 조회
+			$('#zdbServiceTabs').on('tabchange', function(e, index, index2){
+				fn_displayTabs(index+1);
+			});
+			function fn_displayTabs(index){
+				switch(index){
+					case 1:
+						fn_getConnectionInfo();
+						break;
+					case 2:
+						break;
+					case 3:
+						break;
+					case 4:
+						fn_getConfigurationInfo();
+						break;						
+					case 5:
+						break;
+					case 6:
+						//fn_getEventInfo();
+						break;
+				}
+			}
+			
+			$('#backServices').on('click',function(){
+				gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
+			});			
+			$('#deleteService').on('click',function(){
+				$a.ajax({
+					url: '/zdb/deleteServiceInstance',
+					data:gParam,
+					success: function(res){
+						gCommon.alert('삭제 요청이 완료 되었습니다.');
+						gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
+					}
+				})
+			});
+
+			
+			/* tab1 start */
+			$('#togglePwd').on('click',function(){
+				$('#credential').attr('type',$('#credential').attr('type')=='text'?'password':'text');
+			});
+			$('#credentialUpdate').on('click',function(){
+				var param = $.extend({},gParam);
+				param.secretType = $('#secretType').val()||'';
+				param.newPassword  = $('#credential').val();
+				$a.ajax({
+					url: '/zdb/setNewPassword',
+					data:param,
+					success: function(res){
+						gCommon.alert('정상적으로 변경되었습니다.');
+					}
+				})
+			});
+			$('#gridResource').alopexGrid({
+				autoColumnIndex: true,
+				height: 400,
+				columnMapping : [
+					{ title:'name', key : 'name', width : '130px', sorting : true, align: 'center' },
+					{ title:'status', key : 'status' , width: '80px', align: 'center',render : function( value, data, render, mapping) {
+						var cond = data.condition;
+						var re = '';
+						if(cond.status == 'True'){
+							re = 'Running';
+						}else{
+							re = '<span class="cell Warning">Error <span><span title="'+cond.reason+":"+cond.message+'"> !</span>';	
+						}
+						return re;
+					}},
+					{ title:'role', key : 'role' , width: '80px', align: 'center'},
+					{ title:'node', key : 'node' , width: '80px', align: 'center'},
+					{ title:'cpu(m)', key : 'cpu' , width: '80px', align: 'center'},
+					{ title:'memory(Mi)', key : 'memory' , width: '80px', align: 'center'},
+					{ title:'disk(Gi)', key : 'disk' , width: '80px', align: 'center'}
+				],
+			});
+			//서비스 정보 조회
+			function fn_getService(){
+				$a.ajax({
+					url: '/zdb/getServiceoverview',
+					data:gParam,
+					success: function(res){
+						if(!res.serviceoverview){
+							console.log('no data');
+							return;
+						};
+						var service = gfn_convertServiceData(res.serviceoverview);
+						
+						gService = service;
+						fn_displayService(service);
+						
+						var rsSpec = gCommon.getObjectByIdx(service.resourceSpecOfPodMap,0)||{};
+						var psSpec = gCommon.getObjectByIdx(service.persistenceSpecOfPodMap,0)||{};
+						$('#configInfo').zdbui_setContents({cpu:rsSpec.cpu,memory:rsSpec.memory,disk:psSpec.size});
+						var podData = (function(service){
+							var list = [];
+							var pods = service.pods;
+							for(var i = 0 ; i < pods.length; i++){
+								var pod = pods[i];
+								var condition = gfn_getReadyCondition(pod);
+								list.push({
+									name: pod.metadata.name,
+									condition: condition,
+									role: pod.metadata.labels.component,
+									node: pod.spec.nodeName								
+								});	
+							}
+							return list; 
+						}(service));
+						
+						//cpu,memory 셋팅 - 임시 
+						podData = (function(data){
+							var list = [];
+							for(var i = 0 ; i < data.length;i++){
+								var ob = data[i];
+								$a.ajax({
+									url: '/zdb/getPodMetrics',
+									async:false,
+									method:'get',
+									data:{
+										namespace:gParam.namespace,
+										podName:ob.name
+									},
+									success:function(res){
+										try{
+											var cl = res.podMetrics.metricsCpuUsage;
+											var ml = res.podMetrics.metricsMemoryUsage ;
+											var dl = service.diskUsageOfPodMap;
+											if(cl){
+												ob.cpu = (cl.length ? cl[cl.length-1].value:'') / 1000 + ' / ' + service.resourceSpecOfPodMap[ob.name].cpu;
+											}
+											if(ml && ml.length > 0){
+												ob.memory = ((ml.length? ml[ml.length-1].value:'') / (1024*1000)).toFixed(2) + ' / ' + service.resourceSpecOfPodMap[ob.name].memory;
+											}
+											if(dl && dl[ob.name]){
+												ob.disk = (dl[ob.name].used / (1024*1000)).toFixed(2) + ' / ' + service.persistenceSpecOfPodMap[ob.name].size;
+											}
+										}catch(e){ 
+											//console.log(e);
+										}
+										list.push(ob);
+									}
+								});
+							};
+							return list;
+						}(podData));
+						$('#gridResource').alopexGrid('dataSet',podData);//dataset tab1 end
+						
+						//tab2 스케일
+						fn_setSlider('memory',gSliderConstants[gParam.serviceType].memory.getIndex(rsSpec.memory));
+						
+						/*
+						//tab4 configuration
+						if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+							var r = new RegExp('[a-z-]+=.+','gmi');
+							var ar = service.configMaps[0].data["my.cnf"].match(r);
+							var js = ar.reduce(function(a, value, key){
+								var t = value.split('=');
+								//.replace(/(-[a-z]{1})/g,function($1){return $1.replace('-','').toUpperCase()})
+								a[t[0]]=t[1];
+								return a; 
+							}, {});
+							$('#configTable').zdbui_setContents(js);							
+						}
+						*/
+					}
+				});
+			};
+			
+			function fn_getConnectionInfo(){
+				$a.ajax({
+					url: '/zdb/getConnectionInfo',
+					data:gParam,
+					success: function(res){
+						var connectionInfo = res.connectionInfo || {};
+						connectionInfo.credential = atob(connectionInfo.credetial);
+						connectionList = connectionInfo.connectionList;
+						
+						$('#connectionInfoTable').zdbui_setContents(connectionInfo);
+						for(var i=0; i < connectionList.length ;i++){
+							var ob = connectionList[i];
+							$('input[name='+ob.connectionType+ob.role+'ConnectionString]').val(ob.connectionString);
+							$('input[name='+ob.connectionType+ob.role+'ConnectionLine]').val(ob.connectionLine);
+						};
+					}
+				});
+			};
+			//서비스 display
+			function fn_displayService(ob){
+				var serviceDiv = $('#divService');
+				
+				serviceDiv.html('');
+				serviceDiv.html(gfn_getServiceDetailTemplate({
+					namespace:ob.namespace,
+					serviceType:ob.serviceType,
+					serviceName:ob.serviceName,
+					status:ob.status.toLowerCase(),
+					statusMessage:ob.statusMessage||'',
+					version:ob.version,
+					crtTime:ob.crtTime,
+					updTime:ob.updTime
+				}));
+			}
+			$('#credentialCopy').on('click',function(){
+				$('#credential').select();
+				document.execCommand('copy');
+			});
+			
+			$(document).on('click','.connectionInfoCopy',function(e){
+				var msg = '';
+				if($(this).prev().val() == ''){
+					msg = '복사할 내용이 없습니다.';	
+				}else if($(this).prev().is(':visible')){
+					gCommon.copyToClipboard($(this).prev());	
+					msg = 'Connection String이 복사되었습니다.';
+				}else{
+					$(this).prev().show();
+					gCommon.copyToClipboard($(this).prev());
+					$(this).prev().hide();
+					msg = 'Connection Line이 복사되었습니다.';
+				}
+				var ob = $(this).parent().find(".connectionInfoCopyed").html(msg).show();
+				setTimeout(function(){
+					ob.hide(1000);
+				},1000);
+			})			
+			//publicConnectionInfo
+			/*tab1 end*/
+			
+			/*tab2 start 스케일 */
+			
+			var memorySlider = document.getElementById('memorySlider');
+			
+			var sliderConstants = gSliderConstants[gParam.serviceType];
+			noUiSlider.create(memorySlider, {
+				start:[1],
+				snap: true,
+				connect: [true,false],
+				range: sliderConstants.memory.range,
+				pips: {
+					mode: 'steps',
+					density: 100,
+					format: {
+					  to: function ( value ) {
+						return sliderConstants.memory.getValue(value);
+					  },
+					  from: function ( value ) {
+						return value;
+					  }
+					}
+				}
+			}).on('slide', function ( values, handle ) {
+				fn_setSliderText('memory',parseInt(values[handle]));
+			});
+			function fn_setSlider(type,idx){
+				var slider = $('#'+type+'Slider')[0];
+				if(idx < 0)idx = 0;
+				slider.noUiSlider.set(idx);
+				fn_setSliderText(type,idx)
+			};
+			function fn_setSliderText(type,idx){
+				$('#'+type+'Info').html(sliderConstants[type].getValue(idx));
+			};
+			
+			$('#updateScale').on('click',function(){
+				var data = $.extend({},gParam,{
+					cpu:gSliderConstants[gParam.serviceType].cpu.getValue(parseInt(memorySlider.noUiSlider.get())) ,
+					memory:gSliderConstants[gParam.serviceType].memory.getValue(parseInt(memorySlider.noUiSlider.get()))
+				});
+				$a.ajax({
+					url: '/zdb/updateScale',
+					data:data,
+					success: function(res){
+						gCommon.alert('스케일 정보를 수정 요청 하였습니다.');
+					}
+				});
+			});
+			/*tab2 end 스케일*/
+
+			/*tab4 start 환경설정 */
+			var dbConfigForm = $('form[name=dbConfig]');
+			
+			if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+				dbConfigForm.validator({
+				    elements :{ 
+				        groupConcatMaxLen : { rule:{required:true}, }
+				       ,maxConnections : { rule:{required:true,min:1,max:100000}, }
+				       ,waitTimeout: { rule:{required:true,min:1,max:31536000} }
+				    }
+				});
+			}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
+				dbConfigForm.validator({
+				    elements :{ 
+				        timeout : {rule:{required:true,min:0,max:3600}}
+				       ,tcpKeepalive : {rule:{required:true,min:0,max:3600}}
+				       ,maxmemorySamples: {rule:{required:true,min:1,max:10}}
+				       ,slowlogLogSlowerThan: {rule:{required:true,min:-1,max:12000}}
+				       ,slowlogMaxLen: {rule:{required:true,min:1,max:256}}
+				       ,hashMaxZiplistEntries: {rule:{required:true,min:0,max:65535}}
+				       ,hashMaxZiplistValue: {rule:{required:true,min:0,max:65535}}
+				       ,listMaxZiplistSize: {rule:{required:true,min:-5,max:5}}
+				       ,zsetMaxZiplistEntries: {rule:{required:true,min:0,max:65535}}
+				       ,zsetMaxZiplistValue: {rule:{required:true,min:0,max:65535}}
+				    }
+				});				
+			};
+
+			$('#saveVariables').on('click',function(){ //시스템 변수 적용
+				if(!dbConfigForm.validate()){
+					gCommon.alert(gMessage.notValidInput);
+					return;
+				};
+				var param = $.extend({},gParam, dbConfigForm.serializeObject());
+				$a.ajax({
+					url: '/zdb/updateDBVariables',
+					data:param,
+					success: function(res){
+						gCommon.alert(gMessage.saveSuccess);
+					}
+				});
+			});
+			/*
+			$('#saveConfig').on('click',function(){//my.cnf 적용
+				var tOb = $('#configTable');
+				if(tOb.find('[valid-check]').contents().length>0){
+					gCommon.alert(gMessage.notValidInput);
+					return;
+				};			
+				var param = $.extend({},gParam, tOb.find('*').serializeObject());
+				$a.ajax({
+					url: '/zdb/updateConfig',
+					data:param,
+					success: function(res){
+						gCommon.alert(gMessage.saveSuccess);
+					}
+				});				
+			});
+			*/
+			function fn_getConfigurationInfo(){
+				$a.ajax({
+					url: '/zdb/getDBVariables',
+					data:gParam,
+					success: function(res){
+						var dbConfigurations = res.dbConfigurations
+						if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+							if(dbConfigurations){
+								var tr = '';
+								for(var i = 0 ; i < dbConfigurations.length;i++){
+									var ob = dbConfigurations[i];
+									tr= tr +' <tr> <th>'+ob.name+'</th> <td>'
+									       + '		<input type="text" id="'+ob.name+'" name="'+ob.name+'" class="Textinput" value="'+ob.value+'"/>'
+									       + '		<span class="info-text">'+ob.valueRange+'</span> '
+									       + '		<p data-for="'+ob.name+'" class="warn-text"></p>'
+									       + '	</td> </tr>';
+								};
+								$('#serviceConfigTable tbody').html('').append(tr);
+							}
+						}else{
+							dbConfigForm.zdbui_setContents(dbConfigurations);							
+						}
+					}
+				});
+			};
+			/*tab4 end 환경설정 */
+			
+			/*tab6 start 이벤트*/
+			$('#gridEvent').alopexGrid({
+				autoColumnIndex: true,
+				height: 400,
+				columnMapping : [
+					{ title:'First seen', key : 'firstTimestamp', width : '80px', align: 'center' },
+					{ title:'Last seen', key : 'lastTimestamp' , width: '80px', align: 'center'},
+					{ title:'Kind', key : 'kind' , width: '50px', align: 'center'},
+					{ title:'name', key : 'name' , width: '80px', align: 'center'},
+					{ title:'reason', key : 'reason' , width: '100px', align: 'center'},
+					{ title:'message', key : 'message' , width: '130px', align: 'center'}
+				],
+				message: {
+					nodata: gMessage.gridNodata
+				}
+			});			
+			
+			$('#eventStartDate').val(moment().subtract(7, 'days').format('YYYY-MM-DD'));
+			$('#eventEndDate').val(moment().format('YYYY-MM-DD'));
+			function fn_getEventInfo(){
+				var param = $('form[name=eventForm]').serializeObject();
+				param = $.extend({},gParam,param);
+				console.log(param);
+				return;
+				$a.ajax({
+					url: '/zdb/getEventsWithService',
+					data:param,
+					success: function(res){
+						var list = res.serviceEvents;
+						$('#gridEvent').alopexGrid('dataSet',list);
+					}
+				});				
+			};			
+			$('#searchEvent').on('click',function(){
+				fn_getEventInfo();
+			});
+			//page Start
+			fn_getService();
+			$('#zdbServiceTabs').setTabIndex(0);	
+		};
+
+	});
+</script>

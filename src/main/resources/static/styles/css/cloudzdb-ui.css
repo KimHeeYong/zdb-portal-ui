@@ -1,0 +1,242 @@
+@CHARSET "UTF-8";
+/* Alopex ui component 에 overwrite 해서 사용할 것만 이곳에 정의합니다.
+   새로 class 를 추가하는 것은 cloudzdb-layout.css 에서 정희합니다.
+*/
+.Accordion, .Accordion *,
+.Button, .Button *,
+.Carousel, .Carousel *,
+.Checkbox, .Checkbox *,
+.Dateinput, .Dateinput *,
+.Datepicker, .Datepicker *,
+.Daterange, .Daterange *,
+.Dialog, .Dialog *,
+.Divselect, .Divselect *,
+.Dropdown, .Dropdown *,
+.Dropdownbutton, .Dropdownbutton *,
+.Group, .Group *,
+.Groupbutton, .Groupbutton *,
+.Icon, .Icon *,
+.List, .List *,
+.Navigationbar, .Navigationbar *,
+.Navmenu, .Navmenu *,
+.Paging, .Paging *,
+.Panel, .Panel *,
+.Progressbar, .Progressbar *,
+.Radio, .Radio *,
+.Searchinput, .Searchinput *,
+.Select, .Select *,
+.Slider, .Slider *,
+.Spinner, .Spinner *,
+.Switch, .Switch *,
+.Table, .Table *,
+.Tabs, .Tabs *,
+.Textarea, .Textarea *,
+.Textinput, .Textinput *,
+.Tooltip, .Tooltip *,
+.Tree, .Tree *,
+.Label, .Label *,
+.Quotation, .Quotation *,
+.Cite, .Cite *,
+.Mark, .Mark *,
+.Code, .Code *,
+.Small, .Small *,
+.Strong, .Strong *,
+.Del, .Del *,
+.Alink, .Alink *,
+.Splitter, .Splitter *,
+.Hierarchical, .Hierarchical *,
+.MultiSelect, .MultiSelect * {
+	font-family: "NotoKrR";
+}
+.Button, .Button:hover, .Button:active, .Button.Checked,
+.Dropdownbutton, .Dropdownbutton:hover, .Dropdownbutton:active, .Dropdownbutton.Checked {
+	border: 0;
+}
+.Button, .Button:hover, .Button:active, .Button.Checked,
+.Dropdownbutton, .Dropdownbutton:hover, .Dropdownbutton:active, .Dropdownbutton.Checked,
+.Dateinput > input, .Daterange .Startdate > input, .Daterange .Enddate > input,
+.Dateinput > .Calendar:hover, .Daterange .Calendar:hover, 
+.Dateinput > .Calendar:active, .Daterange .Calendar:active,
+.Textinput, .Divselect {
+	-webkit-transition: none;
+	-moz-transition: none;
+	-o-transition: none;
+	transition: none;
+}
+/* Label :ZDB에서는 tag 를 Alopex UI Label 로 정의합니다.*/
+.Label {
+	height: 20px;
+	padding: 0 11px;
+	line-height: 20px;
+	font-family: 'NotoKrL';
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	-ms-border-radius: 3px;
+	border-radius: 3px;
+}
+.Label.Default {background: #666666}
+.ImageCheckbox:after {
+	left: 1px;
+	top: 42%;
+	width: 18px;
+	height: 18px;
+	margin-top: -6px;
+	background: url("../images/ico-form.png") no-repeat 0 0;
+}
+.ImageCheckbox.Checked:after {
+	background: url("../images/ico-form.png") no-repeat -53px 0;
+}
+.ImageCheckbox.Disabled:after {
+	background: url("../images/ico-form.png") no-repeat -26px 0;
+}
+.ImageCheckbox.Checked.Disabled:after {
+	background: url("../images/ico-form.png") no-repeat -79px 0;
+}
+.ImageRadio {vertical-align: middle;}
+.ImageRadio:after {
+	top: 38%;
+	left: 0;
+	width: 18px;
+	height: 18px;
+	background: url("../images/ico-form.png") no-repeat  0 -53px;
+}
+.ImageRadio.Checked:after {
+	background: url("../images/ico-form.png") no-repeat -53px -53px;
+}
+.ImageRadio.Disabled:after {
+	background: url("../images/ico-form.png") no-repeat -26px -53px;
+}
+.ImageRadio.Checked.Disabled:after {
+	background: url("../images/ico-form.png") no-repeat -79px -53px;
+}
+.Textinput {
+	height: 38px;
+	padding: 0 15px;
+	font-size: 15px;
+	line-height: 36px;
+	border: 1px solid #cccccc;
+	color: #666666;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	-ms-border-radius: 0;
+	border-radius: 0;
+}
+.Textinput:hover, .Textinput:focus, .Textinput:active {
+	border: 1px solid #cccccc;
+}
+.Color-warning, .Warning {color: #ea0530;}
+.Tabs > ul > li, .Tabs > .Scroller > ul > li {
+	font-size: 17px;
+	color: #ffffff;
+	background: #aaaaaa;
+	border-color: #888888;
+}
+.Tabs > ul,
+.Tabs > ul > li:first-child, .Tabs > .Scroller > ul > li:first-child {
+	border-color: #888888;
+}
+.Tabs > ul > li:hover, 
+.Tabs > .Scroller > ul > li:hover, 
+.Tabs > ul > li:active, 
+.Tabs > .Scroller > ul > li:active,
+.Tabs > ul > li.Selected, 
+.Tabs > .Scroller > ul > li.Selected {
+	border-left: 1px solid #888888;
+	border-right: 1px solid #888888;
+	border-top: 4px solid #ea0530;
+	color: #333333;
+}
+.Table.Form-type {
+	border-top: 1px solid #cccccc;
+	border-bottom: 1px solid #cccccc;
+	border-left: 0;
+	border-right: 0;
+}
+.Table.Form-type tr {border-top: 0;}
+.Table.Form-type tr:first-child th, .Table.Form-type tr:first-child td {padding-top: 15px;}
+.Table.Form-type tr:last-child th, .Table.Form-type tr:last-child td {padding-bottom: 15px;}
+.Table.Form-type tbody th {
+	padding: 10px 20px;
+	font-size: 16px;
+	color: #444444;
+	text-align: left;
+	border: 0;
+	background: #f9f9f9;
+}
+.Table.Form-type td {
+	padding: 10px 20px;
+	font-size: 15px;
+	color: #666666; 
+}
+.Divselect {
+	padding: 5px 18px 8px 10px;
+	font-size: 15px;
+	color: #999999;
+	border-color: #cccccc;
+	background: #ffffff url("../images/ico-form.png") no-repeat right -50px;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	-ms-border-radius: 0;
+	border-radius: 0;
+}
+.Divselect:hover, .Divselect:active, .Divselect.ui-state-active {
+	border-color: #cccccc;
+	background: #ffffff url("../images/ico-form.png") no-repeat right -50px;
+}
+.Dateinput > input, .Daterange .Startdate > input, .Daterange .Enddate > input {
+	height: 34px;
+	font-size: 15px;
+	color: #999999;
+	border: 1px solid #888888;
+	border-right: 0;
+}
+.Dateinput > input:hover, .Daterange .Startdate > input:hover, 
+.Daterange .Enddate > input:hover, .Dateinput > input:focus, 
+.Daterange .Startdate > input:focus, .Daterange .Enddate > input:focus {
+	border: 1px solid #888888;
+	border-right: 0;
+}
+.Dateinput > .Calendar, .Daterange .Calendar {
+	width: 34px;
+	height: 34px;
+	right: 6px;
+	background: #ffffff url("../images/ico-form.png") no-repeat -150px 8px;
+	border-top: 1px solid #888888;
+	border-right: 1px solid #888888;
+	border-bottom: 1px solid #888888;
+	border-left: 1px solid #dbdbdb;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	-ms-border-radius: 0;
+	border-radius: 0;
+}
+.Dateinput > .Calendar:hover, 
+.Daterange .Calendar:hover, 
+.Dateinput > .Calendar:active, 
+.Daterange .Calendar:active {
+	border-top: 1px solid #888888;
+	border-right: 1px solid #888888;
+	border-bottom: 1px solid #888888;
+	border-left: 1px solid #dbdbdb;
+	background: #ffffff url("../images/ico-form.png") no-repeat -150px 8px;
+}
+.Spinner {
+	height: 34px;
+	border: 1px solid #888888;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	-ms-border-radius: 0;
+	border-radius: 0;
+}
+.Spinner > .Up {
+	background: #ffffff url("../images/ico-common.png") no-repeat 6px -76px;
+}
+.Spinner > .Down {
+	background: url("../images/ico-common.png") no-repeat 6px -112px;
+}
+.Spinner > .Up:hover {
+	background: #ffffff url("../images/ico-common.png") no-repeat -14px -76px;
+}
+.Spinner > .Down:hover {
+	background: #ffffff url("../images/ico-common.png") no-repeat -14px -112px;
+}
