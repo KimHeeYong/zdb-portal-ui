@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<th:block layout:fragment="page_head">
+	<title></title>
+</th:block>
+<th:block layout:fragment="content">
+	<!-- location -->
+	<div class="locations-area">
+		<div class="prj-list">
+			<strong>Namespace : </strong>
+			<button class="Dropdownbutton namespace" id="namespaces"></button>
+			<ul class="dropmenu-list hide">
+			</ul>
+		</div>
+	</div>
+	<div class="contents-box">
+		<!-- service top area-->
+		<div class="top-area">
+			<h2 class="title">서비스 생성하기</h2>
+			<div class="tag-wrap">
+				<span class="tag">다음의 서비스 생성단계에 따라서 설정해 주세요.</span>
+			</div>
+		</div>
+		<!-- make servuce step -->
+		<div class="make-service">
+			<a href="#" class="new-service">새로 만들기</a>
+			<ul class="service-step">
+				<li>
+					<span class="step-num">01</span>
+					<p class="step-txt">서비스 종류 선택</p>
+				</li>
+				<li>
+					<span class="step-num">02</span>
+					<p class="step-txt">서비스 설정</p>
+				</li>
+				<li>
+					<span class="step-num active">03</span>
+					<p class="step-txt">확인</p>
+				</li>
+			</ul>
+		</div>
+		<p class="info-text__typeb">아래와 같이 서비스 생성을 시작합니다.</p>
+		<!-- accordion-->
+		<ul class="Accordion db-accordion">
+			<li>
+				<a>확인</a>
+				<div class="accor-contents__wrap">
+					<table class="Table Form-type" id="serviceTable">
+						<colgroup>
+							<col style="width: 200px;">
+							<col>
+						</colgroup>
+						<tbody>
+							<tr>
+								<th>종류</th>
+								<td><img src="/styles/images/service-img.png" alt="" class="Valign-md">
+								<span class="info-text__typec" th:text="${#request.getParameter('serviceType')}"></span></td>
+							</tr>
+							<tr>
+								<th>서비스이름</th>
+								<td data="serviceName"></td>
+							</tr>
+							<tr>
+								<th>DB Version</th>
+								<td data="version"></td>
+							</tr>
+							<tr>
+								<th>접근허용</th>
+								<td data="exposeType"></td>
+							</tr>
+							<tr th:if="${#request.getParameter('serviceType')} == 'redis'">
+								<th>용도</th>
+								<td data="purpose"></td>
+							</tr>
+							<tr>
+								<th>할당메모리</th>
+								<td data="specMemory"></td>
+							</tr>
+							<tr>
+								<th>할당디스크</th>
+								<td data="specDisk"></td>
+							</tr>
+							<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
+								<th>기본디비명</th>
+								<td data="dbName"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</li>
+		</ul>
+		<!-- button wrap-->
+		<div class="btn-wrap">
+			<div class="btn-left">
+				<button class="Button btn lg" id="btnPrev">이전</button>
+			</div>
+			<div class="btn-right">
+				<button class="Button btn lg bg-red" id="btnCreate">생성시작</button>
+			</div>
+		</div>
+	</div>
+<script type="text/javascript">
+var gNamespaces = null;     // 네임스페이스 콤보
+var gSelectedNamespace = '';//선택된 네임스페이스
+$a.page(function() {
+	this.init = function() {
+		//네임스페이스 콤보 설정
+		gSelectedNamespace = gParam.namespace;
+		gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAll:false})
+						 .select({id:gSelectedNamespace}) 
+						 .addHandler(function(e){
+							  gSelectedNamespace = e.currentTarget.id;
+						  });
+		if(!gNamespaces.getText()){
+			gCommon.alert(gMessage.validPage);
+		};
+		$('.Accordion').expandAll();
+		
+		var sliderConstants = gSliderConstants[gParam.serviceType];
+		var data = $.extend({},gParam,{
+			specMemory:sliderConstants.memory.getValue(gParam.podSpecIdx),
+			memory:sliderConstants.memory.value[gParam.podSpecIdx],
+			specCpu:sliderConstants.cpu.getValue(gParam.podSpecIdx),
+			cpu:sliderConstants.cpu.value[gParam.podSpecIdx],
+			serviceName:gParam.namespace+'-'+gParam.serviceName,
+		});
+		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+			data.specDisk = sliderConstants.disk.getValue(gParam.diskSpecIdx)
+			data.disk = sliderConstants.disk.value[gParam.diskSpecIdx];
+		};
+		$('#serviceTable').zdbui_setContents(data);
+		
+		$('#btnPrev').on('click',function(){
+			gCommon.movePage('/zdb01/zdb0111',gParam);
+		});
+		$('#btnCreate').on('click',function(){                          
+			$a.ajax({
+				url: '/zdb/createDeployment',
+				data:data,
+				success: function(res){
+					gCommon.alert(res.result.message);
+					gCommon.overlay();
+					gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
+				}
+			});		
+		});
+	}
+});
+</script>	
+</th:block>
+</html>

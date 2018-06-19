@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<th:block layout:fragment="page_head">
+	<title>서비스 생성</title>
+</th:block>
+<th:block layout:fragment="page_css">
+	<link rel="stylesheet" href="/styles/css/nouislider.min.css">
+</th:block>
+<th:block layout:fragment="page_js">
+	<script type="text/javascript" src="/script/libs/etc/nouislider.min.js"></script>
+	<script type="text/javascript" src="/script/app/common/cloudzdb-validator.js"></script>
+</th:block>
+<th:block layout:fragment="content">
+	<!-- location -->
+	<div class="locations-area">
+		<div class="prj-list">
+			<strong>Namespace : </strong>
+			<button id="namespaces" class="Dropdownbutton namespace"></button>
+			<ul class="dropmenu-list hide"> </ul>
+		</div>
+	</div>
+	<div class="contents-box">
+		<!-- service top area-->
+		<div class="top-area">
+			<h2 class="title">서비스 생성하기</h2>
+			<div class="tag-wrap">
+				<span class="tag">다음의 서비스 생성단계에 따라서 설정해 주세요.</span>
+			</div>
+		</div>
+		<!-- make servuce step -->
+		<div class="make-service">
+			<a href="#" class="new-service">새로 만들기</a>
+			<ul class="service-step">
+				<li>
+					<span class="step-num">01</span>
+					<p class="step-txt">서비스 종류 선택</p>
+				</li>
+				<li>
+					<span class="step-num active">02</span>
+					<p class="step-txt">서비스 설정</p>
+				</li>
+				<li>
+					<span class="step-num">03</span>
+					<p class="step-txt">확인</p>
+				</li>
+			</ul>
+		</div>
+		<p class="info-text__typeb"><span th:text="${#request.getParameter('serviceType')}"></span> 설정을 해주세요. 상세 설정은 서비스 생성 후 할 수 있습니다.</p>
+		<!-- accordion-->
+		<ul class="Accordion db-accordion">
+			<li>
+				<a>서비스 설정</a>
+				<div class="accor-contents__wrap">
+					<form name="serviceForm" method="post" data-validation-option="{oninit:true}">
+					<input type="hidden" name="serviceType" th:value="${#request.getParameter('serviceType')}"/>
+					<input type="hidden" name="podSpecIdx" value=""/>
+					<input type="hidden" name="diskSpecIdx" value=""/>
+					<table class="Table Form-type">
+						<colgroup>
+							<col style="width: 200px;">
+							<col>
+						</colgroup>
+						<tbody th:if="${#request.getParameter('serviceType')} == 'redis'">
+							<tr>
+								<th>종류</th>
+								<td><img src="/styles/images/service-img.png" alt="" class="Valign-md">
+								<span class="info-text__typec">Redis</span></td>
+							</tr>
+							<tr>
+								<th>서비스이름 <span class="asterisk">*</span></th>
+								<td>
+									<input class="Textinput" type="text" name="serviceName"> 
+									<span data-for="serviceName" class="info-text" valid-check="true"></span>
+								</td>
+							</tr>
+							<tr>
+								<th>Redis Version <span class="asterisk">*</span></th>
+								<td>
+									<div class="Divselect">
+										<select id="version" name="version" disabled="disabled">
+											<option value="4.0.7">4.0.7</option>
+											<option value="4.0.8">4.0.8</option>
+											<option value="4.0.9" selected="selected">4.0.9</option>
+										</select>
+										<span></span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>Public 접근 허용 <span class="asterisk">*</span></th>
+								<td>
+									<div class="onoff-wrap"><button class="Button btn-off">OFF</button></div>
+									<div class="hide">
+										<input type="radio" name="exposeType" value="public">public</input>
+										<input type="radio" name="exposeType" value="private"/>private</input>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>용도<span class="asterisk">*</span></th>
+								<td>
+									<input type="radio" name="purpose" value="SESSION" checked="checked">SESSION</input>
+									<input type="radio" name="purpose" value="DATA"/>DATA</input>
+								</td>
+							</tr>
+							<tr class="hide">
+								<th class="Valign-top ht130">할당메모리</th>
+								<td>
+									<div class="info-wrap">
+										<div class="info-wrap ht60">
+											<div class="memory-info" id="memoryInfo"></div>
+											<div class="progress-wrap">
+												<div class="memory-bar" id="memorySlider"></div>
+											</div>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+						<tbody th:if="${#request.getParameter('serviceType')} == 'mariadb'">
+							<tr>
+								<th>종류</th>
+								<td><img src="/styles/images/service-img.png" alt="" class="Valign-md">
+								<span class="info-text__typec">Maria</span></td>
+							</tr>
+							<tr>
+								<th>서비스이름 <span class="asterisk">*</span></th>
+								<td>
+									<input class="Textinput" type="text" id="serviceName" name="serviceName" valid-key="lowAlpaNumDash"> 
+									<span data-for="serviceName" class="info-text" valid-check="true"></span>
+								</td>
+							</tr>
+							<tr>
+								<th>Maria Version <span class="asterisk">*</span></th>
+								<td>
+									<div class="Divselect">
+										<select id="version" name="version" disabled="disabled">
+											<option value="10.1.33">10.1.33</option>
+										</select>
+										<span></span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>Public 접근 허용 <span class="asterisk">*</span></th>
+								<td>
+									<div class="onoff-wrap"><button class="Button btn-off">OFF</button></div>
+									<div class="hide">
+										<input type="radio" name="exposeType" value="public">public</input>
+										<input type="radio" name="exposeType" value="private" checked="checked"/>private</input>
+									</div>
+								</td>
+							</tr>							
+							<tr>
+								<th class="Valign-top ht130">할당메모리</th>
+								<td>
+									<div class="info-wrap">
+										<div class="info-wrap ht60">
+											<div class="memory-info" id="memoryInfo"></div>
+											<div class="progress-wrap">
+												<div class="memory-bar" id="memorySlider"></div>
+											</div>
+										</div>
+									</div>
+								</td>
+							</tr>			
+							<tr>
+								<th class="Valign-top ht130">할당디스크</th>
+								<td>
+									<div class="info-wrap">
+										<div class="info-wrap ht60">
+											<div class="memory-info" id="diskInfo"></div>
+											<div class="progress-wrap">
+												<div class="memory-bar" id="diskSlider"></div>
+											</div>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>기본DB명 <span class="asterisk">*</span></th>
+								<td>
+									<input class="Textinput" type="text" id="dbName" name="dbName">
+									<span data-for="dbName" class="info-text" valid-check="true"></span>
+								</td>
+							</tr>						
+						</tbody>
+					</table>
+					</form>
+				</div>
+			</li>
+		</ul>
+		<!-- button wrap-->
+		<div class="btn-wrap">
+			<div class="btn-left">
+				<button class="Button btn lg" id="btnPrev">이전</button>
+			</div>
+			<div class="btn-right">
+				<button class="Button btn lg bg-red" id="btnNext">다음</button>
+			</div>
+		</div>
+	</div>
+	<!-- //contents -->
+	</div>
+<script type="text/javascript">
+var gNamespaces = null;     // 네임스페이스 콤보
+var gSelectedNamespace = '';//선택된 네임스페이스
+$a.page(function() {
+	this.init = function() {
+		//네임스페이스 콤보 설정
+		gSelectedNamespace = gParam.namespace;
+		gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAll:false})
+						 .select({id:gSelectedNamespace}) 
+						 .addHandler(function(e){
+							  gSelectedNamespace = e.currentTarget.id;
+						  });
+		if(!gNamespaces.getText()){
+			gCommon.alert(gMessage.validPage);
+		};
+		$('form[name=serviceForm]').validator({// form에 validator 할 경우
+		    elements :{ // 아래와같이 input,select의 name 값으로 각기 다른 validator 적용가능.
+		        "serviceName" : {
+		            rule:{required:true,checkRule:gValid.serviceName.rule},
+		            message:{checkRule:gValid.serviceName.message}
+		         }
+		       ,"dbName" : {
+		            rule:{required:true,checkRule:gValid.dbName.rule},
+		            message:{checkRule:gValid.dbName.message}
+		        }
+		    }
+		});
+		
+		$('.Accordion').expandAll();
+		$('#version').prop('disabled',true);//임시 - select의 disable
+		
+		$('#btnPrev').on('click',function(){
+			gCommon.movePage('/zdb01/zdb0110',gParam);
+		});
+		$('#btnNext').on('click',function(){                          
+			var param = $.extend({},gParam,$('form[name=serviceForm]').serializeObject());
+			param.namespace = gSelectedNamespace;
+			if(false && param.serviceName==''){
+				gCommon.alert('서비스 이름을 입력하세요.');
+				return;
+			};
+			if($('[valid-check=true]').not(':empty').size() != 0){
+				gCommon.alert(gMessage.notValidInput);
+				return;
+			}
+			gCommon.movePage('/zdb01/zdb0112',param);			
+		});
+		//on off button
+		$('.onoff-wrap > button').click(function(e){
+			e.preventDefault();
+			if($(this).hasClass('btn-on')) {
+				setExposeType('private');
+			} else {
+				setExposeType('public');
+			}
+		});
+		//슬라이더 값
+		var sliderConstants = gSliderConstants[gParam.serviceType];
+		var memorySlider = document.getElementById('memorySlider');
+		
+		noUiSlider.create(memorySlider, {
+			start:[gParam.podSpecIdx||0],
+			snap: true,
+			connect: [true,false],
+			range: sliderConstants.memory.range,
+			pips: {
+				mode: 'steps',
+				density: 100,					
+				format: {
+				  to: function ( value ) {
+					return sliderConstants.memory.getValue(value);
+				  },
+				  from: function ( value ) {
+					return value;
+				  }
+				}
+			}
+		}).on('slide', function ( values, handle ) {
+			setSliderValue(parseInt(values[handle]));
+		});
+		
+		setSliderValue(gParam.podSpecIdx||0);
+		$('form[name=serviceForm]').zdbui_setContents(gParam);
+		setExposeType(gParam.exposeType);
+		function setSliderValue(idx){
+			$('#memoryInfo').html(sliderConstants.memory.getValue(idx));
+			$('input[name=podSpecIdx]').val(idx);
+		};
+		function setExposeType(value){
+			if(value=='public'){
+				$('input[name=exposeType]').zdbui_setComponent('public');
+				$('.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
+			}else{
+				$('input[name=exposeType]').zdbui_setComponent('private');
+				$('.onoff-wrap > button').removeClass('btn-on').addClass('btn-off').text('OFF');
+			}
+		};		
+		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+			var diskSlider = document.getElementById('diskSlider');
+			noUiSlider.create(diskSlider, {
+				start:[gParam.diskSpecIdx||0],
+				snap: true,
+				connect: [true,false],
+				range: sliderConstants.disk.range,
+				pips: {
+					mode: 'steps',
+					density: 100,					
+					format: {
+					  to: function ( value ) {
+						return sliderConstants.disk.getValue(value);
+					  },
+					  from: function ( value ) {
+						return value;
+					  }
+					}
+				}
+			}).on('slide', function ( values, handle ) {
+				setDiskSliderValue(parseInt(values[handle]));
+			});
+			setDiskSliderValue(gParam.diskSpecIdx||0);
+			function setDiskSliderValue(idx){
+				$('#diskInfo').html(sliderConstants.disk.getValue(idx));
+				$('input[name=diskSpecIdx]').val(idx);
+			};
+		}
+	}
+});
+</script>	
+</th:block>
+</html>

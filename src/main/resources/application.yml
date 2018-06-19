@@ -1,0 +1,73 @@
+info:
+  app:
+    name: zdb-portal-ui
+    version: 1.0.0-SNAPSHOT
+    description: ZDB PORTAL UI
+---
+    
+spring:
+  profiles:
+    active: local
+  thymeleaf:
+     encoding: UTF-8
+     
+server:
+  port: 8181
+  
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: info, health, metrics
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    enable:
+      jvm: true
+
+---
+spring:
+  profiles: local
+
+zdb-api-server:
+  url: http://127.0.0.1:8080
+
+props:
+  appName: zdb-portal-dev
+  keycloak:
+    zcp:
+      clientId: account
+      clientSecret: 0227b024-6483-4e96-827b-3bc4dd73637e
+      accessTokenUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
+      userAuthorizationUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
+      redirectUri: ${HOME_URL:http://localhost:8181}/k8s-login
+  iam:
+    baseUrl: https://zcp-iam.cloudzcp.io:443
+---  
+spring:    
+  devtools:
+    livereload:
+      enabled : true
+
+---
+spring:
+  profiles: prod 
+server:
+  port: 8080
+zdb-api-server:
+  url: http://api.zdb-dev.jp-tok.containers.mybluemix.net
+
+props:
+  appName: zdb-portal-dev
+  keycloak:
+    zcp:
+      clientId: account
+      clientSecret: 0227b024-6483-4e96-827b-3bc4dd73637e
+      accessTokenUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
+      userAuthorizationUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
+      redirectUri: ${HOME_URL:http://console.zdb-dev.jp-tok.containers.mybluemix.net}/k8s-login
+  iam:
+    baseUrl: https://zcp-iam.cloudzcp.io:443
+

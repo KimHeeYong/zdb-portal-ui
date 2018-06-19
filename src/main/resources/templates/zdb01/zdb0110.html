@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<th:block layout:fragment="page_head">
+    <title>서비스 생성</title>
+</th:block>
+<th:block layout:fragment="content">
+<!-- location -->
+	<div class="locations-area">
+		<div class="prj-list">
+			<strong>Namespace : </strong>
+			<button id="namespaces" class="Dropdownbutton namespace"></button>
+			<ul class="dropmenu-list"> </ul>
+		</div>
+	</div>
+	<div class="contents-box">
+		<!-- service top area-->
+		<div class="top-area">
+             <h2 class="title">서비스 생성하기</h2>
+             <div class="tag-wrap">
+             	<span class="tag">다음의 서비스 생성단계에 따라서 설정해 주세요.</span>
+             </div>
+		</div>
+		<!-- make servuce step -->
+		<div class="make-service">
+			<a href="#" class="new-service">새로 만들기</a>
+			<ul class="service-step">
+				<li>
+					<span class="step-num active">01</span>
+					<p class="step-txt">서비스 종류 선택</p>
+				</li>
+				<li>
+					<span class="step-num">02</span>
+					<p class="step-txt">서비스 설정</p>
+				</li>
+				<li>
+					<span class="step-num">03</span>
+					<p class="step-txt">확인</p>
+				</li>
+			</ul>
+		</div>
+		<!-- service list-->
+		<div class="service-list__wrap" id="serviceDiv">
+			<!--item 추가될때 마다 아래 div set 이 추가되면 됩니다. -->
+			<div class="item-wrap_line serviceType link" data-service-type="redis">
+				<div class="item-wrap">
+					<p class="item-img"><img src="/styles/images/service-img-big.png" alt="service item img"></p>
+					<dl class="item">
+						<dt>Redis DB</dt>
+						<dd>redis db 설명이 들어가는 부분입니다.</dd>
+					</dl>
+				</div>
+			</div>
+
+			<div class="item-wrap_line serviceType link" data-service-type="mariadb">
+				<div class="item-wrap">
+					<p class="item-img"><img src="/styles/images/service-img-big.png" alt="service item img"></p>
+					<dl class="item">
+						<dt>Maria DB</dt>
+						<dd>maria db에 대한 설명이 들어가는 부분입니다.</dd>
+					</dl>
+				</div>
+			</div>
+			
+			<select id="serviceType" name="serviceType" class="hide">
+				<option value=""></option>
+				<option value="redis">redis</option>
+				<option value="mariadb">mariadb</option>
+			</select>
+		</div>
+		<!-- button wrap-->
+		<div class="btn-wrap__center">
+        	<button class="Button btn lg" id="btnCancle">취소</button>
+        	<button class="Button btn lg bg-red" id="btnSelect">선택하기</button>
+        </div>
+   </div>  
+<script type="text/javascript">   
+	var gNamespaces = null;     // 네임스페이스 콤보
+	var gSelectedNamespace = '';//선택된 네임스페이스
+	$a.page(function() {
+		this.init = function() {
+			//네임스페이스 콤보 설정
+			gSelectedNamespace = gParam.selectedNamespace;
+			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAll:false})
+								 .select({id:gSelectedNamespace}) 
+								 .addHandler(function(e){
+									  gSelectedNamespace = e.currentTarget.id;
+								  });
+			if(gNamespaces.text()==''){
+				gNamespaces.select(0);
+			};
+			$('body').on('click','div.serviceType',function(){
+				$('div.serviceType').removeClass('selected-service-type');
+				$(this).addClass('selected-service-type');
+				var serviceType = $(this).data().serviceType;
+				$('#serviceType').val(serviceType);
+			});
+			$('#btnCancle').on('click',function(){
+				$('#serviceType').val('');
+			});
+			$('#btnSelect').on('click',function(){
+				var namespace = $('#namespaces').val(); 
+				var serviceType = $('#serviceType').val();
+				if(serviceType == ''){
+					gCommon.alert('서비스 타입을 선택하세요');
+					return;
+				}else if(namespace == ''){
+					gCommon.alert('namespace를 선택하세요.');
+					return;
+				}
+				gCommon.movePage('/zdb01/zdb0111?pageId=zdb',{
+					namespace: namespace,
+					serviceType: serviceType
+				});
+			});
+			
+			$('#serviceDiv').zdbui_setContents(gParam);
+		}
+	});
+</script>			
+</th:block>
+</html>
