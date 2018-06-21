@@ -121,7 +121,7 @@ var gCommon = $a.page(function(){
 		var defOpt = {incAll:true};
 		var opt = $.extend({},defOpt,options);
 		$a.request('getNamespace',{
-			url: '/zdb/getNamespaces',
+			url: '/zdbapi/getNamespaces',
 			async: false,
 			success:function(res){
 				var list = res.namespaces;
@@ -250,5 +250,15 @@ $.fn.extend({
 	        data.push({ name: this.name, value: $(this).val() });
 	    });
 	    return data;
+	},
+	pressEnter : function(fn){
+		this.each(function(){
+			$(this).on('keypress',function(evt){
+				if(evt.which == '13' && fn){
+					fn(evt);
+				};
+			})
+		})
+		return this;
 	}
 });

@@ -19,7 +19,7 @@ $a.page(function() {
     	$('.popSave').on('click',function(){
     		var data = $.extend({},param,{releaseName:param.serviceName,tagName:$('#popTagName').val()});
 			$a.ajax({
-				url: '/zdb/createTag',
+				url: '/zdbapi/createTag',
 				data: data, 
 				success: function(res){
 		    		gCommon.alert(gMessage.saveSuccess);

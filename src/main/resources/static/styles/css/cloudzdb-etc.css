@@ -147,3 +147,9 @@
 	font-size: 1.0rem;
 	color: #333333;
 }
+
+.log-console{
+	background: black;
+	font:normal;
+	color:white;
+}

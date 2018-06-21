@@ -90,11 +90,32 @@ public class ApiTemplate {
     	return sbfTemplate.toString();
 	}
 	
-	public static String getUpdateScaleTemplate(String serviceType) {
+	public static String getUpdateScaleUpTemplate(String serviceType) {
 		StringBuffer sbfTemplate = new StringBuffer();
 		
 		if(CommonConstants.SERVICE_TYPE_REDIS.equals(serviceType)) {
-			sbfTemplate.append("{                                                        ");
+			sbfTemplate.append("{                                                         ");
+			sbfTemplate.append("  \"serviceType\": {{serviceType}},                       ");
+			sbfTemplate.append("  \"serviceName\": {{serviceName}},                       ");
+			sbfTemplate.append("  \"namespace\": {{namespace}},                           ");
+			sbfTemplate.append("  \"podSpec\": [                                          ");
+			sbfTemplate.append("    {                                                     ");
+			sbfTemplate.append("      \"podType\": \"master\",                            ");
+			sbfTemplate.append("      \"resourceSpec\": [                                 ");
+			sbfTemplate.append("        {                                                 ");
+			sbfTemplate.append("          \"resourceType\": \"requests\",                 ");
+			sbfTemplate.append("          \"cpu\": {{cpu}},                               ");
+			sbfTemplate.append("          \"memory\": {{memory}}                          ");
+			sbfTemplate.append("        },                                                ");
+			sbfTemplate.append("        {                                                 ");
+			sbfTemplate.append("          \"resourceType\": \"limits\",                   ");
+			sbfTemplate.append("          \"cpu\": {{cpu}},                               ");
+			sbfTemplate.append("          \"memory\": {{memory}}                          ");
+			sbfTemplate.append("        }                                                 ");
+			sbfTemplate.append("      ]                                                   ");
+			sbfTemplate.append("    }                                                     ");
+			sbfTemplate.append("  ]                                                       ");
+			sbfTemplate.append("}                                                         ");
 		}else if(CommonConstants.SERVICE_TYPE_MARIA.equals(serviceType)) {
 			sbfTemplate.append("{                                                        ");
 			sbfTemplate.append("  \"serviceType\": {{serviceType}},                      ");

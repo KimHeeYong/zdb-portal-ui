@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>로그 팝업</title>	
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<!-- alopexui_theme default -->
+	<link rel="stylesheet" href="/styles/css/alopex/alopex-ui-default.css">
+	<!-- end alopexui_theme -->
+	<!-- alopexui_basic -->
+	<link rel="stylesheet" href="/styles/css/alopex/src/alopex-ext.css">
+	<link rel="stylesheet" href="/styles/css/alopex/alopex-grid.css" />
+	<!-- end alopexui_basic -->
+	<link rel="stylesheet" href="/styles/css/cloudzdb-grid.css">
+	<link rel="stylesheet" href="/styles/css/cloudzdb-layout.css">
+	<link rel="stylesheet" href="/styles/css/cloudzdb-ui.css">
+	<link rel="stylesheet" href="/styles/css/cloudzdb-etc.css">
+	
+	<script type="text/javascript" src="/script/libs/jquery/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript" src="/script/libs/jquery/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript" src="/script/libs/alopex/alopex-ui.min.js"></script>
+	<script type="text/javascript" src="/script/libs/alopex/src/alopex-ext.min.js"></script>
+	<script type="text/javascript" src="/script/libs/alopex/src/alopex-ext-setup.js"></script>	
+	<script type="text/javascript" src="/script/libs/alopex/alopex-grid.min.js"></script>
+	<script type="text/javascript" src="/script/libs/alopex/alopex-grid-excel.min.js"></script>
+	<script type="text/javascript" src="/script/libs/etc/moment.min.js"></script>
+	<script type="text/javascript" src="/script/app/common/alopex-common.js"></script>
+	<script type="text/javascript" src="/script/app/common/cloudzdb-ui.js"></script>
+	<script type="text/javascript" src="/script/app/common/constants.js"></script>
+</head>
+<body class="log-console">
+<script type="text/javascript">
+$a.page(function() {
+	this.init = function() {
+		console.log(gParam)
+		$a.ajax({
+			url: '/zdbapi/getPodLog',
+			data : gParam,
+			success: function(res){
+				$('#log').html(res.podLog);
+			}
+		});
+	};
+});
+</script>
+<div id="log">
+	
+</div>
+</body>
+</html>	

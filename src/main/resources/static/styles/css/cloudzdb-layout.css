@@ -454,11 +454,13 @@ body {background-color: #eaedf2;}
 	letter-spacing: -1px;
 }
 .lnb-wrap nav > ul > li:nth-child(2) a {
+	/*
 	padding: 0 20px;
 	height: 50px;
 	line-height: 48px;
 	color: #ff0000;
 	border-bottom: 1px solid #dddddd;
+	*/
 }
 .btn-toggle {
 	position: fixed;

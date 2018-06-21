@@ -29,8 +29,10 @@ public class URIConstants {
 
 	public static final String URI_UPDATE_CONFIG = "/api/v1/{namespace}/mariadb/service/{serviceName}/config"; 
 
-	public static final String URI_UPDATE_SCALE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}"; 
+	public static final String URI_UPDATE_SCALE_UP = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/scaleUp"; 
 	
+	public static final String URI_UPDATE_SCALE_OUT = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/scaleOut";
+
 	public static final String URI_CREATE_DEPLOYMENT = "/api/v1/{namespace}/{serviceType}/service";
 	
 	public static final String URI_SET_NEW_PASSWORD = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/passwd"; 
@@ -41,6 +43,10 @@ public class URIConstants {
 	
 	public static final String URI_DELETE_TAG = "/api/v1/{namespace}/tag/{serviceName}";
 
-	public static final String URI_GET_EVENTS_WITH_SERVICE = "/api/v1/{namespace}/events/{kind}/{serviceName}";
+	public static final String URI_GET_EVENTS = "/api/v1/events?namespace={namespace}&kind={kind}&serviceName={serviceName}&startTime={startTime}&endTime={endTime}&keyword={keyword}";
+
+	public static final String URI_GET_POD_LOG = "/api/v1/{namespace}/log/{podname}";
+
+	public static final String URI_GET_BACKUP_LIST = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/backup-list";
 
 }

@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.stereotype.Component;
 
 import com.skcc.cloudz.zdb.api.iam.service.IamApiService;
-import com.skcc.cloudz.zdb.common.security.vo.OpenIdConnectUserDetails;
+import com.skcc.cloudz.zdb.common.security.vo.OpenIdConnectUserDetailsVo;
 
 @Component
 public class LogoutHandler implements LogoutSuccessHandler {
@@ -25,7 +25,7 @@ public class LogoutHandler implements LogoutSuccessHandler {
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException, ServletException {
         if (authentication != null) {
-        	OpenIdConnectUserDetails vo = (OpenIdConnectUserDetails)authentication.getPrincipal();
+        	OpenIdConnectUserDetailsVo vo = (OpenIdConnectUserDetailsVo)authentication.getPrincipal();
             iamApiService.logout(vo.getUserId());
         }
         

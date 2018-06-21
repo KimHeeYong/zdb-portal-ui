@@ -9,12 +9,18 @@ function gfn_convertServiceDatas(datas){
 function gfn_convertServiceData(data){
 	var ob = {};
 	if(!data)return {};
-	if(data.statefulSets[0]){
-		ob.creationTimestamp = data.statefulSets[0].metadata.creationTimestamp; 
-	};
+	//상태값 GRAY 설정
 	if(data.deploymentStatus!='DEPLOYED' || data.statusMessage != null){
 		ob.status = 'GRAY';
-	}
+	};
+	
+	//생성 시간 설정
+	if(data.statefulSets[0]){
+		ob.creationTimestamp = data.statefulSets[0].metadata.creationTimestamp;
+		if(ob.creationTimestamp){
+			ob.crtTime = moment(ob.creationTimestamp).format('YYYY-MM-DD HH:mm:ss');
+		}
+	};
 	var masterPod = (function(pods){
 		var result = {};
 		
@@ -30,16 +36,17 @@ function gfn_convertServiceData(data){
 		};
 		return result;
 	}(data.pods));
-	var readyCondition = gfn_getReadyCondition(masterPod);
 	
-	ob.lastTransitionTime = readyCondition ? readyCondition.lastTransitionTime:'';
+	if(masterPod){
+		ob.podname = masterPod.metadata.name;
+		var readyCondition = gfn_getReadyCondition(masterPod);
+		ob.lastTransitionTime = readyCondition ? readyCondition.lastTransitionTime:'';
+		 //마지막 구동시간 설정
+		if(ob.lastTransitionTime){ 
+			ob.updTime = moment().diff(moment(ob.lastTransitionTime),'hours') + 'hrs ago';
+		};
+	}
 	
-	if(ob.creationTimestamp){
-		ob.crtTime = moment(ob.creationTimestamp).format('YYYY-MM-DD HH:mm:ss');
-	}
-	if(ob.lastTransitionTime){
-		ob.updTime = moment().diff(moment(ob.lastTransitionTime),'hours') + 'hrs ago';
-	}
 	return $.extend({},data,ob);
 }
 function gfn_getReadyCondition(pod){
@@ -80,7 +87,7 @@ function gfn_getServiceTemplate(ob){
 			+'			</dl>                                                                            '
 			+'			<div class="service-btn__wrap">                                                  '
 			+'				<button class="Button nobg-btn btn-refresh proc_serviceRestart hide" key="'+guid+'">새로고침</button>                '
-			+'				<button class="Button nobg-btn btn-viewdetail">상세보기</button>             '
+			+'				<button class="Button nobg-btn btn-viewdetail viewMonitor" key="'+guid+'">모니터보기</button>             '
 			+'			</div>                                                                           '
 			+'		</div>                                                                               '
 			+'	</div> 		                                                                             ';

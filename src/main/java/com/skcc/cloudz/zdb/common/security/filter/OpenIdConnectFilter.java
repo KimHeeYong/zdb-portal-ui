@@ -22,7 +22,7 @@ import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skcc.cloudz.zdb.common.security.vo.OpenIdConnectUserDetails;
+import com.skcc.cloudz.zdb.common.security.vo.OpenIdConnectUserDetailsVo;
 
 public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter {
 	
@@ -35,22 +35,23 @@ public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter 
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-
         OAuth2AccessToken accessToken;
+        
         try {
             accessToken = restTemplate.getAccessToken();
         } catch (final OAuth2Exception e) {
-        		e.printStackTrace();
+            e.printStackTrace();
             throw new BadCredentialsException("Could not obtain access token", e);
         }
+        
         try {
             final String idToken = accessToken.getAdditionalInformation().get("id_token").toString();
             final Jwt tokenDecoded = JwtHelper.decode(idToken);
-            System.out.println("===== : " + tokenDecoded.getClaims());
-
-			final Map<String, String> authInfo = new ObjectMapper().readValue(tokenDecoded.getClaims(), Map.class);
-
-            final OpenIdConnectUserDetails user = new OpenIdConnectUserDetails(authInfo, accessToken);
+            
+            @SuppressWarnings("unchecked")
+            final Map<String, String> authInfo = new ObjectMapper().readValue(tokenDecoded.getClaims(), Map.class);
+            
+            final OpenIdConnectUserDetailsVo user = new OpenIdConnectUserDetailsVo(authInfo, accessToken);
             return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         } catch (final InvalidTokenException e) {
             throw new BadCredentialsException("Could not obtain user details from token", e);

@@ -53,7 +53,7 @@
 						<tbody>
 							<tr>
 								<th>종류</th>
-								<td><img src="/styles/images/service-img.png" alt="" class="Valign-md">
+								<td th:with="serviceType=${#request.getParameter('serviceType')}"><img th:src="'/styles/images/service-img-'+ ${serviceType} +'.png'" class="Valign-md">
 								<span class="info-text__typec" th:text="${#request.getParameter('serviceType')}"></span></td>
 							</tr>
 							<tr>
@@ -76,7 +76,7 @@
 								<th>할당메모리</th>
 								<td data="specMemory"></td>
 							</tr>
-							<tr>
+							<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
 								<th>할당디스크</th>
 								<td data="specDisk"></td>
 							</tr>
@@ -135,10 +135,10 @@ $a.page(function() {
 		});
 		$('#btnCreate').on('click',function(){                          
 			$a.ajax({
-				url: '/zdb/createDeployment',
+				url: '/zdbapi/createDeployment',
 				data:data,
 				success: function(res){
-					gCommon.alert(res.result.message);
+					//gCommon.alert(res.result.message);
 					gCommon.overlay();
 					gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
 				}

@@ -59,9 +59,10 @@
 		<div class="lnb-wrap">
 			<nav>
 				<ul>
-					<li><a href="#"><img class="icon-img" src="/styles/images/ico-lnbname.png"><span class="lnb-name">ZDB</span></a></li>
+					<!-- 
+					
 					<li><a href="/zdb01/zdb0110"><span class="Icon ico-cloudz db-plus"></span>서비스 생성하기</a></li>
-					<li><a href="/zdb02/zdb0200">서비스 목록</a></li>
+					<li data-menu="zdb0400"><a href="/zdb02/zdb0200">서비스 목록</a></li>
 					<li><a href="#">모니터링</a></li>
 					<li><a href="/zdb04/zdb0400">이벤트</a></li>
 					<li><a href="/zdb05/zdb0500">공지사항</a></li>
@@ -73,6 +74,22 @@
 							<li><a href="#">- 지원</a></li>
 						</ul>
 					</li>
+					 -->
+					<li><a href="#"><img class="icon-img" src="/styles/images/ico-lnbname.png"><span class="lnb-name">ZDB</span></a></li>
+				    <th:block th:each="parent, iterStat : ${addOnServiceMataData}">
+                      <li th:classappend="${parent.url == activePathInfo.firstPath || parent.url == activePathInfo.fullPath? 'selected':''}">
+                          <a th:href="${parent.url} != '' ? ${parent.url} : '#'" th:target="|_${parent.target}|" th:text="${parent.name}"> </a>
+                          
+                          <!-- sub -->
+                          <ul class="lnb-sub" th:if="${not #lists.isEmpty(parent.sub)}" th:style="${parent.url == activePathInfo.firstPath} ? 'display:block' : 'display:none'">
+                             <th:block th:each="child, iterStat : ${parent.sub}">
+                              <li th:classappend="${child.url == activePathInfo.fullPath ? 'selected':''}">
+                                  <a th:href="${child.url} != '' ? ${child.url} : '#'" th:target="|_${child.target}|" th:text="|-${child.name}|"></a>
+                              </li>
+                             </th:block>
+                          </ul>
+                      </li>
+                     </th:block>	
 					<li>
 						<button class="Button btn-toggle lnb-close">접기</button>
 					</li>

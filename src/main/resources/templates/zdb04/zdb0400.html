@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<th:block layout:fragment="page_head">
+	<title>이벤트 목록</title>
+</th:block>
+<th:block layout:fragment="content">
+	<!-- location -->
+	<div class="locations-area">
+		<div class="prj-list">
+			<strong>Namespace : </strong>
+			<button id="namespaces" class="Dropdownbutton namespace"></button>
+			<ul class="dropmenu-list hide">
+			</ul>
+		</div>
+	</div>
+	<div class="contents-box">
+		<ul class="Accordion db-accordion">
+			<li>
+				<a>이벤트 목록</a>
+				<div class="accor-contents__wrap">
+					<!-- tab contents info detail-->
+					<div class="ctn-info__wrap">
+						<form name="eventForm" method="post">
+							<div class="ctn-info__left">
+								<div class="info-list select-date Daterange">
+									<div class="Startdate Dateinput">
+										<input id="eventStartDate" name="eventStartDate" type="text" readonly="readonly">
+										<div class="Calendar" id="eventStartDate"></div>
+									</div>
+									<div class="Spinner Time" data-locale="en" id="eventStartTime" name="eventStartTime" data-hours="24H" data-bind="time:date">
+										<input data-hour>
+										<span data-seperator>:</span>
+										<input data-minute> <input data-ampm> <a class="Up"></a> <a class="Down"></a>
+									</div>
+									<span class="date-line">~</span>
+									<div class="Enddate Dateinput">
+										<input id="eventEndDate" name="eventEndDate" type="text" readonly="readonly">
+										<div class="Calendar" id="eventEndDate"></div>
+									</div>
+									<div class="Spinner Time" data-locale="en" id="eventEndTime" name="eventEndTime" data-hours="24H" data-bind="time:date">
+										<input data-hour>
+										<span data-seperator>:</span>
+										<input data-minute> <input data-ampm> <a class="Up"></a> <a class="Down"></a>
+									</div>
+								</div>
+								<div class="info-list">
+									<div class="Divselect">
+										<select name="kind">
+											<option value="-">전체</option>
+											<option value="StatefulSet">StatefulSet</option>
+											<option value="Service">Service</option>
+											<option value="ReplicaSet">ReplicaSet</option>
+											<option value="PodDisruptionBudget">PodDisruptionBudget</option>
+											<option value="Pod">Pod</option>
+											<option value="PersistentVolumeClaim">PVC</option>
+											<option value="PersistentVolume">PV</option>
+											<option value="Node">Node</option>
+											<option value="Ingress">Ingress</option>
+											<option value="Deployment">Deployment</option>
+											<option value="DaemonSet">DaemonSet</option>
+											<option value="ConfigMap">ConfigMap</option>
+											<option value="Cluster">Cluster</option>
+										</select>
+										<span></span>
+									</div>
+									<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요." />
+									<button class="Button btn-search" id="searchEvent">검색</button>
+								</div>
+							</div>
+						</form>
+					</div>
+					<!-- grid -->
+					<div id="gridEvent"></div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<script type="text/javascript">
+		var gSelectedNamespace = '';//선택된 네임스페이스
+		var gNamespaces = null; // 네임스페이스 콤보
+		$a.page(function() {
+			this.init = function() {
+				gSelectedNamespace = gParam.selectedNamespace || G_NAMESPACE_ALL;
+				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
+						.select({
+							id : gParam.selectedNamespace || G_NAMESPACE_ALL
+						}).addHandler(function(e) {
+							gSelectedNamespace = e.currentTarget.id;
+							gCommon.movePage('/zdb04/zdb0400', {
+								selectedNamespace : gSelectedNamespace
+							});
+						});
+				$('.Accordion').expandAll();
+				
+				$('#gridEvent').alopexGrid({
+					autoColumnIndex: true,
+					height: 400,
+					columnMapping : [
+						{ title:'Last seen', key : 'lastTimestamp' , width: '80px', align: 'center'},
+						{ title:'Kind', key : 'kind' , width: '60px', align: 'left'},
+						{ title:'name', key : 'name' , width: '100px', align: 'left'},
+						{ title:'reason', key : 'reason' , width: '100px', align: 'left'},
+						{ title:'message', key : 'message' , width: '130px', align: 'left'}
+					],
+					message: {
+						nodata: gMessage.gridNodata
+					}
+				});			
+				
+				$('#eventStartDate').val(moment().subtract(3, 'days').format('YYYY-MM-DD'));
+				$('#eventEndDate').val(moment().format('YYYY-MM-DD'));
+				$('#eventEndTime').setData({date :'23:59'});
+				
+				function fn_getEventInfo(){
+					var param = $('form[name=eventForm]').serializeObject();
+					param = $.extend({},gParam,param);
+					param.startTime = moment($('#eventStartDate').val()+$('#eventStartTime').getData().date.replace(/(AM|PM)/,''),'YYYY-MM-DDHH24 : mm').format('YYYY-MM-DD HH:mm:ss');
+					param.endTime = moment($('#eventEndDate').val()+$('#eventEndTime').getData().date.replace(/(AM|PM)/,'')+':59','YYYY-MM-DDHH24 : mm:ss').format('YYYY-MM-DD HH:mm:ss');
+					param.keyword = param.keyword||'-';
+					param.namespace = gSelectedNamespace == G_NAMESPACE_ALL ? '-' : gSelectedNamespace;
+					param.serviceName = '-';
+					
+					$a.ajax({
+						url: '/zdbapi/getEvents',
+						data:param,
+						success: function(res){
+							var list = res.serviceEvents;
+							$('#gridEvent').alopexGrid('dataSet',list);
+						}
+					});				
+				};			
+				$('#searchEvent').on('click',function(){
+					fn_getEventInfo();
+				});
+				$('input[name=keyword]').pressEnter(function(evt){
+					fn_getEventInfo();
+				});
+			}
+		});
+	</script>
+</th:block>
+</html>

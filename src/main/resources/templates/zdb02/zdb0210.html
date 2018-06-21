@@ -160,7 +160,7 @@
 			<!-- accordion wrap-->
 			<ul class="Accordion db-accordion">
 				<li>
-					<a>스케일</a>
+					<a>Scale Up</a>
 					<div class="accor-contents__wrap">
 						<table class="Table Form-type">
 							<colgroup>
@@ -182,26 +182,38 @@
 										</div>
 									</td>
 								</tr>
-								<tr th:if="${#request.getParameter('serviceType')} != 'mariadb'">
+							</tbody>
+						</table>
+						<div class="btn-wrap__right">
+							<button class="Button btn bg-red" id="updateScaleUp">적용하기</button>
+						</div>
+					</div>
+				</li>
+				<li th:if="${#request.getParameter('serviceType')} == 'redis'">
+					<a>Scale Out</a>
+					<div class="accor-contents__wrap">
+						<table class="Table Form-type">
+							<colgroup>
+								<col style="width: 200px;">
+								<col>
+							</colgroup>
+							<tbody>
+								<tr>
 									<th class="Valign-top" >Read-Only Slave 수</th>
 									<td>
-										<div class="Divselect" style="width: 200px">
-											<select>
-												<option value="korea">3</option>
-												<option value="usa">2</option>
-												<option value="japan">1</option>
-											</select>
-											<span></span>
+										<div class="Spinner" data-min="1" data-max="99" data-step="1">
+										    <input id="clusterSlaveCount" name="clusterSlaveCount" value="1">
+										    <a class="Up"></a>
+										    <a class="Down"></a>
 										</div>
-										<p class="info-text Padding-bottom-20">적용하면 서비스 정보의 Resources에 반영됩니다. </p>
 									</td>
 								</tr>
 							</tbody>
 						</table>
 						<div class="btn-wrap__right">
-							<button class="Button btn bg-red" id="updateScale">적용하기</button>
-						</div>
-					</div>
+							<button class="Button btn bg-red" id="updateScaleOut">적용하기</button>
+						</div>	
+					</div>		
 				</li>
 			</ul>
 		</div>
@@ -230,9 +242,9 @@
 								<tr>
 									<th>tcp-keepalive</th>
 									<td> 
-										<input type="text" id="tcpKeepalive" name="tcpKeepalive" class="Textinput"/>
+										<input type="text" id="tcp-keepalive" name="tcp-keepalive" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 3,600</span>
-										<p data-for="tcpKeepalive" class="warn-text"></p>
+										<p data-for="tcp-keepalive" class="warn-text"></p>
 									</td>
 								</tr>
 							</tbody>
@@ -250,7 +262,7 @@
 									<th>maxmemory-policy</th>
 									<td> 
 										<div class="Divselect" style="width: 150px">
-										<select id="maxmemoryPolicy" name="maxmemoryPolicy">
+										<select id="maxmemory-policy" name="maxmemory-policy">
 											<option value="noeviction">noeviction</option>
 											<option value="allkeys-lru">allkeys-lru</option>
 											<option value="volatile-lru">volatile-lru</option>
@@ -265,9 +277,9 @@
 								<tr>
 									<th>maxmemory-samples</th>
 									<td>
-										<input type="text" id="maxmemorySamples" name="maxmemorySamples" class="Textinput"/>
+										<input type="text" id="maxmemory-samples" name="maxmemory-samples" class="Textinput"/>
 										<span class="info-text">범위 : 1 ~ 10</span>
-										<p data-for="maxmemorySamples" class="warn-text"></p>
+										<p data-for="maxmemory-samples" class="warn-text"></p>
 									</td>
 								</tr>	
 							</tbody>
@@ -284,17 +296,17 @@
 									<th rowspan="2">SLOW LOG</th>
 									<th>slowlog-log-slower-than</th>
 									<td>
-										<input type="text" id="slowlogLogSlowerThan" name="slowlogLogSlowerThan" class="Textinput"/>
+										<input type="text" id="slowlog-log-slower-than" name="slowlog-log-slower-than" class="Textinput"/>
 										<span class="info-text">범위 : -1 ~ 12000</span>
-										<p data-for="slowlogLogSlowerThan" class="warn-text"></p>
+										<p data-for="slowlog-log-slower-than" class="warn-text"></p>
 									</td>
 								</tr>
 								<tr>
 									<th>slowlog-max-len</th>
 									<td>
-										<input type="text" id="slowlogMaxLen" name="slowlogMaxLen" class="Textinput"/>
+										<input type="text" id="slowlog-max-len" name="slowlog-max-len" class="Textinput"/>
 										<span class="info-text">범위 : 1 ~ 256</span>
-										<p data-for="slowlogMaxLen" class="warn-text"></p>
+										<p data-for="slowlog-max-len" class="warn-text"></p>
 									</td>
 								</tr>	
 							</tbody>
@@ -311,7 +323,7 @@
 									<th>EVENT NOTIFICATION</th>
 									<th>notify-keyspace-events</th>
 									<td>
-										<input type="text" id="notifyKeyspaceEvents" name="notifyKeyspaceEvents" class="Textinput"/>
+										<input type="text" id="notify-keyspace-events" name="notify-keyspace-events" class="Textinput"/>
 									</td>
 								</tr>
 							</tbody>
@@ -328,41 +340,41 @@
 									<th rowspan="5">ADVANCED CONFIG</th>
 									<th>hash-max-ziplist-entries</th>
 									<td>	
-										<input type="text" id="hashMaxZiplistEntries" name="hashMaxZiplistEntries" class="Textinput"/>
+										<input type="text" id="hash-max-ziplist-entries" name="hash-max-ziplist-entries" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 65536</span>
-										<p data-for="hashMaxZiplistEntries" class="warn-text"></p>
+										<p data-for="hash-max-ziplist-entries" class="warn-text"></p>
 									</td>
 								</tr>
 								<tr>	
 									<th>hash-max-ziplist-value</th>
 									<td>
-										<input type="text" id="hashMaxZiplistValue" name="hashMaxZiplistValue" class="Textinput"/>
+										<input type="text" id="hash-max-ziplist-value" name="hash-max-ziplist-value" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 65535</span>
-										<p data-for="hashMaxZiplistValue" class="warn-text"></p>
+										<p data-for="hash-max-ziplist-value" class="warn-text"></p>
 									</td>
 								</tr>	
 								<tr>	
 									<th>list-max-ziplist-size</th>
 									<td>
-										<input type="text" id="listMaxZiplistSize" name="listMaxZiplistSize" class="Textinput"/>
+										<input type="text" id="list-max-ziplist-size" name="list-max-ziplist-size" class="Textinput"/>
 										<span class="info-text">범위 : -5 ~ 5</span>
-										<p data-for="listMaxZiplistSize" class="warn-text"></p>
+										<p data-for="list-max-ziplist-size" class="warn-text"></p>
 									</td>
 								</tr>	
 								<tr>	
 									<th>zset-max-ziplist-entries</th>
 									<td>
-										<input type="text" id="zsetMaxZiplistEntries" name="zsetMaxZiplistEntries" class="Textinput"/>
+										<input type="text" id="zset-max-ziplist-entries" name="zset-max-ziplist-entries" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 65536</span>
-										<p data-for="zsetMaxZiplistEntries" class="warn-text"></p>
+										<p data-for="zset-max-ziplist-entries" class="warn-text"></p>
 									</td>
 								</tr>	
 								<tr>	
 									<th>zset-max-ziplist-value</th>
 									<td>
-										<input type="text" id="zsetMaxZiplistValue" name="zsetMaxZiplistValue" class="Textinput"/>
+										<input type="text" id="zset-max-ziplist-value" name="zset-max-ziplist-value" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 65536</span>
-										<p data-for="zsetMaxZiplistValue" class="warn-text"></p>
+										<p data-for="zset-max-ziplist-value" class="warn-text"></p>
 									</td>
 								</tr>	
 							</tbody>
@@ -378,7 +390,7 @@
 					<div class="accor-contents__wrap">	
 						<table id="serviceConfigTable" class="Table Form-type">
 							<colgroup>
-								<col style="width: 200px;"> </col>
+								<col style="width: 280px;"> </col>
 								<col> </col>
 							</colgroup>							
 							<tbody>
@@ -394,6 +406,27 @@
 			</ul>
 			</form>
 		</div>
+		<div id="tab5">
+			<ul class="Accordion db-accordion">
+				<li>
+					<a>백업</a>
+		            <div class="accor-contents__wrap">
+		            	<!-- tab contents info detail-->
+		            	<div class="ctn-info__wrap">
+		            		<form name="backupForm" method="post">
+		            		<div class="ctn-info__right">
+								<div class="info-list">
+									<button class="Button btn-search" id="searchBackup">검색</button>
+								</div>
+		            		</div>
+		            		</form>
+		            	</div>
+		            	<!-- grid -->
+		                <div id="gridBackup"></div>
+		            </div>
+				</li>
+			</ul>		
+		</div>
 		<div id="tab6">
 			<ul class="Accordion db-accordion">
 				<li>
@@ -408,7 +441,7 @@
 									    <input id="eventStartDate" name="eventStartDate" type="text" readonly="readonly">
 									    <div class="Calendar" id="eventStartDate"></div>
 									</div>
-									<div class="Spinner Time" data-locale="en" id="eventStartTime" data-bind="time: date">
+									<div class="Spinner Time" data-locale="en" id="eventStartTime" name="eventStartTime" data-hours="24H" data-bind="time:date">
 									    <input data-hour>
 									    <span data-seperator>:</span>
 									    <input data-minute>
@@ -421,7 +454,7 @@
 									    <input id="eventEndDate" name="eventEndDate" type="text" readonly="readonly">
 									    <div class="Calendar" id="eventEndDate"></div>
 									</div>
-									<div class="Spinner Time" data-locale="en" id="eventEndTime" data-bind="time: date">
+									<div class="Spinner Time" data-locale="en" id="eventEndTime" name="eventEndTime" data-hours="24H" data-bind="time:date">
 									    <input data-hour>
 									    <span data-seperator>:</span>
 									    <input data-minute>
@@ -433,24 +466,23 @@
 								<div class="info-list">
 									<div class="Divselect">
 									    <select name="kind">
+											<option value="-">전체</option> 
 											<option value="StatefulSet">StatefulSet</option>
 											<option value="Service">Service</option>
 											<option value="ReplicaSet">ReplicaSet</option>
-											<option value="PodDisruptionBudget">PodDisruptionBudget</option>
 											<option value="Pod">Pod</option>
-											<option value="PersistentVolumeClaim">PersistentVolumeClaim</option>
-											<option value="PersistentVolume">PersistentVolume</option>
+											<option value="PersistentVolumeClaim">PVC</option>
+											<option value="PersistentVolume">PV</option>
 											<option value="Node">Node</option>
 											<option value="Ingress">Ingress</option>
 											<option value="Deployment">Deployment</option>
 											<option value="DaemonSet">DaemonSet</option>
 											<option value="ConfigMap">ConfigMap</option>
 											<option value="Cluster">Cluster</option>
-											<option value="-">전체</option> 
 									    </select>
 									    <span></span>
 									</div>
-									<input class="Textinput srcinput" placeholder="검색어를 입력하세요."/><button class="Button btn-search" id="searchEvent">검색</button>
+									<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요."/><button class="Button btn-search" id="searchEvent">검색</button>
 								</div>
 		            		</div>
 		            		</form>
@@ -465,6 +497,7 @@
 </div>
 <script type="text/javascript">
 	var gSelectedNamespace = '';
+	var gCurrentNamespace = '';
 	var gNamespaces = null;
 	var gService = null;
 	$a.page(function() {
@@ -514,7 +547,7 @@
 			});			
 			$('#deleteService').on('click',function(){
 				$a.ajax({
-					url: '/zdb/deleteServiceInstance',
+					url: '/zdbapi/deleteServiceInstance',
 					data:gParam,
 					success: function(res){
 						gCommon.alert('삭제 요청이 완료 되었습니다.');
@@ -533,7 +566,7 @@
 				param.secretType = $('#secretType').val()||'';
 				param.newPassword  = $('#credential').val();
 				$a.ajax({
-					url: '/zdb/setNewPassword',
+					url: '/zdbapi/setNewPassword',
 					data:param,
 					success: function(res){
 						gCommon.alert('정상적으로 변경되었습니다.');
@@ -544,28 +577,64 @@
 				autoColumnIndex: true,
 				height: 400,
 				columnMapping : [
-					{ title:'name', key : 'name', width : '130px', sorting : true, align: 'center' },
+					{ title:'name', key : 'name', width : '150px', sorting : true, align: 'center' },
 					{ title:'status', key : 'status' , width: '80px', align: 'center',render : function( value, data, render, mapping) {
 						var cond = data.condition;
 						var re = '';
-						if(cond.status == 'True'){
+						
+						if(!cond){
+							re = '준비중';
+						}else if(cond.status == 'True'){
 							re = 'Running';
 						}else{
 							re = '<span class="cell Warning">Error <span><span title="'+cond.reason+":"+cond.message+'"> !</span>';	
-						}
+						};
 						return re;
 					}},
 					{ title:'role', key : 'role' , width: '80px', align: 'center'},
 					{ title:'node', key : 'node' , width: '80px', align: 'center'},
 					{ title:'cpu(m)', key : 'cpu' , width: '80px', align: 'center'},
 					{ title:'memory(Mi)', key : 'memory' , width: '80px', align: 'center'},
-					{ title:'disk(Gi)', key : 'disk' , width: '80px', align: 'center'}
+					{ title:'disk(Gi)', key : 'disk' , width: '80px', align: 'center'},
+					{ title:'restart',key:'restart',width:'40px',render: function( value, data, render, mapping){
+						var re = $('<button class="Button btn-restart">재시작</button>').on('click',function(){
+							fn_restartService(data);
+						});
+						return re;
+					}},
+					{ title:'log',key:'log',width:'40px',render: function( value, data, render, mapping){
+						var re = $('<button class="Button btn-log">로그</button>').on('click',function(){
+							fn_viewLog(data);
+						});
+						return re;
+					}}
 				],
 			});
+			function fn_restartService(data){
+				var param = $({},gParam,{});
+				$a.ajax({
+					url: '/zdbapi/restartService',
+					data:data,
+					success: function(res){
+						console.log(res);
+					}
+				});
+			}
+			function fn_viewLog(data){
+				$a.popup({
+			        url: "/zdb02/zdb0200p02?namespace="+gService.namespace+"&podname="+data.name,
+			        windowpopup: true,
+			        modal: false,
+			        width : 1000,     
+			        height : 800,    
+			        movable:true,    
+			        resizable:true
+			    });
+			}
 			//서비스 정보 조회
 			function fn_getService(){
 				$a.ajax({
-					url: '/zdb/getServiceoverview',
+					url: '/zdbapi/getServiceoverview',
 					data:gParam,
 					success: function(res){
 						if(!res.serviceoverview){
@@ -574,6 +643,7 @@
 						};
 						var service = gfn_convertServiceData(res.serviceoverview);
 						
+						gCurrentNamespace = service.namespace;
 						gService = service;
 						fn_displayService(service);
 						
@@ -599,10 +669,11 @@
 						//cpu,memory 셋팅 - 임시 
 						podData = (function(data){
 							var list = [];
+							//return list;//temp
 							for(var i = 0 ; i < data.length;i++){
 								var ob = data[i];
 								$a.ajax({
-									url: '/zdb/getPodMetrics',
+									url: '/zdbapi/getPodMetrics',
 									async:false,
 									method:'get',
 									data:{
@@ -636,6 +707,7 @@
 						
 						//tab2 스케일
 						fn_setSlider('memory',gSliderConstants[gParam.serviceType].memory.getIndex(rsSpec.memory));
+						$('#clusterSlaveCount').val(gService.clusterSlaveCount);
 						
 						/*
 						//tab4 configuration
@@ -657,7 +729,7 @@
 			
 			function fn_getConnectionInfo(){
 				$a.ajax({
-					url: '/zdb/getConnectionInfo',
+					url: '/zdbapi/getConnectionInfo',
 					data:gParam,
 					success: function(res){
 						var connectionInfo = res.connectionInfo || {};
@@ -665,11 +737,13 @@
 						connectionList = connectionInfo.connectionList;
 						
 						$('#connectionInfoTable').zdbui_setContents(connectionInfo);
-						for(var i=0; i < connectionList.length ;i++){
-							var ob = connectionList[i];
-							$('input[name='+ob.connectionType+ob.role+'ConnectionString]').val(ob.connectionString);
-							$('input[name='+ob.connectionType+ob.role+'ConnectionLine]').val(ob.connectionLine);
-						};
+						if(connectionList && connectionList.length>0){
+							for(var i=0; i < connectionList.length ;i++){
+								var ob = connectionList[i];
+								$('input[name='+ob.connectionType+ob.role+'ConnectionString]').val(ob.connectionString);
+								$('input[name='+ob.connectionType+ob.role+'ConnectionLine]').val(ob.connectionLine);
+							};
+						}
 					}
 				});
 			};
@@ -750,13 +824,26 @@
 				$('#'+type+'Info').html(sliderConstants[type].getValue(idx));
 			};
 			
-			$('#updateScale').on('click',function(){
+			$('#updateScaleUp').on('click',function(){
 				var data = $.extend({},gParam,{
-					cpu:gSliderConstants[gParam.serviceType].cpu.getValue(parseInt(memorySlider.noUiSlider.get())) ,
-					memory:gSliderConstants[gParam.serviceType].memory.getValue(parseInt(memorySlider.noUiSlider.get()))
+					cpu:gSliderConstants[gParam.serviceType].cpu.value[parseInt(memorySlider.noUiSlider.get())],
+					memory:gSliderConstants[gParam.serviceType].memory.value[parseInt(memorySlider.noUiSlider.get())]
 				});
 				$a.ajax({
-					url: '/zdb/updateScale',
+					url: '/zdbapi/updateScaleUp',
+					data:data,
+					success: function(res){
+						gCommon.alert('스케일 정보를 수정 요청 하였습니다.');
+						fn_getService();
+					}
+				});
+			});
+			$('#updateScaleOut').on('click',function(){
+				var data = $.extend({},gParam,{
+					clusterSlaveCount:$('input[name=clusterSlaveCount]').val()
+				});
+				$a.ajax({
+					url: '/zdbapi/updateScaleOut',
 					data:data,
 					success: function(res){
 						gCommon.alert('스케일 정보를 수정 요청 하였습니다.');
@@ -768,27 +855,19 @@
 			/*tab4 start 환경설정 */
 			var dbConfigForm = $('form[name=dbConfig]');
 			
-			if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
 				dbConfigForm.validator({
 				    elements :{ 
-				        groupConcatMaxLen : { rule:{required:true}, }
-				       ,maxConnections : { rule:{required:true,min:1,max:100000}, }
-				       ,waitTimeout: { rule:{required:true,min:1,max:31536000} }
-				    }
-				});
-			}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
-				dbConfigForm.validator({
-				    elements :{ 
-				        timeout : {rule:{required:true,min:0,max:3600}}
-				       ,tcpKeepalive : {rule:{required:true,min:0,max:3600}}
-				       ,maxmemorySamples: {rule:{required:true,min:1,max:10}}
-				       ,slowlogLogSlowerThan: {rule:{required:true,min:-1,max:12000}}
-				       ,slowlogMaxLen: {rule:{required:true,min:1,max:256}}
-				       ,hashMaxZiplistEntries: {rule:{required:true,min:0,max:65535}}
-				       ,hashMaxZiplistValue: {rule:{required:true,min:0,max:65535}}
-				       ,listMaxZiplistSize: {rule:{required:true,min:-5,max:5}}
-				       ,zsetMaxZiplistEntries: {rule:{required:true,min:0,max:65535}}
-				       ,zsetMaxZiplistValue: {rule:{required:true,min:0,max:65535}}
+				        'timeout': {rule:{required:true,min:0,max:3600}}
+				       ,'tcp-keepalive': {rule:{required:true,min:0,max:3600}}
+				       ,'maxmemory-samples': {rule:{required:true,min:1,max:10}}
+				       ,'slowlog-log-slower-than': {rule:{required:true,min:-1,max:12000}}
+				       ,'slowlog-max-len': {rule:{required:true,min:1,max:256}}
+				       ,'hash-max-ziplist-entries': {rule:{required:true,min:0,max:65535}}
+				       ,'hash-max-ziplist-value': {rule:{required:true,min:0,max:65535}}
+				       ,'list-max-ziplist-size': {rule:{required:true,min:-5,max:5}}
+				       ,'zset-max-ziplist-entries': {rule:{required:true,min:0,max:65535}}
+				       ,'zset-max-ziplist-value': {rule:{required:true,min:0,max:65535}}
 				    }
 				});				
 			};
@@ -800,10 +879,11 @@
 				};
 				var param = $.extend({},gParam, dbConfigForm.serializeObject());
 				$a.ajax({
-					url: '/zdb/updateDBVariables',
+					url: '/zdbapi/updateDBVariables',
 					data:param,
 					success: function(res){
 						gCommon.alert(gMessage.saveSuccess);
+						gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gCurrentNamespace});
 					}
 				});
 			});
@@ -816,7 +896,7 @@
 				};			
 				var param = $.extend({},gParam, tOb.find('*').serializeObject());
 				$a.ajax({
-					url: '/zdb/updateConfig',
+					url: '/zdbapi/updateConfig',
 					data:param,
 					success: function(res){
 						gCommon.alert(gMessage.saveSuccess);
@@ -826,7 +906,7 @@
 			*/
 			function fn_getConfigurationInfo(){
 				$a.ajax({
-					url: '/zdb/getDBVariables',
+					url: '/zdbapi/getDBVariables',
 					data:gParam,
 					success: function(res){
 						var dbConfigurations = res.dbConfigurations
@@ -850,33 +930,71 @@
 				});
 			};
 			/*tab4 end 환경설정 */
+			/* tab5 start backup */
+			$('#searchBackup').on('click',function(){
+				fn_getBackupInfo();
+			});
+			$('#gridBackup').alopexGrid({
+				autoColumnIndex: true,
+				height: 400,
+				columnMapping : [
+					{ title:'백업시간', key : 'archivedDatetime' , width: '80px', align: 'center'},
+					{ title:'시작시간', key : 'startDatetime' , width: '80px', align: 'left'},
+					{ title:'완료시간', key : 'completeDatetime' , width: '100px', align: 'left'},
+					{ title:'파일사이즈', key : 'fileSize' , width: '100px', align: 'left'},
+					{ title:'데이터스토리지', key : 'archiveFileSize' , width: '130px', align: 'left'}
+				],
+				message: {
+					nodata: gMessage.gridNodata
+				}
+			});		
+			function fn_getBackupInfo(){
+				var param = {
+					namespace : gService.namespace,
+				    serviceType : gService.serviceType,
+				    serviceName : 'zdb-redis-chkim-1',
+				};
+				
+				$a.ajax({
+					url: '/zdbapi/getBackupList',
+					data:param,
+					success: function(res){
+						var list = res.backupList;
+						$('#gridBackup').alopexGrid('dataSet',list);
+					}
+				});				
+			};	
+			/* tab5 end backup */
+			
 			
 			/*tab6 start 이벤트*/
 			$('#gridEvent').alopexGrid({
 				autoColumnIndex: true,
 				height: 400,
 				columnMapping : [
-					{ title:'First seen', key : 'firstTimestamp', width : '80px', align: 'center' },
 					{ title:'Last seen', key : 'lastTimestamp' , width: '80px', align: 'center'},
-					{ title:'Kind', key : 'kind' , width: '50px', align: 'center'},
-					{ title:'name', key : 'name' , width: '80px', align: 'center'},
-					{ title:'reason', key : 'reason' , width: '100px', align: 'center'},
-					{ title:'message', key : 'message' , width: '130px', align: 'center'}
+					{ title:'Kind', key : 'kind' , width: '60px', align: 'left'},
+					{ title:'name', key : 'name' , width: '100px', align: 'left'},
+					{ title:'reason', key : 'reason' , width: '100px', align: 'left'},
+					{ title:'message', key : 'message' , width: '130px', align: 'left'}
 				],
 				message: {
 					nodata: gMessage.gridNodata
 				}
 			});			
 			
-			$('#eventStartDate').val(moment().subtract(7, 'days').format('YYYY-MM-DD'));
+			$('#eventStartDate').val(moment().subtract(3, 'days').format('YYYY-MM-DD'));
 			$('#eventEndDate').val(moment().format('YYYY-MM-DD'));
+			$('#eventEndTime').setData({date :'23:59'});
 			function fn_getEventInfo(){
 				var param = $('form[name=eventForm]').serializeObject();
 				param = $.extend({},gParam,param);
-				console.log(param);
-				return;
+				param.startTime = moment($('#eventStartDate').val()+$('#eventStartTime').getData().date.replace(/(AM|PM)/,''),'YYYY-MM-DDHH24 : mm').format('YYYY-MM-DD HH:mm:ss');
+				param.endTime = moment($('#eventEndDate').val()+$('#eventEndTime').getData().date.replace(/(AM|PM)/,'')+':59','YYYY-MM-DDHH24 : mm:ss').format('YYYY-MM-DD HH:mm:ss');
+				param.keyword=param.keyword||'-';
+				
 				$a.ajax({
-					url: '/zdb/getEventsWithService',
+					url: '/zdbapi/getEvents',
 					data:param,
 					success: function(res){
 						var list = res.serviceEvents;
@@ -885,6 +1003,9 @@
 				});				
 			};			
 			$('#searchEvent').on('click',function(){
+				fn_getEventInfo();
+			});
+			$('input[name=keyword]').pressEnter(function(evt){
 				fn_getEventInfo();
 			});
 			//page Start

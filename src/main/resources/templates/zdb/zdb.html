@@ -113,7 +113,7 @@ $a.page(function(){
 	function fn_getNamespacList(){
 		var namespaceList = [];
 		$a.ajax({
-			url: '/zdb/getNamespaces',
+			url: '/zdbapi/getNamespaces',
 			async: false,
 			success:function(res){
 				var list = res.namespaces;

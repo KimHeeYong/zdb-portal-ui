@@ -86,7 +86,7 @@
 				var data = gCommon.findObjectByKeyOb(gTagList,{id:$(this).prev().data('id')});
 				data = $.extend({},data,{serviceName:data.releaseName});
 				$a.ajax({
-					url: '/zdb/deleteTag',
+					url: '/zdbapi/deleteTag',
 					data: data, 
 					success: function(res){
 						gCommon.alert(gMessage.procSuccss);
@@ -127,12 +127,26 @@
 			$('body').on('click','.proc_serviceRestart',function(evt){
 				var data = $('#'+$(this).attr('key')).data();
 				$a.ajax({
-					url: '/zdb/restartService',
+					url: '/zdbapi/restartService',
 					data : data,
 					success: function(res){
 						console.log(res);	
 					}
 				});
+			});
+			//서비스 목록 refresh 클릭
+			$('body').on('click','.viewMonitor',function(evt){
+				var data = $('#'+$(this).attr('key')).data();
+				
+				/*
+				$a.ajax({
+					url: '/zdbapi/restartService',
+					data : data,
+					success: function(res){
+						console.log(res);	
+					}
+				});
+				*/
 			});
 
 			fn_getServices();	
@@ -142,7 +156,7 @@
 		function fn_getServices(){
 			var deferred = $.Deferred();
 			$a.ajax({
-				url: '/zdb/getServiceoverviews',
+				url: '/zdbapi/getServiceoverviews',
 				data: {namespace:gSelectedNamespace} , 
 				success: function(res){
 					gServiceList = res.serviceoverviews;
