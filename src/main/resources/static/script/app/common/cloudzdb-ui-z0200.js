@@ -37,7 +37,7 @@ function gfn_convertServiceData(data){
 		return result;
 	}(data.pods));
 	
-	if(masterPod){
+	if(masterPod && masterPod.metadata){
 		ob.podname = masterPod.metadata.name;
 		var readyCondition = gfn_getReadyCondition(masterPod);
 		ob.lastTransitionTime = readyCondition ? readyCondition.lastTransitionTime:'';
@@ -133,7 +133,7 @@ function gfn_getServiceDetailTemplate(ob){
 		+'				</dl>'
 		+'				<div class="service-btn__wrap">'
 		+'					<button class="Button nobg-btn btn-refresh hide">새로고침</button>'
-		+'					<button class="Button nobg-btn btn-viewdetail">상세보기</button>'
+		+'					<button class="Button nobg-btn btn-viewdetail hide">상세보기</button>'
 		+'				</div>'
 		+'			</div>'
 	for(var key in ob){

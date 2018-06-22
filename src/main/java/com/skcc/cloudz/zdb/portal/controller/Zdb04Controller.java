@@ -1,7 +1,10 @@
 package com.skcc.cloudz.zdb.portal.controller;
 
+import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +30,13 @@ public class Zdb04Controller {
 	@GetMapping("zdb0400")
 	public ModelAndView zdb0200(HttpServletRequest request,HttpServletResponse response) {
 		ModelAndView mav = new ModelAndView();
+		HttpSession session = request.getSession();
+		Enumeration<String> it = session.getAttributeNames();
+		while(it.hasMoreElements()) {
+			String key = it.nextElement();
+			System.out.println(key + ":" + session.getAttribute(key));
+			
+		}
 		return mav;
 	}
 }

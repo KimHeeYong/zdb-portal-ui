@@ -87,8 +87,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>zdb</groupId>
-			<artifactId>zdb.rest.api.ui</artifactId>
+			<groupId>com.skcc.cloudz.zdb</groupId>
+			<artifactId>zdb-portal-server-for-ui</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 

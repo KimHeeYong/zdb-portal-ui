@@ -27,6 +27,7 @@ import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.EventMetaData;
+import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 
@@ -94,9 +95,22 @@ public class ZdbApiService{
 		return ob;
 	}
 	
+	public int getNodeCount(Map<String,String> param) {
+		int ob = 0;
+		ZdbRestDTO zdbRestDTO = restTemplate.getForObject(apiServer + URIConstants.URI_GET_NODE_COUNT, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			ob = zdbRestDTO.getResult().getNodes();
+		};
+		return ob;
+	}
+	
 	//restartService
-	public void restartService(Map<String, String> param) {
-		restTemplate.getForObject(apiServer + URIConstants.URI_RESTART_SERVICE, ZdbRestDTO.class,param);
+	public ZdbRestDTO restartService(Map<String, String> param) {
+		return restTemplate.getForObject(apiServer + URIConstants.URI_RESTART_SERVICE, ZdbRestDTO.class,param);
+	}
+	//restartService
+	public ZdbRestDTO restartPod(Map<String, String> param) {
+		return restTemplate.getForObject(apiServer + URIConstants.URI_RESTART_POD, ZdbRestDTO.class,param);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -191,7 +205,6 @@ public class ZdbApiService{
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param, headers);
-		System.out.println(entity);
 		return restTemplate.exchange(apiServer + URIConstants.URI_UPDATE_SCALE_OUT, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();
 	}
 
@@ -246,8 +259,8 @@ public class ZdbApiService{
 		return list;
 	}
 
-	public String getPodLog(Map<String, String> param) {
-		String result = "";
+	public String[] getPodLog(Map<String, String> param) {
+		String[] result = {};
 		ZdbRestDTO zdbRestDTO = restTemplate.getForObject(apiServer + URIConstants.URI_GET_POD_LOG,ZdbRestDTO.class,param);
 		
 		if(zdbRestDTO!=null) {
@@ -266,6 +279,15 @@ public class ZdbApiService{
 		return result;
 	}
 
+	public ScheduleEntity getSchedule(Map<String, String> param) {
+		ScheduleEntity result = null;
+		ZdbRestDTO zdbRestDTO = restTemplate.getForObject(apiServer + URIConstants.URI_GET_SCHEDULE,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getGetSchedule();
+		};
+		return result;
+	}
 
 }
 

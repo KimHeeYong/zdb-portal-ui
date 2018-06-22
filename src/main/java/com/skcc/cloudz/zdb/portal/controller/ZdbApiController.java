@@ -19,6 +19,7 @@ import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.IResult;
+import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 
@@ -74,12 +75,31 @@ public class ZdbApiController {
 		return mav;
 	}
 	
+	@RequestMapping(value = "getNodeCount")
+	public ModelAndView getNodeCount(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		int nodes = zdbApiService.getNodeCount(param);
+		mav.addObject(IResult.NODES,nodes);
+		return mav;
+	}
+	
 	@RequestMapping(value = "restartService")
 	public ModelAndView restartService(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
 		zdbApiService.restartService(param);
+		return mav;
+	}
+	
+	@RequestMapping(value = "restartPod")
+	public ModelAndView restartPod(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		mav.addObject(CommonConstants.RESULT ,zdbApiService.restartPod(param)); 
 		return mav;
 	}
 	
@@ -235,7 +255,7 @@ public class ZdbApiController {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
-		String result = zdbApiService.getPodLog(param);
+		String [] result = zdbApiService.getPodLog(param);
 		mav.addObject(IResult.POD_LOG,result);
 		
 		return mav;
@@ -252,5 +272,24 @@ public class ZdbApiController {
 		return mav;
 	}
 	
+	@RequestMapping(value = "getSchedule")	
+	public ModelAndView getSchedule(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ScheduleEntity schedule = zdbApiService.getSchedule(param);
+		mav.addObject("schedule",schedule);
+		
+		return mav;
+	}
 	
+	@RequestMapping(value = "getMonitoringPanels")
+	public ModelAndView getMonitoringPanels(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ServiceOverview serviceoverview = zdbApiService.getServiceoverview(param);
+		mav.addObject(IResult.SERVICEOVERVIEW,serviceoverview);
+		return mav;
+	}
 }

@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.skcc.cloudz.zdb.api.iam.domain.vo.ApiResponseVo;
+import com.skcc.cloudz.zdb.api.iam.domain.vo.ZcpUserResVo;
 import com.skcc.cloudz.zdb.api.iam.service.IamApiService;
 
 @Service
@@ -58,6 +59,38 @@ public class IamApiServiceImpl implements IamApiService {
         }
         
         return apiResponseVo;
+    }
+
+
+
+    @Override
+    public ZcpUserResVo getUser(String userId) {
+        ZcpUserResVo zcpUserResVo = new ZcpUserResVo();
+        
+        try {
+            String url = UriComponentsBuilder.fromUriString(iamBaseUrl).path("/iam/user/{id}").buildAndExpand(userId).toString();
+            log.info("===> Request Url : {}", url);
+            
+            HttpHeaders headers = new HttpHeaders();
+            HttpEntity<String> requestEntity = new HttpEntity<String>(headers); 
+            
+            ResponseEntity<ZcpUserResVo> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, ZcpUserResVo.class);
+            
+            log.info("===> Response status : {}", responseEntity.getStatusCode().value());
+            log.info("===> Response body msg : {}", responseEntity.getBody().getMsg());
+            log.info("===> Response body code : {}", responseEntity.getBody().getCode());
+            log.info("===> Response body data : {}", responseEntity.getBody().getData());
+            
+            if (responseEntity!= null && responseEntity.getStatusCode() == HttpStatus.OK) {
+                zcpUserResVo.setCode(responseEntity.getBody().getCode());
+                zcpUserResVo.setMsg(responseEntity.getBody().getMsg());
+                zcpUserResVo.setData(responseEntity.getBody().getData());    
+            }
+        } catch (RestClientException e) {
+            e.printStackTrace();
+        }
+        
+        return zcpUserResVo;
     }
     
 

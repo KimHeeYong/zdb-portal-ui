@@ -76,16 +76,14 @@
 		</ul>
 	</div>
 	<script type="text/javascript">
-		var gSelectedNamespace = '';//선택된 네임스페이스
 		var gNamespaces = null; // 네임스페이스 콤보
 		$a.page(function() {
 			this.init = function() {
-				gSelectedNamespace = gParam.selectedNamespace || G_NAMESPACE_ALL;
 				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
 						.select({
 							id : gParam.selectedNamespace || G_NAMESPACE_ALL
 						}).addHandler(function(e) {
-							gSelectedNamespace = e.currentTarget.id;
+							gCommon.setSelectedNamespace(e.currentTarget.id);
 							gCommon.movePage('/zdb04/zdb0400', {
 								selectedNamespace : gSelectedNamespace
 							});
@@ -94,13 +92,15 @@
 				
 				$('#gridEvent').alopexGrid({
 					autoColumnIndex: true,
-					height: 400,
-					columnMapping : [
-						{ title:'Last seen', key : 'lastTimestamp' , width: '80px', align: 'center'},
-						{ title:'Kind', key : 'kind' , width: '60px', align: 'left'},
-						{ title:'name', key : 'name' , width: '100px', align: 'left'},
-						{ title:'reason', key : 'reason' , width: '100px', align: 'left'},
-						{ title:'message', key : 'message' , width: '130px', align: 'left'}
+					autoResize:false,
+					width: 1500,
+					height: 700,
+					columnMapping : [  
+						{ title:'Last seen', key : 'lastTimestamp' , width: '180px', align: 'center'},
+						{ title:'Kind', key : 'kind' , width: '180px', align: 'left'},
+						{ title:'name', key : 'name' , width: '300px', align: 'left'},
+						{ title:'reason', key : 'reason' , width: '190px', align: 'left'},
+						{ title:'message', key : 'message' , width: '400px', align: 'left'}
 					],
 					message: {
 						nodata: gMessage.gridNodata

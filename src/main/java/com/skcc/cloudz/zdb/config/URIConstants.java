@@ -14,12 +14,16 @@ public class URIConstants {
 	public static final String URI_GET_TAGS_WITH_NAMESPACE = "/api/v1/{namespace}/tags";
 
 	public static final String URI_GET_CONNECTION_INFO = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/connection";
+	
+	public static final String URI_GET_NODE_COUNT = "/api/v1/nodeCount";
 
 	public static final String URI_GET_SERVICE = "/api/v1/{namespace}/{serviceType}/service/services/{serviceName}";
 
 	public static final String URI_GET_POD_RESOURCE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/pods/resource";
 	
 	public static final String URI_RESTART_SERVICE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/restart";
+
+	public static final String URI_RESTART_POD = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/pod/{podName}/restart";
 
 	public static final String URI_GET_POD_METRICS = "/api/v1/{namespace}/service/{podName}/metrics";
 
@@ -48,5 +52,7 @@ public class URIConstants {
 	public static final String URI_GET_POD_LOG = "/api/v1/{namespace}/log/{podname}";
 
 	public static final String URI_GET_BACKUP_LIST = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/backup-list";
+
+	public static final String URI_GET_SCHEDULE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/schedule";
 
 }

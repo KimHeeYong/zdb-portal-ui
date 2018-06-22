@@ -23,6 +23,7 @@
 	<script type="text/javascript" src="/script/libs/alopex/alopex-grid.min.js"></script>
 	<script type="text/javascript" src="/script/libs/alopex/alopex-grid-excel.min.js"></script>
 	<script type="text/javascript" src="/script/libs/etc/moment.min.js"></script>
+	<script type="text/javascript" src="/script/libs/etc/jquery.cookie.js"></script>
 	<script type="text/javascript" src="/script/app/common/alopex-common.js"></script>
 	<script type="text/javascript" src="/script/app/common/cloudzdb-ui.js"></script>
 	<script type="text/javascript" src="/script/app/common/constants.js"></script>
@@ -31,17 +32,26 @@
 <script type="text/javascript">
 $a.page(function() {
 	this.init = function() {
-		console.log(gParam)
+		var title = gParam.namespace+" > "+ gParam.serviceName +" > "+ gParam.podname + " log";
+		$('title,#title').html(title);
+		
 		$a.ajax({
 			url: '/zdbapi/getPodLog',
 			data : gParam,
 			success: function(res){
-				$('#log').html(res.podLog);
+				if(res.podLog){
+					for(var i = 0 ; i < res.podLog.length;i++){
+						$('#log').append('<p>'+res.podLog[i]+'</p>');
+					};
+				};
 			}
 		});
 	};
 });
 </script>
+<div id="title">
+</div>
+<hr/>
 <div id="log">
 	
 </div>

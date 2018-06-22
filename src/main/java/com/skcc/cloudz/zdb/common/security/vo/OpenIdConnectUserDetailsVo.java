@@ -1,5 +1,6 @@
 package com.skcc.cloudz.zdb.common.security.vo;
 
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
+import com.skcc.cloudz.zdb.api.iam.domain.vo.ZcpUserVo;
 import com.skcc.cloudz.zdb.common.domain.vo.CommonVo;
 
 public class OpenIdConnectUserDetailsVo extends CommonVo implements UserDetails {
@@ -27,12 +29,21 @@ public class OpenIdConnectUserDetailsVo extends CommonVo implements UserDetails 
     
     public OpenIdConnectUserDetailsVo() {}
 
-    public OpenIdConnectUserDetailsVo(Map<String, String> userInfo, OAuth2AccessToken token) {
+    public OpenIdConnectUserDetailsVo(Map<String, String> userInfo, OAuth2AccessToken token, ZcpUserVo zcpUserVo) {
         this.userId = userInfo.get("sub");
-        //this.userId = "04461fb8-9739-42a4-96e2-46fa77780c54";
         this.email = userInfo.get("email");
         this.token = token;
-
+        
+        // added user info
+        if (zcpUserVo != null) {
+            this.username = zcpUserVo.getUsername();
+            this.firstName = zcpUserVo.getFirstName();
+            this.namespaces = zcpUserVo.getNamespaces();
+            this.defaultNamespace = zcpUserVo.getDefaultNamespace();
+            this.usedNamespace = zcpUserVo.getUsedNamespace();
+            //this.accessRole = zcpUserVo.getClusterRole() != null ? zcpUserVo.getClusterRole().getName() : AccessRole.NONE.getName();
+            this.accessRole = AccessRole.CLUSTER_ADMIN.getName();
+        }
     }
     
     @Override
@@ -139,3 +150,4 @@ public class OpenIdConnectUserDetailsVo extends CommonVo implements UserDetails 
     }
     
 }
+

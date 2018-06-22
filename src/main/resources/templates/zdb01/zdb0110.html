@@ -75,15 +75,13 @@
    </div>  
 <script type="text/javascript">   
 	var gNamespaces = null;     // 네임스페이스 콤보
-	var gSelectedNamespace = '';//선택된 네임스페이스
 	$a.page(function() {
 		this.init = function() {
 			//네임스페이스 콤보 설정
-			gSelectedNamespace = gParam.selectedNamespace;
 			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAll:false})
 								 .select({id:gSelectedNamespace}) 
 								 .addHandler(function(e){
-									  gSelectedNamespace = e.currentTarget.id;
+									 gCommon.setSelectedNamespace(e.currentTarget.id);
 								  });
 			if(gNamespaces.text()==''){
 				gNamespaces.select(0);

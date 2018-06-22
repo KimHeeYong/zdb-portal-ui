@@ -92,7 +92,7 @@
 									<td><input id="credential" name="credential" class="Textinput" type="password"/>
 										<span class="input-pw"></span>
 										<button class="Button line-btn" id="togglePwd">보기</button>
-										<button class="Button line-btn connectionInfoCopy">복사</button>
+										<button class="Button line-btn" id="credentialCopy">복사</button>
 										<button class="Button line-btn" id="credentialUpdate">변경</button>
 										<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
 									</td>	
@@ -201,7 +201,7 @@
 								<tr>
 									<th class="Valign-top" >Read-Only Slave 수</th>
 									<td>
-										<div class="Spinner" data-min="1" data-max="99" data-step="1">
+										<div id="clusterSlaveCountSpinner" class="Spinner" data-min="1" data-max="1" data-step="1">
 										    <input id="clusterSlaveCount" name="clusterSlaveCount" value="1">
 										    <a class="Up"></a>
 										    <a class="Down"></a>
@@ -214,6 +214,159 @@
 							<button class="Button btn bg-red" id="updateScaleOut">적용하기</button>
 						</div>	
 					</div>		
+				</li>
+			</ul>
+		</div>
+		
+		<!-- Monitoring Tab -->
+		<div id="tab3">
+			<ul>
+				<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
+					<!-- Accordion wrap: System Resources -->
+					<ul class="Accordion db-accordion">
+						<li>
+							<a>System Resources</a>
+							<div class="accor-contents__wrap">
+								<table class="Table">
+									<tbody>
+										<tr>
+											<td>
+												<div class="panel-cpu" id="panelCpu"></div>
+											</td>
+											<td>
+												<div class="panel-memory" id="panelMemory"></div>
+											</td>
+											<td>
+												<div class="panel-network" id="panelNetwork"></div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+				            </div>
+						</li>
+					</ul>
+					<!-- Accordion wrap: Connections & Table -->
+					<ul class="Accordion db-accordion">
+						<li>
+							<a>Connections & Table</a>
+							<div class="accor-contents__wrap">
+								<table class="Table">
+									<tbody>
+										<tr>
+											<td>
+												<div class="panel-connections" id="panelConnections"></div>
+											</td>
+											<td>
+												<div class="panel-thread" id="panelThread"></div>
+											</td>
+											<td>
+												<div class="panel-tablelack" id="panelTablelack"></div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+				            </div>
+						</li>
+					</ul>
+					<!-- Accordion wrap: Query & Replication -->
+					<ul class="Accordion db-accordion">
+						<li>
+							<a>Query & Replication</a>
+							<div class="accor-contents__wrap">
+								<table class="Table">
+									<tbody>
+										<tr>
+											<td>
+												<div class="panel-qps" id="panelQps"></div>
+											</td>
+											<td>
+												<div class="panel-replicationdelay" id="panelReplicationdelay"></div>
+											</td>
+											<td>
+												<div class="panel-sqlthread" id="panelSqlthread"></div>
+											</td>
+											<td>
+												<div class="panel-iothread" id="panelIothread"></div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+				            </div>
+						</li>
+					</ul>
+				</li>
+			</ul>
+			<ul>
+				<li th:if="${#request.getParameter('serviceType')=='redis'}">
+					<!-- Accordion wrap: System Resources -->
+					<ul class="Accordion db-accordion">
+						<li>
+							<a>System Resources</a>
+							<div class="accor-contents__wrap">
+								<table class="Table">
+									<tbody>
+										<tr>
+											<td>
+												<div class="panel-cpu" id="panelCpu"></div>
+											</td>
+											<td>
+												<div class="panel-memory" id="panelMemory"></div>
+											</td>
+											<td>
+												<div class="panel-network" id="panelNetwork"></div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+				            </div>
+						</li>
+					</ul>
+					<!-- Accordion wrap: Keys -->
+					<ul class="Accordion db-accordion">
+						<li>
+							<a>Keys</a>
+							<div class="accor-contents__wrap">
+								<table class="Table">
+									<tbody>
+										<tr>
+											<td>
+												<div class="panel-items" id="panelItems"></div>
+											</td>
+											<td>
+												<div class="panel-expiringvsnot" id="panelExpiringvsnot"></div>
+											</td>
+											<td>
+												<div class="panel-expired" id="panelExpired"></div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+				            </div>
+						</li>
+					</ul>
+					<!-- Accordion wrap: Connections & Table -->
+					<ul class="Accordion db-accordion">
+						<li>
+							<a>Commands</a>
+							<div class="accor-contents__wrap">
+								<table class="Table">
+									<tbody>
+										<tr>
+											<td>
+												<div class="panel-executed" id="panelExecuted"></div>
+											</td>
+											<td>
+												<div class="panel-calls" id="panelCalls"></div>
+											</td>
+											<td>
+												<div class="panel-hits" id="panelHits"></div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+				            </div>
+						</li>
+					</ul>
 				</li>
 			</ul>
 		</div>
@@ -393,10 +546,7 @@
 								<col style="width: 280px;"> </col>
 								<col> </col>
 							</colgroup>							
-							<tbody>
-				
-								
-							</tbody>
+							<tbody> </tbody>
 						</table>
 			            <div class="btn-wrap__right">
 				        	<button class="Button btn bg-red" id="saveVariables">적용하기</button>
@@ -414,10 +564,31 @@
 		            	<!-- tab contents info detail-->
 		            	<div class="ctn-info__wrap">
 		            		<form name="backupForm" method="post">
-		            		<div class="ctn-info__right">
+		            		<div class="ctn-info__left">
+								<span class="info-list"> 백업설정:</span>
+								<span class="info-list">
+		            				<div class="onoff-wrap"><button class="Button btn-off">OFF</button></div>
+									<div class="hide">
+										<select name="useYn"> <option value="Y">Y</option> <option value="N">N</option> </select>
+									</div>	
+								</span>
+								<span class="info-list" id="scheduleInfo">
+									백업 시간: <span class="info-db" data="startTime">05:00</span>
+								</span>
+								<span class="info-list hide" id="scheduleUpdate">
+									백업 시간: 
+									<div class="Spinner Time" data-locale="en" id="startTime" data-hours="24H" data-bind="time:date">
+									    <input data-hour>
+									    <span data-seperator>:</span>
+									    <input data-minute>
+									    <input data-ampm>
+									    <a class="Up"></a>
+									    <a class="Down"></a>
+									</div>
+								</span>
 								<div class="info-list">
 									<button class="Button btn-search" id="searchBackup">검색</button>
-								</div>
+								</div>			            		
 		            		</div>
 		            		</form>
 		            	</div>
@@ -496,7 +667,6 @@
 	</div>
 </div>
 <script type="text/javascript">
-	var gSelectedNamespace = '';
 	var gCurrentNamespace = '';
 	var gNamespaces = null;
 	var gService = null;
@@ -504,11 +674,10 @@
 		
 		this.init = function() {
 			//namespace 변경시 이벤트
-			gSelectedNamespace = gParam.selectedNamespace||G_NAMESPACE_ALL;
 			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
 								 .select({id:gSelectedNamespace})
 								 .addHandler(function(e) {
-									  gSelectedNamespace = e.currentTarget.id;
+									  gCommon.setSelectedNamespace(e.currentTarget.id);
 									  gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
 		   						  });
 			$('.Accordion').expandAll();
@@ -530,11 +699,13 @@
 					case 2:
 						break;
 					case 3:
+						fn_getMonitoring();
 						break;
 					case 4:
 						fn_getConfigurationInfo();
 						break;						
 					case 5:
+						fn_getBackupScheduleInfo();
 						break;
 					case 6:
 						//fn_getEventInfo();
@@ -559,7 +730,20 @@
 			
 			/* tab1 start */
 			$('#togglePwd').on('click',function(){
-				$('#credential').attr('type',$('#credential').attr('type')=='text'?'password':'text');
+				var isShowPwd = $('#credential').attr('type')=='password';
+				if(isShowPwd){
+					$('#credential').attr('type','text');
+					$('#connectionInfoTable').find('input[data-origin]').each(function(){
+						var ob = $(this);
+						ob.val(ob.val().replace('[password]',$('#credential').val()));
+					});
+				}else{
+					$('#credential').attr('type','password');
+					$('#connectionInfoTable').find('input[data-origin]').each(function(){
+						var ob = $(this);
+						ob.val(ob.data('origin'));
+					});
+				}
 			});
 			$('#credentialUpdate').on('click',function(){
 				var param = $.extend({},gParam);
@@ -570,14 +754,17 @@
 					data:param,
 					success: function(res){
 						gCommon.alert('정상적으로 변경되었습니다.');
+						$('#zdbServiceTabs').setTabIndex(0);
 					}
 				})
 			});
 			$('#gridResource').alopexGrid({
 				autoColumnIndex: true,
+				autoResize:false,
+				width:1500,
 				height: 400,
 				columnMapping : [
-					{ title:'name', key : 'name', width : '150px', sorting : true, align: 'center' },
+					{ title:'name', key : 'name', width : '360px', sorting : true, align: 'left' },
 					{ title:'status', key : 'status' , width: '80px', align: 'center',render : function( value, data, render, mapping) {
 						var cond = data.condition;
 						var re = '';
@@ -591,18 +778,18 @@
 						};
 						return re;
 					}},
-					{ title:'role', key : 'role' , width: '80px', align: 'center'},
-					{ title:'node', key : 'node' , width: '80px', align: 'center'},
-					{ title:'cpu(m)', key : 'cpu' , width: '80px', align: 'center'},
-					{ title:'memory(Mi)', key : 'memory' , width: '80px', align: 'center'},
-					{ title:'disk(Gi)', key : 'disk' , width: '80px', align: 'center'},
-					{ title:'restart',key:'restart',width:'40px',render: function( value, data, render, mapping){
+					{ title:'role', key : 'role' , width: '130px', align: 'center'},
+					{ title:'node', key : 'node' , width: '130px', align: 'center'},
+					{ title:'cpu(m)', key : 'cpu' , width: '140px', align: 'center'},
+					{ title:'memory(Mi)', key : 'memory' , width: '140px', align: 'center'},
+					{ title:'disk(Gi)', key : 'disk' , width: '140px', align: 'center'},
+					{ title:'restart',key:'restart',width:'60px', align: 'center',render: function( value, data, render, mapping){
 						var re = $('<button class="Button btn-restart">재시작</button>').on('click',function(){
-							fn_restartService(data);
+							fn_restartPod(data);
 						});
 						return re;
 					}},
-					{ title:'log',key:'log',width:'40px',render: function( value, data, render, mapping){
+					{ title:'log',key:'log',width:'60px', align: 'center',render: function( value, data, render, mapping){
 						var re = $('<button class="Button btn-log">로그</button>').on('click',function(){
 							fn_viewLog(data);
 						});
@@ -610,26 +797,23 @@
 					}}
 				],
 			});
-			function fn_restartService(data){
-				var param = $({},gParam,{});
+			function fn_restartPod(data){
+				var param = {
+						serviceType:gService.serviceType,
+						namespace:gService.namespace,
+						serviceName:gService.serviceName,
+						podName:data.name
+				}
 				$a.ajax({
-					url: '/zdbapi/restartService',
-					data:data,
+					url: '/zdbapi/restartPod',
+					data:param,
 					success: function(res){
 						console.log(res);
 					}
 				});
 			}
 			function fn_viewLog(data){
-				$a.popup({
-			        url: "/zdb02/zdb0200p02?namespace="+gService.namespace+"&podname="+data.name,
-			        windowpopup: true,
-			        modal: false,
-			        width : 1000,     
-			        height : 800,    
-			        movable:true,    
-			        resizable:true
-			    });
+				window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
 			}
 			//서비스 정보 조회
 			function fn_getService(){
@@ -656,10 +840,21 @@
 							for(var i = 0 ; i < pods.length; i++){
 								var pod = pods[i];
 								var condition = gfn_getReadyCondition(pod);
+								var role = ""; 
+								if(gService.serviceType == 'redis'){
+									if(pod.metadata.labels.role == "metrics")continue;
+									else if(pod.metadata.labels.role == 'slave'){
+										role = 'slave(readOnly)'; 
+									}else{
+										role = pod.metadata.labels.role
+									}
+								}else{
+									role = pod.metadata.labels.component;
+								};
 								list.push({
 									name: pod.metadata.name,
 									condition: condition,
-									role: pod.metadata.labels.component,
+									role: role,
 									node: pod.spec.nodeName								
 								});	
 							}
@@ -691,8 +886,9 @@
 											if(ml && ml.length > 0){
 												ob.memory = ((ml.length? ml[ml.length-1].value:'') / (1024*1000)).toFixed(2) + ' / ' + service.resourceSpecOfPodMap[ob.name].memory;
 											}
+											ob.disk = ' / ' + psSpec.size;
 											if(dl && dl[ob.name]){
-												ob.disk = (dl[ob.name].used / (1024*1000)).toFixed(2) + ' / ' + service.persistenceSpecOfPodMap[ob.name].size;
+												ob.disk = (dl[ob.name].used / (1024*1000)).toFixed(2) + ob.disk;
 											}
 										}catch(e){ 
 											//console.log(e);
@@ -740,8 +936,8 @@
 						if(connectionList && connectionList.length>0){
 							for(var i=0; i < connectionList.length ;i++){
 								var ob = connectionList[i];
-								$('input[name='+ob.connectionType+ob.role+'ConnectionString]').val(ob.connectionString);
-								$('input[name='+ob.connectionType+ob.role+'ConnectionLine]').val(ob.connectionLine);
+								$('input[name='+ob.connectionType+ob.role+'ConnectionString]').val(ob.connectionString).attr('data-origin',ob.connectionString);
+								$('input[name='+ob.connectionType+ob.role+'ConnectionLine]').val(ob.connectionLine).attr('data-origin',ob.connectionLine);
 							};
 						}
 					}
@@ -763,22 +959,19 @@
 					updTime:ob.updTime
 				}));
 			}
-			$('#credentialCopy').on('click',function(){
-				$('#credential').select();
-				document.execCommand('copy');
-			});
 			
-			$(document).on('click','.connectionInfoCopy',function(e){
+			$(document).on('click','.connectionInfoCopy,#credentialCopy',function(e){
+				var target = e.target.id == "credentialCopy" ? $('#credential') : $(this).prev();
 				var msg = '';
-				if($(this).prev().val() == ''){
+				if(target.val() == ''){
 					msg = '복사할 내용이 없습니다.';	
-				}else if($(this).prev().is(':visible')){
-					gCommon.copyToClipboard($(this).prev());	
-					msg = 'Connection String이 복사되었습니다.';
+				}else if(target.is(':visible')){
+					gCommon.copyToClipboard(target);
+					msg = (target.get(0).id == 'credential'?'Credential이 복사되었습니다': 'Connection String이 복사되었습니다.');
 				}else{
-					$(this).prev().show();
-					gCommon.copyToClipboard($(this).prev());
-					$(this).prev().hide();
+					target.show();
+					gCommon.copyToClipboard(target);
+					target.hide();
 					msg = 'Connection Line이 복사되었습니다.';
 				}
 				var ob = $(this).parent().find(".connectionInfoCopyed").html(msg).show();
@@ -850,8 +1043,171 @@
 					}
 				});
 			});
+			
+			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
+				$a.ajax({
+					url: '/zdbapi/getNodeCount',
+					data:data,
+					success: function(res){
+						$('#clusterSlaveCount').attr('max',res.nodes);
+					}
+				});				
+			};
 			/*tab2 end 스케일*/
 
+			/*tab3 start 모니터링*/
+			function fn_getMonitoring(){
+				$a.ajax({
+					url: '/zdbapi/getMonitoringPanels',
+					data:gParam,
+					success: function(res){
+						var service = gfn_convertServiceData(res.serviceoverview);
+						fn_getPanels(service);
+					}
+				});
+			};
+			function fn_getPanels(service){
+				console.log(service);
+				if(service.serviceType == "mariadb") {
+					var grafanaUrl = "http://grafana.zdb-dev.jp-tok.containers.mybluemix.net/d-solo/_tiGI-Niz/zdb-mariadb-summary?refresh=1m&orgId=1"
+						+ "&var-namespace=" + service.namespace 
+						+ "&var-service=" + service.serviceName + "-mariadb";
+					
+					/* System */
+					var iframePanelCpu = document.createElement("iframe");
+					iframePanelCpu.setAttribute("src", grafanaUrl + "&panelId=396");
+					var panelCpu = document.getElementById('panelCpu');
+					panelCpu.innerHTML = "";
+					panelCpu.appendChild(iframePanelCpu);
+					
+					var iframePanelMemory = document.createElement("iframe");
+					iframePanelMemory.setAttribute("src", grafanaUrl + "&panelId=398");
+					var panelMemory = document.getElementById('panelMemory');
+					panelMemory.innerHTML = "";
+					panelMemory.appendChild(iframePanelMemory);
+					
+					var iframePanelNetwork = document.createElement("iframe");
+					iframePanelNetwork.setAttribute("src", grafanaUrl + "&panelId=400");
+					var panelNetwork = document.getElementById('panelNetwork');
+					panelNetwork.innerHTML = "";
+					panelNetwork.appendChild(iframePanelNetwork);
+					
+					/* Connection & Table */
+					var iframePanelConnections = document.createElement("iframe");
+					iframePanelConnections.setAttribute("src", grafanaUrl + "&panelId=92");
+					var panelConnections = document.getElementById('panelConnections');
+					panelConnections.innerHTML = "";
+					panelConnections.appendChild(iframePanelConnections);
+					
+					var iframePanelThread = document.createElement("iframe");
+					iframePanelThread.setAttribute("src", grafanaUrl + "&panelId=10");
+					var panelThread = document.getElementById('panelThread');
+					panelThread.innerHTML = "";
+					panelThread.appendChild(iframePanelThread);
+					
+					var iframePanelTablelack = document.createElement("iframe");
+					iframePanelTablelack.setAttribute("src", grafanaUrl + "&panelId=32");
+					var panelTablelack = document.getElementById('panelTablelack');
+					panelTablelack.innerHTML = "";
+					panelTablelack.appendChild(iframePanelTablelack);
+					
+					/* Query & Replication */
+					var iframePanelQps = document.createElement("iframe");
+					iframePanelQps.setAttribute("src", grafanaUrl + "&panelId=410");
+					var panelQps = document.getElementById('panelQps');
+					panelQps.innerHTML = "";
+					panelQps.appendChild(iframePanelQps);
+					
+					var iframePanelReplicationdelay = document.createElement("iframe");
+					iframePanelReplicationdelay.setAttribute("src", grafanaUrl + "&panelId=404");
+					var panelReplicationdelay = document.getElementById('panelReplicationdelay');
+					panelReplicationdelay.innerHTML = "";
+					panelReplicationdelay.appendChild(iframePanelReplicationdelay);
+					
+					var iframePanelSqlthread = document.createElement("iframe");
+					iframePanelSqlthread.setAttribute("src", grafanaUrl + "&panelId=408");
+					var panelSqlthread = document.getElementById('panelSqlthread');
+					panelSqlthread.innerHTML = "";
+					panelSqlthread.appendChild(iframePanelSqlthread);
+					
+					var iframePanelIothread = document.createElement("iframe");
+					iframePanelIothread.setAttribute("src", grafanaUrl + "&panelId=406");
+					var panelIothread = document.getElementById('panelIothread');
+					panelIothread.innerHTML = "";
+					panelIothread.appendChild(iframePanelIothread);
+				}
+				else if (service.serviceType == "redis") {
+					var grafanaUrl = "http://grafana.zdb-dev.jp-tok.containers.mybluemix.net/d-solo/EbEby-Niz/zdb-redis-summary?refresh=1m&orgId=1"
+						+ "&var-namespace=" + service.namespace 
+						+ "&var-service=" + service.serviceName + "-master"
+						+ "&var-container=" + service.serviceName;
+					
+					/* System */
+					var iframePanelCpu = document.createElement("iframe");
+					iframePanelCpu.setAttribute("src", grafanaUrl + "&panelId=12");
+					var panelCpu = document.getElementById('panelCpu');
+					panelCpu.innerHTML = "";
+					panelCpu.appendChild(iframePanelCpu);
+					
+					var iframePanelMemory = document.createElement("iframe");
+					iframePanelMemory.setAttribute("src", grafanaUrl + "&panelId=14");
+					var panelMemory = document.getElementById('panelMemory');
+					panelMemory.innerHTML = "";
+					panelMemory.appendChild(iframePanelMemory);
+					
+					var iframePanelNetwork = document.createElement("iframe");
+					iframePanelNetwork.setAttribute("src", grafanaUrl + "&panelId=16");
+					var panelNetwork = document.getElementById('panelNetwork');
+					panelNetwork.innerHTML = "";
+					panelNetwork.appendChild(iframePanelNetwork);
+					
+					/* Keys */
+					var iframePanelItems = document.createElement("iframe");
+					iframePanelItems.setAttribute("src", grafanaUrl + "&panelId=20");
+					var panelItems = document.getElementById('panelItems');
+					panelItems.innerHTML = "";
+					panelItems.appendChild(iframePanelItems);
+					
+					var iframePanelExpiringvsnot = document.createElement("iframe");
+					iframePanelExpiringvsnot.setAttribute("src", grafanaUrl + "&panelId=24");
+					var panelExpiringvsnot = document.getElementById('panelExpiringvsnot');
+					panelExpiringvsnot.innerHTML = "";
+					panelExpiringvsnot.appendChild(iframePanelExpiringvsnot);
+					
+					var iframePanelExpired = document.createElement("iframe");
+					iframePanelExpired.setAttribute("src", grafanaUrl + "&panelId=8");
+					var panelExpired = document.getElementById('panelExpired');
+					panelExpired.innerHTML = "";
+					panelExpired.appendChild(iframePanelExpired);
+					
+					/* Commands */
+					var iframePanelExecuted = document.createElement("iframe");
+					iframePanelExecuted.setAttribute("src", grafanaUrl + "&panelId=4");
+					var panelExecuted = document.getElementById('panelExecuted');
+					panelExecuted.innerHTML = "";
+					panelExecuted.appendChild(iframePanelExecuted);
+
+					var iframePanelCalls = document.createElement("iframe");
+					iframePanelCalls.setAttribute("src", grafanaUrl + "&panelId=10");
+					var panelCalls = document.getElementById('panelCalls');
+					panelCalls.innerHTML = "";
+					panelCalls.appendChild(iframePanelCalls);
+					
+					var iframePanelHits = document.createElement("iframe");
+					iframePanelHits.setAttribute("src", grafanaUrl + "&panelId=18");
+					var panelHits = document.getElementById('panelHits');
+					panelHits.innerHTML = "";
+					panelHits.appendChild(iframePanelHits);
+					
+					
+				}
+				else {
+					// TODO
+				}
+				
+			}
+			/*tab3 end 모니터링*/
+			
 			/*tab4 start 환경설정 */
 			var dbConfigForm = $('form[name=dbConfig]');
 			
@@ -887,23 +1243,6 @@
 					}
 				});
 			});
-			/*
-			$('#saveConfig').on('click',function(){//my.cnf 적용
-				var tOb = $('#configTable');
-				if(tOb.find('[valid-check]').contents().length>0){
-					gCommon.alert(gMessage.notValidInput);
-					return;
-				};			
-				var param = $.extend({},gParam, tOb.find('*').serializeObject());
-				$a.ajax({
-					url: '/zdbapi/updateConfig',
-					data:param,
-					success: function(res){
-						gCommon.alert(gMessage.saveSuccess);
-					}
-				});				
-			});
-			*/
 			function fn_getConfigurationInfo(){
 				$a.ajax({
 					url: '/zdbapi/getDBVariables',
@@ -931,28 +1270,63 @@
 			};
 			/*tab4 end 환경설정 */
 			/* tab5 start backup */
-			$('#searchBackup').on('click',function(){
+			var backupForm = $('form[name=backupForm]'); 
+			backupForm.find('#searchBackup').on('click',function(){
 				fn_getBackupInfo();
 			});
 			$('#gridBackup').alopexGrid({
-				autoColumnIndex: true,
+				autoColumnIndex : true,
+				autoResize : false,
+				width:970,
 				height: 400,
 				columnMapping : [
-					{ title:'백업시간', key : 'archivedDatetime' , width: '80px', align: 'center'},
-					{ title:'시작시간', key : 'startDatetime' , width: '80px', align: 'left'},
-					{ title:'완료시간', key : 'completeDatetime' , width: '100px', align: 'left'},
-					{ title:'파일사이즈', key : 'fileSize' , width: '100px', align: 'left'},
-					{ title:'데이터스토리지', key : 'archiveFileSize' , width: '130px', align: 'left'}
+					{ title:'백업일자', key : 'startDatetime' , width: '130px', align: 'center',render:function(value,data,render,mapping){
+						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
+						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD') : '';
+					}},
+					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
+						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
+						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
+					}},
+					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
+						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
+						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
+					}},
+					{ title:'파일사이즈<br/>(byte)', key : 'fileSize' , width: '80px', align: 'center'},
+					{ title:'다운로드', key : 'archiveFileSize' , width: '90px', align: 'center',render:function(value,data,render,mapping){
+						var re = $('<button class="Button btn-download">다운로드</button>').on('click',function(){
+							fn_downloadBackupFile(data);
+						});
+						return re;
+					}}
 				],
 				message: {
 					nodata: gMessage.gridNodata
 				}
 			});		
+			function fn_getBackupScheduleInfo(){
+				var param = {
+						namespace : 'zdb-redis',
+					    serviceType : 'redis',
+					    serviceName : 'zdb-redis-chkim-1', //temp
+					};
+				$a.ajax({
+					url: '/zdbapi/getSchedule',
+					data:param,
+					success: function(res){
+						if(res.schedule){
+							console.log(res.schedule.startTime);
+							backupForm.zdbui_setContents(res.schedule);
+							backupForm.find('#startTime').setData({date :res.schedule.startTime});
+						};
+					}
+				});					
+			};
 			function fn_getBackupInfo(){
 				var param = {
 					namespace : gService.namespace,
 				    serviceType : gService.serviceType,
-				    serviceName : 'zdb-redis-chkim-1',
+				    serviceName : 'zdb-redis-chkim-1',//temp
 				};
 				
 				$a.ajax({
@@ -964,19 +1338,24 @@
 					}
 				});				
 			};	
+			function fn_downloadBackupFile(data){
+				console.log('fn_downloadBackupFile todo');
+			};
 			/* tab5 end backup */
 			
 			
 			/*tab6 start 이벤트*/
 			$('#gridEvent').alopexGrid({
 				autoColumnIndex: true,
+				autoResize:false,
+				width: 1500,
 				height: 400,
-				columnMapping : [
-					{ title:'Last seen', key : 'lastTimestamp' , width: '80px', align: 'center'},
-					{ title:'Kind', key : 'kind' , width: '60px', align: 'left'},
-					{ title:'name', key : 'name' , width: '100px', align: 'left'},
-					{ title:'reason', key : 'reason' , width: '100px', align: 'left'},
-					{ title:'message', key : 'message' , width: '130px', align: 'left'}
+				columnMapping : [  
+					{ title:'Last seen', key : 'lastTimestamp' , width: '180px', align: 'center'},
+					{ title:'Kind', key : 'kind' , width: '180px', align: 'left'},
+					{ title:'name', key : 'name' , width: '300px', align: 'left'},
+					{ title:'reason', key : 'reason' , width: '190px', align: 'left'},
+					{ title:'message', key : 'message' , width: '400px', align: 'left'}
 				],
 				message: {
 					nodata: gMessage.gridNodata

@@ -7,6 +7,7 @@ import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.Mycnf;
+import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 import com.zdb.core.domain.ZDBRedisConfig;
@@ -28,6 +29,8 @@ public class Result {
 	
 	private ConnectionInfo connectionInfo;
 
+	private int nodes;
+
 	private PodResource podResource;
 	
 	private List<Mycnf> mariaDBConfig;
@@ -44,5 +47,8 @@ public class Result {
 
 	private List<BackupEntity> backupList;
 	
-	private String podLog;
+	private String[] podLog;
+	
+	private ScheduleEntity getSchedule; 
+	
 }

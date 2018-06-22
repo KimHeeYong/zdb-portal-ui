@@ -55,8 +55,10 @@ $a.page(function(){
 var gOverlay = null;
 var gParam = {};
 var G_NAMESPACE_ALL = "_DEFAULT_ALL";
+var gSelectedNamespace = null;
 var gCommon = $a.page(function(){ 
 	this.init = function(){ //초기화 루틴 수행
+		gSelectedNamespace = $.cookie('selectedNamespace')||G_NAMESPACE_ALL;
 		$a.ajax = function(opt){
 			var defOpt = {
 				type:"POST",
@@ -70,6 +72,10 @@ var gCommon = $a.page(function(){
 		}
 		$(document).ajaxStart(function(){ gCommon.overlay({progress:true});}).ajaxStop(function() { gCommon.removeOverlay();});
 		gParam = this.getParameterJson();
+	};
+	this.setSelectedNamespace = function(val){
+		gSelectedNamespace = val;
+		$.cookie('selectedNamespace',val,{path:'/'});
 	};
 	this.alert = function(message){ 
 		alert(message); 

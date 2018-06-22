@@ -7,6 +7,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,11 +25,18 @@ import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skcc.cloudz.zdb.api.iam.domain.vo.ZcpUserResVo;
+import com.skcc.cloudz.zdb.api.iam.service.IamApiService;
 import com.skcc.cloudz.zdb.common.security.vo.OpenIdConnectUserDetailsVo;
 
 public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter {
 	
+	private static final Logger log = LoggerFactory.getLogger(OpenIdConnectFilter.class);
+	   
     public OAuth2RestOperations restTemplate;
+    
+    @Autowired
+    private IamApiService iamApiService;
 
     public OpenIdConnectFilter(String defaultFilterProcessesUrl) {
         super(defaultFilterProcessesUrl);
@@ -51,8 +61,15 @@ public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter 
             @SuppressWarnings("unchecked")
             final Map<String, String> authInfo = new ObjectMapper().readValue(tokenDecoded.getClaims(), Map.class);
             
-            final OpenIdConnectUserDetailsVo user = new OpenIdConnectUserDetailsVo(authInfo, accessToken);
+            ZcpUserResVo zcpUserResVo = iamApiService.getUser(authInfo.get("sub"));
+            
+            final OpenIdConnectUserDetailsVo user = new OpenIdConnectUserDetailsVo(authInfo, accessToken, zcpUserResVo.getData());
+            log.info("=======> user : {}", user.toString());
             return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        
+            
+//            final OpenIdConnectUserDetailsVo user = new OpenIdConnectUserDetailsVo(authInfo, accessToken);
+//            return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         } catch (final InvalidTokenException e) {
             throw new BadCredentialsException("Could not obtain user details from token", e);
         }
