@@ -1,0 +1,23 @@
+<div class="popup-wrap">
+	<div class="popup-alert">
+		<div class="popup-text">
+			<span id="message"></span>
+		</div>
+	</div>
+	<!--button-->
+	<div class="popup-btn__wrap">
+		<button class="Button btn bg-gray ok">확인</button>
+	</div>
+	<!--//button-->
+</div>
+<script type="text/javascript">
+$a.page(function() {
+	this.init = function() {
+		$('#message').html(gPopData.message);
+		$('button.ok').click(function(){
+			$a.close('Y');
+		});
+	}
+});
+	
+</script>

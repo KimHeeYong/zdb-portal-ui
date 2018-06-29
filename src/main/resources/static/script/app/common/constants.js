@@ -1,87 +1,58 @@
 var G_SERVICE_TYPE_MARIA = 'mariadb';
 var G_SERVICE_TYPE_REDIS = 'redis';
 
+var _gSliderConstantsCommonRange = { 'min': 0, '14%': 1, '28%': 2, '42%': 3, '56%': 4, '70%': 5, '85%':6, 'max': 7 };
+var _gSliderConstantsCommonGetValue = function(index){
+	return this.value[index]+this.unit;
+};
+var _gSliderConstantsCommonGetIndex = function(val){
+	return this.value.indexOf(parseInt((val||'0').replace(/[a-zA-Z]+/g,'')));
+};
 var gSliderConstants = {
 	redis :{
 		memory : {
-			range : {
-				'min': 0, '16%': 1, '32%': 2, '49%': 3, '66%': 4, '83%': 5, 'max': 6		
-			},
-			value :[256,512,1000,3000,5000,8000,12000],
-			unit : 'Mi',
-			getValue : function(index){
-				return this.value[index]+this.unit;
-			},
-			getIndex : function(val){
-				return this.value.indexOf(parseInt((val||'0').replace(/[a-zA-Z]+/g,'')));
-			}
+			range : _gSliderConstantsCommonRange,
+			value :[0,256,512,1000,3000,5000,8000,12000],
+			unit : 'MB',
+			getValue : _gSliderConstantsCommonGetValue,
+			getIndex : _gSliderConstantsCommonGetIndex
 		},
 		cpu : {
-			range : {
-				'min': 0, '16%': 1, '32%': 2, '49%': 3, '66%': 4, '83%': 5, 'max': 6	
-			},
-			value : [200,300,500,700,900,1200,2000],
+			range : _gSliderConstantsCommonRange,
+			value : [0,200,300,500,700,900,1200,2000],
 			unit : 'm',
-			getValue : function(index){
-				return this.value[index]+this.unit;
-			},
-			getIndex : function(val){
-				return this.value.indexOf(parseInt((val||'0').replace(/[a-zA-Z]+/g,'')));
-			}
+			getValue : _gSliderConstantsCommonGetValue,
+			getIndex : _gSliderConstantsCommonGetIndex
 		},
 		disk : {
-			range : {
-				'min': 0, '16%': 1, '32%': 2, '49%': 3, '66%': 4, '83%': 5, 'max': 6	
-			},
-			value : [20,40,80,100,250,500,1000],
-			unit : 'Gi',
-			getValue : function(index){
-				return this.value[index]+this.unit;
-			},
-			getIndex : function(val){
-				return this.value.indexOf(parseInt((val||'0').replace(/[a-zA-Z]+/g,'')));
-			}
+			range : _gSliderConstantsCommonRange,
+			value : [0,20,40,80,100,250,500,1000],
+			unit : 'GB',
+			getValue : _gSliderConstantsCommonGetValue,
+			getIndex : _gSliderConstantsCommonGetIndex
 		}		
 	},
 	mariadb :{
 		memory : {
-			range : {
-				'min': 0, '16%': 1, '32%': 2, '49%': 3, '66%': 4, '83%': 5, 'max': 6				
-			},
-			value :[256,300,350,400,450,480,512],
-			unit : 'Mi',
-			getValue : function(index){
-				return this.value[index]+this.unit;
-			},
-			getIndex : function(val){
-				return this.value.indexOf(parseInt((val||'0').replace(/[a-zA-Z]+/g,'')));
-			}
+			range : _gSliderConstantsCommonRange,
+			value :[0,256,300,350,400,450,480,512],
+			unit : 'MB',
+			getValue : _gSliderConstantsCommonGetValue,
+			getIndex : _gSliderConstantsCommonGetIndex
 		},
 		cpu : {
-			range : {
-				'min': 0, '16%': 1, '32%': 2, '49%': 3, '66%': 4, '83%': 5, 'max': 6
-			},
-			value : [200,250,300,350,400,450,500],
+			range : _gSliderConstantsCommonRange,
+			value : [0,200,250,300,350,400,450,500],
 			unit : 'm',
-			getValue : function(index){
-				return this.value[index]+this.unit;
-			},
-			getIndex : function(val){
-				return this.value.indexOf(parseInt((val||'0').replace(/[a-zA-Z]+/g,'')));
-			}
+			getValue : _gSliderConstantsCommonGetValue,
+			getIndex : _gSliderConstantsCommonGetIndex
 		},
 		disk : {
-			range : {
-				'min': 0, '16%': 1, '32%': 2, '49%': 3, '66%': 4, '83%': 5, 'max': 6
-			},
-			value : [20,40,80,100,250,500,1000],
-			unit : 'Gi',
-			getValue : function(index){
-				return this.value[index]+this.unit;
-			},
-			getIndex : function(val){
-				return this.value.indexOf(parseInt((val||'0').replace(/[a-zA-Z]+/g,'')));
-			}
+			range : _gSliderConstantsCommonRange,
+			value : [0,20,40,80,100,250,500,1000],
+			unit : 'GB',
+			getValue : _gSliderConstantsCommonGetValue,
+			getIndex : _gSliderConstantsCommonGetIndex
 		}
 	}
 };

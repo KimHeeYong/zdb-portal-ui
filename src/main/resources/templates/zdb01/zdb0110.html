@@ -20,20 +20,19 @@
              	<span class="tag">다음의 서비스 생성단계에 따라서 설정해 주세요.</span>
              </div>
 		</div>
-		<!-- make servuce step -->
 		<div class="make-service">
 			<a href="#" class="new-service">새로 만들기</a>
 			<ul class="service-step">
 				<li>
-					<span class="step-num active">01</span>
+					<span class="makestep-num active">01</span>
 					<p class="step-txt">서비스 종류 선택</p>
 				</li>
 				<li>
-					<span class="step-num">02</span>
+					<span class="makestep-num">02</span>
 					<p class="step-txt">서비스 설정</p>
 				</li>
 				<li>
-					<span class="step-num">03</span>
+					<span class="makestep-num">03</span>
 					<p class="step-txt">확인</p>
 				</li>
 			</ul>
@@ -43,20 +42,20 @@
 			<!--item 추가될때 마다 아래 div set 이 추가되면 됩니다. -->
 			<div class="item-wrap_line serviceType link" data-service-type="redis">
 				<div class="item-wrap">
-					<p class="item-img"><img src="/styles/images/service-img-big.png" alt="service item img"></p>
+					<p class="item-img"><img src="/styles/images/service-img-big-redis.png" alt="service item img"></p>
 					<dl class="item">
-						<dt>Redis DB</dt>
-						<dd>redis db 설명이 들어가는 부분입니다.</dd>
+						<dt>Redis</dt>
+						<dd></dd>
 					</dl>
 				</div>
 			</div>
-
+			
 			<div class="item-wrap_line serviceType link" data-service-type="mariadb">
 				<div class="item-wrap">
-					<p class="item-img"><img src="/styles/images/service-img-big.png" alt="service item img"></p>
+					<p class="item-img"><img src="/styles/images/service-img-big-mariadb.png" alt="service item img"></p>
 					<dl class="item">
-						<dt>Maria DB</dt>
-						<dd>maria db에 대한 설명이 들어가는 부분입니다.</dd>
+						<dt>MariaDB</dt>
+						<dd></dd>
 					</dl>
 				</div>
 			</div>
@@ -87,8 +86,8 @@
 				gNamespaces.select(0);
 			};
 			$('body').on('click','div.serviceType',function(){
-				$('div.serviceType').removeClass('selected-service-type');
-				$(this).addClass('selected-service-type');
+				$('div.serviceType').removeClass('selected');
+				$(this).addClass('selected');
 				var serviceType = $(this).data().serviceType;
 				$('#serviceType').val(serviceType);
 			});
@@ -106,7 +105,6 @@
 					return;
 				}
 				gCommon.movePage('/zdb01/zdb0111?pageId=zdb',{
-					namespace: namespace,
 					serviceType: serviceType
 				});
 			});

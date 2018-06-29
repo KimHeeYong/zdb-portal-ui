@@ -1,7 +1,5 @@
 $a.page(function(){
-	//search ux
 	this.init = function(){
-		//left menu open close
 		var btnToggle = $('.Button.btn-toggle');
 		$(btnToggle).click(function(e){
 			e.preventDefault();
@@ -56,6 +54,7 @@ var gOverlay = null;
 var gParam = {};
 var G_NAMESPACE_ALL = "_DEFAULT_ALL";
 var gSelectedNamespace = null;
+var gPopData = '';
 var gCommon = $a.page(function(){ 
 	this.init = function(){ //초기화 루틴 수행
 		gSelectedNamespace = $.cookie('selectedNamespace')||G_NAMESPACE_ALL;
@@ -64,7 +63,7 @@ var gCommon = $a.page(function(){
 				type:"POST",
 				dataType:'json',
 			    error: function(res) { // if error occured
-			        console.log('error' + res);
+			    	gCommon.alert('시스템 에러가 발생하였습니다. <br/> URL:' + opt.url)
 			    }
 			};
 			var option = $.extend({},defOpt,opt);
@@ -77,11 +76,8 @@ var gCommon = $a.page(function(){
 		gSelectedNamespace = val;
 		$.cookie('selectedNamespace',val,{path:'/'});
 	};
-	this.alert = function(message){ 
-		alert(message); 
-	};
+
 	this.movePage = function(url,param,isPost){
-		//var sParam = '';
 		var method = isPost ? 'post': 'get';
 		if(!url){
 			console.log('빈 url');
@@ -201,6 +197,40 @@ var gCommon = $a.page(function(){
 			};
 		}
 		return result;
+	};
+	this.confirm = function(message,trueCallback){
+		gPopData = {};
+		gPopData.message = message;
+	    $a.popup({
+	        url: "/zdbcom/confirm",
+	        data:message,
+	        iframe: false,
+	        width: 500,
+	        height: 300,
+	        title : '',
+	        callback : function(res){
+	        	if(res == "Y"){
+	        		trueCallback();
+	        	};
+	        }
+	    });
+	};
+	this.alert = function(message,fnCallback){
+		gPopData = {};
+		gPopData.message = message;
+	    $a.popup({
+	        url: "/zdbcom/alert",
+	        data:message,
+	        iframe: false,	        
+	        width: 500,
+	        height: 230,
+	        title : '',
+	        callback: function(){
+	        	if(fnCallback){
+	        		fnCallback();
+	        	}
+	        }
+	    });
 	};
 });
 String.prototype.replaceAll = function(org, dest) {

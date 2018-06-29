@@ -4,8 +4,8 @@ var gValid = {
 		message:'서비스명 양식이 올바르지 않습니다.'
 	},
 	dbName : {
-		rule:/[-a-z0-9]+/g,
-		message:'디비명 양식이 올바르지 않습니다.' 
+		rule:/^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/g,
+		message:'DB명 양식이 올바르지 않습니다.' 
 	}
 }; 
 $a.page(function() {

@@ -14,66 +14,62 @@
 		</div>
 	</div>
 	<div class="contents-box">
-		<ul class="Accordion db-accordion">
-			<li>
-				<a>이벤트 목록</a>
-				<div class="accor-contents__wrap">
-					<!-- tab contents info detail-->
-					<div class="ctn-info__wrap">
-						<form name="eventForm" method="post">
-							<div class="ctn-info__left">
-								<div class="info-list select-date Daterange">
-									<div class="Startdate Dateinput">
-										<input id="eventStartDate" name="eventStartDate" type="text" readonly="readonly">
-										<div class="Calendar" id="eventStartDate"></div>
-									</div>
-									<div class="Spinner Time" data-locale="en" id="eventStartTime" name="eventStartTime" data-hours="24H" data-bind="time:date">
-										<input data-hour>
-										<span data-seperator>:</span>
-										<input data-minute> <input data-ampm> <a class="Up"></a> <a class="Down"></a>
-									</div>
-									<span class="date-line">~</span>
-									<div class="Enddate Dateinput">
-										<input id="eventEndDate" name="eventEndDate" type="text" readonly="readonly">
-										<div class="Calendar" id="eventEndDate"></div>
-									</div>
-									<div class="Spinner Time" data-locale="en" id="eventEndTime" name="eventEndTime" data-hours="24H" data-bind="time:date">
-										<input data-hour>
-										<span data-seperator>:</span>
-										<input data-minute> <input data-ampm> <a class="Up"></a> <a class="Down"></a>
-									</div>
-								</div>
-								<div class="info-list">
-									<div class="Divselect">
-										<select name="kind">
-											<option value="-">전체</option>
-											<option value="StatefulSet">StatefulSet</option>
-											<option value="Service">Service</option>
-											<option value="ReplicaSet">ReplicaSet</option>
-											<option value="PodDisruptionBudget">PodDisruptionBudget</option>
-											<option value="Pod">Pod</option>
-											<option value="PersistentVolumeClaim">PVC</option>
-											<option value="PersistentVolume">PV</option>
-											<option value="Node">Node</option>
-											<option value="Ingress">Ingress</option>
-											<option value="Deployment">Deployment</option>
-											<option value="DaemonSet">DaemonSet</option>
-											<option value="ConfigMap">ConfigMap</option>
-											<option value="Cluster">Cluster</option>
-										</select>
-										<span></span>
-									</div>
-									<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요." />
-									<button class="Button btn-search" id="searchEvent">검색</button>
-								</div>
-							</div>
-						</form>
+		<div class="top-area">
+           <h2 class="title">이벤트 목록</h2>
+		</div>
+		<div class="accor-contents__wrap">
+			<!-- tab contents info detail-->
+			<form name="eventForm" method="post">
+				<div class="ctn-info__wrap">
+					<div class="info-list select-date Daterange">
+						<div class="Startdate Dateinput">
+							<input id="eventStartDate" name="eventStartDate" type="text" readonly="readonly">
+							<div class="Calendar" id="eventStartDate"></div>
+						</div>
+						<div class="Spinner Time" data-locale="en" id="eventStartTime" name="eventStartTime" data-hours="24H" data-bind="time:date">
+							<input data-hour>
+							<span data-seperator>:</span>
+							<input data-minute> <input data-ampm> <a class="Up"></a> <a class="Down"></a>
+						</div>
+						<span class="date-line">~</span>
+						<div class="Enddate Dateinput">
+							<input id="eventEndDate" name="eventEndDate" type="text" readonly="readonly">
+							<div class="Calendar" id="eventEndDate"></div>
+						</div>
+						<div class="Spinner Time" data-locale="en" id="eventEndTime" name="eventEndTime" data-hours="24H" data-bind="time:date">
+							<input data-hour>
+							<span data-seperator>:</span>
+							<input data-minute> <input data-ampm> <a class="Up"></a> <a class="Down"></a>
+						</div>
 					</div>
-					<!-- grid -->
-					<div id="gridEvent"></div>
+					
+					<div class="info-list__select">
+						<div class="Divselect">
+							<select name="kind">
+								<option value="-">전체</option>
+								<option value="StatefulSet">StatefulSet</option>
+								<option value="Service">Service</option>
+								<option value="ReplicaSet">ReplicaSet</option>
+								<option value="Pod">Pod</option>
+								<option value="PersistentVolumeClaim">PVC</option>
+								<option value="PersistentVolume">PV</option>
+								<option value="Node">Node</option>
+								<option value="Ingress">Ingress</option>
+								<option value="Deployment">Deployment</option>
+								<option value="DaemonSet">DaemonSet</option>
+								<option value="ConfigMap">ConfigMap</option>
+								<option value="Cluster">Cluster</option>
+							</select>
+							<span></span>
+						</div>
+						<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요." />
+						<button class="Button btn-search" id="searchEvent">검색</button>
+					</div>
 				</div>
-			</li>
-		</ul>
+			</form>
+			<!-- grid -->
+			<div id="gridEvent"></div>
+		</div>
 	</div>
 	<script type="text/javascript">
 		var gNamespaces = null; // 네임스페이스 콤보
@@ -81,25 +77,24 @@
 			this.init = function() {
 				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
 						.select({
-							id : gParam.selectedNamespace || G_NAMESPACE_ALL
+							id:gSelectedNamespace
 						}).addHandler(function(e) {
 							gCommon.setSelectedNamespace(e.currentTarget.id);
-							gCommon.movePage('/zdb04/zdb0400', {
-								selectedNamespace : gSelectedNamespace
-							});
 						});
 				$('.Accordion').expandAll();
 				
 				$('#gridEvent').alopexGrid({
 					autoColumnIndex: true,
-					autoResize:false,
-					width: 1500,
-					height: 700,
+					height: 635,
 					columnMapping : [  
-						{ title:'Last seen', key : 'lastTimestamp' , width: '180px', align: 'center'},
-						{ title:'Kind', key : 'kind' , width: '180px', align: 'left'},
-						{ title:'name', key : 'name' , width: '300px', align: 'left'},
-						{ title:'reason', key : 'reason' , width: '190px', align: 'left'},
+						{ title:'Last seen', key : 'lastTimestamp' , width: '100px', align: 'center'},
+						{ title:'Kind', key : 'kind' , width: '60px', align: 'left',render:function(value){
+							if(value){
+								return value = value.replace('PersistentVolumeClaim','PVC').replace('PersistentVolume','PV');
+							};
+						}},
+						{ title:'name', key : 'name' , width: '160px', align: 'left'},
+						{ title:'reason', key : 'reason' , width: '110px', align: 'left'},
 						{ title:'message', key : 'message' , width: '400px', align: 'left'}
 					],
 					message: {

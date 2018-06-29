@@ -23,34 +23,53 @@
 		<span class="tag">태그:</span>
 		<span class="Label Default">모든태그</span>
 	</div>
-	<div class="filter-wrap">
-		<input id="txtServiceFilter" class="Textinput filter-input" placeholder="Keyword 입력">
-		<!--오름차순 내림차순 아이콘이 있고 select만 하는 기능이라 dropdownbutton으로 적용함 -->
-		<button class="Dropdownbutton filter-select serviceFilter" id="serviceSort">이름순</button>
-		<ul class="dropmenu-list hide">
-			<li class="dsc" id="sortNm">
-				<a>이름순</a>
-			</li>
-			<li class="asc" id="sortSt">
-				<a>서비스 종류순</a>
-			</li>
-			<li class="asc" id="sortUt">
-				<a>구동일시순</a>
-			</li>
-			<li class="dsc" id="sortCt">
-				<a>생성일시순</a>
-			</li>
+</div>
+<div class="search-wrap">
+	<input class="Textinput srcinput" placeholder="검색어를 입력하세요." id="txtServiceFilter">
+	<button class="Button btn-search" id="btnSearch">검색</button>
+</div>	
+<!-- accordion wrap-->
+<!--namespace detail view-->
+<div class="panel-line__wrap">
+	<!-- namespace sorting-->
+	<div class="namespace-sort">
+		<div class="sort-button">
+			<button class="Button btn-ico__typeb btn-cardview Checked">카드형으로 보기</button>
+			<button class="Button btn-ico__typeb btn-listview">목록형으로 보기</button>
+		</div>
+		<ul class="sort-list">
+			<li data-sort-name="shortServiceName" class="asc">이름</li>
+			<li data-sort-name="serviceType">서비스종류</li>
+			<li data-sort-name="lastTransitionTime">구동일시</li>
+			<li data-sort-name="crtTime">생성일시</li>
 		</ul>
 	</div>
+	<div id="divServiceList"> </div>
 </div>
-<!-- accordion wrap-->
-<ul class="Accordion db-accordion" id="divServiceList"> </ul>
-
+<style>
+.btn-ico {
+	cursor: pointer;
+	text-indent: -9999px;
+	width: 24px;
+	height: 24px;
+	border: 0;
+	background: transparent url("/styles/images/ico-btn.png") no-repeat;
+}
+.Button.btn-ico.btn-del__typeb:hover, .Button.btn-ico.btn-del__typeb:active,
+.btn-ico.btn-del__typeb:hover, .btn-ico.btn-del__typeb:active {
+	background: transparent url("/styles/images/ico-btn.png") no-repeat;
+	background-position: -314px -58px;
+}
+.Button.btn-ico.btn-del__typeb, .btn-ico.btn-del__typeb {
+	background: transparent url("/styles/images/ico-btn.png") no-repeat;
+	background-position: -278px -58px;
+}
+.btn-ico.btn-refresh {background-position: -32px -178px;}
+</style>
 <script type="text/javascript">
 
 	var gSelectedTag = '';//선택된 태그
 	var gNamespaces = null;     // 네임스페이스 콤보
-	var gSelectedSort = '';    //선택된 정렬
 	var gServiceList = [];      //서비스 목록
 	var gTagList = [];
 	$a.page(function() {
@@ -61,10 +80,10 @@
 							  fn_getServices();
 						  }) 
 						 .select({id:gSelectedNamespace});
-			//정렬 콤보 설정
-			gSelectedSort = $('#serviceSort~.dropmenu-list>li:first').attr('id');
-			$('#serviceSort').addHandler(function(e){
-				gSelectedSort = e.currentTarget.id;
+			var sortLi = $('.sort-list li'); 
+			sortLi.on('click',function(evt){
+				var tCss = $(this).attr('class') == 'asc' ? 'dsc' : 'asc';
+				sortLi.attr('class','').filter(this).attr('class',tCss);
 				fn_displayServices();
 			});
 			//서비스 목록 조회 태그 선택
@@ -77,76 +96,92 @@
 			});
 			//서비스 목록내 태그 삭제
 			$('body').on('click','button.tagDel',function(){
-				if(!confirm('선택한 태그를 삭제하시겠습니까?')){
-					return;
-				};
-				var data = gCommon.findObjectByKeyOb(gTagList,{id:$(this).prev().data('id')});
-				data = $.extend({},data,{serviceName:data.releaseName});
-				$a.ajax({
-					url: '/zdbapi/deleteTag',
-					data: data, 
-					success: function(res){
-						gCommon.alert(gMessage.procSuccss);
-						fn_getServices();
-					}
-				});
+				var ob = $(this).prev();
+				gCommon.confirm('선택한 태그를 삭제하시겠습니까?',function(){
+					var data = gCommon.findObjectByKeyOb(gTagList,{id:ob.data('id')});
+					data = $.extend({},data,{serviceName:data.releaseName});
+					$a.ajax({
+						url: '/zdbapi/deleteTag',
+						data: data, 
+						success: function(res){
+							gCommon.alert(gMessage.procSuccss);
+							fn_getServices();
+						}
+					});
+				})
 			});
 			//서비스 목록내 태그 추가
 			$('body').on('click','button.tagAdd',function(e){
 				e.preventDefault();
 				var data = $('#'+$(this).attr('key')).data();
-			    $a.popup({
-			        url: "/zdb02/zdb0200p01",
-			        iframe: false,  // default 는 true
-			        width: 500,
-			        height: 450,
-			        data:data,
-			        title : "태그추가",
-			        callback:function(result){
-			        	if(result == "success"){
-			        		fn_getServices();
-			        	}
-			        }
-			    });
+				$(this).next().show().find('input').focus();
+			});
+			$('body').on('keypress','input.tagAddInput',function(evt){
+				if(evt.which == '13'){
+					var data = $('#'+$(this).attr('key')).data();
+		    		data = $.extend({},data,{releaseName:data.serviceName,tagName:$(this).val()});
+					$a.ajax({
+						url: '/zdbapi/createTag',
+						data: data, 
+						success: function(res){
+				    		gCommon.alert(gMessage.saveSuccess);
+				    		fn_getServices();
+						}
+					});
+				};
+			}).on('focusout','input.tagAddInput',function(){
+				$(this).val('').parent().hide();
 			});
 			
 			//서비스 목록 클릭
-			$('body').on('click','.proc_serviceDetail',function(evt){
-				var data = $('#'+$(this).attr('key')).data();
+			$('body').on('click','.proc_serviceDetail,.viewMonitor',function(evt){
+				var data = $('#'+$(evt.target).attr('key')).data();
 				if(data.status == 'gray'){
 					gCommon.alert('서비스 준비 중입니다.');
 					return;
 				};
-				gCommon.movePage('/zdb02/zdb0210',$.extend(data,{}));
+				var param = $.extend({},data,{});
+				if($(evt.target).hasClass('viewMonitor')){
+					param.goMoniter = 'Y';
+				};
+				gCommon.movePage('/zdb02/zdb0210',param);
 			});
 			
 			//서비스 목록 refresh 클릭
 			$('body').on('click','.proc_serviceRestart',function(evt){
-				var data = $('#'+$(this).attr('key')).data();
-				$a.ajax({
-					url: '/zdbapi/restartService',
-					data : data,
-					success: function(res){
-						console.log(res);	
-					}
-				});
+				gCommon.confirm('서비스를 재시작 하시겠습니까?',function(){
+					var data = $('#'+$(evt.target).attr('key')).data();
+					$a.ajax({
+						url: '/zdbapi/restartService',
+						data : data,
+						success: function(res){
+							if(res.result.code == '0'){
+								fn_getServices();	
+							};
+						}
+					});
+				})
+			}).on('click','.proc_serviceDelete',function(evt){
+				gCommon.confirm('서비스를 삭제 하시겠습니까?',function(){
+					var data = $('#'+$(evt.target).attr('key')).data();
+					$a.ajax({
+						url: '/zdbapi/deleteServiceInstance',
+						data:data,
+						success: function(res){
+							gCommon.alert('삭제 요청이 완료 되었습니다.',function(){
+								fn_getServices();
+							});
+						}
+					})
+				})
 			});
-			//서비스 목록 refresh 클릭
-			$('body').on('click','.viewMonitor',function(evt){
-				var data = $('#'+$(this).attr('key')).data();
-				
-				/*
-				$a.ajax({
-					url: '/zdbapi/restartService',
-					data : data,
-					success: function(res){
-						console.log(res);	
-					}
-				});
-				*/
+			
+			$('#btnSearch').on('click',function(){
+				fn_getServices();
 			});
-
-			//fn_getServices();	
+			$('#txtServiceFilter').pressEnter(function(){
+				fn_getServices();
+			});
 		};
 		
 		//서비스 목록 조회 && 태그 조회
@@ -159,7 +194,7 @@
 					gServiceList = res.serviceoverviews;
 					gfn_convertServiceDatas(gServiceList);
 					gTagList = res.tags;
-					tagDiv = $('#tagArea').html('<span class="tag">태그:</span><span class="Label white">모든태그</span>'); 
+					tagDiv = $('#tagArea').html('<span class="tag">태그:</span> <span class="Label white">모든태그</span>'); 
 					if(gTagList){
 						for(var i = 0 ; i < gTagList.length;i++){
 							var tag = gTagList[i];
@@ -179,61 +214,45 @@
 		};
 		//서비스 목록 display
 		function fn_displayServices(){
+
+			fn_displayTags();
 			var serviceListDiv = $('#divServiceList');
 			var dispServiceDiv = $('<div/>');
 			
 			var namespaces = fn_getViewNamespaces();
 			var filterList = getFilterAndSortServices(gServiceList);
 			
-			for(var i = 0; i < namespaces.length; i++){
+			for(var i = 0; i < filterList.length; i++){
 				var namespace = namespaces[i];
-				dispServiceDiv.append('<li id="service'+namespace.id+'"><a>Namespace : <span>'+namespace.text+'</span></a><div class="accor-contents__wrap"></div></li>');
-				var list = filterList[namespace.id];
-				if(list){
-					for(var j = 0; j < list.length;j++){
-						var ob = list[j];
-						var data = {
-								namespace:ob.namespace,
-								serviceType:ob.serviceType,
-								serviceName:ob.serviceName,
-								status:ob.status.toLowerCase(),
-								version:ob.version,
-								updTime:ob.updTime,
-								statusMessage:ob.statusMessage||'',
-								tagList:ob.tags
-							};
-						var tDiv = $(gfn_getServiceTemplate(data));
-						dispServiceDiv.find('#service'+ob.namespace+" div.accor-contents__wrap").append(tDiv);
-						gCommon.setDataAttrs(tDiv.find('.Panel-content[link]'),data);
+				var ob = filterList[i];
+				var data = {
+						namespace:ob.namespace,
+						serviceType:ob.serviceType,
+						serviceName:ob.serviceName,
+						shortServiceName:ob.shortServiceName,
+						status:ob.status.toLowerCase(),
+						version:ob.version,
+						updTime:ob.updTime,
+						elapsedTime:ob.elapsedTime,
+						statusMessage:ob.statusMessage||'',
+						tagList:ob.tags
 					};
-				};
-				//서비스 생성 
-				//dispServiceDiv.find('#service'+namespace.id+" div.accor-contents__wrap").append(gfn_getMakeServiceTemplate({namespace:namespace.id}));
+				var tDiv = $(gfn_getServiceTemplate(data));
+				dispServiceDiv.append(tDiv);
+				gCommon.setDataAttrs(tDiv.find('.Panel-content[link]'),data);
 			};
-			//서비스 목록이 없는 네임스페이스 삭제
-			dispServiceDiv.find('li[id^=service]').filter(function(){
-				return $(this).find('.Panel-content[link]').size() == 0
-			}).remove();
 			
 			serviceListDiv.html('');
 			serviceListDiv.html(dispServiceDiv.html());
-			serviceListDiv.refresh();
-			serviceListDiv.expandAll();
+			$a.convert(serviceListDiv.find('.Tooltip'));
 			gCommon.removeOverlay();
-			
-			fn_displayTags();
 		}
 		function fn_displayTags(){
 			var tagDiv = $('#tagArea'); 
 			tagDiv.find('span.Label').removeClass('selected');
-			/*
-			tagDiv.find('span[data-id]').hide();
-			$('.Panel-content[link] div.tag-wrap span[data-id]').each(function(){
-				tagDiv.find('[data-id='+$(this).data('id')+']').show();
-			});
-			*/
+			
 			if(gSelectedTag!=''){
-				tagDiv.find('[data-id='+gSelectedTag+']').addClass('selected');
+				tagDiv.find('[data-id='+gSelectedTag+']').filter(':visible').addClass('selected');
 			};
 			if(tagDiv.find('span.Label.selected').size()==0){
 				gSelectedTag = '';
@@ -260,38 +279,21 @@
 						continue;
 					};	
 				};
-				if(!list[ob.namespace]){
-					list[ob.namespace] = [];
-				}
-				list[ob.namespace].push(ob);
+				list.push(ob);
 			};				
-			for(var key in list){
-				var li = list[key];
-				var val1 = '';
-				var val2 = '';
-				li.sort(function(a,b){  
-					//오름차순이면 val1 = a, val2 = b 내림차순이면 val1 = b,val2 = a
-					switch(gSelectedSort){
-						case "sortNm": //이름 내림 
-							val1 = b.serviceName;
-							val2 = a.serviceName;
-							break;   
-						case "sortSt": // 서비스 오름
-							val1 = a.serviceType;
-							val2 = b.serviceType;
-							break;
-						case "sortUt": // 구동일시 오름
-							val1 = b.lastTransitionTime;
-							val2 = a.lastTransitionTime;
-							break;
-						case "sortCt": // 생성일시 내림
-							val1 = b.crtTime;
-							val2 = a.crtTime;
-							break;
-					}
+			var sOb = $('.sort-list li').filter('[class=asc],[class=dsc]');
+			var selectedSort = sOb.data('sortName');
+			var sortType = sOb.attr('class');
+			list.sort(function(a,b){  
+				//오름차순이면 val1 = a, val2 = b 내림차순이면 val1 = b,val2 = a
+				var val1 = a[selectedSort];
+				var val2 = b[selectedSort];
+				if(sortType == 'asc'){
 					return(val1<val2)?-1:(val1>val2)?1:0; 
-				});
-			};
+				}else{
+					return(val2<val1)?-1:(val2>val1)?1:0;
+				};
+			});
 			return list;
 		}
 		function fn_getViewNamespaces(){

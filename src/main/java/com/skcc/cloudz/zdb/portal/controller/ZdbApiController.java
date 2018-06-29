@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,10 +36,11 @@ public class ZdbApiController {
 	@Autowired ZdbApiService zdbApiService;
 	
 	@RequestMapping("getNamespaces")
-	public ModelAndView getNamespaces() {
+	public ModelAndView getNamespaces(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
-		List<Namespace> namespaces = zdbApiService.getNamespaces(); 
+		List<Namespace> namespaces = zdbApiService.getNamespaces(param); 
 		mav.addObject(IResult.NAMESPACES ,namespaces);
 		return mav;
 	}
@@ -90,7 +92,8 @@ public class ZdbApiController {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
-		zdbApiService.restartService(param);
+		ZdbRestDTO result = zdbApiService.restartService(param);
+		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;
 	}
 	
@@ -99,7 +102,8 @@ public class ZdbApiController {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
-		mav.addObject(CommonConstants.RESULT ,zdbApiService.restartPod(param)); 
+		ZdbRestDTO result = zdbApiService.restartPod(param);
+		mav.addObject(CommonConstants.RESULT ,result);		
 		return mav;
 	}
 	
@@ -282,7 +286,44 @@ public class ZdbApiController {
 		
 		return mav;
 	}
+	@RequestMapping(value = "updateSchedule")
+	public ModelAndView updateSchedule(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.updateSchedule(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}
 	
+	@RequestMapping(value = "updateBackup")
+	public ModelAndView updateBackup(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.updateBackup(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}
+	
+	@RequestMapping(value = "deleteBackup")
+	public ModelAndView deleteBackup(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.deleteBackup(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}
+
+	@RequestMapping(value = "downloadBackup")
+	public ResponseEntity<byte[]> downloadBackup(HttpServletRequest request) {
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ResponseEntity<byte[]> result = zdbApiService.downloadBackup(param);
+		
+        return result;
+	}
 	@RequestMapping(value = "getMonitoringPanels")
 	public ModelAndView getMonitoringPanels(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);

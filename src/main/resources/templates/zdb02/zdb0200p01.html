@@ -1,31 +1,45 @@
 <div class="popup-wrap">
-	<div class="popup-contents">
-		<div class="popup-text">
-			태그명
-			<input type="text" id="popTagName" name="popTagName"></input>
+	<div class="popup-mcontents">
+		<div class="popup-cont">
+			<form id="credentialPopForm" name="credentialPopForm">
+			<div> New Credential</div>
+			<div> 
+				<input class="Textinput" type="text" id="credential" name="credential"></input> 
+				<p data-for="credential" class="warn-text"></p>
+			</div>
+			</form>
 		</div>
-	</div>
-	<!--button-->
-	<div class="popup-btn__wrap">
-		<button class="Button btn popSave">저장</button>
-		<button class="Button btn popClose">닫기</button>
+		<!--button-->
+		<div class="popup-btn__wrap">
+			<button class="Button btn credentialSave">저장</button>
+			<button class="Button btn popClose">닫기</button>
+		</div>
 	</div>
 </div>
 
 <script type="text/javascript">
 $a.page(function() {
     this.init = function(id, param) {
-	    
-    	$('.popSave').on('click',function(){
-    		var data = $.extend({},param,{releaseName:param.serviceName,tagName:$('#popTagName').val()});
+    	var form = $('form[name=credentialPopForm]');
+    	form.validator({
+		    elements :{ 
+		        'credential': {rule:{required:true}}
+		    }
+		});	
+    	$('.credentialSave').on('click',function(){
+    		if(!form.validate()){
+				return;
+			};
+    		var data = $.extend({},param,{newPassword:form.find('#credential').val()});
 			$a.ajax({
-				url: '/zdbapi/createTag',
-				data: data, 
+				url: '/zdbapi/setNewPassword',
+				data:data,
 				success: function(res){
-		    		gCommon.alert(gMessage.saveSuccess);
-		    		$a.close('success');
+					gCommon.alert('정상적으로 변경되었습니다.',function(){
+						$a.close('Y');
+					});
 				}
-			});
+			})
     	});
     	
     	$('.popClose').on('click',function(){

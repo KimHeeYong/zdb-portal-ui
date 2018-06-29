@@ -55,4 +55,12 @@ public class URIConstants {
 
 	public static final String URI_GET_SCHEDULE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/schedule";
 
+	public static final String URI_UPDATE_SCHEDULE = "/api/v1/{namespace}/{serviceType}/service/schedule";
+
+	public static final String URI_UPDATE_BACKUP = "/api/v1/{namespace}/{serviceType}/service/backup";
+
+	public static final String URI_DELETE_BACKUP = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/{backupId}/delete";
+
+	public static final String URI_DOWNLOAD_BACKUP = "/api/v1/download/{backupId}";
+
 }

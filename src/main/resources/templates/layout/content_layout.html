@@ -10,9 +10,9 @@
 	<link rel="stylesheet" href="/styles/css/alopex/src/alopex-ext.css">
 	<link rel="stylesheet" href="/styles/css/alopex/alopex-grid.css" />
 	<!-- end alopexui_basic -->
-	<link rel="stylesheet" href="/styles/css/cloudzdb-grid.css">
-	<link rel="stylesheet" href="/styles/css/cloudzdb-layout.css">
-	<link rel="stylesheet" href="/styles/css/cloudzdb-ui.css">
+	<link rel="stylesheet" href="/styles/css/cloudzcp-grid.css">
+	<link rel="stylesheet" href="/styles/css/cloudzcp-layout.css">
+	<link rel="stylesheet" href="/styles/css/cloudzcp-ui.css">
 	<link rel="stylesheet" href="/styles/css/cloudzdb-etc.css">
 	<th:block layout:fragment="page_css"></th:block>
 	
@@ -28,22 +28,31 @@
 	<script type="text/javascript" src="/script/app/common/cloudzdb-ui.js"></script>
 	<script type="text/javascript" src="/script/app/common/constants.js"></script>
 	<th:block layout:fragment="page_js"></th:block>
+	<script type="text/javascript">
+	$a.page(function() {
+		this.init = function() {
+			$('#logout').on('click',function(){
+				gCommon.setSelectedNamespace('');
+				location.href='/logout';
+			});	
+		}
+	});
+	</script>
 </head>
 <body th:fragment="mainBody">
-<div class="db-wrapper">
+<div class="cp-wrapper">
 	<!-- header -->
-	<header class="db-header">
-		<h1 class="logo"><img src="../styles/images/cloudzlogo.png" alt="CLOUD Z Database"></h1>
+	<header class="cp-header">
+		<h1 class="logo"><img src="/styles/images/cloudzlogo.png" alt="CLOUD Z Database"></h1>
 		<!-- utils -->
 		<div class="header-utils">
-			<a class="user">skccux01@sk.com</a>
-			<!-- user click 시 하단의 user-menus 가 오픈되고 close class 가 추가됩니다. -->
+			<a class="user" th:text="${session.userInfo.username}"></a>
 			<div class="user-menus">
 				<ul class="dropmenu-list">
 					<li class="selected">나의 정보</li>
 					<li>비밀번호 변경</li>
 					<li onclick="location.href='https://console.cloudzcp.io/'">Admin</li>
-					<li onclick="location.href='/logout'">로그아웃</li>
+					<li id="logout">로그아웃</li>
 				</ul>
 			</div>
 		</div>
@@ -51,31 +60,10 @@
 	</header>
 	<!-- //header -->
 	<!-- main-contents -->
-	<div class="db-container">
-		<!-- lnb
-			서브 메뉴가 있는 경우 : expandable
-			서브 메뉴를 클릭하고 오픈한 경우 : expanded
-			로 class가 추가되고 삭제됩니다.
-		-->
-		<div class="lnb-wrap">
+	<div class="cp-container">
+		<div class="lnb-wrap db-lnb">
 			<nav>
 				<ul>
-					<!-- 
-					
-					<li><a href="/zdb01/zdb0110"><span class="Icon ico-cloudz db-plus"></span>서비스 생성하기</a></li>
-					<li data-menu="zdb0400"><a href="/zdb02/zdb0200">서비스 목록</a></li>
-					<li><a href="#">모니터링</a></li>
-					<li><a href="/zdb04/zdb0400">이벤트</a></li>
-					<li><a href="/zdb05/zdb0500">공지사항</a></li>
-					<li><a href="#">지원</a>
-						<ul class="lnb-sub">
-							<li class="selected"><a href="#">- 시작하기</a></li>
-							<li><a href="#">- 권한</a></li>
-							<li><a href="#">- 문서</a></li>
-							<li><a href="#">- 지원</a></li>
-						</ul>
-					</li>
-					 -->
 					<li><a href="#"><img class="icon-img" src="/styles/images/ico-lnbname.png"><span class="lnb-name">ZDB</span></a></li>
 				    <th:block th:each="parent, iterStat : ${addOnServiceMataData}">
                       <li th:classappend="${parent.url == activePathInfo.firstPath || parent.url == activePathInfo.fullPath? 'selected':''}">
@@ -99,7 +87,7 @@
 		</div>
 		<!-- //lnb -->
 		<!-- contents -->
-		<th:block layout:fragment="content"></th:block>
+		<th:block layout:fragment="content"> </th:block>
 	</div>
 </div>
 </body>

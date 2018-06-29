@@ -22,34 +22,34 @@
 	<div class="contents-box">
 		<!-- service top area-->
 		<div class="top-area">
-			<h2 class="title">서비스 생성하기</h2>
-			<div class="tag-wrap">
-				<span class="tag">다음의 서비스 생성단계에 따라서 설정해 주세요.</span>
-			</div>
+             <h2 class="title">서비스 생성하기</h2>
+             <div class="tag-wrap">
+             	<span class="tag">다음의 서비스 생성단계에 따라서 설정해 주세요.</span>
+             </div>
 		</div>
 		<!-- make servuce step -->
 		<div class="make-service">
 			<a href="#" class="new-service">새로 만들기</a>
 			<ul class="service-step">
 				<li>
-					<span class="step-num">01</span>
+					<span class="makestep-num">01</span>
 					<p class="step-txt">서비스 종류 선택</p>
 				</li>
 				<li>
-					<span class="step-num active">02</span>
+					<span class="makestep-num active">02</span>
 					<p class="step-txt">서비스 설정</p>
 				</li>
 				<li>
-					<span class="step-num">03</span>
+					<span class="makestep-num">03</span>
 					<p class="step-txt">확인</p>
 				</li>
 			</ul>
-		</div>
-		<p class="info-text__typeb"><span th:text="${#request.getParameter('serviceType')}"></span> 설정을 해주세요. 상세 설정은 서비스 생성 후 할 수 있습니다.</p>
+		</div>		
+		<p class="info-text__typeb"> 필수항목을 입력하세요. 상세 설정은 서비스 생성 후 할 수 있습니다.</p>
 		<!-- accordion-->
-		<ul class="Accordion db-accordion">
+		<ul>
 			<li>
-				<a>서비스 설정</a>
+				<h3 class="form-title double-line">서비스설정</h3>
 				<div class="accor-contents__wrap">
 					<form name="serviceForm" method="post" data-validation-option="{oninit:true}">
 					<input type="hidden" name="serviceType" th:value="${#request.getParameter('serviceType')}"/>
@@ -63,18 +63,17 @@
 						<tbody th:if="${#request.getParameter('serviceType')} == 'redis'">
 							<tr>
 								<th>종류</th>
-								<td><img src="/styles/images/service-img.png" alt="" class="Valign-md">
-								<span class="info-text__typec">Redis</span></td>
+								<td> <span class="info-text__typec">Redis</span></td>
 							</tr>
 							<tr>
 								<th>서비스이름 <span class="asterisk">*</span></th>
 								<td>
-									<input class="Textinput" type="text" name="serviceName"> 
-									<span data-for="serviceName" class="info-text" valid-check="true"></span>
+									<input class="Textinput" type="text" id="serviceName" name="serviceName"> 
+									<span data-for="serviceName" class="info-text"></span>
 								</td>
 							</tr>
 							<tr>
-								<th>Redis Version <span class="asterisk">*</span></th>
+								<th>버전</th>
 								<td>
 									<div class="Divselect">
 										<select id="version" name="version" disabled="disabled">
@@ -87,24 +86,24 @@
 								</td>
 							</tr>
 							<tr>
-								<th>Public 접근 허용 <span class="asterisk">*</span></th>
+								<th>Public 접근 허용</th>
 								<td>
-									<div class="onoff-wrap"><button class="Button btn-off">OFF</button></div>
+									<div class="onoff-wrap"><button class="Button btn-on">ON</button></div>
 									<div class="hide">
-										<input type="radio" name="exposeType" value="public">public</input>
+										<input type="radio" name="exposeType" value="public" checked="checked">public</input>
 										<input type="radio" name="exposeType" value="private"/>private</input>
 									</div>
 								</td>
 							</tr>
 							<tr>
-								<th>용도<span class="asterisk">*</span></th>
+								<th>용도</th>
 								<td>
 									<input type="radio" name="purpose" value="SESSION" checked="checked">SESSION</input>
 									<input type="radio" name="purpose" value="DATA"/>DATA</input>
 								</td>
 							</tr>
 							<tr>
-								<th class="Valign-top ht130">할당메모리</th>
+								<th class="ht140">할당메모리</th>
 								<td>
 									<div class="info-wrap">
 										<div class="info-wrap ht60">
@@ -120,39 +119,45 @@
 						<tbody th:if="${#request.getParameter('serviceType')} == 'mariadb'">
 							<tr>
 								<th>종류</th>
-								<td><img src="/styles/images/service-img-mariadb.png" alt="" class="Valign-md">
-								<span class="info-text__typec">Maria</span></td>
+								<td> <span class="info-text__typec">MariaDB</span></td>
 							</tr>
 							<tr>
 								<th>서비스이름 <span class="asterisk">*</span></th>
 								<td>
 									<input class="Textinput" type="text" id="serviceName" name="serviceName" valid-key="lowAlpaNumDash"> 
-									<span data-for="serviceName" class="info-text" valid-check="true"></span>
+									<span data-for="serviceName" class="info-text"></span>
 								</td>
 							</tr>
 							<tr>
-								<th>Maria Version <span class="asterisk">*</span></th>
+								<th>DB명 <span class="asterisk">*</span></th>
+								<td>
+									<input class="Textinput" type="text" id="dbName" name="dbName">
+									<span data-for="dbName" class="info-text"></span>
+								</td>
+							</tr>								
+							<tr>
+								<th>버전</th>
 								<td>
 									<div class="Divselect">
 										<select id="version" name="version" disabled="disabled">
-											<option value="10.1.33">10.1.33</option>
+											<option value="10.2.14">10.2.14</option>
 										</select>
 										<span></span>
 									</div>
 								</td>
 							</tr>
 							<tr>
-								<th>Public 접근 허용 <span class="asterisk">*</span></th>
+								<th>Public 접근 허용</th>
 								<td>
-									<div class="onoff-wrap"><button class="Button btn-off">OFF</button></div>
+									<div class="onoff-wrap"><button class="Button btn-on">ON</button></div>
 									<div class="hide">
-										<input type="radio" name="exposeType" value="public">public</input>
-										<input type="radio" name="exposeType" value="private" checked="checked"/>private</input>
+										<input type="radio" name="exposeType" value="public" checked="checked">public</input>
+										<input type="radio" name="exposeType" value="private"/>private</input>
 									</div>
 								</td>
 							</tr>							
 							<tr>
-								<th class="Valign-top ht130">할당메모리</th>
+								<th class="ht140">할당메모리</th>
 								<td>
 									<div class="info-wrap">
 										<div class="info-wrap ht60">
@@ -165,7 +170,7 @@
 								</td>
 							</tr>			
 							<tr>
-								<th class="Valign-top ht130">할당디스크</th>
+								<th class="Valign-top ht140">할당디스크</th>
 								<td>
 									<div class="info-wrap">
 										<div class="info-wrap ht60">
@@ -177,13 +182,6 @@
 									</div>
 								</td>
 							</tr>
-							<tr>
-								<th>기본DB명 <span class="asterisk">*</span></th>
-								<td>
-									<input class="Textinput" type="text" id="dbName" name="dbName">
-									<span data-for="dbName" class="info-text" valid-check="true"></span>
-								</td>
-							</tr>						
 						</tbody>
 					</table>
 					</form>
@@ -207,15 +205,17 @@ var gNamespaces = null;     // 네임스페이스 콤보
 $a.page(function() {
 	this.init = function() {
 		//네임스페이스 콤보 설정
-		gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAll:false})
-						 .select({id:gSelectedNamespace}) 
-						 .addHandler(function(e){
+		gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAll:false});
+		gNamespaces.addHandler(function(e){
 							  gCommon.setSelectedNamespace(e.currentTarget.id);
-						  });
+							  setDefaultServiceName();
+						  })
+						 .select({id:gSelectedNamespace}); 
 		if(!gNamespaces.getText()){
 			gCommon.alert(gMessage.validPage);
 		};
-		$('form[name=serviceForm]').validator({// form에 validator 할 경우
+		var form = $('form[name=serviceForm]');
+		form.validator({// form에 validator 할 경우
 		    elements :{ // 아래와같이 input,select의 name 값으로 각기 다른 validator 적용가능.
 		        "serviceName" : {
 		            rule:{required:true,checkRule:gValid.serviceName.rule},
@@ -226,7 +226,16 @@ $a.page(function() {
 		            message:{checkRule:gValid.dbName.message}
 		        }
 		    }
+		}).find('input[name=serviceName]').on('keyup',function(){
+			setDefaultServiceName();
 		});
+		function setDefaultServiceName(){
+			var ob = $('input[name=serviceName]'); 
+			var defVal = gSelectedNamespace + '-';
+			if(!(eval('/^'+defVal+'/').test(ob.val()))){
+				ob.val(defVal);
+			};
+		};
 		
 		$('.Accordion').expandAll();
 		$('#version').prop('disabled',true);//임시 - select의 disable
@@ -235,16 +244,20 @@ $a.page(function() {
 			gCommon.movePage('/zdb01/zdb0110',gParam);
 		});
 		$('#btnNext').on('click',function(){                          
-			var param = $.extend({},gParam,$('form[name=serviceForm]').serializeObject());
+			var param = $.extend({},gParam,form.serializeObject());
 			param.namespace = gSelectedNamespace;
-			if(false && param.serviceName==''){
-				gCommon.alert('서비스 이름을 입력하세요.');
-				return;
-			};
-			if($('[valid-check=true]').not(':empty').size() != 0){
+			if(!form.validate()){
 				gCommon.alert(gMessage.notValidInput);
 				return;
-			}
+			};
+			if(param.podSpecIdx == 0){
+				gCommon.alert('메모리 용량을 선택하세요.');
+				return;
+			};
+			if(gParam.serviceType == G_SERVICE_TYPE_MARIA && param.diskSpecIdx == 0){
+				gCommon.alert('디스크 용량을 선택하세요.');
+				return;
+			};
 			gCommon.movePage('/zdb01/zdb0112',param);			
 		});
 		//on off button
@@ -281,20 +294,22 @@ $a.page(function() {
 			setSliderValue(parseInt(values[handle]));
 		});
 		
-		setSliderValue(gParam.podSpecIdx||0);
-		$('form[name=serviceForm]').zdbui_setContents(gParam);
+		memorySlider.noUiSlider.set(gParam.podSpecIdx||1)
+		setSliderValue(gParam.podSpecIdx||1);
+		form.zdbui_setContents(gParam);
 		setExposeType(gParam.exposeType);
+		setDefaultServiceName();
 		function setSliderValue(idx){
 			$('#memoryInfo').html(sliderConstants.memory.getValue(idx));
 			$('input[name=podSpecIdx]').val(idx);
 		};
 		function setExposeType(value){
-			if(value=='public'){
-				$('input[name=exposeType]').zdbui_setComponent('public');
-				$('.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
-			}else{
+			if(value=='private'){
 				$('input[name=exposeType]').zdbui_setComponent('private');
 				$('.onoff-wrap > button').removeClass('btn-on').addClass('btn-off').text('OFF');
+			}else{
+				$('input[name=exposeType]').zdbui_setComponent('public');
+				$('.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
 			}
 		};		
 		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
@@ -319,7 +334,8 @@ $a.page(function() {
 			}).on('slide', function ( values, handle ) {
 				setDiskSliderValue(parseInt(values[handle]));
 			});
-			setDiskSliderValue(gParam.diskSpecIdx||0);
+			diskSlider.noUiSlider.set(gParam.diskSpecIdx||1)
+			setDiskSliderValue(gParam.diskSpecIdx||1);
 			function setDiskSliderValue(idx){
 				$('#diskInfo').html(sliderConstants.disk.getValue(idx));
 				$('input[name=diskSpecIdx]').val(idx);

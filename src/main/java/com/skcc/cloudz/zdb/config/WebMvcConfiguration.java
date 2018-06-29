@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.skcc.cloudz.zdb.common.interceptor.AddOnServiceMetaDataInterceptor;
+import com.skcc.cloudz.zdb.common.interceptor.SessionUserDataInterceptor;
 
 @Configuration
 public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
@@ -16,11 +17,21 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
         return addOnServiceMetaDataInterceptor;
     }
 
+    @Bean
+    public SessionUserDataInterceptor addSessionUserDataInterceptor() {
+    	SessionUserDataInterceptor sessionInterceptor = new SessionUserDataInterceptor();
+    	return sessionInterceptor;
+    }
+    
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(addOnServiceMetaDataInterceptor())
-            .addPathPatterns(new String[] {"/*", "/**/*"})
-            .excludePathPatterns(new String[] {"/static/**", "/i18n/**", "/error/**","/zdbapi/**"});
+    	
+        registry.addInterceptor(addOnServiceMetaDataInterceptor())        	
+		    .addPathPatterns(new String[] {"/zdb*/**"})
+		    .excludePathPatterns(new String[] {"/zdbapi/**","/zdbcom/**"});
+        registry.addInterceptor(addSessionUserDataInterceptor())
+        	.addPathPatterns(new String[] {"/zdb*/**"})
+        	.excludePathPatterns(new String[] {"/zdbapi/**","/zdbcom/**"});
     }
     
     @Override

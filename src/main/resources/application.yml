@@ -53,11 +53,17 @@ spring:
 
 ---
 spring:
-  profiles: prod 
+  profiles: prod
 server:
   port: 8080
 zdb-api-server:
   url: http://api.zdb-dev.jp-tok.containers.mybluemix.net
+
+logging:
+  config: classpath:logback-prod.xml  
+---  
+zdb-demon-server:
+  url: http://169.56.71.106:8080
 
 props:
   appName: zdb-portal-dev

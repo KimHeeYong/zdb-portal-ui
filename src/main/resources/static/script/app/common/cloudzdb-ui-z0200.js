@@ -9,6 +9,9 @@ function gfn_convertServiceDatas(datas){
 function gfn_convertServiceData(data){
 	var ob = {};
 	if(!data)return {};
+	if(data.serviceName){
+		ob.shortServiceName = data.serviceName.replace(data.namespace+'-','');
+	};
 	//상태값 GRAY 설정
 	if(data.deploymentStatus!='DEPLOYED' || data.statusMessage != null){
 		ob.status = 'GRAY';
@@ -46,7 +49,6 @@ function gfn_convertServiceData(data){
 			ob.updTime = moment().diff(moment(ob.lastTransitionTime),'hours') + 'hrs ago';
 		};
 	}
-	
 	return $.extend({},data,ob);
 }
 function gfn_getReadyCondition(pod){
@@ -61,33 +63,41 @@ function gfn_getReadyCondition(pod){
 	};
 	return result;
 }
+
 //서비스 템플릿
 function gfn_getServiceTemplate(ob){    
 	var guid = gCommon.getUid();
 	var template = '' 
 			+'	<div class="Panel service-panel">                                                        '
-			+'		<div class="Panel-content" link id="'+guid+'">' //data="{namespace:\'{{namespace}}\',serviceType:\'{{serviceType}}\',serviceName:\'{{serviceName}}\'}"
-			+'			<div class="state {{status}}" title="{{statusMessage}}"></div>                                              '
+			+'		<div class="Panel-content" link id="'+guid+'">'
+			+'			<span class="state {{status}}"></span>                                             '
+			+ (ob.statusMessage?'<div class="Tooltip wd300">{{statusMessage}}</div>':'') 
 			+'			<div class="service-logo">                                                       '
 			+'				<img src="/styles/images/service-img-{{serviceType}}.png" class="service-img">               '
 			+'				<p class="ver-info">{{version}}</p>                                              '
 			+'			</div>                                                                           '
 			+'			<dl class="service-info">                                                        '
-			+'				<dt class="proc_serviceDetail link" key="'+guid+'">{{serviceName}}</dt>                                            '
+			+'				<dt class="proc_serviceDetail link" key="'+guid+'"><p class="service-name">{{namespace}}</p>{{shortServiceName}}</dt>      '
 			+'				<dd>                                                                         '
 			+'					<div class="tag-wrap">                                                   '
 			+'						{{tags}}                                                             '
 			+'					<button class="Label add-label tagAdd" key="'+guid+'">추가</button>					 '
+			+'					<span class="add-label__input hide"><input class="Textinput tagAddInput"  key="'+guid+'" ></input></span>'
 			+'					</div>                                                                   '
 			+'				</dd>                                                                        '
 			+'				<dd class="time-info">                                                       '
-			+'					<strong>Uptime</strong> :                                                '
-			+'					<span>{{updTime}}</span>                                                '
+			+'					<strong>구동시간 </strong> :                                                '
+			+'					<span>{{elapsedTime}}</span>                                                '
 			+'				</dd>                                                                        '
 			+'			</dl>                                                                            '
-			+'			<div class="service-btn__wrap">                                                  '
-			+'				<button class="Button nobg-btn btn-refresh proc_serviceRestart hide" key="'+guid+'">새로고침</button>                '
-			+'				<button class="Button nobg-btn btn-viewdetail viewMonitor" key="'+guid+'">모니터보기</button>             '
+			+'			<div class="service-btn__wrap">                                                  ';
+			if(ob.status == 'gray'){
+				template = template 
+				+'              <button class="btn-ico btn-del__typeb proc_serviceDelete" key="'+guid+'" title="삭제">삭제</button>         '
+				+'				<button class="btn-ico btn-refresh proc_serviceRestart" key="'+guid+'" title="재시작">재시작</button>                '
+			}
+			template = template 
+			+'				<button class="btn-ico btn-viewdetail viewMonitor" key="'+guid+'" title="모니터링">모니터보기</button>             '
 			+'			</div>                                                                           '
 			+'		</div>                                                                               '
 			+'	</div> 		                                                                             ';
@@ -109,36 +119,41 @@ function gfn_getServiceTemplate(ob){
 function gfn_getServiceDetailTemplate(ob){
 	var template = '' 
 		+'			<div class="Panel-content">'
-		+'				<div class="state {{status}}" title="{{statusMessage}}"></div>'
+		+'				<div class="state {{status}}"></div>'
 		+'				<div class="service-logo">'
-		+'					<img src="/styles/images/service-img-{{serviceType}}.png" class="service-img">'
+		+'					<img src="/styles/images/service-img-big-{{serviceType}}.png" class="service-img">'
 		+'					<p class="ver-info">{{version}}</p>'
 		+'				</div>'
 		+'				<dl class="service-info">'
 		+'					<dt>{{serviceName}}</dt>'
 		+'					<dd>'
 		+'						<div class="tag-wrap">'
-		+'							<span class="Label Default">Tworld</span>'
-		+'							<span class="Label Default">html,css</span>'
-		+'							<span class="Label Default">html,css</span>'
-		+'							<button class="Label add-label">추가</button>'
+		+'							{{tags}}'
+		+'							<button class="Label add-label tagAdd">추가</button>'
+		+'					        <span class="add-label__input hide"><input class="Textinput tagAddInput"></input></span>'
 		+'						</div>'
 		+'					</dd>'
-		+'					<dd class="time-info">'
-		+'						<strong>Uptime</strong> :'
-		+'						<span>{{updTime}}</span>'
-		+'						<strong class="Margin-left-40">생성일시</strong> :'
-		+'						<span>{{crtTime}}</span>'
-		+'					</dd>'
+		+'					<ul class="time-info">'
+		+'						<li>생성일시: <span>{{crtTime}}</span> </li>'
+		+'						<li>구동시간: <span>{{elapsedTime}}</span> </li>'
+		+'					</ul>'
 		+'				</dl>'
 		+'				<div class="service-btn__wrap">'
-		+'					<button class="Button nobg-btn btn-refresh hide">새로고침</button>'
+		+'					<button class="Button nobg-btn btn-refresh hide">재시작</button>'
 		+'					<button class="Button nobg-btn btn-viewdetail hide">상세보기</button>'
 		+'				</div>'
 		+'			</div>'
 	for(var key in ob){
 		template = template.replaceAll('{{'+key+'}}',ob[key]||'');
 	};		        
+	var tags = '';
+	if(ob.tagList){
+		for(var i=0;i < ob.tagList.length;i++){
+			var tag = ob.tagList[i];
+			tags = tags + '<span class="Label Default" data-id="'+tag.id+'">'+tag.tagName+'</span><button class="btn-ico label-del tagDel" data-id="'+tag.id+'">삭제</button>';
+		};
+	};
+	template = template.replaceAll('{{tags}}',tags);
 	return template;
 }
 

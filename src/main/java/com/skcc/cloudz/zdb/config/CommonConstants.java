@@ -20,4 +20,8 @@ public class CommonConstants {
 	public static final String POD_METRICS = "podMetrics";
 
 	public static final String RESULT = "result";
+
+	public static final String PARAM = "param";
+
+	public static final String USER_INFO = "userInfo";
 }
