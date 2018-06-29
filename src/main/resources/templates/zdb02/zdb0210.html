@@ -110,11 +110,11 @@
 											<label class="ImageRadio"> <input class="Radio" name="con1" value="connectionLine">Command Line </label>
 										</div>
 										<div class="info-input__wrap connectionString">	
-						               		<input class="Textinput Warning" name="privatemasterConnectionString" readonly="readonly"></input>     
+						               		<input class="Textinput" name="privatemasterConnectionString" readonly="readonly"></input>     
 						               		<button class="Button line-btn connectionStringCopy">복사</button>
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">	
-						               		<input type="text" class="Textinput Warning" name="privateslaveConnectionLine" readonly="readonly"></input>     
+						               		<input type="text" class="Textinput" name="privateslaveConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button line-btn connectionLineCopy">복사</button>                          
 						               	</div>
 						               	<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
@@ -128,11 +128,11 @@
 											<label class="ImageRadio"> <input class="Radio" name="con2" value="connectionLine">Command Line </label>
 										</div>					               		
 					               		<div class="info-input__wrap connectionString">                                                                                                  
-						               		<input class="Textinput Warning" name="privateslaveConnectionString" readonly="readonly"></input>     
+						               		<input class="Textinput" name="privateslaveConnectionString" readonly="readonly"></input>     
 						               		<button class="Button line-btn connectionStringCopy">복사</button>                          
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">
-						               		<input type="text" class="Textinput Warning" name="privateslaveConnectionLine" readonly="readonly"></input>     
+						               		<input type="text" class="Textinput" name="privateslaveConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button line-btn connectionLineCopy">복사</button>                          
 						               	</div>	
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
@@ -149,11 +149,11 @@
 											<label class="ImageRadio"> <input class="Radio" name="con3" value="connectionLine">Command Line </label>
 										</div>
         						   		<div class="info-input__wrap connectionString">                                                                                                  
-						               		<input class="Textinput Warning" name="publicmasterConnectionString" readonly="readonly"></input>     
+						               		<input class="Textinput" name="publicmasterConnectionString" readonly="readonly"></input>     
 						               		<button class="Button line-btn connectionStringCopy">복사</button>                          
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">                                                                   
-						               		<input type="text" class="Textinput Warning" name="publicmasterConnectionLine" readonly="readonly"></input>     
+						               		<input type="text" class="Textinput" name="publicmasterConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button line-btn connectionLineCopy">복사</button>                          
 						               	</div>	
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
@@ -167,11 +167,11 @@
 											<label class="ImageRadio"> <input class="Radio" name="con4" value="connectionLine">Command Line </label>
 										</div>					               	
 		               	           		<div class="info-input__wrap connectionString">                                                                                                  
-						               		<input class="Textinput Warning" name="publicslaveConnectionString" readonly="readonly"></input>     
+						               		<input class="Textinput" name="publicslaveConnectionString" readonly="readonly"></input>     
 						               		<button class="Button line-btn connectionStringCopy">복사</button>                          
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">                                                                                              
-						               		<input type="text" class="Textinput Warning" name="publicslaveConnectionLine" readonly="readonly"></input>     
+						               		<input type="text" class="Textinput" name="publicslaveConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button line-btn connectionLineCopy">복사</button>
 						               	</div>	                          
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
@@ -1278,10 +1278,12 @@
 			/*tabSystem end 환경설정 */
 			
 			/* tabBackup start backup */
-			var backupForm = $('form[name=backupForm]'); 
+			var backupForm = $('form[name=backupForm]');
+			var backupStatus = 'N';//Y 수정가능상태, N 수정불가 상태, I 수정중상태
 			backupForm.find('#searchBackup').on('click',function(){
 				fn_getBackupInfo();
 			});
+
 			//on off button
 			backupForm.find('.onoff-wrap > button').click(function(e){
 				e.preventDefault();
@@ -1291,15 +1293,42 @@
 					setBackupUseYn('Y');
 				}
 			});
-			function setBackupUseYn(value){
-				if(value=='Y'){
-					$('select[name=useYn]').zdbui_setComponent('Y');
-					$('.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
-					$('#storePeriodSpinner').setEnabled(true); 
+			function setBackupUseYn(val){
+				if(val=='Y'){
+					backupForm.find('select[name=useYn]').zdbui_setComponent('Y');
+					backupForm.find('.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
+					backupStatus = val;
 				}else{
-					$('select[name=useYn]').zdbui_setComponent('N');
-					$('.onoff-wrap > button').removeClass('btn-on').addClass('btn-off').text('OFF');
-					$('#storePeriodSpinner').setEnabled(false); 
+					backupForm.find('select[name=useYn]').zdbui_setComponent('N');
+					backupForm.find('.onoff-wrap > button').removeClass('btn-on').addClass('btn-off').text('OFF');
+					backupStatus = val
+				}
+				setBackupBtnEnable();
+			};
+			
+			function setBackupBtnEnable(){
+				if(backupStatus=='Y'){
+					backupForm.find('#saveSchedule').setEnabled(true);
+					backupForm.find('#saveSchedule').text('수정');
+					setBackupCompEnable('N')
+				}else if(backupStatus=='N'){
+					backupForm.find('#saveSchedule').setEnabled(false);
+					backupForm.find('#saveSchedule').text('수정');
+					setBackupCompEnable('N')
+				}else if(backupStatus=='I'){
+					backupForm.find('#saveSchedule').setEnabled(true);
+					backupForm.find('#saveSchedule').text('적용');
+					setBackupCompEnable('Y')
+				}
+			};
+			
+			function setBackupCompEnable(val){
+				if(val=='Y'){
+					backupForm.find('#storePeriodSpinner').setEnabled(true);
+					backupForm.find('#startTime').setEnabled(true);
+				}else{
+					backupForm.find('#storePeriodSpinner').setEnabled(false);
+					backupForm.find('#startTime').setEnabled(false);
 				}
 			};
 			$('#gridBackup').alopexGrid({
@@ -1374,20 +1403,27 @@
 				});					
 			};
 			$('body').on('click','button#saveSchedule',function(){
-				gCommon.confirm('백업 설정을 수정 하시겠습니까?',function(){
-					var param = $.extend({},gParam,backupForm.serializeObject());
-					param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
-					
-					$a.ajax({
-						url: '/zdbapi/updateSchedule',
-						data:param,
-						success: function(res){
-							if(res.result.code == '0'){
-								gCommon.alert('백업 설정이 수정되었습니다.');
-							};
-						}
-					});					
-				});
+				if(backupStatus=='I'){
+					gCommon.confirm('백업 설정을 수정 하시겠습니까?',function(){
+						var param = $.extend({},gParam,backupForm.serializeObject());
+						param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
+						
+						$a.ajax({
+							url: '/zdbapi/updateSchedule',
+							data:param,
+							success: function(res){
+								if(res.result.code == '0'){
+									gCommon.alert('백업 설정이 수정되었습니다.');
+									backupStatus = 'Y';
+									setBackupBtnEnable();
+								};
+							}
+						});					
+					});
+				}else if(backupStatus=='Y'){
+					backupStatus = 'I';
+					setBackupBtnEnable();
+				}
 			});
 			$('body').on('click','button#updateBackup',function(){
 				gCommon.confirm('백업을 실행 하시겠습니까?',function(res){
