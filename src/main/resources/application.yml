@@ -34,8 +34,11 @@ spring:
 zdb-api-server:
   url: http://127.0.0.1:8080
 
+zdb-demon-server:
+  url: http://agent.zdb-dev.jp-tok.containers.mybluemix.net
+  
 props:
-  appName: zdb-portal-dev
+  appName: zdb-portal-local
   keycloak:
     zcp:
       clientId: account
@@ -53,27 +56,52 @@ spring:
 
 ---
 spring:
-  profiles: prod
+  profiles: zdb-dev
 server:
   port: 8080
 zdb-api-server:
-  url: http://api.zdb-dev.jp-tok.containers.mybluemix.net
+  url: http://api.${spring.profiles}.jp-tok.containers.mybluemix.net
 
 logging:
   config: classpath:logback-prod.xml  
----  
+  
 zdb-demon-server:
-  url: http://169.56.71.106:8080
+  url: http://agent.${spring.profiles}.jp-tok.containers.mybluemix.net
 
 props:
-  appName: zdb-portal-dev
+  appName: zdb-portal
   keycloak:
     zcp:
       clientId: account
       clientSecret: 0227b024-6483-4e96-827b-3bc4dd73637e
       accessTokenUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
       userAuthorizationUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
-      redirectUri: ${HOME_URL:http://console.zdb-dev.jp-tok.containers.mybluemix.net}/k8s-login
+      redirectUri: ${HOME_URL:http://console.${spring.profiles}.jp-tok.containers.mybluemix.net}/k8s-login
   iam:
     baseUrl: https://zcp-iam.cloudzcp.io:443
 
+---
+spring:
+  profiles: zcp-demo
+server:
+  port: 8080
+zdb-api-server:
+  url: http://api.${spring.profiles}.jp-tok.containers.mybluemix.net
+
+logging:
+  config: classpath:logback-prod.xml  
+  
+zdb-demon-server:
+  url: http://agent.${spring.profiles}.jp-tok.containers.mybluemix.net
+
+props:
+  appName: zdb-portal
+  keycloak:
+    zcp:
+      clientId: account
+      clientSecret: 0227b024-6483-4e96-827b-3bc4dd73637e
+      accessTokenUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
+      userAuthorizationUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
+      redirectUri: ${HOME_URL:http://console.${spring.profiles}.jp-tok.containers.mybluemix.net}/k8s-login
+  iam:
+    baseUrl: https://zcp-iam.cloudzcp.io:443
