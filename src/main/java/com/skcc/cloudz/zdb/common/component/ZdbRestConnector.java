@@ -1,11 +1,14 @@
 package com.skcc.cloudz.zdb.common.component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -56,15 +59,29 @@ public class ZdbRestConnector extends RestTemplate{
 		return result;
 	}
 	
+	@Autowired
+	Environment env;
+	
 	// 임시 세션 dwtemp 
 	public String getSessionNamespaces() {
 		OpenIdConnectUserDetailsVo userInfo = securityService.getUserDetails();
-		List<String> userNamespaces = userInfo.getNamespaces().stream().collect(Collectors.toList());
-		userNamespaces.add("zdb-redis");
-		userNamespaces.add("lwk");
-		userNamespaces.add("zdb-maria");
-		
-		return userNamespaces == null ? "" : userNamespaces.stream().map(i -> i.toString()).collect(Collectors.joining(","));
+		List<String> userNamespaces = null;
+
+		if (userInfo != null && userInfo.getNamespaces() != null) {
+			userNamespaces = userInfo.getNamespaces().stream().collect(Collectors.toList());
+		}
+
+		if (Arrays.asList(env.getActiveProfiles()).contains("local")) {
+			if(userNamespaces == null) {
+				userNamespaces = new ArrayList<>();
+			}
+			userNamespaces.add("zdb-redis");
+			userNamespaces.add("lwk");
+			userNamespaces.add("zdb-maria");
+		}
+
+		return userNamespaces == null || userNamespaces.isEmpty() ? ""
+				: userNamespaces.stream().map(i -> i.toString()).collect(Collectors.joining(","));
 	}
 
 	private void addHeaderSession(HttpHeaders headers) {
