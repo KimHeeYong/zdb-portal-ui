@@ -1287,7 +1287,8 @@ n : entries n"></span></th>
 							}else{
 								gCommon.alert(gMessage.saveSuccess);
 							};
-						}
+						},
+						loadingMessage:'환경설정 적용중입니다.'
 					});
 				}));
 			});
@@ -1299,16 +1300,37 @@ n : entries n"></span></th>
 						var dbConfigurations = res.dbConfigurations
 						if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
 							if(dbConfigurations){
-								var tr = '';
+								$('#serviceConfigTable tbody').html('');
+								var sels = {
+									character_set_server:{options:[{key:'utf-8',val:'utf-8'},{key:'euckr',val:'euckr'}]},
+									innodb_buffer_pool_instances:{options:[{key:'1',val:'1'},{key:'2',val:'2'},{key:'4',val:'4'},{key:'8',val:'8'}]},
+									innodb_flush_method:{options:[{key:'fsync',val:'fsync'},{key:'O_DSYNC',val:'O_DSYNC'}, {key:'O_DIRECT',val:'O_DIRECT'}
+																	,{key:'O_DIRECT_NO_FSYNC',val:'O_DIRECT_NO_FSYNC'}]},
+									query_cache_type:{options:[{key:'0',val:'OFF'},{key:'1',val:'ON'},{key:'2',val:'DEMAND'}]},
+									thread_handling:{options:[{key:'no-threads',val:'no-threads'},{key:'one-thread-per-connection',val:'one-thread-per-connection'},{key:'pool-of-threads',val:'pool-of-threads'}]},
+									'transaction-isolation':{options:[{key:'READ-UNCOMMITTED',val:'READ-UNCOMMITTED'},{key:'READ-COMMITTED',val:'READ-COMMITTED'}
+																,{key:'REPEATABLE-READ',val:'REPEATABLE-READ'},{key:'SERIALIZABLE',val:'SERIALIZABLE'}]}
+								};
 								for(var i = 0 ; i < dbConfigurations.length;i++){
 									var ob = dbConfigurations[i];
-									tr= tr +' <tr> <th>'+ob.name+'</th> <td>'
+									var tr = '';
+									if(sels[ob.name]){
+										tr = '<tr><th>'+ob.name+'</th><td><div class="Divselect" style="min-width:200px;"> <select name="'+ob.name+'" >'
+										for(var j = 0 ; j < sels[ob.name].options.length; j++){
+											var opts = sels[ob.name].options[j];
+											tr +='<option value="'+opts.key+'" '+(ob.value==opts.key?"selected":"")+'>'+opts.val+'</option>';
+										};
+										tr += '</select><span></span></div>'+'<span class="info-text"> '+ob.valueRange+'</span></td></tr>';
+									}else{
+										tr = ' <tr> <th>'+ob.name+'</th> <td>'
 									       + '		<input type="text" id="'+ob.name+'" name="'+ob.name+'" class="Textinput" value="'+ob.value+'"/>'
 									       + '		<span class="info-text">'+ob.valueRange+'</span> '
 									       + '		<p data-for="'+ob.name+'" class="warn-text"></p>'
 									       + '	</td> </tr>';
+									}
+									$('#serviceConfigTable tbody').append(tr);
 								};
-								$('#serviceConfigTable tbody').html('').append(tr);
+								$a.convert($('#serviceConfigTable tbody').find('.Divselect'));
 							}
 						}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
 							if(gService.purpose != 'DATA'){

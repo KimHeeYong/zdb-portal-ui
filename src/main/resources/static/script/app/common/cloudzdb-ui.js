@@ -66,11 +66,9 @@ var gCommon = $a.page(function(){
 			    	gCommon.alert('시스템 에러가 발생하였습니다. <br/> URL:' + opt.url)
 			    },
 			    beforeSend:function(bopt){
-			    	var loadingMessage = '';
-			    	if(this.data && this.data.loadingMessage){
-			    		loadingMessage = this.data.loadingMessage;
+			    	if(opt && opt.loadingMessage){
+			    		$('#loading-message').html(opt.loadingMessage);
 			    	};
-			    	$('#loading-message').html(loadingMessage);
 			    },
 			    complete:function(copt){
 			    	

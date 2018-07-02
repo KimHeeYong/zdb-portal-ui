@@ -4,6 +4,7 @@
     "name": "서비스생성",
     "order": 1,
     "url": "/zdb01/zdb0110",
+    "folder": "/zdb01",
     "target": "self",
     "accessRoles": [
       "cluster-admin",
@@ -16,6 +17,7 @@
     "name": "서비스목록",
     "order": 2,
     "url": "/zdb02/zdb0200",
+    "folder": "/zdb02",
     "target": "self",
     "accessRoles": [
       "cluster-admin",
@@ -28,6 +30,7 @@
     "name": "모니터링",
     "order": 3,
     "url": "javascript:gCommon.alert('추후 제공 예정입니다.')",
+    "folder": "/zdb03",
     "target": "self",
     "accessRoles": [
       "cluster-admin",
@@ -41,6 +44,7 @@
     "name": "이벤트",
     "order": 4,
     "url": "/zdb04/zdb0400",
+    "folder": "/zdb04",
     "target": "self",
     "accessRoles": [
       "cluster-admin",

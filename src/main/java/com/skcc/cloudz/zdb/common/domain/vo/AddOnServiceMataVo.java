@@ -13,6 +13,7 @@ public class AddOnServiceMataVo implements Comparable<AddOnServiceMataVo> {
     private List<AddOnServiceMataSubVo> sub;
     private List<AccessRole> accessRoles;
     private boolean enable;
+    private String folder;
     
     public AddOnServiceMataVo() {}
 
@@ -90,5 +91,13 @@ public class AddOnServiceMataVo implements Comparable<AddOnServiceMataVo> {
         
         return 0;
     }
+
+	public String getFolder() {
+		return folder;
+	}
+
+	public void setFolder(String folder) {
+		this.folder = folder;
+	}
     
 }
