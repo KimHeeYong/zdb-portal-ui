@@ -23,7 +23,9 @@ spec:
         imagePullPolicy: Always                       
         env:
         - name: SPRING_ACTIVE_PROFILE
-          value: zdb-dev
+#          value: zdb-dev
+          value: zcp-demo
+          
       imagePullSecrets:
       - name: zdb-system-secret
       serviceAccountName: zdb-system-account
