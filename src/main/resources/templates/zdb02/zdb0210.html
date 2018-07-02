@@ -1208,7 +1208,7 @@ n : entries n"></span></th>
 				});
 			};
 			function fn_getPanels(service){
-				if(service.serviceType == "mariadb") {
+				if(service.serviceType == G_SERVICE_TYPE_MARIA) {
 					var grafanaUrl = "http://grafana.zdb-dev.jp-tok.containers.mybluemix.net/d-solo/lEdH1KHiz/mariadb-overview?refresh=1m&orgId=1"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-service=" + service.serviceName + "-mariadb";
@@ -1226,7 +1226,7 @@ n : entries n"></span></th>
 					$('#panelSqlthread').find('iframe').attr('src',grafanaUrl + "&panelId=404");
 					$('#panelIothread').find('iframe').attr('src',grafanaUrl + "&panelId=402");
 				}
-				else if (service.serviceType == "redis") {
+				else if (service.serviceType == G_SERVICE_TYPE_REDIS) {
 					var grafanaUrl = "http://grafana.zdb-dev.jp-tok.containers.mybluemix.net/d-solo/4DdKRZviz/redis-overview?refresh=30s&orgId=1"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-container=" + service.pods[0].spec.containers[0].name;

@@ -38,6 +38,7 @@
 		}
 	});
 	</script>
+	
 </head>
 <body th:fragment="mainBody">
 <div class="cp-wrapper">
@@ -64,7 +65,7 @@
 		<div id="loading">
 			<div id="loading-image">
 				<img src="/styles/images/ajax-loader.gif" alt="Loading..." />
-				<p id="loading-message">액션 정보를 로딩중입니다.</p>
+				<p id="loading-message"></p>
 			</div>
 		</div>
 		<div class="lnb-wrap db-lnb">
@@ -72,18 +73,18 @@
 				<ul>
 					<li><a href="#"><img class="icon-img" src="/styles/images/ico-lnbname.png"><span class="lnb-name">ZDB</span></a></li>
 				    <th:block th:each="parent, iterStat : ${addOnServiceMataData}">
-                      <li th:classappend="${parent.folder == activePathInfo.firstPath || parent.url == activePathInfo.fullPath? 'selected':''}">
-                          <a th:href="${parent.url} != '' ? ${parent.url} : '#'" th:target="|_${parent.target}|" th:text="${parent.name}"> </a>
-                          <!-- sub -->
-                          <ul class="lnb-sub" th:if="${not #lists.isEmpty(parent.sub)}" th:style="${parent.url == activePathInfo.firstPath} ? 'display:block' : 'display:none'">
-                             <th:block th:each="child, iterStat : ${parent.sub}">
-                              <li th:classappend="${child.url == activePathInfo.fullPath ? 'selected':''}">
-                                  <a th:href="${child.url} != '' ? ${child.url} : '#'" th:target="|_${child.target}|" th:text="|-${child.name}|"></a>
-                              </li>
-                             </th:block>
-                          </ul>
-                      </li>
-                     </th:block>	
+                        <li th:classappend="${parent.folder == activePathInfo.firstPath || parent.url == activePathInfo.fullPath? 'selected':''}">
+                            <a th:href="${parent.url} != '' ? ${parent.url} : '#'" th:target="|_${parent.target}|" th:text="${parent.name}"> </a>
+                            <!-- sub -->
+                            <ul class="lnb-sub" th:if="${not #lists.isEmpty(parent.sub)}" th:style="${parent.url == activePathInfo.firstPath} ? 'display:block' : 'display:none'">
+                                <th:block th:each="child, iterStat : ${parent.sub}">
+	                                <li th:classappend="${child.url == activePathInfo.fullPath ? 'selected':''}">
+	                                    <a th:href="${child.url} != '' ? ${child.url} : '#'" th:target="|_${child.target}|" th:text="|-${child.name}|"></a>
+	                                </li>
+	                            </th:block>
+                            </ul>
+                        </li>
+                    </th:block>	
 					<li>
 						<button class="Button btn-toggle lnb-close">접기</button>
 					</li>

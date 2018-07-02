@@ -25,13 +25,15 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
     
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-    	
+    	String[] pageUrlPattern = {"/zdb*/**"};
+    	String[] ajaxAndComPattern = {"/zdbapi/**","/zdbcom/**"};
         registry.addInterceptor(addOnServiceMetaDataInterceptor())        	
-		    .addPathPatterns(new String[] {"/zdb*/**"})
-		    .excludePathPatterns(new String[] {"/zdbapi/**","/zdbcom/**"});
+		    .addPathPatterns(pageUrlPattern)
+		    .excludePathPatterns(ajaxAndComPattern);
         registry.addInterceptor(addSessionUserDataInterceptor())
-        	.addPathPatterns(new String[] {"/zdb*/**"})
-        	.excludePathPatterns(new String[] {"/zdbapi/**","/zdbcom/**"});
+        	.addPathPatterns(pageUrlPattern)
+        	.excludePathPatterns(ajaxAndComPattern);
+        
     }
     
     @Override

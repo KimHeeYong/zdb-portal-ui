@@ -59,6 +59,7 @@ var gCommon = $a.page(function(){
 	this.init = function(){ //초기화 루틴 수행
 		gSelectedNamespace = $.cookie('selectedNamespace')||G_NAMESPACE_ALL;
 		$a.ajax = function(opt){
+			
 			var defOpt = {
 				type:"POST",
 				dataType:'json',
@@ -66,9 +67,11 @@ var gCommon = $a.page(function(){
 			    	gCommon.alert('시스템 에러가 발생하였습니다. <br/> URL:' + opt.url)
 			    },
 			    beforeSend:function(bopt){
+			    	var loadingMessage = '정보 로딩중입니다.';
 			    	if(opt && opt.loadingMessage){
-			    		$('#loading-message').html(opt.loadingMessage);
+			    		loadingMessage = opt.loadingMessage;
 			    	};
+			    	$('#loading-message').html(loadingMessage);
 			    },
 			    complete:function(copt){
 			    	
