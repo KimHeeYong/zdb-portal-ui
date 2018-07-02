@@ -106,15 +106,16 @@ function gfn_getServiceTemplate(ob){
 	};	
 	var tags = '';
 	var ml = 3;//태그 최대 갯수
-	var nDelMsg = '#redis#mariadb#session#data';
 	if(ob.tagList){
 		for(var i=0;i < ob.tagList.length;i++){
 			if(--ml < 0)break;
 			var tag = ob.tagList[i];
 			tags = tags + '<span class="Label Default" data-id="'+tag.id+'">'+tag.tagName+'</span>'
+			/*
 			if(nDelMsg.indexOf('#'+tag.tagName) < 0){
 				tags = tags + '<button class="btn-ico label-del tagDel" data-id="'+tag.id+'">삭제</button>';
 			}
+			*/
 		};
 	};
 	template = template.replaceAll('{{tags}}',tags);
@@ -153,10 +154,14 @@ function gfn_getServiceDetailTemplate(ob){
 		template = template.replaceAll('{{'+key+'}}',ob[key]||'');
 	};		        
 	var tags = '';
+	var nDelMsg = '#redis#mariadb#session#data';
 	if(ob.tagList){
 		for(var i=0;i < ob.tagList.length;i++){
 			var tag = ob.tagList[i];
-			tags = tags + '<span class="Label Default" data-id="'+tag.id+'">'+tag.tagName+'</span><button class="btn-ico label-del tagDel" data-id="'+tag.id+'">삭제</button>';
+			tags = tags + '<span class="Label Default" data-id="'+tag.id+'">'+tag.tagName+'</span>';
+			if(nDelMsg.indexOf('#'+tag.tagName) < 0){
+				tags = tags + '<button class="btn-ico label-del tagDel" data-id="'+tag.id+'">삭제</button>';
+			};			
 		};
 	};
 	template = template.replaceAll('{{tags}}',tags);

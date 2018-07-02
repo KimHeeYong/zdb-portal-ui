@@ -67,8 +67,10 @@ div.grid{
 	overflow: hidden;
 }
 
-.tooltip-ico{
+.ico_title{
 	width: 31px;
 	height: 32px;
-	background: transparent url(/styles/images/ico-img.png) no-repeat;
+	background: transparent url(/styles/images/icons.png) no-repeat;
+	background-position: -294px -113px;
+    padding: 30px 12px 0px 10px
 }

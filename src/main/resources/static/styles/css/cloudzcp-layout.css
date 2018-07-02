@@ -702,6 +702,8 @@ a.blank-link {
 	position: absolute;
 	right: 16px;
 	top: 16px;
+}
+.lnb-wrap nav > ul > li:nth-child(4):after {
 	background: url("/styles/images/ico-common.png") no-repeat 0 -45px;
 }
 .lnb-wrap nav > ul > li.expandable:after,
@@ -725,15 +727,26 @@ a.blank-link {
 	background-color: #313131;
 	border-color: #313131;
 }
-.lnb-wrap.db-lnb nav > ul > li:nth-child(2) a {
+.icons{
+	cursor: pointer;
+	text-indent: -9999px;
+	width: 22px;
+	height: 22px;
+	border: 0;
+	background: transparent url("/styles/images/ico-btn.png") no-repeat;
+}
+.lnb-wrap.db-lnb nav > ul > li:nth-child(2) a:before {
 	/*
 	padding: 0 20px;
 	height: 50px;
 	line-height: 48px;
 	color: #ff0000;
 	border-bottom: 1px solid #dddddd;
+	background-position: -228px -180px;
+	background: transparent url("/styles/images/icons.png") no-repeat;
+    content: "";
+    opacity: 1;
 	*/
-  
 }
 .lnb-sub {
 	display: none;
@@ -2205,4 +2218,28 @@ a.view-detail:active {
 .asterisk {
 	padding: 0 5px 0 2px;
 	color: #ea0530;
+}
+#loading {
+   width: 100%;   
+   height: 100%;   
+   top: 0px;
+   left: 0px;
+   position: fixed;   
+   display: none;   
+   opacity: 0.7;   
+   background-color: #fff;   
+   z-index: 99;   
+   text-align: center; 
+} 
+#loading-image {   
+   position: absolute;   
+   top: 45%;   
+   left: 50%;   
+   z-index: 100; 
+} 
+#loading-image p {
+   margin-top:20px;
+   font-weight: 700;
+   font-size: 17px;
+   color: #222; 
 }

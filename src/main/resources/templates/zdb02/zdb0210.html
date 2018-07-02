@@ -451,7 +451,10 @@
 							<tbody>
 								<tr>
 									<th rowspan="2">NETWORK</th>
-									<th>timeout <span class="tooltip-ico"></span></th>
+									<th>timeout <span class="ico_title" title="Redis 서버에 연결된 Client가 timeout 시간(초) 동안 아무 명령이 없으면 접속을 끊습니다.
+									
+timeout 값이 0인 경우, 아무 명령이 없어도 접속을 끊지 않습니다."></span>
+									</th>
 									<td> 
 										<input type="text" id="timeout" name="timeout" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 3,600</span>
@@ -459,7 +462,9 @@
 									</td>
 								</tr>
 								<tr>
-									<th>tcp-keepalive</th>
+									<th>tcp-keepalive<span class="ico_title" title="Redis 서버가 tcp-keepalive 시간(초)마다 Client의 상태를 확인하여 아무 응답이 없으면 접속을 끊습니다.
+
+tcp-keepalive 값이 0인 경우, 아무 응답이 없어도 접속을 끊지 않습니다."></span></th>
 									<td> 
 										<input type="text" id="tcp-keepalive" name="tcp-keepalive" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 3,600</span>
@@ -478,7 +483,14 @@
 							<tbody>
 								<tr>
 									<th rowspan="2">MEMORY MANAGEMENT</th>
-									<th>maxmemory-policy</th>
+									<th>maxmemory-policy<span class="ico_title" title="메모리 관리에 대한 정책을 선택합니다.
+
+noeviction: 기존 데이터 삭제 안함. 메모리 한계에 도달하면 OOM 오류 반환. 새 데이터 저장되지 않음
+allkeys-lru: LRU로 삭제하여 공간을 확보하고 새 데이터를 저장
+volatile-lru: expire set을 가진 값 중에서 LRU로 삭제하여 공간을 확보하고 새 데이터를 저장
+allkeys-random: 랜덤으로 삭제하여 공간을 확보하고 새 데이터를 저장
+volatile-random: expire set을 가진 값 중에서 랜덤으로 삭제하여 공간을 확보하고 새 데이터를 저장
+volatile-ttl: expire set을 가진 값 중에서 TTL이 짧은 것부터 삭제하여 공간을 확보하고 새 데이터를 저장"></span></th>
 									<td> 
 										<div class="Divselect" style="width: 150px">
 										<select id="maxmemory-policy" name="maxmemory-policy">
@@ -494,7 +506,9 @@
 									</td>
 								</tr>
 								<tr>
-									<th>maxmemory-samples</th>
+									<th>maxmemory-samples<span class="ico_title" title="메모리를 절약하기 위해서, LRU 알고리즘 수행 시 검사를 위한 샘플의 크기를 선택합니다.
+
+낮을 수록 메모리를 절약 할 수 있습니다."></span></th>
 									<td>
 										<input type="text" id="maxmemory-samples" name="maxmemory-samples" class="Textinput"/>
 										<span class="info-text">범위 : 1 ~ 10</span>
@@ -513,7 +527,11 @@
 							<tbody>	
 								<tr>
 									<th rowspan="2">SLOW LOG</th>
-									<th>slowlog-log-slower-than</th>
+									<th>slowlog-log-slower-than<span class="ico_title" title="slowlog-log-slower-than 값으로 설정된 시간(밀리초) 이상 소요되는 명령을 Slowlog로 기록합니다.
+
+값이 0인 경우 모든 명령을 기록합니다.
+
+값이 음수인 경우 아무런 명령을 기록하지 않습니다."></span></th>
 									<td>
 										<input type="text" id="slowlog-log-slower-than" name="slowlog-log-slower-than" class="Textinput"/>
 										<span class="info-text">범위 : -1 ~ 12000</span>
@@ -521,7 +539,7 @@
 									</td>
 								</tr>
 								<tr>
-									<th>slowlog-max-len</th>
+									<th>slowlog-max-len<span class="ico_title" title="slowlog의 최대 개수를 지정합니다."></span></th>
 									<td>
 										<input type="text" id="slowlog-max-len" name="slowlog-max-len" class="Textinput"/>
 										<span class="info-text">범위 : 1 ~ 256</span>
@@ -540,7 +558,20 @@
 							<tbody>									
 								<tr>
 									<th>EVENT NOTIFICATION</th>
-									<th>notify-keyspace-events</th>
+									<th>notify-keyspace-events<span class="ico_title" title='Redis의 Keyspace Event에 대한 Notification 기능을 설정합니다.
+
+" ": notification 비활성화
+K:Keyspace 이벤트, published with __keyspace@__ prefix.
+E:Keyevent 이벤트, published with __keyevent@__ prefix.
+g:데이터 타입이 지정돼 있지 않은 일반 명령어(예: DEL, EXPIRE, RENAME 등)
+$: String 명령어
+l:List 명령어
+s: Set 명령어
+h:Hash 명령어
+z: Sorted set 명령어
+x:Expired 이벤트 (events generated every time a key expires)
+e: Evicted 이벤트 (events generated when a key is evicted for maxmemory)
+A: g$lshzxe 혼합 옵션 (예: "AKE"는 모든 이벤트를 의미함)'></span></th>
 									<td>
 										<input type="text" id="notify-keyspace-events" name="notify-keyspace-events" class="Textinput"/>
 									</td>
@@ -558,7 +589,7 @@
 							<tbody>		
 								<tr>
 									<th rowspan="5">ADVANCED CONFIG</th>
-									<th>hash-max-ziplist-entries</th>
+									<th>hash-max-ziplist-entries<span class="ico_title" title="Hash의 Field 개수를 설정합니다. 값이 512일 때, Filed 수가 512개 이하이면 Zip list로 저장됩니다."></span></th>
 									<td>	
 										<input type="text" id="hash-max-ziplist-entries" name="hash-max-ziplist-entries" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 65536</span>
@@ -566,7 +597,7 @@
 									</td>
 								</tr>
 								<tr>	
-									<th>hash-max-ziplist-value</th>
+									<th>hash-max-ziplist-value<span class="ico_title" title="값(String)의 크기를 설정합니다. 값이 64일 때, 값의 크기가 64Byte 이하이면 Zip list로 저장됩니다."></span></th>
 									<td>
 										<input type="text" id="hash-max-ziplist-value" name="hash-max-ziplist-value" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 65535</span>
@@ -574,7 +605,16 @@
 									</td>
 								</tr>	
 								<tr>	
-									<th>list-max-ziplist-size</th>
+									<th>list-max-ziplist-size<span class="ico_title" title="Zip list의 크기를 설정합니다.
+
+-5 : max size 64 kb
+-4 : max size 32 kb
+-3 : max size 16 kb
+-2 : max size  8 kb     default
+-1 : max size   4 kb
+1 : entry 1
+2 : entries 2
+n : entries n"></span></th>
 									<td>
 										<input type="text" id="list-max-ziplist-size" name="list-max-ziplist-size" class="Textinput"/>
 										<span class="info-text">범위 : -5 ~ 5</span>
@@ -582,7 +622,9 @@
 									</td>
 								</tr>	
 								<tr>	
-									<th>zset-max-ziplist-entries</th>
+									<th>zset-max-ziplist-entries<span class="ico_title" title="Sorted Set에 포함된 멤버의 개수 기준을 설정합니다.
+
+값이 128일 때, Sorted Set에 포함된 멤버의 개수가 128보다 크면 Skip list로, 아니면 Zip list로 인코딩 됩니다."></span></th>
 									<td>
 										<input type="text" id="zset-max-ziplist-entries" name="zset-max-ziplist-entries" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 65536</span>
@@ -590,7 +632,9 @@
 									</td>
 								</tr>	
 								<tr>	
-									<th>zset-max-ziplist-value</th>
+									<th>zset-max-ziplist-value<span class="ico_title" title="Sorted Set의 사이즈의 기준을 설정합니다.
+
+값이 64일 때, Sorted Set에 포함된 요소 중 가장 긴 요소의 길이가 이 값보다 크면 Skip list로, 아니면 Zip list로 인코딩 됩니다."></span></th>
 									<td>
 										<input type="text" id="zset-max-ziplist-value" name="zset-max-ziplist-value" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 65536</span>

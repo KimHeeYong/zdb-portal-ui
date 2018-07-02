@@ -64,12 +64,26 @@ var gCommon = $a.page(function(){
 				dataType:'json',
 			    error: function(res) { // if error occured
 			    	gCommon.alert('시스템 에러가 발생하였습니다. <br/> URL:' + opt.url)
+			    },
+			    beforeSend:function(bopt){
+			    	var loadingMessage = '';
+			    	if(this.data && this.data.loadingMessage){
+			    		loadingMessage = this.data.loadingMessage;
+			    	};
+			    	$('#loading-message').html(loadingMessage);
+			    },
+			    complete:function(copt){
+			    	
 			    }
 			};
 			var option = $.extend({},defOpt,opt);
 			  $.ajax(option);
 		}
-		$(document).ajaxStart(function(){ gCommon.overlay({progress:true});}).ajaxStop(function() { gCommon.removeOverlay();});
+		$(document).ajaxStart(function(as){
+			gCommon.overlay(as);
+		}).ajaxStop(function(ae) { 
+			gCommon.removeOverlay(ae);
+		});
 		gParam = this.getParameterJson();
 	};
 	this.setSelectedNamespace = function(val){
@@ -105,12 +119,10 @@ var gCommon = $a.page(function(){
 	    return vars;
 	}
 	this.overlay = function(opt){
-		gOverlay = $('body').overlay(opt);
+		gOverlay = $('body #loading').show();
 	};
 	this.removeOverlay = function(){
-		if(gOverlay!=null){
-			gOverlay.remove();
-		}
+		$('body #loading').hide();
 	};
 	this.setDataAttrs = function(selector,data){
 		for(var key in data){
