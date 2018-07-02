@@ -13,7 +13,7 @@
 			border: 1px solid #cccccc;
 			background-position: -25px -173px; 
 		}
-	</style>
+	</style>  
 </th:block>
 <th:block layout:fragment="page_js">
 	<script type="text/javascript" src="/script/app/common/cloudzdb-ui-z0200.js"></script>
@@ -169,7 +169,7 @@
 		               	           		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="publicslaveConnectionString" readonly="readonly"></input>     
 						               		<button class="Button line-btn connectionStringCopy">복사</button>                          
-						               	</div>
+						               	</div> 
 						               	<div class="info-input__wrap connectionLine hide">                                                                                              
 						               		<input type="text" class="Textinput" name="publicslaveConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button line-btn connectionLineCopy">복사</button>
@@ -451,7 +451,7 @@
 							<tbody>
 								<tr>
 									<th rowspan="2">NETWORK</th>
-									<th>timeout</th>
+									<th>timeout <span class="tooltip-ico"></span></th>
 									<td> 
 										<input type="text" id="timeout" name="timeout" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 3,600</span>

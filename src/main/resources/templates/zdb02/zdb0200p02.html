@@ -29,31 +29,44 @@
 	<script type="text/javascript" src="/script/app/common/constants.js"></script>
 </head>
 <body class="log-console">
-<script type="text/javascript">
-$a.page(function() {
-	this.init = function() {
-		var title = gParam.namespace+" > "+ gParam.serviceName +" > "+ gParam.podname + " log";
-		$('title,#title').html(title);
-		
-		$a.ajax({
-			url: '/zdbapi/getPodLog',
-			data : gParam,
-			success: function(res){
-				if(res.podLog){
-					for(var i = 0 ; i < res.podLog.length;i++){
-						$('#log').append('<p>'+res.podLog[i]+'</p>');
-					};
-				};
+<div>
+	<script type="text/javascript">
+	$a.page(function() {
+		this.init = function() {
+			$('#popLogClose').on('click',function(){
+				window.close();
+			});
+			$('#popLogRefresh').on('click',function(){
+				showLog();
+			});
+			showLog();
+			
+			function showLog(){
+				var title = gParam.namespace+" > "+ gParam.serviceName +" > "+ gParam.podname + " log";
+				$('title,#title').html(title);
+				$('#log').html('');
+				$a.ajax({
+					url: '/zdbapi/getPodLog',
+					data : gParam,
+					success: function(res){
+						if(res.podLog){
+							for(var i = 0 ; i < res.podLog.length;i++){
+								$('#log').append('<p>'+res.podLog[i]+'</p>');
+							};
+						};
+					}
+				});
 			}
-		});
-	};
-});
-</script>
-<div id="title">
-</div>
-<hr/>
-<div id="log" style="margin-left:15px;">
-	
+		};
+	});
+	</script>
+	<div id="title"> </div>
+	<hr/>
+	<div id="log" style="margin-left:15px;"> </div>
+	<div class="popup-btn__wrap">
+		<button class="Button btn" id="popLogRefresh">새로고침</button> 
+		<button class="Button btn" id="popLogClose">닫기</button> 
+	</div>
 </div>
 </body>
 </html>	

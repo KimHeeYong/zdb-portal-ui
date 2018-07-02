@@ -153,10 +153,16 @@ var gCommon = $a.page(function(){
 		if(!selector)return;
 		if(selector.val()==''){
 			selector.val(' ')
-		}
-		selector.get(0).select();
-		var result = document.execCommand('copy')
+		};
 		
+		var result = '';
+		var befType = selector.attr('type');
+		if(befType=='password'){
+			selector.attr('type','text');
+		};
+		selector.get(0).select();
+		result = document.execCommand('copy')
+		selector.attr('type',befType);
 		return result;
 	};
 	this.getUid = function(){

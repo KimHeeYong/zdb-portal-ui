@@ -36,6 +36,7 @@
 		<div class="sort-button">
 			<button class="Button btn-ico__typeb btn-cardview Checked">카드형으로 보기</button>
 			<button class="Button btn-ico__typeb btn-listview">목록형으로 보기</button>
+			<div class="Tooltip">추후제공 예정입니다.</div>
 		</div>
 		<ul class="sort-list">
 			<li data-sort-name="shortServiceName" class="asc">이름</li>
@@ -136,6 +137,7 @@
 			//서비스 목록 클릭
 			$('body').on('click','.proc_serviceDetail,.viewMonitor',function(evt){
 				var data = $('#'+$(evt.target).attr('key')).data();
+				if(!data)return;
 				if(data.status == 'gray'){
 					gCommon.alert('서비스 준비 중입니다.');
 					return;

@@ -81,7 +81,7 @@ function gfn_getServiceTemplate(ob){
 			+'				<dd>                                                                         '
 			+'					<div class="tag-wrap">                                                   '
 			+'						{{tags}}                                                             '
-			+'					<button class="Label add-label tagAdd" key="'+guid+'">추가</button>					 '
+			+'					<button class="Label add-label tagAdd hide" key="'+guid+'">추가</button>					 '
 			+'					<span class="add-label__input hide"><input class="Textinput tagAddInput"  key="'+guid+'" ></input></span>'
 			+'					</div>                                                                   '
 			+'				</dd>                                                                        '
@@ -105,10 +105,16 @@ function gfn_getServiceTemplate(ob){
 		template = template.replaceAll('{{'+key+'}}',ob[key]||'');
 	};	
 	var tags = '';
+	var ml = 3;//태그 최대 갯수
+	var nDelMsg = '#redis#mariadb#session#data';
 	if(ob.tagList){
 		for(var i=0;i < ob.tagList.length;i++){
+			if(--ml < 0)break;
 			var tag = ob.tagList[i];
-			tags = tags + '<span class="Label Default" data-id="'+tag.id+'">'+tag.tagName+'</span><button class="btn-ico label-del tagDel" data-id="'+tag.id+'">삭제</button>';
+			tags = tags + '<span class="Label Default" data-id="'+tag.id+'">'+tag.tagName+'</span>'
+			if(nDelMsg.indexOf('#'+tag.tagName) < 0){
+				tags = tags + '<button class="btn-ico label-del tagDel" data-id="'+tag.id+'">삭제</button>';
+			}
 		};
 	};
 	template = template.replaceAll('{{tags}}',tags);
