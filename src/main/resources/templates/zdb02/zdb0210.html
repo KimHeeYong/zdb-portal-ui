@@ -1203,50 +1203,59 @@ n : entries n"></span></th>
 
 			/*tabMonitor start 모니터링*/
 			function fn_getMonitoring(){
+				fn_getGrafanaUrl();
 				fn_getService().done(function(){
-					fn_getPanels(gService);
+					fn_getPanels(gService, grafanaUrl);
 				});
 			};
-			function fn_getPanels(service){
-				if(service.serviceType == G_SERVICE_TYPE_MARIA) {
-					var grafanaUrl = "http://grafana.zdb-dev.jp-tok.containers.mybluemix.net/d-solo/lEdH1KHiz/mariadb-overview?refresh=1m&orgId=1"
+			function fn_getGrafanaUrl(){
+				$a.ajax({
+					url: '/zdbapi/getGrafanaUrl',
+					success: function(res){
+						grafanaUrl = res.grafanaUrl;
+					}
+				});
+			}
+			function fn_getPanels(service, grafanaUrl){
+				console.log("Grafana" + grafanaUrl);
+				if(service.serviceType == "mariadb") {
+					var iframeSrc = grafanaUrl + "/d-solo/zdbmaria1/mariadb-summary?refresh=1m&orgId=2"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-service=" + service.serviceName + "-mariadb";
 					/* System Resources */
-					$('#panelCpu').find('iframe').attr('src',grafanaUrl + "&panelId=396");
-					$('#panelMemory').find('iframe').attr('src',grafanaUrl + "&panelId=398");
-					$('#panelNetwork').find('iframe').attr('src',grafanaUrl + "&panelId=400");					
+					$('#panelCpu').find('iframe').attr('src',iframeSrc + "&panelId=1");
+					$('#panelMemory').find('iframe').attr('src',iframeSrc + "&panelId=2");
+					$('#panelNetwork').find('iframe').attr('src',iframeSrc + "&panelId=3");					
 					/* Connection & Table */
-					$('#panelConnections').find('iframe').attr('src',grafanaUrl + "&panelId=92");					
-					$('#panelThread').find('iframe').attr('src',grafanaUrl + "&panelId=10");					
-					$('#panelTablelack').find('iframe').attr('src',grafanaUrl + "&panelId=32");					
+					$('#panelConnections').find('iframe').attr('src',iframeSrc + "&panelId=4");					
+					$('#panelThread').find('iframe').attr('src',iframeSrc + "&panelId=5");					
+					$('#panelTablelack').find('iframe').attr('src',iframeSrc + "&panelId=6");					
 					/* Query & Replication */
-					$('#panelQps').find('iframe').attr('src',grafanaUrl + "&panelId=13");
-					$('#panelReplicationdelay').find('iframe').attr('src',grafanaUrl + "&panelId=406");
-					$('#panelSqlthread').find('iframe').attr('src',grafanaUrl + "&panelId=404");
-					$('#panelIothread').find('iframe').attr('src',grafanaUrl + "&panelId=402");
+					$('#panelQps').find('iframe').attr('src',iframeSrc + "&panelId=7");
+					$('#panelReplicationdelay').find('iframe').attr('src',iframeSrc + "&panelId=8");
+					$('#panelSqlthread').find('iframe').attr('src',iframeSrc + "&panelId=9");
+					$('#panelIothread').find('iframe').attr('src',iframeSrc + "&panelId=10");
 				}
-				else if (service.serviceType == G_SERVICE_TYPE_REDIS) {
-					var grafanaUrl = "http://grafana.zdb-dev.jp-tok.containers.mybluemix.net/d-solo/4DdKRZviz/redis-overview?refresh=30s&orgId=1"
+				else if (service.serviceType == "redis") {
+					var iframeSrc = grafanaUrl + "/d-solo/zdbredis1/redis-summary?refresh=1m&orgId=2"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-container=" + service.pods[0].spec.containers[0].name;
 					/* System Resources */
-					$('#panelCpu').find('iframe').attr('src',grafanaUrl + "&panelId=24");
-					$('#panelMemory').find('iframe').attr('src',grafanaUrl + "&panelId=7");
-					$('#panelNetwork').find('iframe').attr('src',grafanaUrl + "&panelId=22");
+					$('#panelCpu').find('iframe').attr('src',iframeSrc + "&panelId=1");
+					$('#panelMemory').find('iframe').attr('src',iframeSrc + "&panelId=2");
+					$('#panelNetwork').find('iframe').attr('src',iframeSrc + "&panelId=3");
 					/* Keys */
-					$('#panelItems').find('iframe').attr('src',grafanaUrl + "&panelId=5");
-					$('#panelExpiringvsnot').find('iframe').attr('src',grafanaUrl + "&panelId=13");
-					$('#panelExpired').find('iframe').attr('src',grafanaUrl + "&panelId=8");
+					$('#panelItems').find('iframe').attr('src',iframeSrc + "&panelId=4");
+					$('#panelExpiringvsnot').find('iframe').attr('src',iframeSrc + "&panelId=5");
+					$('#panelExpired').find('iframe').attr('src',iframeSrc + "&panelId=6");
 					/* Commands */
-					$('#panelExecuted').find('iframe').attr('src',grafanaUrl + "&panelId=2");
-					$('#panelHits').find('iframe').attr('src',grafanaUrl + "&panelId=1");
-					$('#panelCalls').find('iframe').attr('src',grafanaUrl + "&panelId=14");
+					$('#panelExecuted').find('iframe').attr('src',iframeSrc + "&panelId=7");
+					$('#panelHits').find('iframe').attr('src',iframeSrc + "&panelId=8");
+					$('#panelCalls').find('iframe').attr('src',iframeSrc + "&panelId=9");
 				}
 				else {
 					// TODO
 				}
-				
 			}
 			/*tabMonitor end 모니터링*/
 			

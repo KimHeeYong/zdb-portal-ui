@@ -4,7 +4,6 @@ info:
     version: 1.0.0-SNAPSHOT
     description: ZDB PORTAL UI
 ---
-    
 spring:
   profiles:
     active: local
@@ -48,6 +47,9 @@ props:
       redirectUri: ${HOME_URL:http://localhost:8181}/k8s-login
   iam:
     baseUrl: https://zcp-iam.cloudzcp.io:443
+
+grafana:
+  url: http://grafana.zdb-dev.jp-tok.containers.mybluemix.net
 ---  
 spring:    
   devtools:
@@ -80,6 +82,8 @@ props:
   iam:
     baseUrl: https://zcp-iam.cloudzcp.io:443
 
+grafana:
+  url: http://grafana.zdb-dev.jp-tok.containers.mybluemix.net
 ---
 spring:
   profiles: zcp-demo
@@ -105,3 +109,6 @@ props:
       redirectUri: ${HOME_URL:http://console.${spring.profiles}.jp-tok.containers.mybluemix.net}/k8s-login
   iam:
     baseUrl: https://zcp-iam.cloudzcp.io:443
+
+grafana:
+  url: http://grafana.zdb-dev.jp-tok.containers.mybluemix.net

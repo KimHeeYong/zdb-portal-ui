@@ -324,13 +324,12 @@ public class ZdbApiController {
 		
         return result;
 	}
-	@RequestMapping(value = "getMonitoringPanels")
-	public ModelAndView getMonitoringPanels(HttpServletRequest request) {
+	
+	@RequestMapping(value = "getGrafanaUrl")
+	public ModelAndView getGrafanaUrl(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
-		Map<String,String> param = RequestUtil.getMapFromRequest(request);
-		
-		ServiceOverview serviceoverview = zdbApiService.getServiceoverview(param);
-		mav.addObject(IResult.SERVICEOVERVIEW,serviceoverview);
+		String result = zdbApiService.getGrafanaUrl();
+		mav.addObject("grafanaUrl",result);
 		return mav;
 	}
 }

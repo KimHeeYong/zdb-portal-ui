@@ -40,6 +40,7 @@ public class ZdbApiService{
 
 	@Value("${zdb-api-server.url}") String apiServer;
 	@Value("${zdb-demon-server.url}") String demonServer;
+	@Value("${grafana.url}") String grafanaUrl;
     @Autowired SecurityService securityService;
     @Autowired ZdbRestConnector connector;
     
@@ -338,5 +339,8 @@ public class ZdbApiService{
 		 return response;
 	}
 
+	public String getGrafanaUrl() {
+		 return grafanaUrl;
+	}
 }
 
