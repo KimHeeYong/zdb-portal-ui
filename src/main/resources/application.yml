@@ -106,7 +106,8 @@ props:
       clientSecret: 0227b024-6483-4e96-827b-3bc4dd73637e
       accessTokenUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
       userAuthorizationUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
-      redirectUri: ${HOME_URL:http://console.${spring.profiles}.jp-tok.containers.mybluemix.net}/k8s-login
+#      redirectUri: ${HOME_URL:http://console.${spring.profiles}.jp-tok.containers.mybluemix.net}/k8s-login
+      redirectUri: http://zdb.cloudzcp.io/k8s-login
   iam:
     baseUrl: https://zcp-iam.cloudzcp.io:443
 
