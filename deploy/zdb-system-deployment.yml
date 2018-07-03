@@ -39,7 +39,7 @@ kind: Service
 metadata:
   annotations:
     service.kubernetes.io/ibm-load-balancer-cloud-provider-ip-type: public
-  name: zdb-portal-ui-loadbalancer
+  name: zdb-portal-ui-service
   namespace: zdb-system
 spec:
   ports:
@@ -48,4 +48,4 @@ spec:
     targetPort: 8080
   selector:
     app: zdb-portal-ui
-  type: LoadBalancer
+  type: ClusterIP
