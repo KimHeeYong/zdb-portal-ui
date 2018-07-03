@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Zdb02Controller {
 
 	@Autowired ZdbApiService zdbApiService;
+	@Value("${grafana.url}") String grafanaUrl;
 	
 	@GetMapping("zdb0200")
 	public ModelAndView zdb0200(HttpServletRequest request,HttpServletResponse response) {
@@ -32,6 +34,7 @@ public class Zdb02Controller {
 	@RequestMapping("zdb0210")
 	public ModelAndView zdb0210R(HttpServletRequest request,HttpServletResponse response) {
 		ModelAndView mav = new ModelAndView();
+		mav.addObject("grafanaUrl",grafanaUrl);
 		return mav;
 	}
 	@RequestMapping("zdb0200p01")

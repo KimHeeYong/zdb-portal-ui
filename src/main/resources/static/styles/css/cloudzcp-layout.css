@@ -736,10 +736,10 @@ a.blank-link {
 	background: transparent url("/styles/images/ico-btn.png") no-repeat;
 }
 .lnb-wrap.db-lnb nav > ul > li:nth-child(2) a:before {
-	/*
 	padding: 0 20px;
 	height: 50px;
 	line-height: 48px;
+	/*
 	color: #ff0000;
 	border-bottom: 1px solid #dddddd;
 	background-position: -228px -180px;
@@ -747,6 +747,7 @@ a.blank-link {
     content: "";
     opacity: 1;
 	*/
+	
 }
 .lnb-sub {
 	display: none;

@@ -74,3 +74,27 @@ div.grid{
 	background-position: -294px -113px;
     padding: 30px 12px 0px 10px
 }
+/*!
+ *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */
+/* FONT PATH
+ * -------------------------- */
+@font-face {
+  font-family: 'FontAwesome';
+  src: url("/styles/fonts/fontawesome-webfont.eot?v=4.7.0");
+  src: url("/styles/fonts/fontawesome/fontawesome-webfont.eot?#iefix&v=4.7.0") format("embedded-opentype"), url("/styles/fonts/fontawesome/fontawesome-webfont.woff2?v=4.7.0") format("woff2"), url("/styles/fonts/fontawesome/fontawesome-webfont.woff?v=4.7.0") format("woff"), url("/styles/fonts/fontawesome/fontawesome-webfont.ttf?v=4.7.0") format("truetype"), url("/styles/fonts/fontawesome/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: 1.25rem;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  vertical-align: middle;
+ }
+.fa-plus-circle:before {
+  content: ""; 
+  margin-right:5px;}

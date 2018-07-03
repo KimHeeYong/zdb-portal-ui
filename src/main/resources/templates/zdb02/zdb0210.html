@@ -671,6 +671,11 @@ n : entries n"></span></th>
 		
 	</div>
 </div>
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+	var gGrafanaUrl = [[${grafanaUrl}]];
+	/*]]>*/
+</script>
 <script type="text/javascript">
 	var gCurrentNamespace = '';
 	var gNamespaces = null;
@@ -1203,23 +1208,13 @@ n : entries n"></span></th>
 
 			/*tabMonitor start 모니터링*/
 			function fn_getMonitoring(){
-				fn_getGrafanaUrl();
 				fn_getService().done(function(){
-					fn_getPanels(gService, grafanaUrl);
+					fn_getPanels(gService);
 				});
 			};
-			function fn_getGrafanaUrl(){
-				$a.ajax({
-					url: '/zdbapi/getGrafanaUrl',
-					success: function(res){
-						grafanaUrl = res.grafanaUrl;
-					}
-				});
-			}
-			function fn_getPanels(service, grafanaUrl){
-				console.log("Grafana" + grafanaUrl);
+			function fn_getPanels(service){
 				if(service.serviceType == "mariadb") {
-					var iframeSrc = grafanaUrl + "/d-solo/zdbmaria1/mariadb-summary?refresh=1m&orgId=2"
+					var iframeSrc = gGrafanaUrl + "/d-solo/zdbmaria1/mariadb-summary?refresh=1m&orgId=2"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-service=" + service.serviceName + "-mariadb";
 					/* System Resources */
@@ -1235,9 +1230,8 @@ n : entries n"></span></th>
 					$('#panelReplicationdelay').find('iframe').attr('src',iframeSrc + "&panelId=8");
 					$('#panelSqlthread').find('iframe').attr('src',iframeSrc + "&panelId=9");
 					$('#panelIothread').find('iframe').attr('src',iframeSrc + "&panelId=10");
-				}
-				else if (service.serviceType == "redis") {
-					var iframeSrc = grafanaUrl + "/d-solo/zdbredis1/redis-summary?refresh=1m&orgId=2"
+				} else if (service.serviceType == "redis") {
+					var iframeSrc = gGrafanaUrl + "/d-solo/zdbredis1/redis-summary?refresh=1m&orgId=2"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-container=" + service.pods[0].spec.containers[0].name;
 					/* System Resources */

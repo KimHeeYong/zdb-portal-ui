@@ -324,12 +324,4 @@ public class ZdbApiController {
 		
         return result;
 	}
-	
-	@RequestMapping(value = "getGrafanaUrl")
-	public ModelAndView getGrafanaUrl(HttpServletRequest request) {
-		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
-		String result = zdbApiService.getGrafanaUrl();
-		mav.addObject("grafanaUrl",result);
-		return mav;
-	}
 }
