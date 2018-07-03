@@ -3,13 +3,13 @@ kind: Ingress
 metadata:
   generation: 1
   name: zdb-portal-ui-ingress
-  namespace: zdb
+  namespace: zdb-system
 spec:
   rules:
-  - host: console.zdb-dev.jp-tok.containers.mybluemix.net
+  - host: zdb.cloudzcp.io
     http:
       paths:
       - backend:
-          serviceName: zdb-portal-ui-loadbalancer
+          serviceName: zdb-portal-ui-service
           servicePort: 8080
         path: /
