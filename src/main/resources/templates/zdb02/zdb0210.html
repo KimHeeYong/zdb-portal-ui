@@ -1187,7 +1187,7 @@ n : entries n"></span></th>
 			function setScaleButton(){
 				var orgMemory = gSliderConstants[gParam.serviceType].memory.getIndex((gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{}).memory)||0; 
 				var chgMemory = parseInt(memorySlider.noUiSlider.get());
-				if(orgMemory == chgMemory){
+				if(orgMemory == chgMemory || chgMemory < 1){
 					$('#updateScaleUp').addClass('Disabled');	
 				}else{
 					$('#updateScaleUp').removeClass('Disabled');

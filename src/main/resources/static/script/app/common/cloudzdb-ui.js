@@ -64,7 +64,12 @@ var gCommon = $a.page(function(){
 				type:"POST",
 				dataType:'json',
 			    error: function(res) { // if error occured
-			    	gCommon.alert('시스템 에러가 발생하였습니다. <br/> URL:' + opt.url)
+			    	if(res.status == 0){
+			    		alert('로그인 후 이용하여 주기시 바랍니다.');
+		    			location.href = location.href;
+			    	}else{
+			    		gCommon.alert('시스템 에러가 발생하였습니다. <br/>')
+			    	}
 			    },
 			    beforeSend:function(bopt){
 			    	var loadingMessage = '정보 로딩중입니다.';
@@ -75,6 +80,9 @@ var gCommon = $a.page(function(){
 			    },
 			    complete:function(copt){
 			    	
+			    },
+			    fail: function(res){
+			    	console.log(res);
 			    }
 			};
 			var option = $.extend({},defOpt,opt);

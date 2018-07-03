@@ -111,11 +111,6 @@ function gfn_getServiceTemplate(ob){
 			if(--ml < 0)break;
 			var tag = ob.tagList[i];
 			tags = tags + '<span class="Label Default" data-id="'+tag.id+'">'+tag.tagName+'</span>'
-			/*
-			if(nDelMsg.indexOf('#'+tag.tagName) < 0){
-				tags = tags + '<button class="btn-ico label-del tagDel" data-id="'+tag.id+'">삭제</button>';
-			}
-			*/
 		};
 	};
 	template = template.replaceAll('{{tags}}',tags);

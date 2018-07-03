@@ -81,6 +81,9 @@
 							  fn_getServices();
 						  }) 
 						 .select({id:gSelectedNamespace});
+			if(gNamespaces.text()==''){
+				gNamespaces.select(0);
+			};			
 			var sortLi = $('.sort-list li'); 
 			sortLi.on('click',function(evt){
 				var tCss = $(this).attr('class') == 'asc' ? 'dsc' : 'asc';
