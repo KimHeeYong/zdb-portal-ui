@@ -49,7 +49,7 @@ props:
     baseUrl: https://zcp-iam.cloudzcp.io:443
 
 grafana:
-  url: http://grafana.zdb-dev.jp-tok.containers.mybluemix.net
+  url: http://grafana-zdb.cloudzcp.io
 ---  
 spring:    
   devtools:
@@ -83,7 +83,7 @@ props:
     baseUrl: https://zcp-iam.cloudzcp.io:443
 
 grafana:
-  url: http://grafana.zdb-dev.jp-tok.containers.mybluemix.net
+  url: http://grafana-zdb.cloudzcp.io
 ---
 spring:
   profiles: zcp-demo
@@ -112,4 +112,4 @@ props:
     baseUrl: https://zcp-iam.cloudzcp.io:443
 
 grafana:
-  url: http://grafana.zdb-dev.jp-tok.containers.mybluemix.net
+  url: http://grafana-zdb.cloudzcp.io
