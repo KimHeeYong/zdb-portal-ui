@@ -444,17 +444,12 @@
 					<h3 class="form-title">Network</h3>
 						<table class="Table Form-type">
 							<colgroup>
-								<col style="width: 150px;"> </col>
-								<col style="width: 200px;"> </col>
+								<col style="width: 250px;"> </col>
 								<col> </col>
 							</colgroup>
 							<tbody>
 								<tr>
-									<th rowspan="2">NETWORK</th>
-									<th>timeout <span class="ico_title" title="Redis 서버에 연결된 Client가 timeout 시간(초) 동안 아무 명령이 없으면 접속을 끊습니다.
-									
-timeout 값이 0인 경우, 아무 명령이 없어도 접속을 끊지 않습니다."></span>
-									</th>
+									<th>timeout <span class="ico_title" id="iconTimeout"></span></th>
 									<td> 
 										<input type="text" id="timeout" name="timeout" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 3,600</span>
@@ -462,9 +457,7 @@ timeout 값이 0인 경우, 아무 명령이 없어도 접속을 끊지 않습�
 									</td>
 								</tr>
 								<tr>
-									<th>tcp-keepalive<span class="ico_title" title="Redis 서버가 tcp-keepalive 시간(초)마다 Client의 상태를 확인하여 아무 응답이 없으면 접속을 끊습니다.
-
-tcp-keepalive 값이 0인 경우, 아무 응답이 없어도 접속을 끊지 않습니다."></span></th>
+									<th>tcp-keepalive<span class="ico_title" id="iconTcpKeepalive"></span></th>
 									<td> 
 										<input type="text" id="tcp-keepalive" name="tcp-keepalive" class="Textinput"/>
 										<span class="info-text">범위 : 0 ~ 3,600</span>
@@ -473,24 +466,23 @@ tcp-keepalive 값이 0인 경우, 아무 응답이 없어도 접속을 끊지 �
 								</tr>
 							</tbody>
 						</table>
-						<h3 class="form-title">Memory</h3>
+						<div class="Tooltip" data-base="#iconTimeout" data-position="right" data-animation="fade">
+							Redis 서버에 연결된 Client가 timeout 시간(초) 동안 아무 명령이 없으면 접속을 끊습니다.
+							<br>timeout 값이 0인 경우, 아무 명령이 없어도 접속을 끊지 않습니다.
+						</div>
+						<div class="Tooltip" data-base="#iconTcpKeepalive" data-position="right" data-animation="fade">
+							Redis 서버가 tcp-keepalive 시간(초)마다 Client의 상태를 확인하여 아무 응답이 없으면 접속을 끊습니다.
+							<br>tcp-keepalive 값이 0인 경우, 아무 응답이 없어도 접속을 끊지 않습니다.
+						</div>
+						<h3 class="form-title">Memory Management</h3>
 						<table class="Table Form-type">
 							<colgroup>
-								<col style="width: 150px;"> </col>
-								<col style="width: 200px;"> </col>
+								<col style="width: 250px;"> </col>
 								<col> </col>
 							</colgroup>
 							<tbody>
 								<tr>
-									<th rowspan="2">MEMORY MANAGEMENT</th>
-									<th>maxmemory-policy<span class="ico_title" title="메모리 관리에 대한 정책을 선택합니다.
-
-noeviction: 기존 데이터 삭제 안함. 메모리 한계에 도달하면 OOM 오류 반환. 새 데이터 저장되지 않음
-allkeys-lru: LRU로 삭제하여 공간을 확보하고 새 데이터를 저장
-volatile-lru: expire set을 가진 값 중에서 LRU로 삭제하여 공간을 확보하고 새 데이터를 저장
-allkeys-random: 랜덤으로 삭제하여 공간을 확보하고 새 데이터를 저장
-volatile-random: expire set을 가진 값 중에서 랜덤으로 삭제하여 공간을 확보하고 새 데이터를 저장
-volatile-ttl: expire set을 가진 값 중에서 TTL이 짧은 것부터 삭제하여 공간을 확보하고 새 데이터를 저장"></span></th>
+									<th>maxmemory-policy<span class="ico_title" id="iconMaxmemoryPolicy"></span></th>
 									<td> 
 										<div class="Divselect" style="width: 150px">
 										<select id="maxmemory-policy" name="maxmemory-policy">
@@ -506,9 +498,7 @@ volatile-ttl: expire set을 가진 값 중에서 TTL이 짧은 것부터 삭제�
 									</td>
 								</tr>
 								<tr>
-									<th>maxmemory-samples<span class="ico_title" title="메모리를 절약하기 위해서, LRU 알고리즘 수행 시 검사를 위한 샘플의 크기를 선택합니다.
-
-낮을 수록 메모리를 절약 할 수 있습니다."></span></th>
+									<th>maxmemory-samples<span class="ico_title" id="iconMaxmemorySamples"></span></th>
 									<td>
 										<input type="text" id="maxmemory-samples" name="maxmemory-samples" class="Textinput"/>
 										<span class="info-text">범위 : 1 ~ 10</span>
@@ -517,21 +507,28 @@ volatile-ttl: expire set을 가진 값 중에서 TTL이 짧은 것부터 삭제�
 								</tr>	
 							</tbody>
 						</table>
-					    <h3 class="form-title">Slow log</h3>
+						<div class="Tooltip" data-base="#iconMaxmemoryPolicy" data-position="right" data-animation="fade">
+							메모리 관리에 대한 정책을 선택합니다.
+							<br>noeviction: 기존 데이터를 삭제하지 않습니다. 메모리 한계에 도달하면 OOM 오류 반환하며, 새 데이터가 저장되지 않습니다.
+							<br>allkeys-lru: 전체 키에 대하여 LRU 알고리즘으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
+							<br>volatile-lru: expire set을 가진 키에 대하여 LRU 알고리즘으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
+							<br>allkeys-random: 전체 키에 대하여 랜덤으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
+							<br>volatile-random: expire set을 가진 키에 대하여 랜덤으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
+							<br>volatile-ttl: expire set을 가진 키에 대하여 TTL이 짧은 것부터 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
+						</div>
+						<div class="Tooltip" data-base="#iconMaxmemorySamples" data-position="right" data-animation="fade">
+							메모리를 절약하기 위해서, LRU 알고리즘 수행 시 검사를 위한 샘플의 크기를 선택합니다.
+							<br>낮을 수록 메모리를 절약 할 수 있습니다.
+						</div>
+					    <h3 class="form-title">Slow Log</h3>
 						<table class="Table Form-type">
 							<colgroup>
-								<col style="width: 150px;"> </col>
-								<col style="width: 200px;"> </col>
+								<col style="width: 250px;"> </col>
 								<col> </col>
 							</colgroup>
 							<tbody>	
 								<tr>
-									<th rowspan="2">SLOW LOG</th>
-									<th>slowlog-log-slower-than<span class="ico_title" title="slowlog-log-slower-than 값으로 설정된 시간(밀리초) 이상 소요되는 명령을 Slowlog로 기록합니다.
-
-값이 0인 경우 모든 명령을 기록합니다.
-
-값이 음수인 경우 아무런 명령을 기록하지 않습니다."></span></th>
+									<th>slowlog-log-slower-than<span class="ico_title" id="iconSlowlogLST"></span></th>
 									<td>
 										<input type="text" id="slowlog-log-slower-than" name="slowlog-log-slower-than" class="Textinput"/>
 										<span class="info-text">범위 : -1 ~ 12000</span>
@@ -539,7 +536,7 @@ volatile-ttl: expire set을 가진 값 중에서 TTL이 짧은 것부터 삭제�
 									</td>
 								</tr>
 								<tr>
-									<th>slowlog-max-len<span class="ico_title" title="slowlog의 최대 개수를 지정합니다."></span></th>
+									<th>slowlog-max-len<span class="ico_title" id="iconSlowlogMaxLen"></span></th>
 									<td>
 										<input type="text" id="slowlog-max-len" name="slowlog-max-len" class="Textinput"/>
 										<span class="info-text">범위 : 1 ~ 256</span>
@@ -548,101 +545,121 @@ volatile-ttl: expire set을 가진 값 중에서 TTL이 짧은 것부터 삭제�
 								</tr>	
 							</tbody>
 						</table>
+						<div class="Tooltip" data-base="#iconSlowlogLST" data-position="right" data-animation="fade">
+							slowlog-log-slower-than 값으로 설정된 시간(밀리초) 이상 소요되는 명령을 Slowlog로 기록합니다.
+							<br>값이 0인 경우 모든 명령을 기록합니다.
+							<br>값이 음수인 경우 아무런 명령을 기록하지 않습니다.
+						</div>
+						<div class="Tooltip" data-base="#iconSlowlogMaxLen" data-position="right" data-animation="fade">
+							slowlog의 최대 개수를 지정합니다.
+						</div>
 					    <h3 class="form-title">Event Notification</h3>
 						<table class="Table Form-type">
 							<colgroup>
-								<col style="width: 150px;"> </col>
-								<col style="width: 200px;"> </col>
+								<col style="width: 250px;"> </col>
 								<col> </col>
 							</colgroup>
 							<tbody>									
 								<tr>
-									<th>EVENT NOTIFICATION</th>
-									<th>notify-keyspace-events<span class="ico_title" title='Redis의 Keyspace Event에 대한 Notification 기능을 설정합니다.
-
-" ": notification 비활성화
-K:Keyspace 이벤트, published with __keyspace@__ prefix.
-E:Keyevent 이벤트, published with __keyevent@__ prefix.
-g:데이터 타입이 지정돼 있지 않은 일반 명령어(예: DEL, EXPIRE, RENAME 등)
-$: String 명령어
-l:List 명령어
-s: Set 명령어
-h:Hash 명령어
-z: Sorted set 명령어
-x:Expired 이벤트 (events generated every time a key expires)
-e: Evicted 이벤트 (events generated when a key is evicted for maxmemory)
-A: g$lshzxe 혼합 옵션 (예: "AKE"는 모든 이벤트를 의미함)'></span></th>
+									<th>notify-keyspace-events<span class="ico_title" id="iconNotifyKeyspaceEvents"></span></th>
 									<td>
 										<input type="text" id="notify-keyspace-events" name="notify-keyspace-events" class="Textinput"/>
 									</td>
 								</tr>
 							</tbody>
 						</table>
+						<div class="Tooltip" data-base="#iconNotifyKeyspaceEvents" data-position="right" data-animation="fade">
+							Redis의 Keyspace Event에 대한 Notification 기능을 설정합니다.
+							<br>" ": notification 비활성화
+							<br>K: Keyspace 이벤트, published with __keyspace@__ prefix.
+							<br>E: Keyevent 이벤트, published with __keyevent@__ prefix.
+							<br>g: 데이터 타입이 지정돼 있지 않은 일반 명령어(예: DEL, EXPIRE, RENAME 등)
+							<br>$: String 명령어
+							<br>l: List 명령어
+							<br>s: Set 명령어
+							<br>h: Hash 명령어
+							<br>z: Sorted set 명령어
+							<br>x: Expired 이벤트 (events generated every time a key expires)
+							<br>e: Evicted 이벤트 (events generated when a key is evicted for maxmemory)
+							<br>A: 혼합 옵션 (예: "AKE"는 모든 이벤트를 의미함)
+						</div>
 						<div id="divAdvancedConfig">
-						<h3 class="form-title">Advanced Config</h3>
-						<table class="Table Form-type">
-							<colgroup>
-								<col style="width: 150px;"> </col>
-								<col style="width: 200px;"> </col>
-								<col> </col>
-							</colgroup>
-							<tbody>		
-								<tr>
-									<th rowspan="5">ADVANCED CONFIG</th>
-									<th>hash-max-ziplist-entries<span class="ico_title" title="Hash의 Field 개수를 설정합니다. 값이 512일 때, Filed 수가 512개 이하이면 Zip list로 저장됩니다."></span></th>
-									<td>	
-										<input type="text" id="hash-max-ziplist-entries" name="hash-max-ziplist-entries" class="Textinput"/>
-										<span class="info-text">범위 : 0 ~ 65536</span>
-										<p data-for="hash-max-ziplist-entries" class="warn-text"></p>
-									</td>
-								</tr>
-								<tr>	
-									<th>hash-max-ziplist-value<span class="ico_title" title="값(String)의 크기를 설정합니다. 값이 64일 때, 값의 크기가 64Byte 이하이면 Zip list로 저장됩니다."></span></th>
-									<td>
-										<input type="text" id="hash-max-ziplist-value" name="hash-max-ziplist-value" class="Textinput"/>
-										<span class="info-text">범위 : 0 ~ 65535</span>
-										<p data-for="hash-max-ziplist-value" class="warn-text"></p>
-									</td>
-								</tr>	
-								<tr>	
-									<th>list-max-ziplist-size<span class="ico_title" title="Zip list의 크기를 설정합니다.
-
--5 : max size 64 kb
--4 : max size 32 kb
--3 : max size 16 kb
--2 : max size  8 kb     default
--1 : max size   4 kb
-1 : entry 1
-2 : entries 2
-n : entries n"></span></th>
-									<td>
-										<input type="text" id="list-max-ziplist-size" name="list-max-ziplist-size" class="Textinput"/>
-										<span class="info-text">범위 : -5 ~ 5</span>
-										<p data-for="list-max-ziplist-size" class="warn-text"></p>
-									</td>
-								</tr>	
-								<tr>	
-									<th>zset-max-ziplist-entries<span class="ico_title" title="Sorted Set에 포함된 멤버의 개수 기준을 설정합니다.
-
-값이 128일 때, Sorted Set에 포함된 멤버의 개수가 128보다 크면 Skip list로, 아니면 Zip list로 인코딩 됩니다."></span></th>
-									<td>
-										<input type="text" id="zset-max-ziplist-entries" name="zset-max-ziplist-entries" class="Textinput"/>
-										<span class="info-text">범위 : 0 ~ 65536</span>
-										<p data-for="zset-max-ziplist-entries" class="warn-text"></p>
-									</td>
-								</tr>	
-								<tr>	
-									<th>zset-max-ziplist-value<span class="ico_title" title="Sorted Set의 사이즈의 기준을 설정합니다.
-
-값이 64일 때, Sorted Set에 포함된 요소 중 가장 긴 요소의 길이가 이 값보다 크면 Skip list로, 아니면 Zip list로 인코딩 됩니다."></span></th>
-									<td>
-										<input type="text" id="zset-max-ziplist-value" name="zset-max-ziplist-value" class="Textinput"/>
-										<span class="info-text">범위 : 0 ~ 65536</span>
-										<p data-for="zset-max-ziplist-value" class="warn-text"></p>
-									</td>
-								</tr>	
-							</tbody>
-						</table>
+							<h3 class="form-title">Advanced Config</h3>
+							<table class="Table Form-type">
+								<colgroup>
+									<col style="width: 250px;"> </col>
+									<col> </col>
+								</colgroup>
+								<tbody>		
+									<tr>
+										<th>hash-max-ziplist-entries<span class="ico_title" id="iconHashMZE"></span></th>
+										<td>	
+											<input type="text" id="hash-max-ziplist-entries" name="hash-max-ziplist-entries" class="Textinput"/>
+											<span class="info-text">범위 : 0 ~ 65536</span>
+											<p data-for="hash-max-ziplist-entries" class="warn-text"></p>
+										</td>
+									</tr>
+									<tr>	
+										<th>hash-max-ziplist-value<span class="ico_title" id="iconHashMZV"></span></th>
+										<td>
+											<input type="text" id="hash-max-ziplist-value" name="hash-max-ziplist-value" class="Textinput"/>
+											<span class="info-text">범위 : 0 ~ 65535</span>
+											<p data-for="hash-max-ziplist-value" class="warn-text"></p>
+										</td>
+									</tr>	
+									<tr>	
+										<th>list-max-ziplist-size<span class="ico_title" id="iconListMZS"></span></th>
+										<td>
+											<input type="text" id="list-max-ziplist-size" name="list-max-ziplist-size" class="Textinput"/>
+											<span class="info-text">범위 : -5 ~ 5</span>
+											<p data-for="list-max-ziplist-size" class="warn-text"></p>
+										</td>
+									</tr>	
+									<tr>	
+										<th>zset-max-ziplist-entries<span class="ico_title" id="iconZsetMZE"></span></th>
+										<td>
+											<input type="text" id="zset-max-ziplist-entries" name="zset-max-ziplist-entries" class="Textinput"/>
+											<span class="info-text">범위 : 0 ~ 65536</span>
+											<p data-for="zset-max-ziplist-entries" class="warn-text"></p>
+										</td>
+									</tr>	
+									<tr>	
+										<th>zset-max-ziplist-value<span class="ico_title" id="iconZsetMZV"></span></th>
+										<td>
+											<input type="text" id="zset-max-ziplist-value" name="zset-max-ziplist-value" class="Textinput"/>
+											<span class="info-text">범위 : 0 ~ 65536</span>
+											<p data-for="zset-max-ziplist-value" class="warn-text"></p>
+										</td>
+									</tr>	
+								</tbody>
+							</table>
+							<div class="Tooltip" data-base="#iconHashMZE" data-position="right" data-animation="fade">
+								Hash의 Field 개수를 설정합니다. 값이 512일 때, Filed 수가 512개 이하이면 Zip list로 저장됩니다.
+							</div>
+							<div class="Tooltip" data-base="#iconHashMZV" data-position="right" data-animation="fade">
+								값(String)의 크기를 설정합니다. 값이 64일 때, 값의 크기가 64Byte 이하이면 Zip list로 저장됩니다.
+							</div>
+							<div class="Tooltip" data-base="#iconListMZS" data-position="right" data-animation="fade">
+								Zip list의 크기를 설정합니다.
+								<br>-5 : max size 64 kb
+								<br>-4 : max size 32 kb
+								<br>-3 : max size 16 kb
+								<br>-2 : max size  8 kb (default)
+								<br>-1 : max size  4 kb
+								<br>1 : entry 1
+								<br>2 : entries 2
+								<br>n : entries n
+							</div>
+							<div class="Tooltip" data-base="#iconZsetMZE" data-position="right" data-animation="fade">
+								Sorted Set에 포함된 멤버의 개수 기준을 설정합니다.
+								<br>값이 128일 때, Sorted Set에 포함된 멤버의 개수가 128보다 크면 Skip list로,
+								<br>아니면 Zip list로 인코딩 됩니다.
+							</div>
+							<div class="Tooltip" data-base="#iconZsetMZV" data-position="right" data-animation="fade">
+								Sorted Set의 사이즈의 기준을 설정합니다.
+								<br>값이 64일 때, Sorted Set에 포함된 요소 중 가장 긴 요소의 길이가 이 값보다 크면 Skip list로, 
+								<br>아니면 Zip list로 인코딩 됩니다.
+							</div>
 						</div>
 			            <div class="btn-wrap__right">
 				        	<button class="Button btn bg-red" id="saveVariables">적용하기</button>
