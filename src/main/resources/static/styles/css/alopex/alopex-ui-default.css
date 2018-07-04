@@ -4568,6 +4568,36 @@
 	text-align: left;
 }
 
+.Table.Monitoring tr {
+	border-top: 1px solid #e2e4e7;
+}
+
+.Table.Monitoring tr:nth-child(even) td {
+	background: #ffffff;
+}
+
+.Table.Monitoring tbody {
+	border-top: 0;
+}
+
+.Table.Monitoring tbody th {
+	padding: 10px;
+	color: #00436f;
+	font-weight: bold;
+	text-align: center;
+	border: 1px solid #e2e4e7;
+	background-clip: padding-box !important;
+	background: #edf2f6;
+}
+
+.Table.Monitoring .Table th {
+	text-align: center;
+}
+
+.Table.Monitoring td {
+	text-align: left;
+}
+
 .Table .AscendingOrder,
 .Table .DescendingOrder {
 	position: relative;
