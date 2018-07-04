@@ -16,10 +16,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.gson.Gson;
 import com.skcc.cloudz.zdb.common.security.service.SecurityService;
 import com.skcc.cloudz.zdb.common.security.vo.OpenIdConnectUserDetailsVo;
+import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 
 @Component
 public class ZdbRestConnector extends RestTemplate{
@@ -44,7 +47,13 @@ public class ZdbRestConnector extends RestTemplate{
 		addHeaderSession(tempHeaders);
 		
 		HttpEntity<?> newRequestEntity = new HttpEntity<>(tempBody,tempHeaders);
-		ResponseEntity<T> result = super.exchange(url, method, newRequestEntity, responseType, uriVariables);
+		ResponseEntity<T> result = null;
+		try {
+			result = super.exchange(url, method, newRequestEntity, responseType, uriVariables);
+		} catch (HttpStatusCodeException e) {
+			ZdbRestDTO resultMap = new Gson().fromJson(e.getResponseBodyAsString(), ZdbRestDTO.class);
+			result = new ResponseEntity(resultMap, e.getStatusCode());
+		}
 		
 		return result;
 	};

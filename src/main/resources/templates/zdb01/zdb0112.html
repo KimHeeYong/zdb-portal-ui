@@ -165,9 +165,12 @@ $a.page(function() {
 				url: '/zdbapi/createDeployment',
 				data:data,
 				success: function(res){
-					//gCommon.alert(res.result.message);
-					gCommon.overlay();
-					gCommon.movePage('/zdb02/zdb0200');
+					var re = res.result;
+					if(re.code != '0'){
+						gCommon.alert(re.message);
+					}else{
+						gCommon.movePage('/zdb02/zdb0200');
+					};
 				},
 				loadingMessage:'서비스를 생성 중입니다.'
 			});		
