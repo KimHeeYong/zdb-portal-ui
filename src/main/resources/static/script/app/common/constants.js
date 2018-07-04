@@ -35,14 +35,14 @@ var gSliderConstants = {
 	mariadb :{
 		memory : {
 			range : _gSliderConstantsCommonRange,
-			value :[0,256,300,350,400,450,480,512],
+			value :[0,1024,2048,4096,8196,16384,24576,32768],
 			unit : 'MB',
 			getValue : _gSliderConstantsCommonGetValue,
 			getIndex : _gSliderConstantsCommonGetIndex
 		},
 		cpu : {
 			range : _gSliderConstantsCommonRange,
-			value : [0,200,250,300,350,400,450,500],
+			value : [0,500,1000,2000,4000,8000,12000,16000],
 			unit : 'm',
 			getValue : _gSliderConstantsCommonGetValue,
 			getIndex : _gSliderConstantsCommonGetIndex

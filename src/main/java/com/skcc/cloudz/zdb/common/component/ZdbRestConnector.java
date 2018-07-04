@@ -71,7 +71,8 @@ public class ZdbRestConnector extends RestTemplate{
 			userNamespaces = userInfo.getNamespaces().stream().collect(Collectors.toList());
 		}
 
-		if (Arrays.asList(env.getActiveProfiles()).contains("local")) {
+		List<String> asList = Arrays.asList(env.getActiveProfiles());
+		if (asList.contains("local") || asList.contains("zdb-demo")) {
 			if(userNamespaces == null) {
 				userNamespaces = new ArrayList<>();
 			}
