@@ -382,7 +382,7 @@
 			<h3 class="form-title">이벤트</h3>
            		<form name="eventForm" method="post">
            		<div class="ctn-info__wrap">
-					<div class="info-list select-date Daterange">
+					<div class="info-list select-date Daterange" data-selectyear="true" data-selectmonth="true">
 						<div class="Startdate Dateinput">
 						    <input id="eventStartDate" name="eventStartDate" type="text" readonly="readonly">
 						    <div class="Calendar" id="eventStartDate"></div>
@@ -782,7 +782,6 @@
 						url: '/zdbapi/deleteTag',
 						data: data, 
 						success: function(res){
-							gCommon.alert(gMessage.procSuccss);
 							fn_getService();
 						}
 					});
@@ -800,7 +799,6 @@
 						url: '/zdbapi/createTag',
 						data: data, 
 						success: function(res){
-				    		gCommon.alert(gMessage.saveSuccess);
 				    		fn_getService();
 						}
 					});
@@ -1375,11 +1373,20 @@
 			backupForm.find('.onoff-wrap > button').click(function(e){
 				e.preventDefault();
 				if($(this).hasClass('btn-on')) {
-					setBackupUseYn('N');
+					setBackupUseYnEvt('N');
 				} else {
-					setBackupUseYn('Y');
+					setBackupUseYnEvt('Y');
 				}
 			});
+			function setBackupUseYnEvt(val){
+				var msg = val == 'Y'? '백업 설정을 활성화 하시겠습니까?': '백업 설정을 비활성화 하시겠습니까?';
+				gCommon.confirm(msg,function(yn){
+					if(yn == 'Y'){
+						setBackupUseYn(val);
+						fn_saveSchedule();				
+					};
+				});
+			}
 			function setBackupUseYn(val){
 				if(val=='Y'){
 					backupForm.find('select[name=useYn]').zdbui_setComponent('Y');
@@ -1424,9 +1431,9 @@
 				fitTableWidth :true,
 				height: 400,
 				columnMapping : [
-					{ title:'백업일자', key : 'startDatetime' , width: '130px', align: 'center',render:function(value,data,render,mapping){
+					{ title:'요청시간', key : 'acceptedDatetime' , width: '130px', align: 'center',render:function(value,data,render,mapping){
 						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
-						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD') : '';
+						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
 					}},
 					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
 						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
@@ -1492,20 +1499,7 @@
 			$('body').on('click','button#saveSchedule',function(){
 				if(backupStatus=='I'){
 					gCommon.confirm('백업 설정을 수정 하시겠습니까?',function(){
-						var param = $.extend({},gParam,backupForm.serializeObject());
-						param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
-						
-						$a.ajax({
-							url: '/zdbapi/updateSchedule',
-							data:param,
-							success: function(res){
-								if(res.result.code == '0'){
-									gCommon.alert('백업 설정이 수정되었습니다.');
-									backupStatus = 'Y';
-									setBackupBtnEnable();
-								};
-							}
-						});					
+						fn_saveSchedule();				
 					});
 				}else if(backupStatus=='Y'){
 					backupStatus = 'I';
@@ -1526,6 +1520,22 @@
 					});	
 				});
 			});
+			function fn_saveSchedule(){
+				var param = $.extend({},gParam,backupForm.serializeObject());
+				param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
+				
+				$a.ajax({
+					url: '/zdbapi/updateSchedule',
+					data:param,
+					success: function(res){
+						if(res.result.code == '0'){
+							gCommon.alert('백업 설정이 수정되었습니다.',function(){
+								fn_getBackupScheduleInfo()
+							});
+						};
+					}
+				});	
+			}
 			function fn_getBackupInfo(){
 				$a.ajax({
 					url: '/zdbapi/getBackupList',
@@ -1537,6 +1547,7 @@
 				});				
 			};	
 			function fn_deleteBackupFile(data){
+				if(data.status!='OK')return;
 				gCommon.confirm('선택한 백업을 삭제 하시겠습니까?',function(){
 					var param = $.extend({},gParam,{backupId:data.backupId})
 					$a.ajax({
@@ -1552,6 +1563,7 @@
 				})
 			};
 			function fn_downloadBackupFile(data){
+				if(data.status!='OK')return;
 				var param = $.extend({},gParam,{backupId:data.backupId})
 				gCommon.movePage('/zdbapi/downloadBackup',param);
 			};

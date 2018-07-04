@@ -178,12 +178,15 @@ var gCommon = $a.page(function(){
 		
 		var result = '';
 		var befType = selector.attr('type');
+		var befVal = selector.val();
 		if(befType=='password'){
 			selector.attr('type','text');
 		};
+		selector.val(selector.val().replace('[password]',$('#credential').val()));
 		selector.get(0).select();
 		result = document.execCommand('copy')
 		selector.attr('type',befType);
+		selector.val(befVal);
 		return result;
 	};
 	this.getUid = function(){
@@ -237,7 +240,7 @@ var gCommon = $a.page(function(){
 	        title : '',
 	        callback : function(res){
 	        	if(res == "Y"){
-	        		trueCallback();
+	        		trueCallback(res);
 	        	};
 	        }
 	    });
