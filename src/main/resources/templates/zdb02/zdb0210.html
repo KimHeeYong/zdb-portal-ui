@@ -1368,8 +1368,9 @@
 								$('select[name=character_set_server]').on('change',function(){
 									setDbConfigurationFilter();
 								});
-								if(dbConfigurations['collation-server']){
-									$('select[name=collation-server]').val(dbConfigurations['collation-server']).parent().refresh();
+								var dt = gCommon.findObjectByKeyOb(dbConfigurations,{name:'collation-server'});
+								if(dt){
+									$('select[name=collation-server]').val(dt.value).parent().refresh();
 								};
 								function setDbConfigurationFilter(isRefresh){
 									$('select[name=collation-server] option').hide().filter(function(){
