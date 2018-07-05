@@ -27,6 +27,11 @@
 	<script type="text/javascript" src="/script/app/common/alopex-common.js"></script>
 	<script type="text/javascript" src="/script/app/common/cloudzdb-ui.js"></script>
 	<script type="text/javascript" src="/script/app/common/constants.js"></script>
+	<style type="text/css"> 
+		#popLogRefresh{
+			vertical-align: middle;
+		}
+	</style>
 </head>
 <body class="log-console">
 <div>
@@ -36,7 +41,7 @@
 			$('#popLogClose').on('click',function(){
 				window.close();
 			});
-			$('#popLogRefresh').on('click',function(){
+			$('body').on('click','#popLogRefresh',function(){
 				showLog();
 			});
 			showLog();
@@ -44,6 +49,7 @@
 			function showLog(){
 				var title = gParam.namespace+" > "+ gParam.serviceName +" > "+ gParam.podname + " log";
 				$('title,#title').html(title);
+				$('#title').append('<button class="btn-ico btn-refresh" id="popLogRefresh" alt="새로고침"></button>');
 				$('#log').html('');
 				$a.ajax({
 					url: '/zdbapi/getPodLog',
@@ -60,13 +66,9 @@
 		};
 	});
 	</script>
-	<div id="title"> </div>
+	<div id="title" style="width:100%;"> </div>
 	<hr/>
 	<div id="log" style="margin-left:15px;"> </div>
-	<div class="popup-btn__wrap">
-		<button class="Button btn" id="popLogRefresh">새로고침</button> 
-		<button class="Button btn" id="popLogClose">닫기</button> 
-	</div>
 </div>
 </body>
 </html>	
