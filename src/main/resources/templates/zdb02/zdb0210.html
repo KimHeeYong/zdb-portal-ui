@@ -1449,9 +1449,9 @@
 						} else if(value < 1024*1024 ) {
 							return (value / 1024).toFixed(2) +'KB';
 						} else if(value < 1024*1024*1024 ) {
-							return (value / 1024*1024).toFixed(2) +'MB';
+							return (value / (1024*1024)).toFixed(2) +'MB';
 						} else if(value < 1024*1024*1024*1024 ) {
-							return (value / 1024*1024*1024).toFixed(2) +'GB';
+							return (value / (1024*1024*1024)).toFixed(2) +'GB';
 						}
 						return value;
 					}},
@@ -1468,6 +1468,29 @@
 						return re;
 					}}
 				],
+				footer: {
+					footerMapping: [
+						{ columnIndex: 1, title:'백업 파일 사이즈 합계: '},
+						{ columnIndex: 4, render:function(value,data,render,mapping){
+							var rawData = AlopexGrid.trimData(value);
+							var validData = [];
+							var totalValue = 0;
+							for (var i in rawData) {
+								if (rawData[i].status == 'OK') {
+									totalValue += parseInt(rawData[i].fileSize, 10);
+								};
+							};
+							if(totalValue < 1024 ) {
+								return totalValue +'B';
+							} else if(totalValue < 1024*1024 ) {
+								return (totalValue / 1024).toFixed(2) +'KB';
+							} else if(totalValue < 1024*1024*1024 ) {
+								return (totalValue / (1024*1024)).toFixed(2) +'MB';
+							} else if(totalValue < 1024*1024*1024*1024 ) {
+								return (totalValue / (1024*1024*1024)).toFixed(2) +'GB';
+							};
+						}}
+					]},
 				message: {
 					nodata: gMessage.gridNodata
 				}
