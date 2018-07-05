@@ -896,7 +896,11 @@
 						};
 					}},
 					{ title:'Last Uptime', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
-						return data.condition.lastTransitionTime.replace('T', ' ').replace('Z', '');
+						var lt = data.condition.lastTransitionTime;
+						if(lt){
+							var isValid = moment(lt).isValid(); 
+							return moment(lt).format('YYYY-MM-DD HH:mm:ss');
+						}
 					}}, 
 					{ title:'Restart',key:'restart',width:'60px', align: 'center',render: function( value, data, render, mapping){
 						var re = $('<button class="btn-ico btn-refresh">재시작</button>').on('click',function(){
