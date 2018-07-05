@@ -1470,8 +1470,8 @@
 				],
 				footer: {
 					footerMapping: [
-						{ columnIndex: 1, title:'백업 파일 사이즈 합계: '},
-						{ columnIndex: 4, render:function(value,data,render,mapping){
+						{ columnIndex: 2, title:'백업 파일 사이즈 합계: ', align:'center'},
+						{ columnIndex: 3, align:'center',render:function(value,data,render,mapping){
 							var rawData = AlopexGrid.trimData(value);
 							var validData = [];
 							var totalValue = 0;

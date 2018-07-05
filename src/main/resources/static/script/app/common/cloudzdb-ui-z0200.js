@@ -13,7 +13,7 @@ function gfn_convertServiceData(data){
 		ob.shortServiceName = data.serviceName.replace(data.namespace+'-','');
 	};
 	//상태값 GRAY 설정
-	if(data.deploymentStatus!='DEPLOYED' || data.statusMessage != null){
+	if(data.deploymentStatus!='DEPLOYED'){
 		ob.status = 'GRAY';
 	};
 	
