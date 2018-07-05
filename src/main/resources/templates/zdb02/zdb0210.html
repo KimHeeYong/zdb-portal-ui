@@ -256,6 +256,11 @@
 		<div id="tabMonitor">
 			<ul>
 				<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
+					<div align="right">
+						<a id="advancedMonitoring" target="_sub">
+							<button class="Button btn" style="margin-top: 1px;margin-bottom: 1px;">Advanced Monitoring</button>
+						</a>
+					</div>
 					<h3 class="form-title">System Resources</h3>
 					<div class="tabs-contents">
                          <table class="Table Monitoring">
@@ -297,6 +302,11 @@
 			</ul>
 			<ul>
 				<li th:if="${#request.getParameter('serviceType')=='redis'}">
+					<div align="right">
+						<a id="advancedMonitoring" target="_sub">
+							<button class="Button btn" style="margin-top: 1px;margin-bottom: 1px;">Advanced Monitoring</button>
+						</a>
+					</div>
 					<h3 class="form-title">System Resources</h3>
 					<div class="tabs-contents">
                          <table class="Table Monitoring">
@@ -1226,6 +1236,9 @@
 			};
 			function fn_getPanels(service){
 				if(service.serviceType == "mariadb") {
+					$('#advancedMonitoring').attr('href', gGrafanaUrl + "/d/zdbmaria1/mariadb-advanced?refresh=1m&orgId=1"
+							+ "&var-namespace="+ service.namespace
+							+ "&var-service=" + service.serviceName + "-mariadb");
 					var iframeSrc = gGrafanaUrl + "/d-solo/zdbmaria2/mariadb-summary?refresh=1m&orgId=1"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-service=" + service.serviceName + "-mariadb";
@@ -1243,6 +1256,9 @@
 					$('#panelSqlthread').find('iframe').attr('src',iframeSrc + "&panelId=9");
 					$('#panelIothread').find('iframe').attr('src',iframeSrc + "&panelId=10");
 				} else if (service.serviceType == "redis") {
+					$('#advancedMonitoring').attr('href', gGrafanaUrl + "/d/zdbredis1/redis-advanced?refresh=1m&orgId=1"
+							+ "&var-namespace="+ service.namespace
+							+ "&var-service=" + service.pods[0].spec.containers[0].name + "-master");
 					var iframeSrc = gGrafanaUrl + "/d-solo/zdbredis2/redis-summary?refresh=1m&orgId=1"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-service=" + service.pods[0].spec.containers[0].name + "-master"
@@ -1318,14 +1334,15 @@
 							if(dbConfigurations){
 								$('#serviceConfigTable tbody').html('');
 								var sels = {
-									character_set_server:{options:[{key:'utf-8',val:'utf-8'},{key:'euckr',val:'euckr'}]},
-									innodb_buffer_pool_instances:{options:[{key:'1',val:'1'},{key:'2',val:'2'},{key:'4',val:'4'},{key:'8',val:'8'}]},
-									innodb_flush_method:{options:[{key:'fsync',val:'fsync'},{key:'O_DSYNC',val:'O_DSYNC'}, {key:'O_DIRECT',val:'O_DIRECT'}
-																	,{key:'O_DIRECT_NO_FSYNC',val:'O_DIRECT_NO_FSYNC'}]},
+									character_set_server:{options:[{key:'utf8'},{key:'euckr'},{key:'utf8mb4'},{key:'utf16'}]},
+									'collation-server':{options:[{key:'utf8_general_ci'},{key:'utf8_bin'},{key:'euckr_korean_ci'},{key:'euckr_bin'}
+													,{key:'utf8mb4_general_ci'},{key:'utf8mb4_bin'},{key:'utf16_general_ci'},{key:'utf16_bin'}]},
+									innodb_buffer_pool_instances:{options:[{key:'1'},{key:'2'},{key:'4'},{key:'8'}]},
+									innodb_flush_method:{options:[{key:'fsync'},{key:'O_DSYNC'}, {key:'O_DIRECT'} ,{key:'O_DIRECT_NO_FSYNC'}]},
 									query_cache_type:{options:[{key:'0',val:'OFF'},{key:'1',val:'ON'},{key:'2',val:'DEMAND'}]},
-									thread_handling:{options:[{key:'no-threads',val:'no-threads'},{key:'one-thread-per-connection',val:'one-thread-per-connection'},{key:'pool-of-threads',val:'pool-of-threads'}]},
-									'transaction-isolation':{options:[{key:'READ-UNCOMMITTED',val:'READ-UNCOMMITTED'},{key:'READ-COMMITTED',val:'READ-COMMITTED'}
-																,{key:'REPEATABLE-READ',val:'REPEATABLE-READ'},{key:'SERIALIZABLE',val:'SERIALIZABLE'}]}
+									thread_handling:{options:[{key:'no-threads'},{key:'one-thread-per-connection'},{key:'pool-of-threads'}]},
+									'transaction-isolation':{options:[{key:'READ-UNCOMMITTED'},{key:'READ-COMMITTED'}
+																,{key:'REPEATABLE-READ'},{key:'SERIALIZABLE'}]}
 								};
 								for(var i = 0 ; i < dbConfigurations.length;i++){
 									var ob = dbConfigurations[i];
@@ -1334,7 +1351,7 @@
 										tr = '<tr><th>'+ob.name+'</th><td><div class="Divselect" style="min-width:200px;"> <select name="'+ob.name+'" >'
 										for(var j = 0 ; j < sels[ob.name].options.length; j++){
 											var opts = sels[ob.name].options[j];
-											tr +='<option value="'+opts.key+'" '+(ob.value==opts.key?"selected":"")+'>'+opts.val+'</option>';
+											tr +='<option value="'+opts.key+'" '+(ob.value==opts.key?"selected":"")+'>'+(opts.val||opts.key)+'</option>';
 										};
 										tr += '</select><span></span></div>'+'<span class="info-text"> '+ob.valueRange+'</span></td></tr>';
 									}else{
@@ -1347,6 +1364,19 @@
 									$('#serviceConfigTable tbody').append(tr);
 								};
 								$a.convert($('#serviceConfigTable tbody').find('.Divselect'));
+								setDbConfigurationFilter();
+								$('select[name=character_set_server]').on('change',function(){
+									setDbConfigurationFilter();
+								});
+								if(dbConfigurations['collation-server']){
+									$('select[name=collation-server]').val(dbConfigurations['collation-server']).parent().refresh();
+								};
+								function setDbConfigurationFilter(isRefresh){
+									$('select[name=collation-server] option').hide().filter(function(){
+										return $(this).val().indexOf($('select[name=character_set_server]').val()+'_')>-1;
+									}).show().filter(':first').prop('selected',true);
+									$('select[name=collation-server]').parent().refresh();
+								};
 							}
 						}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
 							if(gService.purpose != 'DATA'){

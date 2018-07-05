@@ -54,8 +54,8 @@
 							<tr>
 								<th>종류</th>
 								<td> 
-									<span th:if="${#request.getParameter('serviceType')} == 'mariadb'" class="info-text__typec" th:text="MariaDB"></span>
-									<span th:if="${#request.getParameter('serviceType')} == 'redis'" class="info-text__typec" th:text="Redis"></span>
+									<span th:if="${#request.getParameter('serviceType')} == 'mariadb'" th:text="MariaDB"></span>
+									<span th:if="${#request.getParameter('serviceType')} == 'redis'" th:text="Redis"></span>
 								</td>
 							</tr>
 							<tr>
