@@ -256,6 +256,11 @@
 		<div id="tabMonitor">
 			<ul>
 				<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
+					<div align="right">
+						<a id="advancedMonitoring" target="_sub">
+							<button class="Button btn" style="margin-top: 1px;margin-bottom: 1px;">Advanced Monitoring</button>
+						</a>
+					</div>
 					<h3 class="form-title">System Resources</h3>
 					<div class="tabs-contents">
                          <table class="Table Monitoring">
@@ -297,6 +302,11 @@
 			</ul>
 			<ul>
 				<li th:if="${#request.getParameter('serviceType')=='redis'}">
+					<div align="right">
+						<a id="advancedMonitoring" target="_sub">
+							<button class="Button btn" style="margin-top: 1px;margin-bottom: 1px;">Advanced Monitoring</button>
+						</a>
+					</div>
 					<h3 class="form-title">System Resources</h3>
 					<div class="tabs-contents">
                          <table class="Table Monitoring">
@@ -1229,6 +1239,9 @@
 			};
 			function fn_getPanels(service){
 				if(service.serviceType == "mariadb") {
+					$('#advancedMonitoring').attr('href', gGrafanaUrl + "/d/zdbmaria1/mariadb-advanced?refresh=1m&orgId=1"
+							+ "&var-namespace="+ service.namespace
+							+ "&var-service=" + service.serviceName + "-mariadb");
 					var iframeSrc = gGrafanaUrl + "/d-solo/zdbmaria2/mariadb-summary?refresh=1m&orgId=1"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-service=" + service.serviceName + "-mariadb";
@@ -1246,6 +1259,9 @@
 					$('#panelSqlthread').find('iframe').attr('src',iframeSrc + "&panelId=9");
 					$('#panelIothread').find('iframe').attr('src',iframeSrc + "&panelId=10");
 				} else if (service.serviceType == "redis") {
+					$('#advancedMonitoring').attr('href', gGrafanaUrl + "/d/zdbredis1/redis-advanced?refresh=1m&orgId=1"
+							+ "&var-namespace="+ service.namespace
+							+ "&var-service=" + service.pods[0].spec.containers[0].name + "-master");
 					var iframeSrc = gGrafanaUrl + "/d-solo/zdbredis2/redis-summary?refresh=1m&orgId=1"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-service=" + service.pods[0].spec.containers[0].name + "-master"
