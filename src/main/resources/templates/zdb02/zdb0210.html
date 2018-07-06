@@ -955,7 +955,8 @@
 						gTagList = service.tags;
 						fn_displayService(service);
 						
-						if(gService.serviceType == G_SERVICE_TYPE_REDIS && gService.purpose != 'DATA'){
+						 //redis purpose data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
+						if(gService.serviceType == G_SERVICE_TYPE_REDIS && gService.purpose != 'DATA'){  
 							for(var ti = 0; ti < $('#zdbServiceTabs').getLength(); ti++ ){
 								if($('#zdbServiceTabs').getTabContentByIndex(ti).id == 'tabBackup'){
 									$('#zdbServiceTabs').removeTab(ti);
