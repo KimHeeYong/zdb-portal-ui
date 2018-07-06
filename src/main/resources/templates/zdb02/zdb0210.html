@@ -727,33 +727,33 @@
 
 			//탭 변경 시 조회
 			$('#zdbServiceTabs').on('tabchange', function(e, index, index2){
-				fn_displayTabs(index+1);
+				fn_displayTabs(index);
 			});
 			function fn_displayTabs(index){
-				switch(index){
-					case 1:
+				var tabId = $('#zdbServiceTabs').getTabContentByIndex(index).id;
+				switch(tabId){
+					case "tabService":
 						$("#gridResource").alopexGrid( "viewUpdate" );
 						fn_getConnectionInfo();
 						break;
-					case 2:
+					case "tabScale":
 						break;
-					case 3:
+					case "tabMonitor":
 						fn_getMonitoring();
 						break;
-					case 4:
+					case "tabBackup":
 						$("#gridBackup").alopexGrid( "viewUpdate" );
 						fn_getBackupScheduleInfo();
 						fn_getBackupInfo();
 						break;						
-					case 5:
+					case "tabEvent":
 						$("#gridEvent").alopexGrid( "viewUpdate" );
 						break;
-					case 6:
+					case "tabSystem":
 						fn_getConfigurationInfo();
 						break;
 				}
 			}
-			
 			$('#backServices').on('click',function(){
 				gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
 			});			
@@ -835,7 +835,6 @@
 			});
 			$('#credentialUpdate').on('click',function(){
 				var param = $.extend({},gParam);
-				//param.secretType = $('#secretType').val()||'';
 				param.newPassword  = $('#credential').val();
 				
 			    $a.popup({
@@ -847,7 +846,7 @@
 			        title : '',
 			        callback : function(res){
 			        	if(res == "Y"){
-			        		$('#zdbServiceTabs').setTabIndex(0);
+			        		$('#zdbServiceTabs').setTabByContent('#tabService');
 			        	};
 			        }
 			    });
@@ -956,6 +955,15 @@
 						gTagList = service.tags;
 						fn_displayService(service);
 						
+						if(gService.serviceType == G_SERVICE_TYPE_REDIS && gService.purpose != 'DATA'){
+							for(var ti = 0; ti < $('#zdbServiceTabs').getLength(); ti++ ){
+								if($('#zdbServiceTabs').getTabContentByIndex(ti).id == 'tabBackup'){
+									$('#zdbServiceTabs').removeTab(ti);
+								};
+							};
+							$('#tabSystem #divAdvancedConfig').hide();
+						};
+						
 						var rsSpec = gCommon.getObjectByIdx(service.resourceSpecOfPodMap,0)||{};
 						var psSpec = gCommon.getObjectByIdx(service.persistenceSpecOfPodMap,0)||{};
 						$('#configInfo').zdbui_setContents({cpu:rsSpec.cpu,memory:rsSpec.memory,disk:service.persistentVolumeClaims.length==0?'사용안함':psSpec.size});
@@ -1046,6 +1054,7 @@
 						$('#clusterSlaveCount').val(gService.clusterSlaveCount);
 						//todo temp
 						setScaleButton();
+						
 					},complete:function(res){
 						deferred.resolve(res.responseJSON);
 					}
@@ -1383,9 +1392,6 @@
 								};
 							}
 						}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
-							if(gService.purpose != 'DATA'){
-								$('#divAdvancedConfig').hide();
-							};
 							dbConfigForm.zdbui_setContents(dbConfigurations);							
 						}
 					}
@@ -1672,13 +1678,13 @@
 				fn_getEventInfo();
 			});
 			//page Start
-			$('#zdbServiceTabs').setTabIndex(0);	
+			$('#zdbServiceTabs').setTabByContent('#tabService');	
 			if(gParam.goMoniter == 'Y'){
-				$('#zdbServiceTabs').setTabIndex(2);	
+				$('#zdbServiceTabs').setTabByContent('#tabMonitor');	
 			}else{
 				fn_getService();
 			}
 		};
-
+		
 	});
 </script>
