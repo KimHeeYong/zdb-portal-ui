@@ -862,7 +862,7 @@
 						var re = '';
 						if(!data.condition){
 							re = '준비중';
-						}else if(data.condition.status == 'True'){
+						}else if(data.condition && data.condition.status == 'True'){
 							re = '<button class="Button btn-ico btn-config__save"></button>';
 						}else{
 							if(data.colspanCol != true){
@@ -896,7 +896,7 @@
 						};
 					}},
 					{ title:'Last Uptime', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
-						var lt = data.condition.lastTransitionTime;
+						var lt = data.condition? data.condition.lastTransitionTime : '';
 						if(lt){
 							var isValid = moment(lt).isValid(); 
 							return moment(lt).format('YYYY-MM-DD HH:mm:ss');
@@ -981,7 +981,6 @@
 									condition: condition,
 									role: role,
 									node: pod.spec.nodeName,
-									restartCount: pod.status.containerStatuses["0"].restartCount,
 									colspanCol: false
 								});	
 							}
@@ -1033,7 +1032,7 @@
 						for(var i = 0 ; i < podData.length;i++){
 							var pod = podData[i];
 							tList.push(pod);
-							if(pod.condition.status != 'True'){ 
+							if(pod.condition && pod.condition.status != 'True'){ 
 								var tPod = $.extend({},pod,{colspanCol:true})
 								tList.push(tPod);
 							};
