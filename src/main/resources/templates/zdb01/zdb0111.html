@@ -93,22 +93,22 @@
 								</td>
 							</tr>
 							<tr>
+								<th>백업 여부</th>
+								<td>
+									<div class="onoff-wrap" id="backupOnOff"><button class="Button btn-off">OFF</button></div>
+									<div class="hide">
+										<input type="radio" name="backupEnabled" value="true">Y</input>
+										<input type="radio" name="backupEnabled" value="false" checked="checked"/>N</input>
+									</div>
+								</td>
+							</tr>
+							<tr>
 								<th>Public 접근 허용</th>
 								<td>
 									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-on">ON</button></div>
 									<div class="hide">
 										<input type="radio" name="exposeType" value="public" checked="checked">public</input>
 										<input type="radio" name="exposeType" value="private"/>private</input>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th>백업 사용 여부</th>
-								<td>
-									<div class="onoff-wrap" id="backupOnOff"><button class="Button btn-on">ON</button></div>
-									<div class="hide">
-										<input type="radio" name="backupEnabled" value="true" checked="checked">Y</input>
-										<input type="radio" name="backupEnabled" value="false"/>N</input>
 									</div>
 								</td>
 							</tr>
@@ -157,6 +157,16 @@
 								</td>
 							</tr>
 							<tr>
+								<th>백업 여부</th>
+								<td>
+									<div class="onoff-wrap" id="backupOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="hide">
+										<input type="radio" name="backupEnabled" value="true" checked="checked">사용</input>
+										<input type="radio" name="backupEnabled" value="false"/>미사용</input>
+									</div>
+								</td>
+							</tr>						
+							<tr>
 								<th>Public 접근 허용</th>
 								<td>
 									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-on">ON</button></div>
@@ -166,16 +176,6 @@
 									</div>
 								</td>
 							</tr>
-							<tr>
-								<th>백업 사용 여부</th>
-								<td>
-									<div class="onoff-wrap" id="backupOnOff"><button class="Button btn-on">ON</button></div>
-									<div class="hide">
-										<input type="radio" name="backupEnabled" value="true" checked="checked">사용</input>
-										<input type="radio" name="backupEnabled" value="false"/>미사용</input>
-									</div>
-								</td>
-							</tr>						
 							<tr>
 								<th class="ht140">할당메모리</th>
 								<td>
@@ -294,7 +294,20 @@ $a.page(function() {
 				}
 			});
 		});
-		//on off button
+		$('input[name=purpose]').on('change',function(e){
+			setPurpose(this.value);
+		});
+		//백업사용 on off button
+		$('#backupOnOff.onoff-wrap > button').click(function(e){
+			if($(this).hasClass('Disabled'))return;
+			e.preventDefault();
+			if($(this).hasClass('btn-on')) {
+				setBackupEnabled('false');
+			} else {
+				setBackupEnabled('true');
+			}
+		});
+		//Public허용 on off button
 		$('#exposeOnOff.onoff-wrap > button').click(function(e){
 			e.preventDefault();
 			if($(this).hasClass('btn-on')) {
@@ -303,15 +316,7 @@ $a.page(function() {
 				setExposeType('public');
 			}
 		});
-		//on off button
-		$('#backupOnOff.onoff-wrap > button').click(function(e){
-			e.preventDefault();
-			if($(this).hasClass('btn-on')) {
-				setBackupEnabled('false');
-			} else {
-				setBackupEnabled('true');
-			}
-		});
+		
 		//슬라이더 값
 		var sliderConstants = gSliderConstants[gParam.serviceType];
 		var memorySlider = document.getElementById('memorySlider');
@@ -342,20 +347,24 @@ $a.page(function() {
 		form.zdbui_setContents(gParam);
 		setExposeType(gParam.exposeType);
 		setBackupEnabled(gParam.backupEnabled);
+		if(gParam.serviceType==G_SERVICE_TYPE_REDIS){
+			setPurpose(gParam.purpose||'SESSION');
+		};
 		setDefaultServiceName();
 		function setSliderValue(idx){
 			$('#memoryInfo').html(sliderConstants.memory.getValue(idx));
 			$('input[name=podSpecIdx]').val(idx);
 		};
-		function setExposeType(value){
-			if(value=='private'){
-				$('input[name=exposeType]').zdbui_setComponent('private');
-				$('#exposeOnOff.onoff-wrap > button').removeClass('btn-on').addClass('btn-off').text('OFF');
+		function setPurpose(value){
+			$('input[name=purpose]').zdbui_setComponent(value);
+			if(value=='SESSION'){
+				setBackupEnabled('false');
+				$('#backupOnOff.onoff-wrap > button').addClass('Disabled');
 			}else{
-				$('input[name=exposeType]').zdbui_setComponent('public');
-				$('#exposeOnOff.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
-			}
-		};		
+				$('#backupOnOff.onoff-wrap > button').removeClass('Disabled');
+			};
+			
+		}
 		function setBackupEnabled(value){
 			if(value=='false'){
 				$('input[name=backupEnabled]').zdbui_setComponent('false');
@@ -363,6 +372,15 @@ $a.page(function() {
 			}else{
 				$('input[name=backupEnabled]').zdbui_setComponent('true');
 				$('#backupOnOff.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
+			}
+		};		
+		function setExposeType(value){
+			if(value=='private'){
+				$('input[name=exposeType]').zdbui_setComponent('private');
+				$('#exposeOnOff.onoff-wrap > button').removeClass('btn-on').addClass('btn-off').text('OFF');
+			}else{
+				$('input[name=exposeType]').zdbui_setComponent('public');
+				$('#exposeOnOff.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
 			}
 		};		
 		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
