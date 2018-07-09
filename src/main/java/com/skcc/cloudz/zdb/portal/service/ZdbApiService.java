@@ -20,9 +20,9 @@ import org.springframework.stereotype.Component;
 import com.skcc.cloudz.zdb.common.component.ZdbRestConnector;
 import com.skcc.cloudz.zdb.common.security.service.SecurityService;
 import com.skcc.cloudz.zdb.common.util.StringUtil;
-import com.skcc.cloudz.zdb.config.ApiTemplate;
 import com.skcc.cloudz.zdb.config.CommonConstants;
 import com.skcc.cloudz.zdb.config.URIConstants;
+import com.skcc.cloudz.zdb.portal.domain.dto.ApiTemplate;
 import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.zdb.core.domain.BackupEntity;
@@ -336,6 +336,11 @@ public class ZdbApiService{
 		 
 		 ResponseEntity<byte[]> response = connector.exchange(demonServer + URIConstants.URI_DOWNLOAD_BACKUP, HttpMethod.GET, entity, byte[].class, param);
 		 return response;
+	}
+	public ZdbRestDTO isAvailable(Map<String, String> param) {
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_IS_AVAILABLE,ZdbRestDTO.class,param);
+
+		return zdbRestDTO;
 	}
 }
 

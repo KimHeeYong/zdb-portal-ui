@@ -1,0 +1,31 @@
+{
+	"serviceType": ${serviceType},
+	"serviceName": ${serviceName},
+	"namespace": ${namespace},
+	"podSpec": [{
+		"podType": "master",
+		"resourceSpec": [
+		{
+			"resourceType": "requests",
+			"cpu": ${cpu},
+			"memory": ${memory}
+		}, {
+			"resourceType": "limit",
+			"cpu": ${cpu},
+			"memory": ${memory}
+		}]
+	}, {
+		"podType": "slave",
+		"resourceSpec": [
+		{
+			"resourceType": "requests",
+			"cpu": ${cpu},
+			"memory": ${memory}
+		}, 
+		{
+			"resourceType": "limit",
+			"cpu": ${cpu},
+			"memory": ${memory}
+		}]
+	}]
+}

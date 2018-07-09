@@ -24,4 +24,6 @@ public class CommonConstants {
 	public static final String PARAM = "param";
 
 	public static final String USER_INFO = "userInfo";
+
+	public static final String TEMPLATE_PATH = "com/skcc/cloudz/zdb/portal/domain/template/";
 }

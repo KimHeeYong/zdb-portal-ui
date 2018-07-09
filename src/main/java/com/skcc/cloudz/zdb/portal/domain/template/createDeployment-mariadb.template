@@ -1,0 +1,38 @@
+{
+ 	"serviceType": ${serviceType},
+ 	"serviceName": ${serviceName},
+ 	"namespace": ${namespace},
+ 	"clusterEnabled": true,
+ 	"backupEnabled": ${backupEnabled},
+ 	"podSpec": [
+ 		{
+ 		"podType": "master",
+ 		"resourceSpec": [{
+ 			"resourceType": "requests",
+ 			"cpu": ${cpu},
+ 			"memory": ${memory}
+ 		}]
+ 		}, 
+ 		{
+ 		"podType": "slave",
+ 		"resourceSpec": [{
+ 			"resourceType": "requests",
+ 			"cpu": ${cpu},
+ 			"memory": ${memory}
+ 		}]
+ 		}
+ 	],
+ 	"serviceSpec": [{
+ 		"loadBalancerType": ${exposeType}
+ 	}],
+ 	"persistenceSpec": [{
+ 		"podType": "master",
+ 		"size": ${disk}
+ 	}, {
+ 		"podType": "slave",
+ 		"size": ${disk}
+ 	}],
+ 	"mariaDBConfig": {
+ 		"mariadbDatabase": ${dbName}
+ 	}
+ }

@@ -315,6 +315,16 @@ public class ZdbApiController {
 		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;
 	}
+	
+	@RequestMapping(value = "isAvailable")
+	public ModelAndView isAvaliable(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.isAvailable(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}
 
 	@RequestMapping(value = "downloadBackup")
 	public ResponseEntity<byte[]> downloadBackup(HttpServletRequest request) {

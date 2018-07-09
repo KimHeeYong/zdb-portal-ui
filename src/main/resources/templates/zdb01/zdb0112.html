@@ -70,13 +70,17 @@
 								<th>버전</th>
 								<td data="version"></td>
 							</tr>
+							<tr th:if="${#request.getParameter('serviceType')} == 'redis'">
+								<th>용도</th>
+								<td data="purpose"></td>
+							</tr>
 							<tr>
 								<th>Public 접근 허용</th>
 								<td data="exposeTypeStr"></td>
 							</tr>
-							<tr th:if="${#request.getParameter('serviceType')} == 'redis'">
-								<th>용도</th>
-								<td data="purpose"></td>
+							<tr>
+								<th>Backup 사용 여부</th>
+								<td data="backupEnabledStr"></td>
 							</tr>
 							<tr>
 								<th>할당메모리</th>
@@ -141,7 +145,8 @@ $a.page(function() {
 			specCpu:sliderConstants.cpu.getValue(gParam.podSpecIdx),
 			cpu:sliderConstants.cpu.value[gParam.podSpecIdx],
 			serviceName:gParam.serviceName,
-			exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + ''
+			exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
+			backupEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
 		});
 		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
 			data.specDisk = sliderConstants.disk.getValue(gParam.diskSpecIdx)

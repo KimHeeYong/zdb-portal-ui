@@ -1,0 +1,27 @@
+{
+	"version": ${version},
+	"serviceType": ${serviceType},
+	"serviceName": ${serviceName},
+	"namespace": ${namespace},
+	"backupEnabled": ${backupEnabled},
+	"podSpec": [{
+		"podType": "master",
+		"resourceSpec": [
+			{
+			"resourceType": "requests",
+			"cpu": ${cpu},
+			"memory": ${memory}
+			},
+			{
+			"resourceType": "limits",
+			"cpu": ${cpu},
+			"memory": ${memory}
+			}
+		]
+	}],
+	"serviceSpec": [{
+		"podType": "master",
+		"loadBalancerType": ${exposeType}
+	}],
+	"purpose": ${purpose}
+}
