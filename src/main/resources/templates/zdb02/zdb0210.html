@@ -775,9 +775,11 @@
 						url: '/zdbapi/restartService',
 						data : data,
 						success: function(res){
-							if(res.result.code == '0'){
-								fn_getService();	
-							};	
+							if(res.result.code=='4'){
+								gCommon.alert(res.result.message);
+								return;
+							};
+							fn_getService();	
 						}
 					});
 				});
@@ -927,9 +929,11 @@
 						url: '/zdbapi/restartPod',
 						data:param,
 						success: function(res){
-							if(res.result.code=='0'){
-								gCommon.alert('재시작 요청 하였습니다.');
+							if(res.result.code=='4'){
+								gCommon.alert(res.result.message);
+								return;
 							};
+							gCommon.alert('재시작 요청 하였습니다.');
 						}
 					});
 				});
@@ -1178,6 +1182,10 @@
 						url: '/zdbapi/updateScaleUp',
 						data:data,
 						success: function(res){
+							if(res.result.code=='4'){
+								gCommon.alert(res.result.message);
+								return;
+							};
 							gCommon.alert('스케일 정보를 수정 요청 하였습니다.',function(){
 								fn_getService();
 							});
@@ -1195,6 +1203,10 @@
 						url: '/zdbapi/updateScaleOut',
 						data:data,
 						success: function(res){
+							if(res.result.code=='4'){
+								gCommon.alert(res.result.message);
+								return;
+							};
 							gCommon.alert('스케일 정보를 수정 요청 하였습니다.',function(){
 								fn_getService();
 							});
@@ -1573,10 +1585,12 @@
 						url: '/zdbapi/updateBackup',
 						data:gParam,
 						success: function(res){
-							if(res.result.code == '0'){
-								gCommon.alert('즉시 백업을 요청하였습니다.');
-								fn_getBackupInfo();
+							if(res.result.code=='4'){
+								gCommon.alert(res.result.message);
+								return;
 							};
+							gCommon.alert('즉시 백업을 요청하였습니다.');
+							fn_getBackupInfo();
 						}
 					});	
 				});
@@ -1589,11 +1603,13 @@
 					url: '/zdbapi/updateSchedule',
 					data:param,
 					success: function(res){
-						if(res.result.code == '0'){
-							gCommon.alert('백업 설정이 수정되었습니다.',function(){
-								fn_getBackupScheduleInfo()
-							});
+						if(res.result.code=='4'){
+							gCommon.alert(res.result.message);
+							return;
 						};
+						gCommon.alert('백업 설정이 수정되었습니다.',function(){
+							fn_getBackupScheduleInfo()
+						});
 					}
 				});	
 			}
@@ -1615,10 +1631,12 @@
 						url: '/zdbapi/deleteBackup',
 						data:param,
 						success: function(res){
-							if(res.result.code == '0'){
-								gCommon.alert('백업 삭제를 요청하였습니다.');
-								fn_getBackupInfo();
+							if(res.result.code=='4'){
+								gCommon.alert(res.result.message);
+								return;
 							};
+							gCommon.alert('백업 삭제를 요청하였습니다.');
+							fn_getBackupInfo();
 						}
 					});	
 				})

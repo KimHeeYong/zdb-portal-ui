@@ -55,11 +55,11 @@ public class ZdbApiService{
 	}
 	
 	public List<ServiceOverview> getServices(Map<String,String> param) {
-		List<ServiceOverview> list = null;
+		List<ServiceOverview> list = Collections.emptyList();
 		String url = URIConstants.URI_GET_SERVICES_WITH_NAMESPACE; 
 		if(CommonConstants.NAMESPACE_ALL.equals(param.get(CommonConstants.NAMESPACE))) {
-			String namespaces = connector.getSessionNamespaces();
 			//dwtemp 임시 네임스페이스 적용
+			String namespaces = connector.getSessionNamespaces();
 
 			param.put(CommonConstants.NAMESPACE, namespaces);
 		};
@@ -73,7 +73,7 @@ public class ZdbApiService{
 	}
 
 	public List<Tag> getTags(Map<String,String> param) {
-		List<Tag> list = null;
+		List<Tag> list = Collections.emptyList();
 		String namespaces = param.get(CommonConstants.NAMESPACE);
 		String url = CommonConstants.NAMESPACE_ALL.equals(namespaces) ? URIConstants.URI_GET_TAGS : URIConstants.URI_GET_TAGS_WITH_NAMESPACE;
 		
@@ -259,7 +259,7 @@ public class ZdbApiService{
 	}
 
 	public List<EventMetaData> getEvents(Map<String, String> param) {
-		List<EventMetaData> list = null;
+		List<EventMetaData> list = Collections.emptyList();
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_EVENTS,ZdbRestDTO.class,param);
 		
 		if(zdbRestDTO!=null) {
