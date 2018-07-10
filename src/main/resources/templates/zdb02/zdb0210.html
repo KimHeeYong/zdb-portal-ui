@@ -1263,7 +1263,7 @@
 				if(service.serviceType == "mariadb") {
 					$('#advancedMonitoring').attr('href', gGrafanaUrl + "/d/zdbmaria1/mariadb-advanced?refresh=1m&orgId=1"
 							+ "&var-namespace="+ service.namespace
-							+ "&var-service=" + service.serviceName + "-mariadb");
+							+ "&var-mariadbservice=" + service.serviceName + "-mariadb");
 					var iframeSrc = gGrafanaUrl + "/d-solo/zdbmaria2/mariadb-summary?refresh=1m&orgId=1"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-service=" + service.serviceName + "-mariadb";
@@ -1283,7 +1283,7 @@
 				} else if (service.serviceType == "redis") {
 					$('#advancedMonitoring').attr('href', gGrafanaUrl + "/d/zdbredis1/redis-advanced?refresh=1m&orgId=1"
 							+ "&var-namespace="+ service.namespace
-							+ "&var-service=" + service.pods[0].spec.containers[0].name + "-master");
+							+ "&var-redisservice=" + service.pods[0].spec.containers[0].name + "-master");
 					var iframeSrc = gGrafanaUrl + "/d-solo/zdbredis2/redis-summary?refresh=1m&orgId=1"
 						+ "&var-namespace=" + service.namespace 
 						+ "&var-service=" + service.pods[0].spec.containers[0].name + "-master"
