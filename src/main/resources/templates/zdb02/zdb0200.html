@@ -147,7 +147,9 @@
 				};
 				var param = $.extend({},data,{});
 				if($(evt.target).hasClass('viewMonitor')){
-					param.goMoniter = 'Y';
+					gCommon.setCookie('selected2010tab','tabMonitor');
+				}else{
+					gCommon.setCookie('selected2010tab','tabService');
 				};
 				gCommon.movePage('/zdb02/zdb0210',param);
 			});

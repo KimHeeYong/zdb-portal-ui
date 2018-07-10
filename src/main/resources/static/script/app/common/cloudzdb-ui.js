@@ -97,9 +97,11 @@ var gCommon = $a.page(function(){
 	};
 	this.setSelectedNamespace = function(val){
 		gSelectedNamespace = val;
-		$.cookie('selectedNamespace',val,{path:'/'});
+		gCommon.setCookie('selectedNamespace',val);
 	};
-
+	this.setCookie = function(key,val){
+		$.cookie(key,val,{path:'/'});
+	};
 	this.movePage = function(url,param,isPost){
 		var method = isPost ? 'post': 'get';
 		if(!url){
@@ -143,7 +145,7 @@ var gCommon = $a.page(function(){
 	this.getNamespaceCombo = function(selector,options){
 		var defOpt = {incAll:true};
 		var opt = $.extend({},defOpt,options);
-		$a.request('getNamespace',{
+		$a.ajax({
 			url: '/zdbapi/getNamespaces',
 			async: false,
 			success:function(res){

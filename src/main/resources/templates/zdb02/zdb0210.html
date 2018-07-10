@@ -731,6 +731,7 @@
 			});
 			function fn_displayTabs(index){
 				var tabId = $('#zdbServiceTabs').getTabContentByIndex(index).id;
+				gCommon.setCookie('selected2010tab',tabId);
 				switch(tabId){
 					case "tabService":
 						$("#gridResource").alopexGrid( "viewUpdate" );
@@ -1697,12 +1698,10 @@
 				fn_getEventInfo();
 			});
 			//page Start
-			$('#zdbServiceTabs').setTabByContent('#tabService');	
-			if(gParam.goMoniter == 'Y'){
-				$('#zdbServiceTabs').setTabByContent('#tabMonitor');	
-			}else{
-				fn_getService();
-			}
+			fn_getService();
+			var cookieTabId = $.cookie('selected2010tab')||'tabService';
+			$('#zdbServiceTabs').setTabByContent('#'+cookieTabId);
+
 		};
 		
 	});
