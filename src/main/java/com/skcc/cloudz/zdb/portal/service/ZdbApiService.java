@@ -47,7 +47,7 @@ public class ZdbApiService{
 		List<Namespace> list = Collections.emptyList();
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_GET_NAMESPACES, HttpMethod.GET, null,  ZdbRestDTO.class).getBody();
 		
-		if(zdbRestDTO!=null) {
+		if(zdbRestDTO != null && zdbRestDTO.getResult() != null) {
 			list = zdbRestDTO.getResult().getNamespaces();
 		};
 		

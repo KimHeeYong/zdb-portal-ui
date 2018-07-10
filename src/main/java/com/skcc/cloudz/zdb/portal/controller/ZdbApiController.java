@@ -6,11 +6,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.skcc.cloudz.zdb.common.exception.ZdbPortalException;
 import com.skcc.cloudz.zdb.common.util.RequestUtil;
 import com.skcc.cloudz.zdb.config.CommonConstants;
 import com.skcc.cloudz.zdb.portal.domain.dto.Result;
@@ -35,12 +38,16 @@ public class ZdbApiController {
 
 	@Autowired ZdbApiService zdbApiService;
 	
-	@RequestMapping("getNamespaces")
-	public ModelAndView getNamespaces(HttpServletRequest request) {
+	@RequestMapping(value="getNamespaces", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE })
+	@ResponseBody
+	public ModelAndView getNamespaces(HttpServletRequest request)throws Exception {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
 		List<Namespace> namespaces = zdbApiService.getNamespaces(param); 
+		if(namespaces == null || namespaces.size() < 1) {
+			throw new ZdbPortalException("네임 스페이스가 존재하지 않습니다.");
+		}
 		mav.addObject(IResult.NAMESPACES ,namespaces);
 		return mav;
 	}

@@ -19,11 +19,23 @@ public class CommonConstants {
 	
 	public static final String POD_METRICS = "podMetrics";
 
+	public static final String MESSAGE = "message";
+	
 	public static final String RESULT = "result";
 
+	public static final String RESULT_CODE = "resultCode";
+
+	public static final String RESULT_MESSAGE = "resultMessage";
+	
 	public static final String PARAM = "param";
 
 	public static final String USER_INFO = "userInfo";
 
 	public static final String TEMPLATE_PATH = "com/skcc/cloudz/zdb/portal/domain/template/";
+
+	public static final String EXCEPTION_URL_STATUS_400 = "/exception/400";
+
+	public static final String EXCEPTION_URL_STATUS_404 = "/exception/404";
+	
+	public static final String EXCEPTION_URL_STATUS_500 = "/exception/500";
 }
