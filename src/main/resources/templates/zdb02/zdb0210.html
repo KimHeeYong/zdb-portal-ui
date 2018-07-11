@@ -89,7 +89,17 @@
 							<tbody>
 								<tr>
 									<th>Credential</th>
-									<td><input id="credential" name="credential" class="Textinput" type="password"/>
+									<td>
+										<form>
+										<input style="display:none" aria-hidden="true"  autocomplete="off">
+										<input id="credential_fake" name="credential_fake" type="password" style="display:none" aria-hidden="true" autocomplete="off">
+										<input style="display:none" aria-hidden="true"  autocomplete="off">
+										<input id="credential_fake" name="credential_fake" type="password" style="display:none" aria-hidden="true" autocomplete="off">
+										<input style="display:none" aria-hidden="true"  autocomplete="off">
+										<input id="credential_fake" name="credential_fake" type="password" style="display:none" aria-hidden="true" autocomplete="off">
+										</form>
+										
+										<input id="credential" name="credential" class="Textinput" type="password" autocomplete="off"/>
 										<span class="input-pw"></span>
 										<button class="Button line-btn" id="togglePwd">보기</button>
 										<button class="Button line-btn" id="credentialCopy">복사</button>
@@ -731,7 +741,7 @@
 			});
 			function fn_displayTabs(index){
 				var tabId = $('#zdbServiceTabs').getTabContentByIndex(index).id;
-				gCommon.setCookie('selected2010tab',tabId);
+				fn_setSelected2010Tab(tabId);
 				switch(tabId){
 					case "tabService":
 						$("#gridResource").alopexGrid( "viewUpdate" );
@@ -1188,7 +1198,8 @@
 								return;
 							};
 							gCommon.alert('스케일 정보를 수정 요청 하였습니다.',function(){
-								fn_getService();
+								fn_getService(); 
+								$('#zdbServiceTabs').setTabByContent('#tabService');
 							});
 						}
 					});
@@ -1196,7 +1207,7 @@
 			});
 			$('#updateScaleOut').on('click',function(){
 				if($(this).hasClass('Disabled'))return;
-				if(gCommon.confirm('Scale In/Out이 수행되면 서비스가 재시작됩니다. 계속 진행하시겠습니까?',function(){
+				if(gCommon.confirm('Slave 갯수를 '+$('input[name=clusterSlaveCount]').val()+' 개로 변경하시겠습니까?',function(){
 					var data = $.extend({},gParam,{
 						clusterSlaveCount:$('input[name=clusterSlaveCount]').val()
 					});
@@ -1338,13 +1349,9 @@
 						url: '/zdbapi/updateDBVariables',
 						data:param,
 						success: function(res){
-							if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
-								gCommon.alert('환경설정 적용으로 시스템이 재시작 됩니다. <br/>	목록화면으로 이동합니다.',function(){
-									gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
-								});
-							}else{
-								gCommon.alert(gMessage.saveSuccess);
-							};
+							gCommon.alert(gMessage.saveSuccess,function(){
+								$('#zdbServiceTabs').setTabByContent('#tabService');
+							});
 						},
 						loadingMessage:'환경설정 적용중입니다.'
 					});
@@ -1680,7 +1687,7 @@
 				param = $.extend({},gParam,param);
 				param.startTime = moment($('#eventStartDate').val()+$('#eventStartTime').getData().date.replace(/(AM|PM)/,''),'YYYY-MM-DDHH : mm').format('YYYY-MM-DD HH:mm:ss');
 				param.endTime = moment($('#eventEndDate').val()+$('#eventEndTime').getData().date.replace(/(AM|PM)/,'')+':59','YYYY-MM-DDHH : mm:ss').format('YYYY-MM-DD HH:mm:ss');
-				param.keyword=param.keyword||'-';
+				param.keyword = param.keyword||'-';
 				
 				$a.ajax({
 					url: '/zdbapi/getEvents',

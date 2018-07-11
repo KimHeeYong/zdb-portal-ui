@@ -157,6 +157,10 @@ body.login {background: #ffffff}
 	-ms-border-radius: 7px;
 	border-radius: 7px;
 }
+.state.inactive {background: #999999;}
+.state.locked {background: #ea0530}
+.state.active {background: #43a047}
+.state.stay {background: #ffad00}
 .state.gray {background-image: url(/styles/images/rotation_ani.gif);}
 .state.red {background: #ea0530}
 .state.green {background: #43a047}
@@ -574,6 +578,7 @@ body.login {background: #ffffff}
 	color: #ea0530;
 }
 .info-text__typec {
+	margin-left: 20px;
 	font-size: 1.33rem;
 	color: #222222;
 }
@@ -1296,9 +1301,9 @@ a.blank-link {
 	background: url("/styles/images/ico-common.png") no-repeat -277px -56px;
 }
 .add-label__input .Textinput {
-	width: 80px;
+	width: 150px;
 	height: 22px;
-	min-width: 80px;
+	min-width: 150px;
 	border: 0;
 	border-bottom: 1px solid #cccccc;
 }
@@ -1330,7 +1335,7 @@ a.blank-link {
 .namespace-btn__wrap {
 	position: absolute;
 	right: 0;
-	bottom: 16px;
+	bottom: 10px;
 }
 .vline {
 	display: inline-block;
@@ -1348,12 +1353,9 @@ a.blank-link {
 }
 .name-progress__wrap li {
 	float: left;
-	padding-right: 2%;
-	width: 43%;
-}
-.name-progress__wrap li:last-child {
-	width: 14%;
-	padding-right: 0;
+	position: relative;
+	width: 50%;
+	margin-bottom: 10px;
 }
 .name-progress__wrap li:last-child .name-pro__title {text-align: center;}
 .name-pro__title {

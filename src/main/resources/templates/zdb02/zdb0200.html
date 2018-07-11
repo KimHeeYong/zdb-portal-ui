@@ -33,10 +33,9 @@
 <div class="panel-line__wrap">
 	<!-- namespace sorting-->
 	<div class="namespace-sort">
-		<div class="sort-button">
-			<button class="Button btn-ico__typeb btn-cardview Checked">카드형으로 보기</button>
-			<button class="Button btn-ico__typeb btn-listview">목록형으로 보기</button>
-			<div class="Tooltip hide" data-position="bottom">추후제공 예정입니다.</div>
+		<div class="sort-button" id="divServiceListBtns">
+			<button class="Button btn-ico__typeb btn-cardview Checked" id="btnServiceListCard" data-list-type="card">카드형으로 보기</button>
+			<button class="Button btn-ico__typeb btn-listview" id="btnServiceListGrid" data-list-type="grid">목록형으로 보기</button>
 		</div>
 		<ul class="sort-list">
 			<li data-sort-name="shortServiceName" class="asc">이름</li>
@@ -45,7 +44,14 @@
 			<li data-sort-name="status">상태</li>
 		</ul>
 	</div>
-	<div id="divServiceList"> </div>
+	<div id="divServiceList">
+		<div id="divServiceListCard" data-list-type="card"> 
+			
+		</div>
+		<div id="divServiceListGrid" data-list-type="grid" class="hide">
+			
+		</div>
+	</div>
 </div>
 <style>
 .btn-ico {
@@ -73,6 +79,7 @@
 	var gNamespaces = null;     // 네임스페이스 콤보
 	var gServiceList = [];      //서비스 목록
 	var gTagList = [];
+	var gSelectedListType = 'card'; 
 	$a.page(function() {
 		this.init = function() {
 			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
@@ -83,7 +90,13 @@
 						 .select({id:gSelectedNamespace});
 			if(gNamespaces.text()==''){
 				gNamespaces.select(0);
-			};			
+			};	
+			if($.cookie('selected2000listType')){
+				fn_setSelected2000ListType($.cookie('selected2000listType'));
+			};
+			$('#btnServiceListCard,#btnServiceListGrid').on('click',function(evt){
+				fn_setSelected2000ListType($(this).data('list-type'));
+			});
 			var sortLi = $('.sort-list li'); 
 			sortLi.on('click',function(evt){
 				var tCss = $(this).attr('class') == 'asc' ? 'dsc' : 'asc';
@@ -146,12 +159,8 @@
 					return;
 				};
 				var param = $.extend({},data,{});
-				if($(evt.target).hasClass('viewMonitor')){
-					gCommon.setCookie('selected2010tab','tabMonitor');
-				}else{
-					gCommon.setCookie('selected2010tab','tabService');
-				};
-				gCommon.movePage('/zdb02/zdb0210',param);
+				var isMonitorTab = $(evt.target).hasClass('viewMonitor');
+				fn_moveServiceDetail(param,isMonitorTab);
 			});
 			
 			//서비스 목록 refresh 클릭
@@ -189,8 +198,50 @@
 			$('#txtServiceFilter').pressEnter(function(){
 				fn_getServices();
 			});
+			
+			$('#divServiceListGrid').alopexGrid({
+				autoColumnIndex: true,
+				height: 635,
+				columnMapping : [  
+					{ title:'', key : 'status' , width: '40px', align: 'center',render : function( value, data, render, mapping) {
+						return '<span class="state '+value+'"></span>';
+					}},
+					{ title:'네임스페이스', key : 'namespace', width: '150px', align: 'left'},
+					{ title:'이름', key : 'shortServiceName', width: '150px', align: 'left', render:function(value,data,render,mapping){
+						var re = $('<a href="#" title="'+value+'">'+value+'</a>').on('click',function(){
+							fn_moveServiceDetail(data,false);
+						});
+						return re;
+					}},
+					{ title:'서비스종류', key : 'serviceType', width: '100px', align: 'center'},
+					{ title:'버전', key : 'version', width: '110px', align: 'center'},
+					{ title:'구동시간', key : 'elapsedTime', width: '80px', align: 'center'},
+					{ title:'생성일시', key : 'crtTime', width: '150px', align: 'center'},
+					{ title:'할당메모리', key : '', width: '100px', align: 'left'},
+					{ title:'백업', key : '', width: '100px', align: 'left'},
+					{ title:'Public', key : '', width: '100px', align: 'left'},
+					{ title:'태그', key : 'tagNames', width: '100px', align: 'left'},
+					{ title:'모니터링', key : '', width: '80px', align: 'center',render:function(value,data,render,mapping){
+						var re = $('<button class="btn-ico btn-viewdetail" title="'+data.serviceName+'">모니터링</button>').on('click',function(){
+							fn_moveServiceDetail(data,true);
+						});
+						return re;
+					}}					
+				],
+				message: {
+					nodata: gMessage.gridNodata
+				}
+			});	
 		};
-		
+		function fn_moveServiceDetail(data,isMonitorTab){
+			var param = {namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName};
+			if(isMonitorTab){
+				fn_setSelected2010Tab('tabMonitor');
+			}else{
+				fn_setSelected2010Tab('tabService');
+			};
+			gCommon.movePage('/zdb02/zdb0210',param);
+		};		
 		//서비스 목록 조회 && 태그 조회
 		function fn_getServices(){
 			var deferred = $.Deferred();
@@ -223,7 +274,7 @@
 		function fn_displayServices(){
 
 			fn_displayTags();
-			var serviceListDiv = $('#divServiceList');
+			var serviceListDiv = $('#divServiceListCard');
 			var dispServiceDiv = $('<div/>');
 			
 			var namespaces = fn_getViewNamespaces();
@@ -237,7 +288,7 @@
 						serviceType:ob.serviceType,
 						serviceName:ob.serviceName,
 						shortServiceName:ob.shortServiceName,
-						status:ob.status.toLowerCase(),
+						status:ob.status,
 						version:ob.version,
 						updTime:ob.updTime,
 						elapsedTime:ob.elapsedTime,
@@ -251,6 +302,7 @@
 			
 			serviceListDiv.html('');
 			serviceListDiv.html(dispServiceDiv.html());
+			$('#divServiceListGrid').alopexGrid('dataSet',filterList);
 			$a.convert(serviceListDiv.find('.Tooltip'));
 			gCommon.removeOverlay();
 		}

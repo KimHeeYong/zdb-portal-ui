@@ -49,6 +49,12 @@ function gfn_convertServiceData(data){
 			ob.updTime = moment().diff(moment(ob.lastTransitionTime),'hours') + 'hrs ago';
 		};
 	}
+	var tagList = [];
+	for(var i = 0 ; i < data.tags.length;i++){
+		tagList.push(data.tags[i].tagName);
+	};
+	ob.tagNames = tagList.join();
+	ob.status = (data.status||'').toLowerCase()
 	return $.extend({},data,ob);
 }
 function gfn_getReadyCondition(pod){
@@ -132,7 +138,7 @@ function gfn_getServiceDetailTemplate(ob){
 		+'						<div class="tag-wrap">'
 		+'							{{tags}}'
 		+'							<button class="Label add-label tagAdd">추가</button>'
-		+'					        <span class="add-label__input hide"><input class="Textinput tagAddInput"></input></span>'
+		+'					        <span class="add-label__input hide"><input type="hidden"/><input class="Textinput tagAddInput" name="tagN" autocomplete="false"></input></span>'
 		+'						</div>'
 		+'					</dd>'
 		+'					<ul class="time-info">'
@@ -204,4 +210,19 @@ function gfn_getConnectionTemplate(ob){
 		 template = template.replaceAll('{{'+key+'}}',ob[key]||'');
 	 };	
 	return template;
+}
+
+function fn_setSelected2010Tab(val){
+	gCommon.setCookie('selected2010tab',val);
+}
+function fn_setSelected2000ListType(val){
+	gSelectedListType = val;
+	gCommon.setCookie('selected2000listType',val);
+	
+	$('#divServiceListBtns').find('button').removeClass('Checked');
+	$('#divServiceListBtns').find('button[data-list-type='+val+']').addClass('Checked');
+	
+	$('#divServiceList').find('div[data-list-type]').hide();
+	$('#divServiceList').find('div[data-list-type='+val+']').show();
+	$("#divServiceListGrid").alopexGrid( "viewUpdate" );
 }
