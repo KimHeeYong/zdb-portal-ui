@@ -31,6 +31,21 @@
 		#popLogRefresh{
 			vertical-align: middle;
 		}
+		#title {
+		    position: fixed;
+		    top: 0; 
+		    z-index: 999;
+		    width:100%; 
+		    border-bottom: 1px solid white; 
+		    padding-bottom: 5px;
+		    padding-left: 5px;
+		    background-color: #dddddd;
+		    color : #777777;
+		}
+		#log {
+			padding-top: 30px;
+			padding-left:15px;
+		}
 	</style>
 </head>
 <body class="log-console">
@@ -49,7 +64,7 @@
 			function showLog(){
 				var title = gParam.namespace+" > "+ gParam.serviceName +" > "+ gParam.podname + " log";
 				$('title,#title').html(title);
-				$('#title').append('<button class="btn-ico btn-refresh" id="popLogRefresh" alt="새로고침"></button>');
+				$('#title').append('<button class="btn-ico btn-refresh" id="popLogRefresh" alt="새로고침" style="margin-right:15px;float:right;"></button>');
 				$('#log').html('');
 				$a.ajax({
 					url: '/zdbapi/getPodLog',
@@ -66,8 +81,7 @@
 		};
 	});
 	</script>
-	<div id="title" style="width:100%;"> </div>
-	<hr/>
+	<div id="title" ></div>
 	<div id="log" style="margin-left:15px;"> </div>
 </div>
 </body>
