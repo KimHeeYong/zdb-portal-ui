@@ -100,3 +100,10 @@ div.grid{
   content: ""; 
   margin-right:5px;
 }
+.newpop{
+	background: url(/styles/images/ico-common.png) no-repeat 0 -45px;
+	width: 15px;
+	height: 15px;
+	float: right;
+    margin-top: 7px;
+}

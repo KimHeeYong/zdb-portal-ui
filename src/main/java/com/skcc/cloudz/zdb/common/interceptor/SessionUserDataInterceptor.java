@@ -11,6 +11,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import com.skcc.cloudz.zdb.common.security.service.SecurityService;
 import com.skcc.cloudz.zdb.common.security.vo.OpenIdConnectUserDetailsVo;
 import com.skcc.cloudz.zdb.config.CommonConstants;
+import com.skcc.cloudz.zdb.portal.service.ZdbApiService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +20,9 @@ public class SessionUserDataInterceptor extends HandlerInterceptorAdapter{
     
     @Autowired
     private SecurityService securityService;
+    
+    @Autowired
+    private ZdbApiService apiService;
     
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
@@ -38,7 +42,7 @@ public class SessionUserDataInterceptor extends HandlerInterceptorAdapter{
 	}
 	
 	public void updateUserNamespaces() {
-		// /updateUserNamespaces
+		apiService.updateUserNamespaces();
 	}
 
 }

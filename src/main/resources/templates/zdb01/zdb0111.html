@@ -284,7 +284,6 @@ $a.page(function() {
 				url: '/zdbapi/isAvailable',
 				data: dt,
 				success: function(res){
-					console.log(res);
 					var re = res.result;
 					if(re.code != '0'){
 						gCommon.alert(re.message);

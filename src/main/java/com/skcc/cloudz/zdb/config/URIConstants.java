@@ -57,6 +57,8 @@ public class URIConstants {
 	
 	public static final String URI_IS_AVAILABLE = "/api/v1/{namespace}/avaliable?memory={memory}&cpu={cpu}&clusterEnabled={clusterEnabled}";
 
+	public static final String URI_UPDATE_USER_NAMESPACES = "/api/v1/updateUserNamespaces";
+	
 	public static final String URI_UPDATE_SCHEDULE = "/api/v1/{namespace}/{serviceType}/service/schedule";
 
 	public static final String URI_UPDATE_BACKUP = "/api/v1/{namespace}/{serviceType}/service/backup";
