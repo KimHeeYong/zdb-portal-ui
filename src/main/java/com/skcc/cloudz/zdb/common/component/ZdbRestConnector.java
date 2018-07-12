@@ -59,7 +59,7 @@ public class ZdbRestConnector extends RestTemplate{
 	};
 
 	public <T> ResponseEntity<T> exchange(String url, HttpMethod method, @Nullable HttpEntity<?> requestEntity, Class<T> responseType) {
-		return this.exchange(url, HttpMethod.GET, requestEntity,responseType,(Map<String, ?>)null);
+		return this.exchange(url, method, requestEntity,responseType,(Map<String, ?>)null);
 	};
 
 	

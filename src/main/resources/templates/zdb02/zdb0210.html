@@ -1492,17 +1492,20 @@
 						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
 						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
 					}},
-					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
+					{ title:'파일사이즈22', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
+						var val = '';
 						if(value < 1024 ) {
-							return value +'B';
+							val = value +'B';
 						} else if(value < 1024*1024 ) {
-							return (value / 1024).toFixed(2) +'KB';
+							val = (value / 1024).toFixed(2) +'KB';
 						} else if(value < 1024*1024*1024 ) {
-							return (value / (1024*1024)).toFixed(2) +'MB';
+							val = (value / (1024*1024)).toFixed(2) +'MB';
 						} else if(value < 1024*1024*1024*1024 ) {
-							return (value / (1024*1024*1024)).toFixed(2) +'GB';
+							val = (value / (1024*1024*1024)).toFixed(2) +'GB';
 						}
-						return value;
+						var st = data.status != 'OK'? 'text-decoration: line-through;': '';
+						var re = '<span style="font:inherit;'+st+'">'+val+'</span>' 
+						return re;
 					}},
 					{ title:'다운로드', key : 'archiveFileSize' , width: '90px', align: 'center',render:function(value,data,render,mapping){
 						var re = $('<button class="Button btn-download '+(data.status != 'OK'?'Disabled':'')+'">다운로드</button>').on('click',function(){

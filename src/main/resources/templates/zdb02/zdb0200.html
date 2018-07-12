@@ -218,10 +218,10 @@
 					{ title:'구동시간', key : 'elapsedTime', width: '80px', align: 'center'},
 					{ title:'생성일시', key : 'crtTime', width: '150px', align: 'center'},
 					{ title:'백업', key : 'backupEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
-						return value == 'true' ? 'Y' : 'N';
+						return value == true ? 'Y' : 'N';
 					}},
 					{ title:'Public', key : 'publicEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
-						return value == 'true' ? 'Y' : 'N';
+						return value == true ? 'Y' : 'N';
 					}},
 					{ title:'태그', key : 'tagNames', width: '100px', align: 'left'},
 					{ title:'모니터링', key : '', width: '80px', align: 'center',render:function(value,data,render,mapping){

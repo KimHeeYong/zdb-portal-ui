@@ -343,9 +343,7 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 	public ZdbRestDTO updateUserNamespaces() {
-		System.out.println("===========update ============");
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USER_NAMESPACES, HttpMethod.POST,null,ZdbRestDTO.class).getBody();
-		
 		return zdbRestDTO;
 	}
 }
