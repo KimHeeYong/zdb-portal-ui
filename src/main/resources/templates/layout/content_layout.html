@@ -51,8 +51,8 @@
 			<a class="user" th:text="${session.userInfo.username}"></a>
 			<div class="user-menus">
 				<ul class="dropmenu-list">
-					<li class="selected">나의 정보</li>
-					<li>비밀번호 변경</li>
+					<li class="selected" onclick="location.href='https://console.cloudzcp.io/my/profile'">나의 정보</li>
+					<li onclick="location.href='https://console.cloudzcp.io/my/pwd'">비밀번호 변경</li>
 					<li onclick="location.href='https://console.cloudzcp.io/'">Admin</li>
 					<li id="logout">로그아웃</li>
 				</ul>
