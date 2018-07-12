@@ -1696,10 +1696,10 @@
 				fn_getEventInfo();
 			});
 			//page Start
-			fn_getService();
-			var cookieTabId = $.cookie('selected2010tab')||'tabService';
-			$('#zdbServiceTabs').setTabByContent('#'+cookieTabId);
-
+			fn_getService().done(function(){
+				var cookieTabId = $.cookie('selected2010tab')||'tabService';
+				$('#zdbServiceTabs').setTabByContent('#'+cookieTabId);
+			});
 		};
 		
 	});
