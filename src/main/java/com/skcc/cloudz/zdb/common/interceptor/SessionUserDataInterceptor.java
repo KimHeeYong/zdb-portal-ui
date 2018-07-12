@@ -27,8 +27,18 @@ public class SessionUserDataInterceptor extends HandlerInterceptorAdapter{
 			OpenIdConnectUserDetailsVo userInfo = securityService.getUserDetails();
 			if(userInfo != null) {
 				session.setAttribute(CommonConstants.USER_INFO, userInfo);
+				
+				try {
+					updateUserNamespaces();
+				} catch(Exception e) {
+					//do nothing.
+				}
 			}
 		};
+	}
+	
+	public void updateUserNamespaces() {
+		// /updateUserNamespaces
 	}
 
 }
