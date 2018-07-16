@@ -13,7 +13,7 @@ var gSliderConstants = {
 		memory : {
 			range : _gSliderConstantsCommonRange,
 			value :[0,256,512,1000,3000,5000,8000,12000],
-			unit : 'MB',
+			unit : 'Mi',
 			getValue : _gSliderConstantsCommonGetValue,
 			getIndex : _gSliderConstantsCommonGetIndex
 		},
@@ -27,7 +27,7 @@ var gSliderConstants = {
 		disk : {
 			range : _gSliderConstantsCommonRange,
 			value : [0,20,40,80,100,250,500,1000],
-			unit : 'GB',
+			unit : 'Gi',
 			getValue : _gSliderConstantsCommonGetValue,
 			getIndex : _gSliderConstantsCommonGetIndex
 		}		
@@ -36,7 +36,7 @@ var gSliderConstants = {
 		memory : {
 			range : _gSliderConstantsCommonRange,
 			value :[0,1000,2000,4000,8000,16000,24000,32000],
-			unit : 'MB',
+			unit : 'Mi',
 			getValue : _gSliderConstantsCommonGetValue,
 			getIndex : _gSliderConstantsCommonGetIndex
 		},
@@ -50,7 +50,7 @@ var gSliderConstants = {
 		disk : {
 			range : _gSliderConstantsCommonRange,
 			value : [0,20,40,80,100,250,500,1000],
-			unit : 'GB',
+			unit : 'Gi',
 			getValue : _gSliderConstantsCommonGetValue,
 			getIndex : _gSliderConstantsCommonGetIndex
 		}

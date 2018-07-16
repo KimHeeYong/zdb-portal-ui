@@ -891,8 +891,8 @@
 					{ title:'Role', key : 'role' , width: '100px', align: 'center'},
 					{ title:'Node', key : 'node' , width: '130px', align: 'center'},
 					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
-					{ title:'Memory(MB)', key : 'memory' , width: '120px', align: 'center'},
-					{ title:'Disk(GB)', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
+					{ title:'Memory(Mi)', key : 'memory' , width: '120px', align: 'center'},
+					{ title:'Disk(Gi)', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
 						if(data.diskUpdateTime){
 							var isValid = moment(data.diskUpdateTime,'YYYYMMDDHHmmss').isValid();
 							return 'Update Time : '+moment(data.diskUpdateTime,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
@@ -1497,11 +1497,11 @@
 						if(value < 1024 ) {
 							val = value +'B';
 						} else if(value < 1024*1024 ) {
-							val = (value / 1024).toFixed(2) +'KB';
+							val = (value / 1024).toFixed(2) +'Ki';
 						} else if(value < 1024*1024*1024 ) {
-							val = (value / (1024*1024)).toFixed(2) +'MB';
+							val = (value / (1024*1024)).toFixed(2) +'Mi';
 						} else if(value < 1024*1024*1024*1024 ) {
-							val = (value / (1024*1024*1024)).toFixed(2) +'GB';
+							val = (value / (1024*1024*1024)).toFixed(2) +'Gi';
 						}
 						var st = data.status == 'DELETED'? 'text-decoration: line-through;': '';
 						var re = '<span style="font:inherit;'+st+'">'+val+'</span>' 
@@ -1535,11 +1535,11 @@
 							if(totalValue < 1024 ) {
 								return totalValue +'B';
 							} else if(totalValue < 1024*1024 ) {
-								return (totalValue / 1024).toFixed(2) +'KB';
+								return (totalValue / 1024).toFixed(2) +'Ki';
 							} else if(totalValue < 1024*1024*1024 ) {
-								return (totalValue / (1024*1024)).toFixed(2) +'MB';
+								return (totalValue / (1024*1024)).toFixed(2) +'Mi';
 							} else if(totalValue < 1024*1024*1024*1024 ) {
-								return (totalValue / (1024*1024*1024)).toFixed(2) +'GB';
+								return (totalValue / (1024*1024*1024)).toFixed(2) +'Gi';
 							};
 						}}
 					]},
