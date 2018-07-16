@@ -520,12 +520,12 @@
 						</table>
 						<div class="Tooltip" data-base="#iconMaxmemoryPolicy" data-position="right" data-animation="fade">
 							메모리 관리에 대한 정책을 선택합니다.
-							<br>noeviction: 기존 데이터를 삭제하지 않습니다. 메모리 한계에 도달하면 OOM 오류 반환하며, 새 데이터가 저장되지 않습니다.
-							<br>allkeys-lru: 전체 키에 대하여 LRU 알고리즘으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
-							<br>volatile-lru: expire set을 가진 키에 대하여 LRU 알고리즘으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
-							<br>allkeys-random: 전체 키에 대하여 랜덤으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
-							<br>volatile-random: expire set을 가진 키에 대하여 랜덤으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
-							<br>volatile-ttl: expire set을 가진 키에 대하여 TTL이 짧은 것부터 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
+							<br>‣ noeviction: 기존 데이터를 삭제하지 않습니다. 메모리 한계에 도달하면 OOM 오류 반환하며, 새 데이터가 저장되지 않습니다.
+							<br>‣ allkeys-lru: 전체 키에 대하여 LRU 알고리즘으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
+							<br>‣ volatile-lru: expire set을 가진 키에 대하여 LRU 알고리즘으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
+							<br>‣ allkeys-random: 전체 키에 대하여 랜덤으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
+							<br>‣ volatile-random: expire set을 가진 키에 대하여 랜덤으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
+							<br>‣ volatile-ttl: expire set을 가진 키에 대하여 TTL이 짧은 것부터 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
 						</div>
 						<div class="Tooltip" data-base="#iconMaxmemorySamples" data-position="right" data-animation="fade">
 							메모리를 절약하기 위해서, LRU 알고리즘 수행 시 검사를 위한 샘플의 크기를 선택합니다.
@@ -581,18 +581,18 @@
 						</table>
 						<div class="Tooltip" data-base="#iconNotifyKeyspaceEvents" data-position="right" data-animation="fade">
 							Redis의 Keyspace Event에 대한 Notification 기능을 설정합니다.
-							<br>" ": notification 비활성화
-							<br>K: Keyspace 이벤트, published with __keyspace@__ prefix.
-							<br>E: Keyevent 이벤트, published with __keyevent@__ prefix.
-							<br>g: 데이터 타입이 지정돼 있지 않은 일반 명령어(예: DEL, EXPIRE, RENAME 등)
-							<br>$: String 명령어
-							<br>l: List 명령어
-							<br>s: Set 명령어
-							<br>h: Hash 명령어
-							<br>z: Sorted set 명령어
-							<br>x: Expired 이벤트 (events generated every time a key expires)
-							<br>e: Evicted 이벤트 (events generated when a key is evicted for maxmemory)
-							<br>A: 혼합 옵션 (예: "AKE"는 모든 이벤트를 의미함)
+							<br>‣ " ": notification 비활성화
+							<br>‣ K: Keyspace 이벤트, published with __keyspace@__ prefix.
+							<br>‣ E: Keyevent 이벤트, published with __keyevent@__ prefix.
+							<br>‣ g: 데이터 타입이 지정돼 있지 않은 일반 명령어(예: DEL, EXPIRE, RENAME 등)
+							<br>‣ $: String 명령어
+							<br>‣ l: List 명령어
+							<br>‣ s: Set 명령어
+							<br>‣ h: Hash 명령어
+							<br>‣ z: Sorted set 명령어
+							<br>‣ x: Expired 이벤트 (events generated every time a key expires)
+							<br>‣ e: Evicted 이벤트 (events generated when a key is evicted for maxmemory)
+							<br>‣ A: 혼합 옵션 (예: "AKE"는 모든 이벤트를 의미함)
 						</div>
 						<div id="divAdvancedConfig">
 							<h3 class="form-title">Advanced Config</h3>
@@ -652,14 +652,14 @@
 							</div>
 							<div class="Tooltip" data-base="#iconListMZS" data-position="right" data-animation="fade">
 								Zip list의 크기를 설정합니다.
-								<br>-5 : max size 64 kb
-								<br>-4 : max size 32 kb
-								<br>-3 : max size 16 kb
-								<br>-2 : max size  8 kb (default)
-								<br>-1 : max size  4 kb
-								<br>1 : entry 1
-								<br>2 : entries 2
-								<br>n : entries n
+								<br>‣ -5 : max size 64 kb
+								<br>‣ -4 : max size 32 kb
+								<br>‣ -3 : max size 16 kb
+								<br>‣ -2 : max size  8 kb (default)
+								<br>‣ -1 : max size  4 kb
+								<br>‣ 1 : entry 1
+								<br>‣ 2 : entries 2
+								<br>‣ n : entries n
 							</div>
 							<div class="Tooltip" data-base="#iconZsetMZE" data-position="right" data-animation="fade">
 								Sorted Set에 포함된 멤버의 개수 기준을 설정합니다.
