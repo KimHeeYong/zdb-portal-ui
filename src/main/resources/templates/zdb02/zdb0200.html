@@ -259,6 +259,9 @@
 			var client = gZdbsocket.getConnect();
 			client.connect({}, function(frame){
 				client.subscribe('/services', function(res) {
+					gServiceList = res.serviceoverviews;
+					gfn_convertServiceDatas(gServiceList);
+					gTagList = res.tags;
 					fn_displayServices();
 				});
 			});
