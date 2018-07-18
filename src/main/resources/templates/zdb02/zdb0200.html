@@ -5,6 +5,9 @@
 </th:block>
 <th:block layout:fragment="page_js">
 	<script src="/script/app/common/cloudzdb-ui-z0200.js"></script>
+	<script src="/script/libs/sockjs/sockjs.js"></script>
+	<script src="/script/libs/sockjs/stomp.js"></script>
+	<script src="/script/app/common/cloudzdb-ui-sock.js"></script>
 </th:block>
 <th:block layout:fragment="content">
 <!-- location -->
@@ -26,7 +29,6 @@
 </div>
 <div class="search-wrap">
 	<input class="Textinput srcinput" placeholder="검색어를 입력하세요." id="txtServiceFilter">
-	<button class="Button btn-search" id="btnSearch">검색</button>
 </div>	
 <!-- accordion wrap-->
 <!--namespace detail view-->
@@ -53,7 +55,7 @@
 		</div>
 	</div>
 </div>
-<style>
+<style type="text/css">
 .btn-ico {
 	cursor: pointer;
 	text-indent: -9999px;
@@ -74,7 +76,6 @@
 .btn-ico.btn-refresh {background-position: -32px -178px;}
 </style>
 <script type="text/javascript">
-
 	var gSelectedTag = '';//선택된 태그
 	var gNamespaces = null;     // 네임스페이스 콤보
 	var gServiceList = [];      //서비스 목록
@@ -82,12 +83,13 @@
 	var gSelectedListType = 'card'; 
 	$a.page(function() {
 		this.init = function() {
+			
 			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
+						 .select({id:gSelectedNamespace})
 						 .addHandler(function(e){
 							  gCommon.setSelectedNamespace(e.currentTarget.id);
-							  fn_getServices();
-						  }) 
-						 .select({id:gSelectedNamespace});
+							  fn_displayServices();
+						  }); 
 			if(gNamespaces.text()==''){
 				gNamespaces.select(0);
 			};	
@@ -122,7 +124,7 @@
 						data: data, 
 						success: function(res){
 							gCommon.alert(gMessage.procSuccss);
-							fn_getServices();
+							//fn_getServices();
 						}
 					});
 				})
@@ -142,7 +144,7 @@
 						data: data, 
 						success: function(res){
 				    		gCommon.alert(gMessage.saveSuccess);
-				    		fn_getServices();
+				    		//fn_getServices();
 						}
 					});
 				};
@@ -172,7 +174,7 @@
 						data : data,
 						success: function(res){
 							if(res.result.code == '0'){
-								fn_getServices();	
+								//fn_getServices();	
 							};
 						}
 					});
@@ -185,19 +187,21 @@
 						data:data,
 						success: function(res){
 							gCommon.alert('삭제 요청이 완료 되었습니다.',function(){
-								fn_getServices();
+								//fn_getServices();
 							});
 						}
 					})
 				})
 			});
 			
+			/*
 			$('#btnSearch').on('click',function(){
 				fn_getServices();
 			});
 			$('#txtServiceFilter').pressEnter(function(){
 				fn_getServices();
 			});
+			*/
 			
 			$('#divServiceListGrid').alopexGrid({
 				autoColumnIndex: true,
@@ -235,6 +239,11 @@
 					nodata: gMessage.gridNodata
 				}
 			});	
+
+			fn_getServices();
+			$(window).on('beforeunload', function() {
+				gZdbsocket.disconnect();
+			});
 		};
 		function fn_moveServiceDetail(data,isMonitorTab){
 			var param = {namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName};
@@ -247,31 +256,12 @@
 		};		
 		//서비스 목록 조회 && 태그 조회
 		function fn_getServices(){
-			var deferred = $.Deferred();
-			$a.ajax({
-				url: '/zdbapi/getServiceoverviews',
-				data: {namespace:gSelectedNamespace} , 
-				success: function(res){
-					gServiceList = res.serviceoverviews;
-					gfn_convertServiceDatas(gServiceList);
-					gTagList = res.tags;
-					tagDiv = $('#tagArea').html('<span class="tag">태그:</span> <span class="Label white">모든태그</span>'); 
-					if(gTagList){
-						for(var i = 0 ; i < gTagList.length;i++){
-							var tag = gTagList[i];
-							var tagSpan = $('<span class="Label white" data-id="'+tag.id+'">'+tag.tagName+'</span>');
-							if((tagDiv).find('span').filter(function() { return $(this).text() == tag.tagName; }).size()==0){
-								tagDiv.append(tagSpan);
-							};
-						};
-					};
+			var client = gZdbsocket.getConnect();
+			client.connect({}, function(frame){
+				client.subscribe('/services', function(res) {
 					fn_displayServices();
-				},
-				complete:function(res){
-					deferred.resolve(res.responseJSON)
-				}
+				});
 			});
-			return deferred.promise();
 		};
 		//서비스 목록 display
 		function fn_displayServices(){
@@ -310,7 +300,17 @@
 			gCommon.removeOverlay();
 		}
 		function fn_displayTags(){
-			var tagDiv = $('#tagArea'); 
+			var tagDiv = $('#tagArea').html('<span class="tag">태그:</span> <span class="Label white">모든태그</span>'); 
+			if(gTagList){
+				for(var i = 0 ; i < gTagList.length;i++){
+					var tag = gTagList[i];
+					var tagSpan = $('<span class="Label white" data-id="'+tag.id+'">'+tag.tagName+'</span>');
+					if((tagDiv).find('span').filter(function() { return $(this).text() == tag.tagName; }).size()==0){
+						tagDiv.append(tagSpan);
+					};
+				};
+			};
+			
 			tagDiv.find('span.Label').removeClass('selected');
 			
 			if(gSelectedTag!=''){
@@ -323,11 +323,18 @@
 		}
 		function getFilterAndSortServices(serviceList){
 			var list = [];
+			var namespaceList = gSelectedNamespace.getDataSource();
 			
 			for(var i = 0;i < serviceList.length;i++){
 				var ob = serviceList[i];
-				if(gSelectedNamespace !== G_NAMESPACE_ALL && gSelectedNamespace !== ob.namespace){
-					continue;
+				if(gSelectedNamespace !== G_NAMESPACE_ALL){
+					if(gSelectedNamespace !== ob.namespace){
+						 continue;
+					 };
+				}else{
+					if(!gCommon.findObjectByKeyOb(namespaceList,{id:ob.namespace})){
+						continue;
+					};
 				};
 				if(gSelectedTag!=''){
 					var temp = gCommon.findObjectByKeyOb(gTagList,{id:gSelectedTag});
