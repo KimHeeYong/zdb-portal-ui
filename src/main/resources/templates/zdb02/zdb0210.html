@@ -18,6 +18,9 @@
 <th:block layout:fragment="page_js">
 	<script type="text/javascript" src="/script/app/common/cloudzdb-ui-z0200.js"></script>
 	<script type="text/javascript" src="/script/libs/etc/nouislider.min.js"></script>
+	<script src="/script/libs/sockjs/sockjs.js"></script>
+	<script src="/script/libs/sockjs/stomp.js"></script>
+	<script src="/script/app/common/cloudzdb-ui-sock.js"></script>	
 </th:block>
 <th:block layout:fragment="content">
 <!-- location -->
@@ -781,7 +784,7 @@
 								gCommon.alert(res.result.message);
 								return;
 							};
-							fn_getService();	
+							//fn_getService();	
 						}
 					});
 				});
@@ -796,7 +799,7 @@
 						url: '/zdbapi/deleteTag',
 						data: data, 
 						success: function(res){
-							fn_getService();
+							//fn_getService();
 						}
 					});
 				})
@@ -813,7 +816,7 @@
 						url: '/zdbapi/createTag',
 						data: data, 
 						success: function(res){
-				    		fn_getService();
+				    		//fn_getService();
 						}
 					});
 				};
@@ -944,7 +947,7 @@
 				window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
 			}
 			//서비스 정보 조회
-			function fn_getService(){
+			function fn_getServiceFirst(){
 				var deferred = $.Deferred();
 				$a.ajax({
 					url: '/zdbapi/getServiceoverview',
@@ -955,120 +958,35 @@
 							return;
 						};
 						var service = gfn_convertServiceData(res.serviceoverview);
-						
 						gCurrentNamespace = service.namespace;
 						gService = service;
 						gTagList = service.tags;
-						fn_displayService(service);
+						fn_displayService();
+						fn_getServiceCallback();
 						
-						 //redis purpose data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
-						if(gService.serviceType == G_SERVICE_TYPE_REDIS && gService.purpose != 'DATA'){  
-							for(var ti = 0; ti < $('#zdbServiceTabs').getLength(); ti++ ){
-								if($('#zdbServiceTabs').getTabContentByIndex(ti).id == 'tabBackup'){
-									$('#zdbServiceTabs').removeTab(ti);
-								};
-							};
-							$('#tabSystem #divAdvancedConfig').hide();
-						};
-						
-						var rsSpec = gCommon.getObjectByIdx(service.resourceSpecOfPodMap,0)||{};
-						var psSpec = gCommon.getObjectByIdx(service.persistenceSpecOfPodMap,0)||{};
-						$('#configInfo').zdbui_setContents({cpu:rsSpec.cpu,memory:rsSpec.memory,disk:service.persistentVolumeClaims.length==0?'사용안함':psSpec.size});
-						var podData = (function(service){
-							var list = [];
-							var pods = service.pods;
-							for(var i = 0 ; i < pods.length; i++){
-								var pod = pods[i];
-								var condition = gfn_getReadyCondition(pod);
-								var role = ""; 
-								if(gService.serviceType == 'redis'){
-									if(pod.metadata.labels.role == "metrics")continue;
-									else if(pod.metadata.labels.role == 'slave'){
-										role = 'slave(readOnly)'; 
-									}else{
-										role = pod.metadata.labels.role
-									}
-								}else{
-									role = pod.metadata.labels.component;
-								};
-								list.push({
-									name: pod.metadata.name,
-									condition: condition,
-									role: role,
-									node: pod.spec.nodeName,
-									colspanCol: false
-								});	
-							}
-							return list; 
-						}(service));
-						
-						//cpu,memory 셋팅 - 임시 
-						podData = (function(data){
-							var list = [];
-							//return list;//temp
-							for(var i = 0 ; i < data.length;i++){
-								var ob = data[i];
-								$a.ajax({
-									url: '/zdbapi/getPodMetrics',
-									async:false,
-									method:'get',
-									data:{
-										namespace:gParam.namespace,
-										podName:ob.name
-									},
-									success:function(res){
-										try{
-											var cl = res.podMetrics.metricsCpuUsage;
-											var ml = res.podMetrics.metricsMemoryUsage ;
-											var dl = service.diskUsageOfPodMap;
-											if(cl){
-												ob.cpu = (cl.length ? cl[cl.length-1].value:'') / 1000 + ' / ' + service.resourceSpecOfPodMap[ob.name].cpu;
-											};
-											if(ml && ml.length > 0){
-												ob.memory = ((ml.length? ml[ml.length-1].value:'') / (1024*1000)).toFixed(2) + ' / ' + service.resourceSpecOfPodMap[ob.name].memory;
-											};
-											if(gService.serviceType == 'redis' && (ob.role != 'master' || service.persistentVolumeClaims.length == 0)){
-												ob.disk = '사용안함';
-											}else if(dl && dl[ob.name]){
-												ob.disk = (dl[ob.name].used / (1024*1000)).toFixed(2) + " / " + psSpec.size;
-												ob.diskUpdateTime = dl[ob.name].updateTime; 
-											};
-										}catch(e){ 
-											//console.log(e);
-										}
-										list.push(ob);
-									}
-								});
-							};
-							return list;
-						}(podData));
-						//error row 임의 생성
-						var tList = [];
-						for(var i = 0 ; i < podData.length;i++){
-							var pod = podData[i];
-							tList.push(pod);
-							if(pod.condition && pod.condition.status != 'True'){ 
-								var tPod = $.extend({},pod,{colspanCol:true})
-								tList.push(tPod);
-							};
-						};
-						
-						$('#gridResource').alopexGrid('dataSet',tList);//dataset 
-						//tabService end
-						
-						//tabScale 스케일
-						fn_setSlider('memory',gSliderConstants[gParam.serviceType].memory.getIndex(rsSpec.memory));
-						$('#clusterSlaveCount').val(gService.clusterSlaveCount);
-						//todo temp
-						setScaleButton();
-						
+
+						fn_getService();
 					},complete:function(res){
 						deferred.resolve(res.responseJSON);
 					}
 				});
 				return deferred.promise();
 			};
-			
+			//서비스 정보 조회
+			function fn_getService(){
+				var client = gZdbsocket.getConnect();
+				client.connect({}, function(frame){
+					client.subscribe('/service/'+gService.serviceName, function(res) {
+						var re = JSON.parse(res.body);
+						var service = gfn_convertServiceData(re.result.serviceoverview);
+						gCurrentNamespace = service.namespace;
+						gService = service;
+						gTagList = service.tags;
+						fn_displayService();
+						fn_getServiceCallback();
+					});
+				});
+			}
 			function fn_getConnectionInfo(){
 				$a.ajax({
 					url: '/zdbapi/getConnectionInfo',
@@ -1094,8 +1012,111 @@
 					}
 				});
 			};
+			function fn_getServiceCallback(){
+				 //redis purpose data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
+				if(gService.serviceType == G_SERVICE_TYPE_REDIS && gService.purpose != 'DATA'){  
+					for(var ti = 0; ti < $('#zdbServiceTabs').getLength(); ti++ ){
+						if($('#zdbServiceTabs').getTabContentByIndex(ti).id == 'tabBackup'){
+							$('#zdbServiceTabs').removeTab(ti);
+						};
+					};
+					$('#tabSystem #divAdvancedConfig').hide();
+				};
+				
+				var rsSpec = gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{};
+				var psSpec = gCommon.getObjectByIdx(gService.persistenceSpecOfPodMap,0)||{};
+				$('#configInfo').zdbui_setContents({cpu:rsSpec.cpu,memory:rsSpec.memory,disk:gService.persistentVolumeClaims.length==0?'사용안함':psSpec.size});
+				var podData = (function(){
+					var list = [];
+					var pods = gService.pods;
+					for(var i = 0 ; i < pods.length; i++){
+						var pod = pods[i];
+						var condition = gfn_getReadyCondition(pod);
+						var role = ""; 
+						if(gService.serviceType == 'redis'){
+							if(pod.metadata.labels.role == "metrics")continue;
+							else if(pod.metadata.labels.role == 'slave'){
+								role = 'slave(readOnly)'; 
+							}else{
+								role = pod.metadata.labels.role
+							}
+						}else{
+							role = pod.metadata.labels.component;
+						};
+						list.push({
+							name: pod.metadata.name,
+							condition: condition,
+							role: role,
+							node: pod.spec.nodeName,
+							colspanCol: false
+						});	
+					}
+					return list; 
+				}());
+				
+				//cpu,memory 셋팅 - 임시 
+				podData = (function(data){
+					var list = [];
+					//return list;//temp
+					for(var i = 0 ; i < data.length;i++){
+						var ob = data[i];
+						$a.ajax({
+							url: '/zdbapi/getPodMetrics',
+							async:false,
+							method:'get',
+							data:{
+								namespace:gParam.namespace,
+								podName:ob.name
+							},
+							success:function(res){
+								try{
+									var cl = res.podMetrics.metricsCpuUsage;
+									var ml = res.podMetrics.metricsMemoryUsage ;
+									var dl = gService.diskUsageOfPodMap;
+									if(cl){
+										ob.cpu = (cl.length ? cl[cl.length-1].value:'') / 1000 + ' / ' + gService.resourceSpecOfPodMap[ob.name].cpu;
+									};
+									if(ml && ml.length > 0){
+										ob.memory = ((ml.length? ml[ml.length-1].value:'') / (1024*1000)).toFixed(2) + ' / ' + gService.resourceSpecOfPodMap[ob.name].memory;
+									};
+									if(gService.serviceType == 'redis' && (ob.role != 'master' || gService.persistentVolumeClaims.length == 0)){
+										ob.disk = '사용안함';
+									}else if(dl && dl[ob.name]){
+										ob.disk = (dl[ob.name].used / (1024*1000)).toFixed(2) + " / " + psSpec.size;
+										ob.diskUpdateTime = dl[ob.name].updateTime; 
+									};
+								}catch(e){ 
+									//console.log(e);
+								}
+								list.push(ob);
+							}
+						});
+					};
+					return list;
+				}(podData));
+				//error row 임의 생성
+				var tList = [];
+				for(var i = 0 ; i < podData.length;i++){
+					var pod = podData[i];
+					tList.push(pod);
+					if(pod.condition && pod.condition.status != 'True'){ 
+						var tPod = $.extend({},pod,{colspanCol:true})
+						tList.push(tPod);
+					};
+				};
+				
+				$('#gridResource').alopexGrid('dataSet',tList);//dataset 
+				//tabService end
+				
+				//tabScale 스케일
+				fn_setSlider('memory',gSliderConstants[gParam.serviceType].memory.getIndex(rsSpec.memory));
+				$('#clusterSlaveCount').val(gService.clusterSlaveCount);
+				//todo temp
+				setScaleButton();
+			}
 			//서비스 display
-			function fn_displayService(ob){
+			function fn_displayService(){
+				var ob = gService;
 				var serviceDiv = $('#divService');
 				
 				serviceDiv.html('');
@@ -1189,7 +1210,7 @@
 								return;
 							};
 							gCommon.alert('스케일 정보를 수정 요청 하였습니다.',function(){
-								fn_getService(); 
+								//fn_getService(); 
 								$('#zdbServiceTabs').setTabByContent('#tabService');
 							});
 						}
@@ -1211,7 +1232,7 @@
 								return;
 							};
 							gCommon.alert('스케일 정보를 수정 요청 하였습니다.',function(){
-								fn_getService();
+								//fn_getService();
 							});
 						}
 					});
@@ -1699,7 +1720,7 @@
 				fn_getEventInfo();
 			});
 			//page Start
-			fn_getService().done(function(){
+			fn_getServiceFirst().done(function(){
 				var cookieTabId = $.cookie('selected2010tab')||'tabService';
 				$('#zdbServiceTabs').setTabByContent('#'+cookieTabId);
 			});

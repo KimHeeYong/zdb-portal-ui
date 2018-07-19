@@ -274,10 +274,7 @@
 			client.connect({}, function(frame){
 				client.subscribe('/services', function(res) {
 					
-					console.log("===================================");
 					var re = JSON.parse(res.body);
-					console.log(re.result);
-					console.log("===================================");
 					gServiceList = re.result.serviceoverviews;
 					gfn_convertServiceDatas(gServiceList);
 					//gTagList = res.tags;
