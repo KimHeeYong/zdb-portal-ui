@@ -240,6 +240,7 @@
 				}
 			});	
 
+			fn_getServicesFirst();
 			fn_getServices();
 			$(window).on('beforeunload', function() {
 				gZdbsocket.disconnect();
@@ -255,13 +256,31 @@
 			gCommon.movePage('/zdb02/zdb0210',param);
 		};		
 		//서비스 목록 조회 && 태그 조회
+		function fn_getServicesFirst(){
+			$a.ajax({
+				url: '/zdbapi/getServiceoverviews',
+				data: {namespace:gSelectedNamespace} , 
+				success: function(res){
+					gServiceList = res.serviceoverviews;
+					gfn_convertServiceDatas(gServiceList);
+					gTagList = res.tags;
+					fn_displayServices();
+				}
+			});
+		}
+		//서비스 목록 조회 && 태그 조회
 		function fn_getServices(){
 			var client = gZdbsocket.getConnect();
 			client.connect({}, function(frame){
 				client.subscribe('/services', function(res) {
-					gServiceList = res.serviceoverviews;
+					
+					console.log("===================================");
+					var re = JSON.parse(res.body);
+					console.log(re.result);
+					console.log("===================================");
+					gServiceList = re.result.serviceoverviews;
 					gfn_convertServiceDatas(gServiceList);
-					gTagList = res.tags;
+					//gTagList = res.tags;
 					fn_displayServices();
 				});
 			});
@@ -274,7 +293,7 @@
 			var dispServiceDiv = $('<div/>');
 			
 			var namespaces = fn_getViewNamespaces();
-			var filterList = getFilterAndSortServices(gServiceList);
+			var filterList = getFilterAndSortServices();
 			
 			for(var i = 0; i < filterList.length; i++){
 				var namespace = namespaces[i];
@@ -324,12 +343,13 @@
 				tagDiv.find('span.Label:first').addClass('selected');
 			};
 		}
-		function getFilterAndSortServices(serviceList){
+		function getFilterAndSortServices(){
 			var list = [];
-			var namespaceList = gSelectedNamespace.getDataSource();
+			var namespaceList = gNamespaces.getDataSource();
 			
-			for(var i = 0;i < serviceList.length;i++){
-				var ob = serviceList[i];
+			console.log(gServiceList.length);
+			for(var i = 0;i < gServiceList.length;i++){
+				var ob = gServiceList[i];
 				if(gSelectedNamespace !== G_NAMESPACE_ALL){
 					if(gSelectedNamespace !== ob.namespace){
 						 continue;

@@ -1,5 +1,5 @@
 var gZdbsocket = {
-		url : 'https://api.cloudzcp.io/zdbsocket',
+		url : 'http://localhost:8080/servicesjs',
 		client : null,
 		getConnect : function(){
 			var socket = new SockJS(this.url);

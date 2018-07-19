@@ -65,7 +65,6 @@ var gCommon = $a.page(function(){
 				dataType:'json',
 			    error: function(res) { // if error occured
 			    	if(res.status == 0){
-			    		alert('로그인 후 이용하여 주기시 바랍니다.');
 		    			location.href = location.href;
 			    	}else{
 			    		gCommon.alert('시스템 에러가 발생하였습니다. <br/>')
