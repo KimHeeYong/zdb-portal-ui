@@ -51,7 +51,6 @@ function gfn_convertServiceData(data){
 	}
 	//cpu 값 설정
 	if(data.resourceSpecOfPodMap){
-		console.log('if');
 		ob.resourceSpecOfPodMap = data.resourceSpecOfPodMap;
 		for(var idx in ob.resourceSpecOfPodMap){
 			var pm = ob.resourceSpecOfPodMap[idx];
@@ -59,7 +58,6 @@ function gfn_convertServiceData(data){
 				pm.cpu = (pm.cpu * 1000) + 'm'; 
 			};
 		};
-		
 	};
 	var tagList = [];
 	for(var i = 0 ; i < data.tags.length;i++){
