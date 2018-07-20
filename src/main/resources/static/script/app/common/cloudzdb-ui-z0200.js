@@ -49,12 +49,24 @@ function gfn_convertServiceData(data){
 			ob.updTime = moment().diff(moment(ob.lastTransitionTime),'hours') + 'hrs ago';
 		};
 	}
+	//cpu 값 설정
+	if(data.resourceSpecOfPodMap){
+		console.log('if');
+		ob.resourceSpecOfPodMap = data.resourceSpecOfPodMap;
+		for(var idx in ob.resourceSpecOfPodMap){
+			var pm = ob.resourceSpecOfPodMap[idx];
+			if(pm.cpu.indexOf('m') < 0){
+				pm.cpu = (pm.cpu * 1000) + 'm'; 
+			};
+		};
+		
+	};
 	var tagList = [];
 	for(var i = 0 ; i < data.tags.length;i++){
 		tagList.push(data.tags[i].tagName);
 	};
 	ob.tagNames = tagList.join();
-	ob.status = (data.status||'').toLowerCase()
+	ob.status = (data.status||'').toLowerCase();
 	return $.extend({},data,ob);
 }
 function gfn_getReadyCondition(pod){
