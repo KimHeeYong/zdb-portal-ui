@@ -1,5 +1,5 @@
 var gZdbsocket = {
-		url : 'http://localhost:8080/servicesjs',
+		url : gApiServerUrl+'/servicesjs',
 		client : null,
 		getConnect : function(){
 			var socket = new SockJS(this.url);
