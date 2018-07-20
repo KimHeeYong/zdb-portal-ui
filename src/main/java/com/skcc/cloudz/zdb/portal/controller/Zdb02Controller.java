@@ -25,15 +25,18 @@ public class Zdb02Controller {
 
 	@Autowired ZdbApiService zdbApiService;
 	@Value("${grafana.url}") String grafanaUrl;
+	@Value("${zdb-api-server.url}") String apiServerUrl;
 	
 	@GetMapping("zdb0200")
 	public ModelAndView zdb0200(HttpServletRequest request,HttpServletResponse response) {
 		ModelAndView mav = new ModelAndView();
+		mav.addObject("apiServerUrl",apiServerUrl);
 		return mav;
 	}
 	@RequestMapping("zdb0210")
 	public ModelAndView zdb0210R(HttpServletRequest request,HttpServletResponse response) {
 		ModelAndView mav = new ModelAndView();
+		mav.addObject("apiServerUrl",apiServerUrl);
 		mav.addObject("grafanaUrl",grafanaUrl);
 		return mav;
 	}

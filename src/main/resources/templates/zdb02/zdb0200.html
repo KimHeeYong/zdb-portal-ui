@@ -4,6 +4,11 @@
     <title>서비스 목록</title>
 </th:block>
 <th:block layout:fragment="page_js">
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		var gApiServerUrl = [[${apiServerUrl}]];
+		/*]]>*/
+	</script>
 	<script src="/script/app/common/cloudzdb-ui-z0200.js"></script>
 	<script src="/script/libs/sockjs/sockjs.js"></script>
 	<script src="/script/libs/sockjs/stomp.js"></script>

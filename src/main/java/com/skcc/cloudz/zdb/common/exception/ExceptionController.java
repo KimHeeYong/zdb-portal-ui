@@ -10,8 +10,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.skcc.cloudz.zdb.config.CommonConstants;
 import com.skcc.cloudz.zdb.portal.domain.dto.AjaxResultDto;
-import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
-import com.zdb.core.domain.IResult;
 
 import lombok.extern.slf4j.Slf4j;
 
