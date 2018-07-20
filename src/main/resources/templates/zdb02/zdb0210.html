@@ -736,6 +736,9 @@
 			function fn_displayTabs(index){
 				var tabId = $('#zdbServiceTabs').getTabContentByIndex(index).id;
 				fn_setSelected2010Tab(tabId);
+				//탭 모니터내의 스크립트 실행이 많아서 iframe들을 초기화
+				$('#tabMonitor').find('iframe').attr('src','');
+				
 				switch(tabId){
 					case "tabService":
 						$("#gridResource").alopexGrid( "viewUpdate" );
@@ -1279,9 +1282,7 @@
 
 			/*tabMonitor start 모니터링*/
 			function fn_getMonitoring(){
-				fn_getService().done(function(){
-					fn_getPanels(gService);
-				});
+				fn_getPanels(gService);
 			};
 			function fn_getPanels(service){
 				if(service.serviceType == "mariadb") {

@@ -4,6 +4,7 @@ var gZdbsocket = {
 		getConnect : function(){
 			var socket = new SockJS(this.url);
 			this.client = Stomp.over(socket);
+			this.client.debug = null;
 			return this.client;
 		},
 		disconnect : function(){
