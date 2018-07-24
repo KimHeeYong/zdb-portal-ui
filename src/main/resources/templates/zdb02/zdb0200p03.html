@@ -1,0 +1,45 @@
+<div class="popup-wrap">
+	<div class="popup-mcontents">
+		<div class="popup-cont">
+			<form id="credentialPopForm" name="credentialPopForm">
+			<div> 
+				<div>서비스를 삭제하시려면</div>
+				<div>서비스의 Credential을 입력하세요</div>
+				<input class="Textinput" type="text" id="credential" name="credential"></input> 
+				<p data-for="credential" class="warn-text"></p>
+			</div>
+			</form>
+		</div>
+		<!--button-->
+		<div class="popup-btn__wrap">
+			<button class="Button btn serviceDel">저장</button>
+			<button class="Button btn popClose">닫기</button>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+$a.page(function() {
+    this.init = function(id, param) {
+    	var form = $('form[name=credentialPopForm]');
+    	form.validator({
+		    elements :{ 
+		        'credential': {rule:{required:true,equalTo:param.credential}}
+		    },
+		    message:{
+		    	'equalTo': "credential이 일치하지 않습니다."
+		    }
+		});	
+    	$('.serviceDel').on('click',function(){
+    		if(!form.validate()){
+				return;
+			};
+			$a.close('Y');
+    	});
+    	
+    	$('.popClose').on('click',function(){
+    		$a.close();
+    	});
+    }
+});
+</script>
