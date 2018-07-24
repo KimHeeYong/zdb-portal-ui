@@ -70,6 +70,10 @@
 								<th>버전</th>
 								<td data="version"></td>
 							</tr>
+							<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
+								<th>Character set</th>
+								<td data="characterSet"></td>
+							</tr>							
 							<tr th:if="${#request.getParameter('serviceType')} == 'redis'">
 								<th>용도</th>
 								<td data="purpose"></td>
@@ -81,6 +85,10 @@
 							<tr>
 								<th>Public 접근 허용</th>
 								<td data="exposeTypeStr"></td>
+							</tr>
+							<tr>
+								<th>Cluster Enable</th>
+								<td data="clusterEnabled"></td>
 							</tr>
 							<tr>
 								<th>할당메모리</th>

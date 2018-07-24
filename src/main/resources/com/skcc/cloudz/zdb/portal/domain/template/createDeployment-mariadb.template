@@ -2,7 +2,7 @@
  	"serviceType": ${serviceType},
  	"serviceName": ${serviceName},
  	"namespace": ${namespace},
- 	"clusterEnabled": true,
+ 	"clusterEnabled": ${clusterEnabled},
  	"backupEnabled": ${backupEnabled},
  	"podSpec": [
  		{
@@ -34,5 +34,6 @@
  	}],
  	"mariaDBConfig": {
  		"mariadbDatabase": ${dbName}
- 	}
+ 	},
+ 	"characterSet":${characterSet}
  }

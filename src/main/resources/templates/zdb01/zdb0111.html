@@ -113,6 +113,15 @@
 								</td>
 							</tr>
 							<tr>
+								<th>Cluster enable</th>
+								<td>
+									<div>
+										<input type="radio" name="clusterEnabled" value="true" checked="checked">true
+										<input type="radio" name="clusterEnabled" value="false">false
+									</div>
+								</td>
+							</tr>							
+							<tr>
 								<th class="ht140">할당메모리</th>
 								<td>
 									<div class="info-wrap">
@@ -157,6 +166,20 @@
 								</td>
 							</tr>
 							<tr>
+								<th>Character set</th>
+								<td>
+									<div class="Divselect">
+										<select id="characterSet" name="characterSet">
+											<option value="utf8">utf8</option>
+											<option value="euckr">euckr</option>
+											<option value="utf8mb4">utf8mb4</option>
+											<option value="utf16">utf16</option>
+										</select>
+										<span></span>
+									</div>
+								</td>
+							</tr>
+							<tr>
 								<th>백업 여부</th>
 								<td>
 									<div class="onoff-wrap" id="backupOnOff"><button class="Button btn-on">ON</button></div>
@@ -171,8 +194,17 @@
 								<td>
 									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-on">ON</button></div>
 									<div class="hide">
-										<input type="radio" name="exposeType" value="public" checked="checked">public</input>
-										<input type="radio" name="exposeType" value="private"/>private</input>
+										<input type="radio" name="exposeType" value="public" checked="checked">public
+										<input type="radio" name="exposeType" value="private">private
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>Cluster enable</th>
+								<td>
+									<div>
+										<input type="radio" name="clusterEnabled" value="true" checked="checked">true
+										<input type="radio" name="clusterEnabled" value="false">false
 									</div>
 								</td>
 							</tr>
