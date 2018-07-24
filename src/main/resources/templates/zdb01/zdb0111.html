@@ -353,9 +353,9 @@ $a.page(function() {
 		$('#clusterOnOff.onoff-wrap > button').click(function(e){
 			e.preventDefault();
 			if($(this).hasClass('btn-on')) {
-				setClusterEnabled('false');
-			} else {
 				setClusterEnabled('true');
+			} else {
+				setClusterEnabled('false');
 			}
 		});
 		
