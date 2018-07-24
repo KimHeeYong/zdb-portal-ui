@@ -45,10 +45,10 @@ public class Result {
 	
 	private List<EventMetaData> serviceEvents;
 
-	private List<BackupEntity> backupList;
+	private List<BackupEntity> BackupList;
 	
 	private String[] podLog;
 	
-	private ScheduleEntity getSchedule; 
+	private ScheduleEntity BackupDetail; 
 	
 }

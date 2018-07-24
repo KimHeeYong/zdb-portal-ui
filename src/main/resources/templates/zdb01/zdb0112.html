@@ -71,7 +71,7 @@
 								<td data="version"></td>
 							</tr>
 							<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
-								<th>Character set</th>
+								<th>캐릭터셋</th>
 								<td data="characterSet"></td>
 							</tr>							
 							<tr th:if="${#request.getParameter('serviceType')} == 'redis'">
@@ -87,7 +87,7 @@
 								<td data="exposeTypeStr"></td>
 							</tr>
 							<tr>
-								<th>Cluster Enable</th>
+								<th>클러스터</th>
 								<td data="clusterEnabled"></td>
 							</tr>
 							<tr>

@@ -113,9 +113,10 @@
 								</td>
 							</tr>
 							<tr>
-								<th>Cluster enable</th>
+								<th>클러스터</th>
 								<td>
-									<div>
+									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="hide">
 										<input type="radio" name="clusterEnabled" value="true" checked="checked">true
 										<input type="radio" name="clusterEnabled" value="false">false
 									</div>
@@ -166,7 +167,7 @@
 								</td>
 							</tr>
 							<tr>
-								<th>Character set</th>
+								<th>캐릭터셋</th>
 								<td>
 									<div class="Divselect">
 										<select id="characterSet" name="characterSet">
@@ -200,9 +201,10 @@
 								</td>
 							</tr>
 							<tr>
-								<th>Cluster enable</th>
+								<th>클러스터</th>
 								<td>
-									<div>
+									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="hide">
 										<input type="radio" name="clusterEnabled" value="true" checked="checked">true
 										<input type="radio" name="clusterEnabled" value="false">false
 									</div>
@@ -347,6 +349,15 @@ $a.page(function() {
 				setExposeType('public');
 			}
 		});
+		//클러스터 on off button
+		$('#clusterOnOff.onoff-wrap > button').click(function(e){
+			e.preventDefault();
+			if($(this).hasClass('btn-on')) {
+				setClusterEnabled('false');
+			} else {
+				setClusterEnabled('true');
+			}
+		});
 		
 		//슬라이더 값
 		var sliderConstants = gSliderConstants[gParam.serviceType];
@@ -378,6 +389,7 @@ $a.page(function() {
 		form.zdbui_setContents(gParam);
 		setExposeType(gParam.exposeType);
 		setBackupEnabled(gParam.backupEnabled);
+		setClusterEnabled(gParam.clusterEnabled);
 		if(gParam.serviceType==G_SERVICE_TYPE_REDIS){
 			setPurpose(gParam.purpose||'SESSION');
 		};
@@ -397,6 +409,15 @@ $a.page(function() {
 			};
 			
 		}
+		function setClusterEnabled(value){
+			if(value=='false'){
+				$('input[name=clusterEnabled]').zdbui_setComponent('false');
+				$('#clusterOnOff.onoff-wrap > button').removeClass('btn-on').addClass('btn-off').text('OFF');
+			}else{
+				$('input[name=clusterEnabled]').zdbui_setComponent('true');
+				$('#clusterOnOff.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
+			}
+		};		
 		function setBackupEnabled(value){
 			if(value=='false'){
 				$('input[name=backupEnabled]').zdbui_setComponent('false');

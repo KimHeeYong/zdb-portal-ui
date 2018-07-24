@@ -232,7 +232,7 @@
 						</div>
 					</div>
 				</li>
-				<li th:if="${#request.getParameter('serviceType')} == 'redis'">
+				<li th:if="${#request.getParameter('serviceType')} == 'redis'" id="divScaleOut">
 					<h3 class="form-title">Scale In/Out</h3>
 					<div class="accor-contents__wrap">
 						<table class="Table Form-type">
@@ -771,16 +771,27 @@
 				gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
 			});			
 			$('#deleteService').on('click',function(){
-				gCommon.confirm('서비스를 삭제 하시겠습니까?',function(res){
-					$a.ajax({
-						url: '/zdbapi/deleteServiceInstance',
-						data:gParam,
-						success: function(res){
-							gCommon.alert('삭제 요청이 완료 되었습니다.');
-							gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
-						}
-					})
-				});
+			    $a.popup({
+			        url: "/zdb02/zdb0200p03",
+			        data:{credential:$("#credential").val()},
+			        iframe: false,
+			        width: 500,
+			        height: 300,
+			        movable:true,
+			        title : '',
+			        callback : function(res){
+			        	if(res == "Y"){
+							$a.ajax({
+								url: '/zdbapi/deleteServiceInstance',
+								data:gParam,
+								success: function(res){
+									gCommon.alert('삭제 요청이 완료 되었습니다.');
+									gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
+								}
+							})
+			        	};
+			        }
+			    });
 			});
 			$('#restartService').on('click',function(){
 				gCommon.confirm('서비스를 재시작 하시겠습니까?',function(res){
@@ -1022,13 +1033,20 @@
 			};
 			function fn_getServiceCallback(){
 				 //redis purpose data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
-				if(gService.serviceType == G_SERVICE_TYPE_REDIS && gService.purpose != 'DATA'){  
-					for(var ti = 0; ti < $('#zdbServiceTabs').getLength(); ti++ ){
-						if($('#zdbServiceTabs').getTabContentByIndex(ti).id == 'tabBackup'){
-							$('#zdbServiceTabs').removeTab(ti);
+				if(gService.serviceType == G_SERVICE_TYPE_REDIS){
+					
+					if(gService.purpose != 'DATA'){
+						for(var ti = 0; ti < $('#zdbServiceTabs').getLength(); ti++ ){
+							if($('#zdbServiceTabs').getTabContentByIndex(ti).id == 'tabBackup'){
+								$('#zdbServiceTabs').removeTab(ti);
+							};
 						};
+						$('#tabSystem #divAdvancedConfig').hide();
 					};
-					$('#tabSystem #divAdvancedConfig').hide();
+					
+					if(gService.clusterEnabled != true){
+						$('li#divScaleOut').hide();
+					};
 				};
 				
 				var rsSpec = gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{};

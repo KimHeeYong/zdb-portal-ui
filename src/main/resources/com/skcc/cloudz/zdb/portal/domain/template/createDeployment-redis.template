@@ -4,6 +4,7 @@
 	"serviceName": ${serviceName},
 	"namespace": ${namespace},
 	"backupEnabled": ${backupEnabled},
+	"clusterEnabled": ${clusterEnabled},
 	"podSpec": [{
 		"podType": "master",
 		"resourceSpec": [
