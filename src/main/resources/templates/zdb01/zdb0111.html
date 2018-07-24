@@ -313,7 +313,7 @@ $a.page(function() {
 				return;
 			};
 			
-			var dt = $.extend({},param,{($("input[name=clusterEnabled]")==true),memory:sliderConstants.memory.value[param.podSpecIdx],cpu:sliderConstants.cpu.value[param.podSpecIdx]});
+			var dt = $.extend({},param,{clusterEnabled:($("input[name=clusterEnabled]:checked").val()=="true"),memory:sliderConstants.memory.value[param.podSpecIdx],cpu:sliderConstants.cpu.value[param.podSpecIdx]});
 			$a.ajax({
 				url: '/zdbapi/isAvailable',
 				data: dt,
