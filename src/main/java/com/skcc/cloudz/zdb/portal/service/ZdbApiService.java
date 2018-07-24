@@ -2,6 +2,7 @@ package com.skcc.cloudz.zdb.portal.service;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -45,12 +46,16 @@ public class ZdbApiService{
     
 	public List<Namespace> getNamespaces(Map<String,String> param) {
 		List<Namespace> list = Collections.emptyList();
-		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_GET_NAMESPACES, HttpMethod.GET, null,  ZdbRestDTO.class).getBody();
+		Map<String,Object> ob = new HashMap<>();
+		Map zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_GET_NAMESPACES, HttpMethod.GET, null,  Map.class).getBody();
 		
+		System.out.println("==========");
+		System.out.println(zdbRestDTO);
+		/*
 		if(zdbRestDTO != null && zdbRestDTO.getResult() != null) {
 			list = zdbRestDTO.getResult().getNamespaces();
 		};
-		
+		*/
 		return list;
 	}
 	

@@ -59,7 +59,6 @@ var gCommon = $a.page(function(){
 	this.init = function(){ //초기화 루틴 수행
 		gSelectedNamespace = $.cookie('selectedNamespace')||G_NAMESPACE_ALL;
 		$a.ajax = function(opt){
-			
 			var defOpt = {
 				type:"POST",
 				dataType:'json',
@@ -85,7 +84,16 @@ var gCommon = $a.page(function(){
 			    }
 			};
 			var option = $.extend({},defOpt,opt);
-			  $.ajax(option);
+			if(opt.success){
+				option.success = function(res){
+					if(res && res.result && res.result.resultCode == 'exception'){
+						gCommon.alert(res.result.resultMessage);
+					}else{
+						opt.success(res);
+					}
+				};
+			};
+			$.ajax(option);
 		}
 		$(document).ajaxStart(function(as){
 			gCommon.overlay(as);
@@ -150,22 +158,24 @@ var gCommon = $a.page(function(){
 			success:function(res){
 				var list = res.namespaces;
 				var namespaceList = [];
-				for(var i = 0 ; i < list.length; i++){
-					var ob = list[i];
-					if(hardFilterList.indexOf(ob.metadata.name) > -1){
-						continue;
+				if(list && list.length > 0){
+					for(var i = 0 ; i < list.length; i++){
+						var ob = list[i];
+						if(hardFilterList.indexOf(ob.metadata.name) > -1){
+							continue;
+						};
+						namespaceList.push({
+							id:ob.metadata.name,
+							text:ob.metadata.name
+						});
 					};
-					namespaceList.push({
-						id:ob.metadata.name,
-						text:ob.metadata.name
-					});
+					if(opt.incAll){
+						namespaceList.push({
+							id:G_NAMESPACE_ALL,
+							text:'전체'
+						});
+					}
 				};
-				if(opt.incAll){
-					namespaceList.push({
-						id:G_NAMESPACE_ALL,
-						text:'전체'
-					});
-				}
 				selector.setDataSource(namespaceList);
 			}
 		});	

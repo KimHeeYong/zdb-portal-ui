@@ -97,7 +97,9 @@
 						  }); 
 			if(gNamespaces.text()==''){
 				gNamespaces.select(0);
+				if(gNamespaces.text() == '')return;
 			};	
+			
 			if($.cookie('selected2000listType')){
 				fn_setSelected2000ListType($.cookie('selected2000listType'));
 			};
