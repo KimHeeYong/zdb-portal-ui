@@ -3,16 +3,10 @@ package com.skcc.cloudz.zdb.portal.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.skcc.cloudz.zdb.common.security.service.SecurityService;
-import com.skcc.cloudz.zdb.common.security.vo.OpenIdConnectUserDetailsVo;
-import com.skcc.cloudz.zdb.portal.service.ZdbApiService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,24 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/zdb02/")
 public class Zdb02Controller {
 
-	@Autowired ZdbApiService zdbApiService;
-	@Value("${grafana.url}") String grafanaUrl;
-	@Value("${zdb-api-server.url}") String apiServerUrl;
-	@Autowired SecurityService securityService;
-	
 	@GetMapping("zdb0200")
 	public ModelAndView zdb0200(HttpServletRequest request,HttpServletResponse response) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("apiServerUrl",apiServerUrl);
 		return mav;
 	}
 	@RequestMapping("zdb0210")
 	public ModelAndView zdb0210R(HttpServletRequest request,HttpServletResponse response) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("apiServerUrl",apiServerUrl);
-		mav.addObject("grafanaUrl",grafanaUrl);
-		OpenIdConnectUserDetailsVo userInfo = securityService.getUserDetails();
-		mav.addObject("userId", userInfo.getUserId());
 		return mav;
 	}
 	@RequestMapping("zdb0200p01")

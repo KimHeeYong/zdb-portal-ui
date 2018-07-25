@@ -18,7 +18,9 @@
 <th:block layout:fragment="page_js">
 	<script type="text/javascript" th:inline="javascript">
 		/*<![CDATA[*/
-		var gApiServerUrl = [[${apiServerUrl}]];
+		var gApiServerUrl = [[${@environment.getProperty('zdb-api-server.url')}]];
+		var gGrafanaUrl = [[${@environment.getProperty('grafana.url')}]];
+		var gUserId = [[${session.userInfo.userId}]];
 		/*]]>*/
 	</script>
 	<script type="text/javascript" src="/script/app/common/cloudzdb-ui-z0200.js"></script>
@@ -26,6 +28,7 @@
 	<script src="/script/libs/sockjs/sockjs.js"></script>
 	<script src="/script/libs/sockjs/stomp.js"></script>
 	<script src="/script/app/common/cloudzdb-ui-sock.js"></script>	
+	
 </th:block>
 <th:block layout:fragment="content">
 <!-- location -->
@@ -707,12 +710,6 @@
 		
 	</div>
 </div>
-<script type="text/javascript" th:inline="javascript">
-	/*<![CDATA[*/
-	var gGrafanaUrl = [[${grafanaUrl}]];
-	var gUserId = [[${userId}]];
-	/*]]>*/
-</script>
 <script type="text/javascript">
 	var gCurrentNamespace = '';
 	var gNamespaces = null;
