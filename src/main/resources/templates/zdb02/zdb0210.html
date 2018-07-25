@@ -710,6 +710,7 @@
 <script type="text/javascript" th:inline="javascript">
 	/*<![CDATA[*/
 	var gGrafanaUrl = [[${grafanaUrl}]];
+	var gUserId = [[${userId}]];
 	/*]]>*/
 </script>
 <script type="text/javascript">
@@ -1310,7 +1311,8 @@
 			function fn_getPanels(service){
 				if(service.serviceType == "mariadb") {
 					$('#advancedMonitoring').attr('href', gGrafanaUrl + "/d/zdbmaria1/mariadb-advanced?refresh=1m&orgId=1"
-							+ "&var-namespace="+ service.namespace
+							+ "&var-user" + gUserId
+							+ "&var-namespace=" + service.namespace
 							+ "&var-mariadbservice=" + service.serviceName + "-mariadb");
 					var iframeSrc = gGrafanaUrl + "/d-solo/zdbmaria2/mariadb-summary?refresh=1m&orgId=1"
 						+ "&var-namespace=" + service.namespace 
@@ -1330,7 +1332,8 @@
 					$('#panelIothread').find('iframe').attr('src',iframeSrc + "&panelId=10");
 				} else if (service.serviceType == "redis") {
 					$('#advancedMonitoring').attr('href', gGrafanaUrl + "/d/zdbredis1/redis-advanced?refresh=1m&orgId=1"
-							+ "&var-namespace="+ service.namespace
+							+ "&var-user" + gUserId
+							+ "&var-namespace=" + service.namespace
 							+ "&var-redisservice=" + service.pods[0].spec.containers[0].name + "-master");
 					var iframeSrc = gGrafanaUrl + "/d-solo/zdbredis2/redis-summary?refresh=1m&orgId=1"
 						+ "&var-namespace=" + service.namespace 
