@@ -100,7 +100,9 @@ var gCommon = $a.page(function(){
 		}).ajaxStop(function(ae) { 
 			gCommon.removeOverlay(ae);
 		});
+		//gParam 에 get파라미터 셋팅
 		gParam = this.getParameterJson();
+		//AlopexGrid 디폴트 셋팅 ( contextMenu disable)
 		AlopexGrid.setup({
 			enableContextMenu : false,
 			enableDefaultContextMenu : false
