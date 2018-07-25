@@ -132,7 +132,7 @@
 						               	<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
 					               	</td>                                                                                         
 				                </tr>
-				                <tr>
+				                <tr class="slaveConnection">
 					               	<td>
 					               		<span class="info-cnt__title">Slave</span>
 										<div class="info-radio__wrap">
@@ -171,7 +171,7 @@
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                                                                                         
 				                </tr>
-				                <tr>
+				                <tr class="slaveConnection">
 					               	<td>
 					               	    <span class="info-cnt__title">Slave</span>
 										<div class="info-radio__wrap">
@@ -1025,7 +1025,12 @@
 							$('.publicConnectionInfo').hide();
 						}else{
 							$('.publicConnectionInfo').show();
-						}
+						};
+						
+						if(gService.clusterEnabled != true){
+							$('#connectionInfoTable').find('tr.slaveConnection').remove();
+							$('#connectionInfoTable').find('th[rowspan]').removeAttr('rowspan');
+						};
 					}
 				});
 			};
