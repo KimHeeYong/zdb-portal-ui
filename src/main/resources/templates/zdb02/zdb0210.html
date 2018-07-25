@@ -126,7 +126,7 @@
 						               		<button class="Button line-btn connectionStringCopy">복사</button>
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">	
-						               		<input type="text" class="Textinput" name="privateslaveConnectionLine" readonly="readonly"></input>     
+						               		<input type="text" class="Textinput" name="privatemasterConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button line-btn connectionLineCopy">복사</button>                          
 						               	</div>
 						               	<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
@@ -1530,6 +1530,9 @@
 				fitTableWidth :true,
 				height: 400,
 				columnMapping : [
+					{ title:'백업종류', key : 'scheduleYn' , width: '50px', align: 'center',render:function(value,data,render,mapping){
+						return value=='Y' ? '스케쥴링' : '온디맨드';
+					}},
 					{ title:'요청시간', key : 'acceptedDatetime' , width: '130px', align: 'center',render:function(value,data,render,mapping){
 						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
 						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
@@ -1539,6 +1542,10 @@
 						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
 					}},
 					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
+						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
+						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
+					}},
+					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
 						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
 						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
 					}},
@@ -1572,8 +1579,8 @@
 				],
 				footer: {
 					footerMapping: [
-						{ columnIndex: 2, title:'백업 파일 사이즈 합계: ', align:'center'},
-						{ columnIndex: 3, align:'center',render:function(value,data,render,mapping){
+						{ columnIndex: 3, title:'백업 파일 사이즈 합계: ', align:'center'},
+						{ columnIndex: 5, align:'center',render:function(value,data,render,mapping){
 							var rawData = AlopexGrid.trimData(value);
 							var validData = [];
 							var totalValue = 0;
