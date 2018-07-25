@@ -101,6 +101,10 @@ var gCommon = $a.page(function(){
 			gCommon.removeOverlay(ae);
 		});
 		gParam = this.getParameterJson();
+		AlopexGrid.setup({
+			enableContextMenu : false,
+			enableDefaultContextMenu : false
+		});
 	};
 	this.setSelectedNamespace = function(val){
 		gSelectedNamespace = val;
