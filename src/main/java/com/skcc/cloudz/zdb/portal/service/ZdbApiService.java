@@ -294,7 +294,7 @@ public class ZdbApiService{
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_SCHEDULE,ZdbRestDTO.class,param);
 		
 		if(zdbRestDTO!=null) {
-			result = zdbRestDTO.getResult().getBackupDetail();
+			result = zdbRestDTO.getResult().getSchedule();
 		};
 		return result;
 	}

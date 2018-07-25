@@ -86,8 +86,10 @@ var gCommon = $a.page(function(){
 			var option = $.extend({},defOpt,opt);
 			if(opt.success){
 				option.success = function(res){
-					if(res && res.result && res.result.resultCode == 'exception'){
-						gCommon.alert(res.result.resultMessage);
+					if(res && res.result && (res.result.resultCode == 'exception')){
+						gCommon.alert(res.result.resultMessage);							
+					}else if(res && res.result && (res.result.code == 4)){
+						gCommon.alert(res.result.message);
 					}else{
 						opt.success(res);
 					}
