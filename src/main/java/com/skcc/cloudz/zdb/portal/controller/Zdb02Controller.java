@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.skcc.cloudz.zdb.common.security.service.SecurityService;
+import com.skcc.cloudz.zdb.common.security.vo.OpenIdConnectUserDetailsVo;
 import com.skcc.cloudz.zdb.portal.service.ZdbApiService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ public class Zdb02Controller {
 	@Autowired ZdbApiService zdbApiService;
 	@Value("${grafana.url}") String grafanaUrl;
 	@Value("${zdb-api-server.url}") String apiServerUrl;
+	@Autowired SecurityService securityService;
 	
 	@GetMapping("zdb0200")
 	public ModelAndView zdb0200(HttpServletRequest request,HttpServletResponse response) {
@@ -38,6 +41,8 @@ public class Zdb02Controller {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("apiServerUrl",apiServerUrl);
 		mav.addObject("grafanaUrl",grafanaUrl);
+		OpenIdConnectUserDetailsVo userInfo = securityService.getUserDetails();
+		mav.addObject("userId", userInfo.getUserId());
 		return mav;
 	}
 	@RequestMapping("zdb0200p01")
