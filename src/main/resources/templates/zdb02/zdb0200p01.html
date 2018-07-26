@@ -30,7 +30,7 @@ $a.page(function() {
     		if(!form.validate()){
 				return;
 			};
-    		var data = $.extend({},param,{newPassword:form.find('#credential').val()});
+    		var data = $.extend({},param,{newPassword:form.find('#credential').val(),clusterEnabled:($("input[name=clusterEnabled]:checked").val()=="true")});
 			$a.ajax({
 				url: '/zdbapi/setNewPassword',
 				data:data,
