@@ -100,6 +100,15 @@ div.grid{
   content: ""; 
   margin-right:5px;
 }
+.fa-stopwatch:before {
+  content:"\f2f2";
+  margin-right:5px;
+  font-family:"Font Awesome";font-weight:900;
+}
+.fa-bug:before {
+  content: ""; 
+  margin-right:5px;
+}
 .newpop{
 	background: url(/styles/images/ico-common.png) no-repeat 0 -45px;
 	width: 15px;

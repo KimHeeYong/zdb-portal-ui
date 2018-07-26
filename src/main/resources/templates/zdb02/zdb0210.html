@@ -1531,7 +1531,7 @@
 				height: 400,
 				columnMapping : [
 					{ title:'백업종류', key : 'scheduleYn' , width: '50px', align: 'center',render:function(value,data,render,mapping){
-						return value=='Y' ? '스케쥴링' : '온디맨드';
+						return value=='Y' ? '<img src="/styles/images/ico-schedule.png" alt="스케줄" style="width:16px;height:16px;">' : '<img src="/styles/images/ico-ondemand.png" alt="온디맨드" style="width:16px;height:16px;">';
 					}},
 					{ title:'요청시간', key : 'acceptedDatetime' , width: '130px', align: 'center',render:function(value,data,render,mapping){
 						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
