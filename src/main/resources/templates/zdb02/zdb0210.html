@@ -1138,10 +1138,12 @@
 				//tabService end
 				
 				//tabScale 스케일
-				fn_setSlider('memory',gSliderConstants[gParam.serviceType].memory.getIndex(rsSpec.memory));
-				$('#clusterSlaveCount').val(gService.clusterSlaveCount);
-				//todo temp
-				setScaleButton();
+				if($('#zdbServiceTabs').getCurrentTabContent()!= '#tabScale'){
+					fn_setSlider('memory',gSliderConstants[gParam.serviceType].memory.getIndex(rsSpec.memory));
+					$('#clusterSlaveCount').val(gService.clusterSlaveCount);
+					//todo temp
+					setScaleButton();
+				}
 			}
 			//서비스 display
 			function fn_displayService(){
@@ -1239,8 +1241,8 @@
 								return;
 							};
 							gCommon.alert('스케일 정보를 수정 요청 하였습니다.',function(){
-								//fn_getService(); 
 								$('#zdbServiceTabs').setTabByContent('#tabService');
+								fn_getServiceFirst(); 
 							});
 						}
 					});
