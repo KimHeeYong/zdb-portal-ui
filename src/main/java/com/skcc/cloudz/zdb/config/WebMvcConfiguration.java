@@ -4,7 +4,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.resource.PathResourceResolver;
 
 import com.skcc.cloudz.zdb.common.interceptor.AddOnServiceMetaDataInterceptor;
 import com.skcc.cloudz.zdb.common.interceptor.SessionUserDataInterceptor;
@@ -46,5 +48,13 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
           .allowCredentials(false)
           .maxAge(3600);
     }
-    
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+            registry
+            .addResourceHandler("/**")
+            .addResourceLocations("classpath:/static/")
+            .setCachePeriod(3000)
+            .resourceChain(true)
+            .addResolver(new PathResourceResolver());
+    }
 }
