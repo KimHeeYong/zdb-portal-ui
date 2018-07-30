@@ -113,3 +113,32 @@ props:
 
 grafana:
   url: http://grafana-zdb.cloudzcp.io
+  
+---
+spring:
+  profiles: prod
+server:
+  port: 8080
+zdb-api-server:
+  url: ${zdb.portal.server.url}
+
+logging:
+  config: classpath:logback-prod.xml  
+  
+zdb-demon-server:
+  url: ${zdb.backup.agent.url}
+
+props:
+  appName: zdb-portal-ui
+  keycloak:
+    zcp:
+      clientId: account
+      clientSecret: ${zcp.client.secret}
+      accessTokenUri: ${zcp.access.token.url}
+      userAuthorizationUri: ${zcp.user.auth.url}
+      redirectUri: ${zcp.redirect.url}
+  iam:
+    baseUrl: ${iam.baseUrl}
+
+grafana:
+  url: ${grafana.url}  

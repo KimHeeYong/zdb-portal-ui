@@ -1,5 +1,5 @@
 FROM java:8
-ENV SPRING_ACTIVE_PROFILE zcp-demo
+ENV SPRING_ACTIVE_PROFILE prod
 ADD dist/zdb-portal-ui-1.0.0-SNAPSHOT.war zdb-portal-ui.war 
 VOLUME /tmp
 VOLUME /target
