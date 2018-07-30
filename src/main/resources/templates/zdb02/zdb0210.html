@@ -1138,10 +1138,12 @@
 				//tabService end
 				
 				//tabScale 스케일
-				fn_setSlider('memory',gSliderConstants[gParam.serviceType].memory.getIndex(rsSpec.memory));
-				$('#clusterSlaveCount').val(gService.clusterSlaveCount);
-				//todo temp
-				setScaleButton();
+				if($('#zdbServiceTabs').getCurrentTabContent()!= '#tabScale'){
+					fn_setSlider('memory',gSliderConstants[gParam.serviceType].memory.getIndex(rsSpec.memory));
+					$('#clusterSlaveCount').val(gService.clusterSlaveCount);
+					//todo temp
+					setScaleButton();
+				}
 			}
 			//서비스 display
 			function fn_displayService(){
@@ -1239,8 +1241,8 @@
 								return;
 							};
 							gCommon.alert('스케일 정보를 수정 요청 하였습니다.',function(){
-								//fn_getService(); 
 								$('#zdbServiceTabs').setTabByContent('#tabService');
+								fn_getServiceFirst(); 
 							});
 						}
 					});
@@ -1313,7 +1315,7 @@
 			function fn_getPanels(service){
 				if(service.serviceType == "mariadb") {
 					$('#advancedMonitoring').attr('href', gGrafanaUrl + "/d/zdbmaria1/mariadb-advanced?refresh=1m&orgId=1"
-							+ "&var-user" + gUserId
+							+ "&var-user=" + gUserId
 							+ "&var-namespace=" + service.namespace
 							+ "&var-mariadbservice=" + service.serviceName + "-mariadb");
 					var iframeSrc = gGrafanaUrl + "/d-solo/zdbmaria2/mariadb-summary?refresh=1m&orgId=1"
@@ -1334,7 +1336,7 @@
 					$('#panelIothread').find('iframe').attr('src',iframeSrc + "&panelId=10");
 				} else if (service.serviceType == "redis") {
 					$('#advancedMonitoring').attr('href', gGrafanaUrl + "/d/zdbredis1/redis-advanced?refresh=1m&orgId=1"
-							+ "&var-user" + gUserId
+							+ "&var-user=" + gUserId
 							+ "&var-namespace=" + service.namespace
 							+ "&var-redisservice=" + service.pods[0].spec.containers[0].name + "-master");
 					var iframeSrc = gGrafanaUrl + "/d-solo/zdbredis2/redis-summary?refresh=1m&orgId=1"
