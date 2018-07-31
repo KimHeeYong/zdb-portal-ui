@@ -52,9 +52,9 @@
 			<a class="user" th:text="${session.userInfo.username}"></a>
 			<div class="user-menus">
 				<ul class="dropmenu-list">
-					<li class="selected" onclick="location.href='https://console.cloudzcp.io/my/profile'">나의 정보<span class="newpop"/></li>
-					<li onclick="location.href='https://console.cloudzcp.io/my/pwd'">비밀번호 변경<span class="newpop"/></li>
-					<li onclick="location.href='https://console.cloudzcp.io/'">CloudZ CP<span class="newpop"/></li>
+					<li class="selected"> <a th:href="${@environment.getProperty('cloudzcp.url')} + |/my/profile|"> 나의 정보<span class="newpop"></span></a></li>
+					<li><a th:href="${@environment.getProperty('cloudzcp.url')} + |/my/pwd|">비밀번호 변경<span class="newpop"></span></a></li>
+					<li><a th:href="${@environment.getProperty('cloudzcp.url')} + |/|">CloudZ CP<span class="newpop"></span></a></li>
 					<li id="logout">로그아웃</li>
 				</ul>
 			</div>

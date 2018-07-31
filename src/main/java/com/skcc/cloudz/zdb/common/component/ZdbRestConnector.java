@@ -85,9 +85,6 @@ public class ZdbRestConnector extends RestTemplate{
 			if(userNamespaces == null) {
 				userNamespaces = new ArrayList<>();
 			}
-			userNamespaces.add("zdb-redis");
-			userNamespaces.add("lwk");
-			userNamespaces.add("zdb-maria");
 		}
 
 		return userNamespaces == null || userNamespaces.isEmpty() ? ""
