@@ -48,8 +48,6 @@ props:
   iam:
     baseUrl: https://zcp-iam.cloudzcp.io:443
 
-cloudzcp:
-  url: https://console.cloudzcp.io
 grafana:
   url: http://grafana-zdb.cloudzcp.io
 ---  
@@ -84,8 +82,6 @@ props:
   iam:
     baseUrl: https://zcp-iam.cloudzcp.io:443
 
-cloudzcp:
-  url: https://console.cloudzcp.io
 grafana:
   url: http://grafana-zdb.cloudzcp.io
 ---
@@ -126,27 +122,28 @@ spring:
 server:
   port: 8080
 zdb-api-server:
-  url: ${zdb.portal.server.url}
+  url: http://zdb-portal-server-loadbalancer.zdb-system:8080
 
 logging:
   config: classpath:logback-prod.xml  
   
 zdb-demon-server:
-  url: ${zdb.backup.agent.url}
+  url: http://zdb-backup-agent-loadbalancer.zdb-system:8080
 
 props:
   appName: zdb-portal-ui
   keycloak:
     zcp:
       clientId: account
-      clientSecret: ${zcp.client.secret}
-      accessTokenUri: ${zcp.access.token.url}
-      userAuthorizationUri: ${zcp.user.auth.url}
-      redirectUri: ${zcp.redirect.url}
+      clientSecret: ${iam.secret}
+      accessTokenUri: https://iam.${domain.custom}/auth/realms/zcp/protocol/openid-connect/token
+      userAuthorizationUri: https://iam.${domain.custom}/auth/realms/zcp/protocol/openid-connect/auth  
+      
+      redirectUri: ${zcp.redirect.url}http://zdb.cloudzcp.io/k8s-login
   iam:
-    baseUrl: ${iam.baseUrl}
+    baseUrl: https://iam.${domain.custom}
 
 cloudzcp:
-  url: https://console.cloudzcp.io
+  url: https://console.${domain.custom}
 grafana:
-  url: ${grafana.url}  
+  url: http://zdb-monitoring.${domain.ingress}
