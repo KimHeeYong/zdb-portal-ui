@@ -145,7 +145,7 @@ props:
       
       redirectUri: https://zdb.${domain.custom}/k8s-login
   iam:
-    baseUrl: https://iam.${domain.custom}
+    baseUrl: http://zcp-iam.zcp-system
 
 cloudzcp:
   url: https://console.${domain.custom}
