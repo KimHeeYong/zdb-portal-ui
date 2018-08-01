@@ -48,6 +48,8 @@ props:
   iam:
     baseUrl: https://zcp-iam.cloudzcp.io:443
 
+cloudzcp:
+  url: https://console.cloudzcp.io
 grafana:
   url: http://grafana-zdb.cloudzcp.io
 ---  
@@ -82,6 +84,8 @@ props:
   iam:
     baseUrl: https://zcp-iam.cloudzcp.io:443
 
+cloudzcp:
+  url: https://console.cloudzcp.io
 grafana:
   url: http://grafana-zdb.cloudzcp.io
 ---
