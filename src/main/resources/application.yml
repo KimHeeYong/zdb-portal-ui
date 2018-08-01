@@ -143,7 +143,7 @@ props:
       accessTokenUri: https://iam.${domain.custom}/auth/realms/zcp/protocol/openid-connect/token
       userAuthorizationUri: https://iam.${domain.custom}/auth/realms/zcp/protocol/openid-connect/auth  
       
-      redirectUri: ${zcp.redirect.url}http://zdb.cloudzcp.io/k8s-login
+      redirectUri: https://zdb.${domain.custom}/k8s-login
   iam:
     baseUrl: https://iam.${domain.custom}
 
