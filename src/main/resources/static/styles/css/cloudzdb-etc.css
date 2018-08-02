@@ -84,3 +84,7 @@ div.grid{
 	float: right;
     margin-top: 7px;
 }
+.gridbtn{
+	height: 25px !important;
+	line-height: 20px !important;
+}

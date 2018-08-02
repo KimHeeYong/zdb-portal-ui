@@ -1532,8 +1532,9 @@
 				fitTableWidth :true,
 				height: 400,
 				columnMapping : [
-					{ title:'백업종류', key : 'scheduleYn' , width: '50px', align: 'center',render:function(value,data,render,mapping){
-						return value=='Y' ? '<img src="/styles/images/ico-schedule.png" alt="스케줄" style="width:16px;height:16px;">' : '<img src="/styles/images/ico-ondemand.png" alt="온디맨드" style="width:16px;height:16px;">';
+					{ title:'백업종류', key : 'scheduleYn' , width: '100px', align: 'center',render:function(value,data,render,mapping){
+						var t = value=='Y' ? '예약백업' : '즉시백업';
+						return '<button class="Button gridbtn btn">'+t+'</button>';
 					}},
 					{ title:'요청시간', key : 'acceptedDatetime' , width: '130px', align: 'center',render:function(value,data,render,mapping){
 						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
