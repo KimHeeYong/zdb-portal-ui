@@ -148,6 +148,6 @@ props:
     baseUrl: http://zcp-iam.zcp-system
 
 cloudzcp:
-  url: https://console.${domain.custom}
+  url: https://${zcp.domain}.${domain.custom}
 grafana:
   url: http://zdb-monitoring.${domain.ingress}
