@@ -140,10 +140,10 @@ props:
     zcp:
       clientId: account
       clientSecret: ${iam.secret}
-      accessTokenUri: https://iam.${domain.custom}/auth/realms/zcp/protocol/openid-connect/token
-      userAuthorizationUri: https://iam.${domain.custom}/auth/realms/zcp/protocol/openid-connect/auth  
+      accessTokenUri: https://${iam.domain}.${domain.custom}/auth/realms/zcp/protocol/openid-connect/token
+      userAuthorizationUri: https://${iam.domain}.${domain.custom}/auth/realms/zcp/protocol/openid-connect/auth  
       
-      redirectUri: https://zdb.${domain.custom}/k8s-login
+      redirectUri: https://${zdb.domain}.${domain.custom}/k8s-login
   iam:
     baseUrl: http://zcp-iam.zcp-system
 
