@@ -432,6 +432,7 @@
 						</div>
 					</div>
 					<div class="info-list__select">
+						<!-- 
 						<div class="Divselect">
 						    <select name="kind">
 								<option value="-">전체</option> 
@@ -450,6 +451,7 @@
 						    </select>
 						    <span></span>
 						</div>
+						 -->
 						<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요."/><button class="Button btn-search" id="searchEvent">검색</button>
 					</div>
            		</div>
@@ -1717,15 +1719,23 @@
 				fitTableWidth :true,
 				height: 400,
 				columnMapping : [  
-					{ title:'Last seen', key : 'lastTimestamp' , width: '180px', align: 'center'},
-					{ title:'Kind', key : 'kind' , width: '100px', align: 'left',render:function(value){
-						if(value){
-							return value = value.replace('PersistentVolumeClaim','PVC').replace('PersistentVolume','PV');
-						};
+					{ title:'', key : 'status' , width: '30px', align: 'center',render:function(value){
+						var re = '';
+						if(value == 0){
+							re = '<i class="fa fa-check-circle ft20 color-success" aria-hidden="true"></i>';
+						}else if(value == 4){
+							re = '<i class="fa fa-times-circle ft20 color-danger" aria-hidden="true"></i>';
+						}else{
+							re = '<i class="fa fa-info-circle ft20 color-info" aria-hidden="true"></i>';
+						}
+						return re;
 					}},
-					{ title:'name', key : 'name' , width: '300px', align: 'left'},
-					{ title:'reason', key : 'reason' , width: '190px', align: 'left'},
-					{ title:'message', key : 'message' , width: '400px', align: 'left'}
+					{ title:'일시', key : 'endTime' , width: '150px', align: 'left',render:function(value){
+						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
+						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
+					}},
+					{ title:'이벤트', key : 'operation' , width: '150px', align: 'left'},
+					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left'}
 				],
 				message: {
 					nodata: gMessage.gridNodata
@@ -1744,10 +1754,10 @@
 				param.keyword = param.keyword||'-';
 				
 				$a.ajax({
-					url: '/zdbapi/getEvents',
+					url: '/zdbapi/getOperationEvents',
 					data:param,
 					success: function(res){
-						var list = res.serviceEvents;
+						var list = res.operationEvents;
 						$('#gridEvent').alopexGrid('dataSet',list);
 					}
 				});				

@@ -7,10 +7,10 @@ import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.Mycnf;
+import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
-import com.zdb.core.domain.ZDBRedisConfig;
 
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.client.dsl.PodResource;
@@ -44,6 +44,8 @@ public class Result {
 	private Map<String,Object> changePassword;
 	
 	private List<EventMetaData> serviceEvents;
+
+	private List<RequestEvent> operationEvents;
 
 	private List<BackupEntity> backupList;
 	

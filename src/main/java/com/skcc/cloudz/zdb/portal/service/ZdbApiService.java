@@ -28,6 +28,7 @@ import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.EventMetaData;
+import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
@@ -269,6 +270,17 @@ public class ZdbApiService{
 		return list;
 	}
 
+	public List<RequestEvent> getOperationEvents(Map<String, String> param) {
+		List<RequestEvent> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_OPERATION_EVENTS,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			list = zdbRestDTO.getResult().getOperationEvents();
+		};
+		
+		return list;
+	}
+	
 	public String[] getPodLog(Map<String, String> param) {
 		String[] result = {};
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_POD_LOG,ZdbRestDTO.class,param);
@@ -346,5 +358,6 @@ public class ZdbApiService{
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USER_NAMESPACES, HttpMethod.POST,null,ZdbRestDTO.class).getBody();
 		return zdbRestDTO;
 	}
+
 }
 

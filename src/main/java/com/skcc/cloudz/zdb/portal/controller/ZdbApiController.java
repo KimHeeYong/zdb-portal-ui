@@ -23,6 +23,7 @@ import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.IResult;
+import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
@@ -257,6 +258,17 @@ public class ZdbApiController {
 		
 		List<EventMetaData> result = zdbApiService.getEvents(param);
 		mav.addObject(IResult.SERVICE_EVENTS,result);
+		
+		return mav;
+	}
+	
+	@RequestMapping(value = "getOperationEvents")	
+	public ModelAndView getOperationEvents(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<RequestEvent> result = zdbApiService.getOperationEvents(param);
+		mav.addObject(IResult.OPERATION_EVENTS,result);
 		
 		return mav;
 	}
