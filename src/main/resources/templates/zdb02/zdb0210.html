@@ -150,10 +150,10 @@
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                  
 				                </tr>
-				                </tbody>
-				                <tbody class="publicConnectionInfo">
+			                </tbody>
+			                <tbody class="publicConnectionInfo">
 								<tr>                                                                                                 
-					               	<th rowspan="2">Public Network</th>                                                                       
+					               	<th rowspan="2">Public Network <button class="Button btn" id="publicNetworkDelete">삭제</button></th>                                                                       
 					               	<td>       
 					               	    <span class="info-cnt__title">Master</span>
 										<div class="info-radio__wrap">
@@ -188,6 +188,14 @@
 						               	</div>	                          
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                  
+				                </tr>
+			                </tbody>
+			                <tbody class="publicConnectionInfoNone">
+								<tr>                                                                                                 
+					               	<th>Public Network</th>                                                                       
+					               	<td>       
+					               	    <button class="Button btn" id="publicNetworkCreate">Public Network생성</button>                                                                                 
+					               	</td>                                                                                         
 				                </tr>
 			                </tbody>
 						</table>
@@ -761,6 +769,7 @@
 						break;						
 					case "tabEvent":
 						$("#gridEvent").alopexGrid( "viewUpdate" );
+						fn_getEventInfo();
 						break;
 					case "tabSystem":
 						fn_getConfigurationInfo();
@@ -1023,15 +1032,16 @@
 								$('input[name='+ob.connectionType+ob.role+'ConnectionLine]').val(ob.connectionLine).attr('data-origin',ob.connectionLine);
 							};
 						};
-						if($('input[name=publicmasterConnectionString]').val()==''){
+						if(gService.publicEnabled != true){
 							$('.publicConnectionInfo').hide();
+							$('.publicConnectionInfoNone').show();
 						}else{
 							$('.publicConnectionInfo').show();
+							$('.publicConnectionInfoNone').hide();
 						};
 						
 						if(gService.clusterEnabled != true){
-							$('#connectionInfoTable').find('tr.slaveConnection').remove();
-							$('#connectionInfoTable').find('th[rowspan]').removeAttr('rowspan');
+							$('#connectionInfoTable').find('tr.slaveConnection').hide();
 						};
 					}
 				});
@@ -1189,6 +1199,32 @@
 					ob.hide(1000);
 				},1000);
 			})			
+			$('#publicNetworkDelete').on('click',function(){
+				if(gCommon.confirm('Public Network 서비스 삭제시 </br> 외부연동이 단절됩니다. <br/> 삭제하시겠습니까?',function(){
+					$a.ajax({
+						url: '/zdbapi/deletePublicService',
+						data:gService,
+						success: function(res){
+							fn_getServiceFirst().done(function(){
+								fn_getConnectionInfo(); 
+							});
+						}
+					});
+				},{okBtnMsg:"삭제"}));
+			});
+			$('#publicNetworkCreate').on('click',function(){
+				if(gCommon.confirm('Public Network를 추가 하시겠습니까?',function(){
+					$a.ajax({
+						url: '/zdbapi/createPublicService',
+						data:gService,
+						success: function(res){
+							fn_getServiceFirst().done(function(){
+								fn_getConnectionInfo(); 
+							}); 
+						}
+					});
+				},{okBtnMsg:"추가"}));
+			});
 			//publicConnectionInfo
 			/*tabService end*/
 			

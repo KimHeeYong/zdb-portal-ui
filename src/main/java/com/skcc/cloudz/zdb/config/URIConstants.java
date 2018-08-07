@@ -47,6 +47,10 @@ public class URIConstants {
 	
 	public static final String URI_DELETE_TAG = "/api/v1/{namespace}/tag/{serviceName}";
 
+	public static final String URI_CREATE_PUBLIC_SERVICE = "/api/v1/{namespace}/{serviceType}/{serviceName}/public-service";
+	
+	public static final String URI_DELETE_PUBLIC_SERVICE = "/api/v1/{namespace}/{serviceType}/{serviceName}/public-service";
+
 	public static final String URI_GET_EVENTS = "/api/v1/events?namespace={namespace}&kind={kind}&serviceName={serviceName}&startTime={startTime}&endTime={endTime}&keyword={keyword}";
 
 	public static final String URI_GET_OPERATION_EVENTS = "/api/v1/operationEvents?namespace={namespace}&serviceName={serviceName}&startTime={startTime}&endTime={endTime}&keyword={keyword}";

@@ -247,12 +247,14 @@ var gCommon = $a.page(function(){
 		}
 		return result;
 	};
-	this.confirm = function(message,trueCallback){
+	this.confirm = function(message,trueCallback,opt){
 		gPopData = {};
+		opt = opt||{};
 		gPopData.message = message;
+		gPopData.okBtnMsg = opt.okBtnMsg; 
+		gPopData.noBtnMsg = opt.noBtnMsg; 
 	    $a.popup({
 	        url: "/zdbcom/confirm",
-	        data:message,
 	        iframe: false,
 	        width: 500,
 	        height: 300,

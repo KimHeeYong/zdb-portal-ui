@@ -250,6 +250,27 @@ public class ZdbApiController {
 		
 		return mav;
 	}
+	
+	@RequestMapping(value = "createPublicService")
+	public ModelAndView createPublicService(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.createPublicService(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
+	@RequestMapping(value = "deletePublicService")
+	public ModelAndView deletePublicService(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.deletePublicService(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
 
 	@RequestMapping(value = "getEvents")	
 	public ModelAndView getEvents(HttpServletRequest request) {

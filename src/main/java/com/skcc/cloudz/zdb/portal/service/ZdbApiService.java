@@ -258,6 +258,26 @@ public class ZdbApiService{
 	    ob = connector.exchange(apiServer + URIConstants.URI_DELETE_TAG, HttpMethod.DELETE, entity,  ZdbRestDTO.class,param).getBody();
 		return ob;
 	}
+	
+	public ZdbRestDTO createPublicService(Map<String, String> param) {
+		ZdbRestDTO ob = null;
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<Map<String, String>> entity = new HttpEntity<>(param, headers);
+		ob = connector.exchange(apiServer + URIConstants.URI_CREATE_PUBLIC_SERVICE, HttpMethod.POST, entity,  ZdbRestDTO.class,param).getBody();
+		return ob;
+	}
+	
+	public ZdbRestDTO deletePublicService(Map<String, String> param) {
+		ZdbRestDTO ob = null;
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<Map<String, String>> entity = new HttpEntity<>(param, headers);
+		ob = connector.exchange(apiServer + URIConstants.URI_DELETE_PUBLIC_SERVICE, HttpMethod.DELETE, entity,  ZdbRestDTO.class,param).getBody();
+		return ob;
+	}
 
 	public List<EventMetaData> getEvents(Map<String, String> param) {
 		List<EventMetaData> list = Collections.emptyList();
