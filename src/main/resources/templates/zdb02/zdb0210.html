@@ -1042,6 +1042,9 @@
 						
 						if(gService.clusterEnabled != true){
 							$('#connectionInfoTable').find('tr.slaveConnection').hide();
+							$('#connectionInfoTable').find('th[rowspan]').attr('rowspan',1);
+						}else{
+							$('#connectionInfoTable').find('th[rowspan]').attr('rowspan',2);
 						};
 					}
 				});
