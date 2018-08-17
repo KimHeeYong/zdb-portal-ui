@@ -141,8 +141,7 @@ props:
       clientId: account
       clientSecret: ${iam.secret}
       accessTokenUri: https://${iam.domain}.${domain.custom}/auth/realms/zcp/protocol/openid-connect/token
-      userAuthorizationUri: https://${iam.domain}.${domain.custom}/auth/realms/zcp/protocol/openid-connect/auth  
-      
+      userAuthorizationUri: https://${iam.domain}.${domain.custom}/auth/realms/zcp/protocol/openid-connect/auth
       redirectUri: https://${zdb.domain}.${domain.custom}/k8s-login
   iam:
     baseUrl: http://zcp-iam.zcp-system
@@ -150,4 +149,4 @@ props:
 cloudzcp:
   url: https://${zcp.domain}.${domain.custom}
 grafana:
-  url: http://zdb-monitoring.${domain.ingress}
+  url: http://${grafana.domain}.${domain.custom}
