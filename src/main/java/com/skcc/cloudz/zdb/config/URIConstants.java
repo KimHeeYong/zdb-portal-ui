@@ -60,6 +60,8 @@ public class URIConstants {
 	public static final String URI_GET_BACKUP_LIST = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/backup-list";
 
 	public static final String URI_GET_SCHEDULE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/schedule";
+
+	public static final String URI_GET_SCHEDULE_INFO_LIST = "/api/v1/scheduleInfo-list?namespace={namespace}";
 	
 	public static final String URI_IS_AVAILABLE = "/api/v1/{namespace}/avaliable?memory={memory}&cpu={cpu}&clusterEnabled={clusterEnabled}";
 

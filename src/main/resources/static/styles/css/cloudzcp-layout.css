@@ -1357,7 +1357,14 @@ a.blank-link {
 	width: 50%;
 	margin-bottom: 10px;
 }
-.name-progress__wrap li:last-child .name-pro__title {text-align: center;}
+.name-pro__title {
+	display: block;
+	margin-bottom: 10px;
+	font-size: 0.87rem;
+}
+.name-progress__wrap .Progressbar {
+	width: calc(100% - 100px);
+}
 .name-pro__title {
 	margin-bottom: 10px;
 	font-size: 0.87rem;
@@ -1381,11 +1388,12 @@ a.blank-link {
 .Progressbar.name-typed div {background: #169bd5;}
 .Progressbar.name-typee div {background: #ea0530;}
 .name-pro__info {
-	float: left;
-	position: relative;
-	top: -4px;
+	position: absolute;
+	top: 23px;
+	right: 0;
+	width: 100px;
+	padding-left: 10px;
 	font-size: 0.73rem;
-	margin-right: 10px;
 }
 .name-user__info {
 	display: block;

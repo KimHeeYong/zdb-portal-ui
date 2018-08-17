@@ -30,6 +30,7 @@ import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
+import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 
@@ -321,6 +322,21 @@ public class ZdbApiService{
 		return result;
 	}
 
+	public List<ScheduleInfoEntity> getScheduleInfoList(Map<String, String> param) {
+		List<ScheduleInfoEntity> result = null;
+		
+		if(CommonConstants.NAMESPACE_ALL.equals(param.get(CommonConstants.NAMESPACE))) {
+			param.put(CommonConstants.NAMESPACE, "all");
+		};
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_SCHEDULE_INFO_LIST,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getScheduleInfoList();
+		};
+		return result;
+	}
+	
 	public ScheduleEntity getSchedule(Map<String, String> param) {
 		ScheduleEntity result = null;
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_SCHEDULE,ZdbRestDTO.class,param);
@@ -378,6 +394,7 @@ public class ZdbApiService{
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USER_NAMESPACES, HttpMethod.POST,null,ZdbRestDTO.class).getBody();
 		return zdbRestDTO;
 	}
+
 
 }
 

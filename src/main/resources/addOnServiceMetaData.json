@@ -52,5 +52,19 @@
       "editor"
     ],
     "enable": true
+  },
+  {
+    "id": "zdb0500",
+    "name": "백업 스케쥴링 목록",
+    "order": 5,
+    "url": "/zdb05/zdb0500",
+    "folder": "/zdb05",
+    "target": "self",
+    "accessRoles": [
+      "cluster-admin",
+      "admin",
+      "editor"
+    ],
+    "enable": true
   }
 ]
