@@ -149,4 +149,4 @@ props:
 cloudzcp:
   url: https://${zcp.domain}.${domain.custom}
 grafana:
-  url: http://${grafana.domain}.${domain.custom}
+  url: https://${grafana.domain}.${domain.custom}
