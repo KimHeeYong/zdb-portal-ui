@@ -1351,10 +1351,21 @@ a.blank-link {
 	width: 100%;
 	padding-bottom: 20px;
 }
+.name-progress__wrap2 {
+	position: relative;
+	width: 100%;
+	padding-bottom: 20px;
+}
 .name-progress__wrap li {
 	float: left;
 	position: relative;
 	width: 50%;
+	margin-bottom: 10px;
+}
+.name-progress__wrap2 li { 
+	float: left;
+	position: relative;
+	width: 25%;
 	margin-bottom: 10px;
 }
 .name-pro__title {
@@ -1364,6 +1375,9 @@ a.blank-link {
 }
 .name-progress__wrap .Progressbar {
 	width: calc(100% - 100px);
+}
+.name-progress__wrap2 .Progressbar {
+	width: calc(100% - 80px);
 }
 .name-pro__title {
 	margin-bottom: 10px;
@@ -1392,6 +1406,14 @@ a.blank-link {
 	top: 23px;
 	right: 0;
 	width: 100px;
+	padding-left: 10px;
+	font-size: 0.73rem;
+}
+.name-pro__info2 {
+	position: absolute;
+	top: 23px;
+	right: 0;
+	width: 80px;
 	padding-left: 10px;
 	font-size: 0.73rem;
 }

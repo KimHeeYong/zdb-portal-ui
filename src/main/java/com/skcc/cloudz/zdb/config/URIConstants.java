@@ -4,6 +4,8 @@ public class URIConstants {
 
 	// namespace list
 	public static final String URI_GET_NAMESPACES = "/api/v1/namespaces";
+
+	public static final String URI_GET_NAMESPACE_RESOURCE = "/iam/metrics/namespaces?userId={userId}";
 	
 	public static final String URI_GET_SERVICES = "/api/v1/service/services";
 

@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.skcc.cloudz.zdb.common.exception.ZdbPortalException;
 import com.skcc.cloudz.zdb.common.util.RequestUtil;
 import com.skcc.cloudz.zdb.config.CommonConstants;
+import com.skcc.cloudz.zdb.portal.domain.dto.NamespaceResource;
 import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.skcc.cloudz.zdb.portal.service.ZdbApiService;
@@ -51,6 +52,16 @@ public class ZdbApiController {
 			throw new ZdbPortalException("네임 스페이스가 존재하지 않습니다.");
 		}
 		mav.addObject(IResult.NAMESPACES ,namespaces);
+		return mav;
+	}
+	@RequestMapping(value="getNamespaceResource")
+	@ResponseBody
+	public ModelAndView getNamespaceResource(HttpServletRequest request)throws Exception {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		NamespaceResource namespaceResource = zdbApiService.getNamespaceResource(param); 
+		mav.addObject(IResult.NAMESPACE_RESOURCE ,namespaceResource);
 		return mav;
 	}
 	
