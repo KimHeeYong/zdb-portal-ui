@@ -1,9 +1,15 @@
 var cloudUtil = {
-	addComma:function(val){
-        return (val+''||'').replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"); 
+	addComma:function(val){ //3자리 콤마 추가
+		val = (val+''||'');
+		var valAr=val.split(".");
+	    return valAr[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (valAr[1] ? "." + valAr[1] : "");
 	},
-	removeComma:function(val){
+	removeComma:function(val){ //3자리 콤마 제거
 		return (val+''||'').replaceAll(',', '');
+	},
+	truncDecimal:function(val,idx){ // 소수점 idx 자리까지 표시
+		if(val.indexOf('.') < 0) return val;
+		return val.substring(0, (val.indexOf('.')+idx+1));
 	}
 }
 
