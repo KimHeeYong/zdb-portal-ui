@@ -284,12 +284,7 @@ var gCommon = $a.page(function(){
 	    });
 	};
 });
-String.prototype.replaceAll = function(org, dest) {
-    return this.split(org).join(dest);
-};
-String.prototype.toUnderscore = function(){
-	return this.replace(/([A-Z])/g, function($1){return "_"+$1.toLowerCase();});
-};
+
 $.fn.extend({ 
     zdbui_setContents :  function(data){ //셀렉터의 영역에서 key 값을 가진 컴포넌트들에 값을 자동으로 매핑
     	if(!data)return;
