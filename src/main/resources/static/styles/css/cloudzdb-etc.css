@@ -21,10 +21,12 @@
 	color: #ffffff;
 }
 
+.ml20{
+	margin-left: 20px !important;
+}
 .mr5 {
 	margin-right: 5px;
 }
-
 .ft15 {
 	font-size: 15px !important;
 }
