@@ -45,10 +45,10 @@
 						{ title:'백업시간', key : 'startTime' , width: '70px', align: 'center'},
 						{ title:'소요시간(분)', key : 'executionTime' , width: '70px', align: 'center'},
 						{ title:'파일사이즈(MB)', key : 'fileSize' , width: '70px', align: 'right', render: function(value){
-							return cloudUtil.addComma((value / (1024*1024)).toFixed(2));
+							return value == 0 ? 0 : cloudUtil.addComma((value / (1024*1024)).toFixed(2));
 						}},
 						{ title:'백업용량(MB)', key : 'fileSumSize' , width: '70px', align: 'right', render: function(value){
-							return cloudUtil.addComma((value / (1024*1024)).toFixed(2));
+							return value == 0 ? 0 : cloudUtil.addComma((value / (1024*1024)).toFixed(2));
 						}},
 						{ title:'최근백업시간', key : 'registerDate' , width: '100px', align: 'right',render:function(value,data,render,mapping){
 							var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
