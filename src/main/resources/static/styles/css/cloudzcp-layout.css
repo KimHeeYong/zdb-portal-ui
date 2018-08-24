@@ -1412,7 +1412,7 @@ a.blank-link {
 .name-pro__info2 {
 	position: absolute;
 	top: 23px;
-	right: 0;
+	right: -5px;
 	width: 80px;
 	padding-left: 10px;
 	font-size: 0.73rem;
