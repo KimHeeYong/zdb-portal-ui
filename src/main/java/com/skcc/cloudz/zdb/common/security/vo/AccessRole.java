@@ -3,19 +3,18 @@ package com.skcc.cloudz.zdb.common.security.vo;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum AccessRole {
-    CLUSTER_ADMIN("cluster-admin", 5),
-    ADMIN("admin", 4),
-    EDITOR("editor", 3),
-    VIEW("view", 2),
-    NONE("none", 1)
+    CLUSTER_ADMIN("cluster-admin"),
+    ADMIN("admin"),
+    EDITOR("editor"),
+    VIEW("view"),
+    MEMBER("member"),
+    NONE("none")
     ;
     
     private String name;
-    private int value;
-
-    private AccessRole(String name, int value) {
+    
+    private AccessRole(String name) {
         this.name = name;
-        this.value = value;
     }
 
     @JsonValue
@@ -23,7 +22,4 @@ public enum AccessRole {
         return name;
     }
 
-    public int getValue() {
-        return value;
-    }
 }
