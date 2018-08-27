@@ -83,6 +83,7 @@
 			<li data-content="#tabMonitor">모니터링</li>
 			<li data-content="#tabBackup">백업</li>
 			<li data-content="#tabEvent">이벤트</li>
+			<li data-content="#tabUser">사용자</li>
 			<li data-content="#tabSystem">환경설정</li>
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
@@ -224,10 +225,16 @@
 							</colgroup>
 							<tbody>
 								<tr>
-									<th class="Valign-top">할당메모리</th>
+									<th class="Valign-top">리소스</th>
 									<td class="overflow-hidden">
 										<div class="info-wrap">
-											<p class="memory-title">메모리</p>
+											<!-- 
+											<div class="info-radio__wrap">
+												<label class="ImageRadio"> <input class="Radio" name="scaleType" value="resource1" checked="checked">리소스선택</label>
+												<label class="ImageRadio"> <input class="Radio" name="scaleType" value="resource2">사용자입력</label>
+											</div>
+											 -->
+											<p class="memory-title">&nbsp;</p>
 											<div class="info-wrap ht60">
 												<div class="memory-info" id="memoryInfo">1GB</div>
 												<div class="progress-wrap">
@@ -468,7 +475,12 @@
            	<!-- grid -->
             <div id="gridEvent" class="grid grid-line__wrap dash"></div>
 		</div>
-		
+		<div id="tabUser">
+			<h3 class="form-title">사용자 목록 및 권한</h3>
+			<div class="tabs-contents">
+   				<div id="gridUser" class="grid grid-line__wrap"></div>
+   			</div>
+		</div>		
 		<div id="tabSystem">
 			<form name="dbConfig" method="post">
 			<ul>
@@ -701,7 +713,7 @@
 				</li>
 				
 				<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
-					<h3 class="form-title">Parameter</h3>
+					<h3 class="form-title">Parameter <span class="fr"><button class="Button btn" style="margin-top:-4px;" id="popMyCnf">설정 보기</button></span></h3>
 					<div class="accor-contents__wrap">	
 						<table id="serviceConfigTable" class="Table Form-type">
 							<colgroup>
@@ -771,6 +783,10 @@
 					case "tabEvent":
 						$("#gridEvent").alopexGrid( "viewUpdate" );
 						fn_getEventInfo();
+						break;
+					case "tabUser":
+						$("#gridUser").alopexGrid( "viewUpdate" );
+						fn_getUserGrants();
 						break;
 					case "tabSystem":
 						fn_getConfigurationInfo();
@@ -887,6 +903,8 @@
 			        }
 			    });
 			});
+			var isSlowLogHidden = gParam.serviceType != G_SERVICE_TYPE_MARIA;
+			
 			$('#gridResource').alopexGrid({
 				autoColumnIndex: true,
 				autoResize:true,
@@ -903,13 +921,12 @@
 							if(data.colspanCol != true){
 								re = '<button class="btn-ico del"></button>';
 							}
-							//re = '<span class="cell Warning">Error <span><span title="'+cond.reason+":"+cond.message+'"> !</span>';	
 						};
 						return re;
 					}},
 					{ title:'Name', key : 'name', width : '330px', sorting : true, align: 'left', colspanTo : function(value, data, mapping) {
 						if(data.colspanCol){
-							return 'log';
+							return isSlowLogHidden ? 'log' : 'slowLog';
 						};
 					},render: function(value,data){
 						var re = '';
@@ -945,12 +962,28 @@
 					}},
 					{ title:'Log',key:'log',width:'60px', align: 'center',render: function( value, data, render, mapping){
 						var re = $('<button class="btn-ico btn-log">로그</button>').on('click',function(){
-							fn_viewLog(data);
+							console.log(data)
+							if(data.condition && data.condition.status == 'True'){
+								window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
+							}else{
+								gCommon.alert(' 서비스 접속 불가 상태입니다. </br> 서비스 이용이 가능할때 조회할수있습니다');
+							}
 						});
 						return re;
-					}}
+					}},
+					{ title:'Slow Log',key:'slowLog',width:'60px', align: 'center',render: function( value, data, render, mapping){
+						var re = $('<button class="btn-ico btn-log">로그</button>').on('click',function(){
+							if(data.condition && data.condition.status == 'True'){
+								window.open("/zdb02/zdb0200p04?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
+							}else{
+								gCommon.alert(' 서비스 접속 불가 상태입니다. </br> 서비스 이용이 가능할때 조회할수있습니다');
+							}
+						});
+						return re;
+					},hidden:isSlowLogHidden}
 				],
 			});
+			
 			function fn_restartPod(data){
 				gCommon.confirm('재시작 하시겠습니까?',function(){
 					var param = {
@@ -1404,107 +1437,6 @@
 			}
 			/*tabMonitor end 모니터링*/
 			
-			/*tabSystem start 환경설정 */
-			var dbConfigForm = $('form[name=dbConfig]');
-			
-			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
-				dbConfigForm.validator({
-				    elements :{ 
-				        'timeout': {rule:{required:true,min:0,max:3600}}
-				       ,'tcp-keepalive': {rule:{required:true,min:0,max:3600}}
-				       ,'maxmemory-samples': {rule:{required:true,min:1,max:10}}
-				       ,'slowlog-log-slower-than': {rule:{required:true,min:-1,max:12000}}
-				       ,'slowlog-max-len': {rule:{required:true,min:1,max:256}}
-				       ,'hash-max-ziplist-entries': {rule:{required:true,min:0,max:65535}}
-				       ,'hash-max-ziplist-value': {rule:{required:true,min:0,max:65535}}
-				       ,'list-max-ziplist-size': {rule:{required:true,min:-5,max:5}}
-				       ,'zset-max-ziplist-entries': {rule:{required:true,min:0,max:65535}}
-				       ,'zset-max-ziplist-value': {rule:{required:true,min:0,max:65535}}
-				    }
-				});				
-			};
-
-			$('#saveVariables').on('click',function(){ //시스템 변수 적용
-				if(!dbConfigForm.validate()){
-					return;
-				};
-				if(gCommon.confirm('시스템 변수를 변경하시겠습니까?',function(){
-					var param = $.extend({},gParam, dbConfigForm.serializeObject());
-					$a.ajax({
-						url: '/zdbapi/updateDBVariables',
-						data:param,
-						success: function(res){
-							gCommon.alert(gMessage.saveSuccess,function(){
-								$('#zdbServiceTabs').setTabByContent('#tabService');
-							});
-						},
-						loadingMessage:'환경설정 적용중입니다.'
-					});
-				}));
-			});
-			function fn_getConfigurationInfo(){
-				$a.ajax({
-					url: '/zdbapi/getDBVariables',
-					data:gParam,
-					success: function(res){
-						var dbConfigurations = res.dbConfigurations
-						if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
-							if(dbConfigurations){
-								$('#serviceConfigTable tbody').html('');
-								var sels = {
-									character_set_server:{options:[{key:'utf8'},{key:'euckr'},{key:'utf8mb4'},{key:'utf16'}]},
-									'collation-server':{options:[{key:'utf8_general_ci'},{key:'utf8_bin'},{key:'euckr_korean_ci'},{key:'euckr_bin'}
-													,{key:'utf8mb4_general_ci'},{key:'utf8mb4_bin'},{key:'utf16_general_ci'},{key:'utf16_bin'}]},
-									innodb_buffer_pool_instances:{options:[{key:'1'},{key:'2'},{key:'4'},{key:'8'}]},
-									innodb_flush_method:{options:[{key:'fsync'},{key:'O_DSYNC'}, {key:'O_DIRECT'} ,{key:'O_DIRECT_NO_FSYNC'}]},
-									query_cache_type:{options:[{key:'0',val:'OFF'},{key:'1',val:'ON'},{key:'2',val:'DEMAND'}]},
-									thread_handling:{options:[{key:'no-threads'},{key:'one-thread-per-connection'},{key:'pool-of-threads'}]},
-									'transaction-isolation':{options:[{key:'READ-UNCOMMITTED'},{key:'READ-COMMITTED'}
-																,{key:'REPEATABLE-READ'},{key:'SERIALIZABLE'}]}
-								};
-								for(var i = 0 ; i < dbConfigurations.length;i++){
-									var ob = dbConfigurations[i];
-									var tr = '';
-									if(sels[ob.name]){
-										tr = '<tr><th>'+ob.name+'</th><td><div class="Divselect" style="min-width:200px;"> <select name="'+ob.name+'" >'
-										for(var j = 0 ; j < sels[ob.name].options.length; j++){
-											var opts = sels[ob.name].options[j];
-											tr +='<option value="'+opts.key+'" '+(ob.value==opts.key?"selected":"")+'>'+(opts.val||opts.key)+'</option>';
-										};
-										tr += '</select><span></span></div>'+'<span class="info-text"> '+ob.valueRange+'</span></td></tr>';
-									}else{
-										tr = ' <tr> <th>'+ob.name+'</th> <td>'
-									       + '		<input type="text" id="'+ob.name+'" name="'+ob.name+'" class="Textinput" value="'+ob.value+'"/>'
-									       + '		<span class="info-text">'+ob.valueRange+'</span> '
-									       + '		<p data-for="'+ob.name+'" class="warn-text"></p>'
-									       + '	</td> </tr>';
-									}
-									$('#serviceConfigTable tbody').append(tr);
-								};
-								$a.convert($('#serviceConfigTable tbody').find('.Divselect'));
-								setDbConfigurationFilter();
-								$('select[name=character_set_server]').on('change',function(){
-									setDbConfigurationFilter();
-								});
-								var dt = gCommon.findObjectByKeyOb(dbConfigurations,{name:'collation-server'});
-								if(dt){
-									$('select[name=collation-server]').val(dt.value).parent().refresh();
-								};
-								function setDbConfigurationFilter(isRefresh){
-									$('select[name=collation-server] option').hide().filter(function(){
-										return $(this).val().indexOf($('select[name=character_set_server]').val()+'_')>-1;
-									}).show().filter(':first').prop('selected',true);
-									$('select[name=collation-server]').parent().refresh();
-								};
-							}
-						}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
-							dbConfigForm.zdbui_setContents(dbConfigurations);							
-						}
-					}
-				});
-			};
-			/*tabSystem end 환경설정 */
-			
 			/* tabBackup start backup */
 			var backupForm = $('form[name=backupForm]');
 			var backupStatus = 'N';//Y 수정가능상태, N 수정불가 상태, I 수정중상태
@@ -1808,6 +1740,152 @@
 			$('input[name=keyword]').pressEnter(function(evt){
 				fn_getEventInfo();
 			});
+			/*tabEvent end 이벤트*/
+			
+			/*tabSystem start 환경설정 */
+			
+			/*tabUser start 사용자 */
+			$('#gridUser').alopexGrid({
+				autoColumnIndex: true,
+				autoResize:true,
+				fitTableWidth :true,
+				height: 400,
+				columnMapping : [  
+					{ title:'USER', key : 'user' , width: '100px', align: 'left'},
+					{ title:'HOST', key : 'host' , width: '100px', align: 'left'},
+					{ title:'SELECT', key : 'select' , width: '70px', align: 'center'},
+					{ title:'INSERT', key : 'insert' , width: '70px', align: 'center'},
+					{ title:'UPDATE', key : 'update' , width: '70px', align: 'center'},
+					{ title:'DELETE', key : 'delete' , width: '70px', align: 'center'},
+					{ title:'EXECUTE', key : 'execute' , width: '70px', align: 'center'},
+					{ title:'CREATE', key : 'create' , width: '70px', align: 'center'},
+					{ title:'ALTER', key : 'alter' , width: '70px', align: 'center'},
+					{ title:'DROP', key : 'drop' , width: '70px', align: 'center'},
+					{ title:'INDEX', key : 'index' , width: '70px', align: 'center', hidden:true},
+					{ title:'CREATE VIEW', key : 'createView' , width: '70px', align: 'center'},
+					{ title:'TRIGGER', key : 'trigger' , width: '70px', align: 'center'},
+					{ title:'GRANT', key : 'grant' , width: '70px', align: 'center'},
+					{ title:'CREATE USER', key : 'createUser' , width: '70px', align: 'center'}
+				],
+				message: {
+					nodata: gMessage.gridNodata
+				}
+			});	
+			function fn_getUserGrants(){
+				$a.ajax({
+					url: '/zdbapi/getUserGrants',
+					data: gService,
+					success: function(res){
+						var list = res.userGrants;
+						$('#gridUser').alopexGrid('dataSet',list);
+					}
+				});				
+			};				
+			/*tabUser end 사용자*/
+			
+			var dbConfigForm = $('form[name=dbConfig]');
+			
+			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
+				dbConfigForm.validator({
+				    elements :{ 
+				        'timeout': {rule:{required:true,min:0,max:3600}}
+				       ,'tcp-keepalive': {rule:{required:true,min:0,max:3600}}
+				       ,'maxmemory-samples': {rule:{required:true,min:1,max:10}}
+				       ,'slowlog-log-slower-than': {rule:{required:true,min:-1,max:12000}}
+				       ,'slowlog-max-len': {rule:{required:true,min:1,max:256}}
+				       ,'hash-max-ziplist-entries': {rule:{required:true,min:0,max:65535}}
+				       ,'hash-max-ziplist-value': {rule:{required:true,min:0,max:65535}}
+				       ,'list-max-ziplist-size': {rule:{required:true,min:-5,max:5}}
+				       ,'zset-max-ziplist-entries': {rule:{required:true,min:0,max:65535}}
+				       ,'zset-max-ziplist-value': {rule:{required:true,min:0,max:65535}}
+				    }
+				});				
+			};
+
+			$('#saveVariables').on('click',function(){ //시스템 변수 적용
+				if(!dbConfigForm.validate()){
+					return;
+				};
+				if(gCommon.confirm('시스템 변수를 변경하시겠습니까?</br> <span class="Color-warning">* 적용시 서비스 재부팅으로 인해 3~5분간<br/> 서비스가 중단됩니다.</span>',function(){
+					var param = $.extend({},gParam, dbConfigForm.serializeObject());
+					$a.ajax({
+						url: '/zdbapi/updateDBVariables',
+						data:param,
+						success: function(res){
+							gCommon.alert(gMessage.saveSuccess,function(){
+								$('#zdbServiceTabs').setTabByContent('#tabService');
+							});
+						},
+						loadingMessage:'환경설정 적용중입니다.'
+					});
+				}));
+			});
+			function fn_getConfigurationInfo(){
+				$a.ajax({
+					url: '/zdbapi/getDBVariables',
+					data:gParam,
+					success: function(res){
+						var dbConfigurations = res.dbConfigurations
+						if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+							if(dbConfigurations){
+								$('#serviceConfigTable tbody').html('');
+								var sels = {
+									character_set_server:{options:[{key:'utf8'},{key:'euckr'},{key:'utf8mb4'},{key:'utf16'}]},
+									'collation-server':{options:[{key:'utf8_general_ci'},{key:'utf8_bin'},{key:'euckr_korean_ci'},{key:'euckr_bin'}
+													,{key:'utf8mb4_general_ci'},{key:'utf8mb4_bin'},{key:'utf16_general_ci'},{key:'utf16_bin'}]},
+									innodb_buffer_pool_instances:{options:[{key:'1'},{key:'2'},{key:'4'},{key:'8'}]},
+									innodb_flush_method:{options:[{key:'fsync'},{key:'O_DSYNC'}, {key:'O_DIRECT'} ,{key:'O_DIRECT_NO_FSYNC'}]},
+									query_cache_type:{options:[{key:'0',val:'OFF'},{key:'1',val:'ON'},{key:'2',val:'DEMAND'}]},
+									thread_handling:{options:[{key:'no-threads'},{key:'one-thread-per-connection'},{key:'pool-of-threads'}]},
+									'transaction-isolation':{options:[{key:'READ-UNCOMMITTED'},{key:'READ-COMMITTED'}
+																,{key:'REPEATABLE-READ'},{key:'SERIALIZABLE'}]}
+								};
+								for(var i = 0 ; i < dbConfigurations.length;i++){
+									var ob = dbConfigurations[i];
+									var tr = '';
+									if(sels[ob.name]){
+										tr = '<tr><th>'+ob.name+'</th><td><div class="Divselect" style="min-width:200px;"> <select name="'+ob.name+'" >'
+										for(var j = 0 ; j < sels[ob.name].options.length; j++){
+											var opts = sels[ob.name].options[j];
+											tr +='<option value="'+opts.key+'" '+(ob.value==opts.key?"selected":"")+'>'+(opts.val||opts.key)+'</option>';
+										};
+										tr += '</select><span></span></div>'+'<span class="info-text"> '+ob.valueRange+'</span></td></tr>';
+									}else{
+										tr = ' <tr> <th>'+ob.name+'</th> <td>'
+									       + '		<input type="text" id="'+ob.name+'" name="'+ob.name+'" class="Textinput" value="'+ob.value+'"/>'
+									       + '		<span class="info-text">'+ob.valueRange+'</span> '
+									       + '		<p data-for="'+ob.name+'" class="warn-text"></p>'
+									       + '	</td> </tr>';
+									}
+									$('#serviceConfigTable tbody').append(tr);
+								};
+								$a.convert($('#serviceConfigTable tbody').find('.Divselect'));
+								setDbConfigurationFilter();
+								$('select[name=character_set_server]').on('change',function(){
+									setDbConfigurationFilter();
+								});
+								var dt = gCommon.findObjectByKeyOb(dbConfigurations,{name:'collation-server'});
+								if(dt){
+									$('select[name=collation-server]').val(dt.value).parent().refresh();
+								};
+								function setDbConfigurationFilter(isRefresh){
+									$('select[name=collation-server] option').hide().filter(function(){
+										return $(this).val().indexOf($('select[name=character_set_server]').val()+'_')>-1;
+									}).show().filter(':first').prop('selected',true);
+									$('select[name=collation-server]').parent().refresh();
+								};
+							}
+						}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
+							dbConfigForm.zdbui_setContents(dbConfigurations);							
+						}
+					}
+				});
+			};
+			$('#popMyCnf').on('click',function(){
+				window.open("/zdb02/zdb0200p05?namespace="+gService.namespace+"&serviceName="+gService.serviceName);
+			});
+			/*tabSystem end 환경설정 */
+			
 			//page Start
 			fn_getServiceFirst().done(function(){
 				var cookieTabId = $.cookie('selected2010tab')||'tabService';

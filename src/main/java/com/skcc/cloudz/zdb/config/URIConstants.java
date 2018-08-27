@@ -55,10 +55,16 @@ public class URIConstants {
 
 	public static final String URI_GET_EVENTS = "/api/v1/events?namespace={namespace}&kind={kind}&serviceName={serviceName}&startTime={startTime}&endTime={endTime}&keyword={keyword}";
 
+	public static final String URI_GET_USER_GRANTS = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/userGrants";
+	
 	public static final String URI_GET_OPERATION_EVENTS = "/api/v1/operationEvents?namespace={namespace}&serviceName={serviceName}&startTime={startTime}&endTime={endTime}&keyword={keyword}";
 
 	public static final String URI_GET_POD_LOG = "/api/v1/{namespace}/log/{podname}";
 
+	public static final String URI_GET_SLOW_LOG = "/api/v1/{namespace}/slowlog/{podname}";
+
+	public static final String URI_GET_MY_CNF = "/api/v1/{namespace}/{serviceName}/mycnf";
+	
 	public static final String URI_GET_BACKUP_LIST = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/backup-list";
 
 	public static final String URI_GET_SCHEDULE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/schedule";

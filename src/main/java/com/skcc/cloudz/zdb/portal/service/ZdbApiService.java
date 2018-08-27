@@ -31,6 +31,7 @@ import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
+import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
@@ -313,6 +314,16 @@ public class ZdbApiService{
 		
 		return list;
 	}
+	public List<DBUser> getUserGrants(Map<String, String> param) {
+		List<DBUser> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_USER_GRANTS,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			list = zdbRestDTO.getResult().getUserGrants();
+		};
+		
+		return list;
+	}
 
 	public List<RequestEvent> getOperationEvents(Map<String, String> param) {
 		List<RequestEvent> list = Collections.emptyList();
@@ -335,6 +346,28 @@ public class ZdbApiService{
 		return result;
 	}
 
+	public String[] getSlowLog(Map<String, String> param) {
+		String[] result = {};
+		System.out.println(param);
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_SLOW_LOG,ZdbRestDTO.class,param);
+		System.out.println(zdbRestDTO);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getSlowLog();
+		};
+		return result;
+	}	
+
+	public String[] getMycnf(Map<String, String> param) {
+		String[] result = {};
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_MY_CNF,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getMycnf();
+		};
+		return result;
+	}
+	
 	public List<BackupEntity> getBackupList(Map<String, String> param) {
 		List<BackupEntity> result = null;
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_BACKUP_LIST,ZdbRestDTO.class,param);
@@ -417,6 +450,7 @@ public class ZdbApiService{
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USER_NAMESPACES, HttpMethod.POST,null,ZdbRestDTO.class).getBody();
 		return zdbRestDTO;
 	}
+
 
 }
 

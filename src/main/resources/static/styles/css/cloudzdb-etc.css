@@ -7,7 +7,12 @@
 .crboth {
 	clear: both;
 }
-
+.fl{
+	float: left;
+}
+.fr{
+	float: right;
+}
 .tag-wrap {
 	min-height: 20px;
 }

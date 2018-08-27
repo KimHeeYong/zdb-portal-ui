@@ -22,6 +22,7 @@ import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.skcc.cloudz.zdb.portal.service.ZdbApiService;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
+import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.IResult;
 import com.zdb.core.domain.RequestEvent;
@@ -294,6 +295,16 @@ public class ZdbApiController {
 		
 		return mav;
 	}
+	@RequestMapping(value = "getUserGrants")	
+	public ModelAndView getUserGrants(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<DBUser> result = zdbApiService.getUserGrants(param);
+		mav.addObject(IResult.USER_GRANTS,result);
+		
+		return mav;
+	}
 	
 	@RequestMapping(value = "getOperationEvents")	
 	public ModelAndView getOperationEvents(HttpServletRequest request) {
@@ -313,6 +324,27 @@ public class ZdbApiController {
 		
 		String [] result = zdbApiService.getPodLog(param);
 		mav.addObject(IResult.POD_LOG,result);
+		
+		return mav;
+	}
+	@RequestMapping(value = "getSlowLog")	
+	public ModelAndView getSlowLog(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		String [] result = zdbApiService.getSlowLog(param);
+		mav.addObject(IResult.SLOW_LOG,result);
+		
+		return mav;
+	}
+	
+	@RequestMapping(value = "getMycnf")	
+	public ModelAndView getMycnf(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		String [] result = zdbApiService.getMycnf(param);
+		mav.addObject(IResult.MY_CNF,result);
 		
 		return mav;
 	}

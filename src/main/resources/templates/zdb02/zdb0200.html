@@ -266,7 +266,6 @@
 					data:{namespace:gSelectedNamespace},
 					success:function(res){
 						var ob = res.namespaceResource;
-						console.log(ob)
 						divArea.html(gfn_getNamespaceResourceTemplate(ob));
 						$a.convert(divArea);
 					}
