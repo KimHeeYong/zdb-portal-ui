@@ -6,8 +6,19 @@ var _gSliderConstantsCommonGetValue = function(index){
 	return this.value[index]+this.unit;
 };
 var _gSliderConstantsCommonGetIndex = function(val){
-	return this.value.indexOf(parseInt((val||'0').replace(/[a-zA-Z]+/g,'')));
+	val = cloudUtil.parseInt(val);
+	var idx = this.value.indexOf(val);
+	if(idx < 0 && val > 0){
+		for(var i = this.value.length - 1; i > -1; i--){
+			if(val >= this.value[i]){
+				idx = [i];
+				break;
+			};
+		};
+	};
+	return idx < 0 ? 0 : idx;
 };
+
 var gSliderConstants = {
 	redis :{
 		memory : {

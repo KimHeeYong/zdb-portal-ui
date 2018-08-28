@@ -228,17 +228,29 @@
 									<th class="Valign-top">리소스</th>
 									<td class="overflow-hidden">
 										<div class="info-wrap">
-											<!-- 
 											<div class="info-radio__wrap">
-												<label class="ImageRadio"> <input class="Radio" name="scaleType" value="resource1" checked="checked">리소스선택</label>
-												<label class="ImageRadio"> <input class="Radio" name="scaleType" value="resource2">사용자입력</label>
+												<label class="ImageRadio"> <input class="Radio" name="scaleType" value="progress" checked="checked">리소스선택</label>
+												<label class="ImageRadio"> <input class="Radio" name="scaleType" value="custom">사용자입력</label>
 											</div>
-											 -->
 											<p class="memory-title">&nbsp;</p>
 											<div class="info-wrap ht60">
-												<div class="memory-info" id="memoryInfo">1GB</div>
-												<div class="progress-wrap">
-													<div class="memory-bar" id="memorySlider"></div>
+												<div id="divScaleProgress">
+													<div class="memory-info" id="memoryInfo">1GB</div>
+													<div class="progress-wrap">
+														<div class="memory-bar" id="memorySlider"></div>
+													</div>
+												</div>
+												<div id="divScaleCustom" class="hide">
+													<form id="scaleForm" name="scaleForm">
+													<div class="wd200 fl">
+														CPU : <input type="text" class="Textinput wd100" id="scaleCpu" name="scaleCpu"/> m
+														<p data-for="scaleCpu" class="warn-text"></p>
+													</div>
+													<div>
+														Memory : <input type="text" class="Textinput wd100" id="scaleMemory" name="scaleMemory"/> Mi
+														<p data-for="scaleMemory" class="warn-text"></p>
+													</div>
+													</form>
 												</div>
 											</div>
 										</div>
@@ -738,6 +750,7 @@
 	var gNamespaces = null;
 	var gService = null;
 	var gTagList = [];
+	var gServiceScale = {};//scaleUp value
 	$a.page(function() {
 		
 		this.init = function() {
@@ -966,7 +979,7 @@
 							if(data.condition && data.condition.status == 'True'){
 								window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
 							}else{
-								gCommon.alert(' 서비스 접속 불가 상태입니다. </br> 서비스 이용이 가능할때 조회할수있습니다');
+								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
 							}
 						});
 						return re;
@@ -976,7 +989,7 @@
 							if(data.condition && data.condition.status == 'True'){
 								window.open("/zdb02/zdb0200p04?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
 							}else{
-								gCommon.alert(' 서비스 접속 불가 상태입니다. </br> 서비스 이용이 가능할때 조회할수있습니다');
+								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
 							}
 						});
 						return re;
@@ -1025,7 +1038,6 @@
 						gTagList = service.tags;
 						fn_displayService();
 						fn_getServiceCallback();
-						
 
 						fn_getService();
 					},complete:function(res){
@@ -1035,10 +1047,12 @@
 				return deferred.promise();
 			};
 			//서비스 정보 조회
+			var gClient = null;
 			function fn_getService(){
-				var client = gZdbsocket.getConnect();
-				client.connect({}, function(frame){
-					client.subscribe('/service/'+gService.serviceName, function(res) {
+				if(gClient!= null)return;
+				var gClient = gZdbsocket.getConnect();
+				gClient.connect({}, function(frame){
+					gClient.subscribe('/service/'+gService.serviceName, function(res) {
 						var re = JSON.parse(res.body);
 						var service = gfn_convertServiceData(re.result.serviceoverview);
 						gCurrentNamespace = service.namespace;
@@ -1083,6 +1097,7 @@
 					}
 				});
 			};
+
 			function fn_getServiceCallback(){
 				 //redis purpose data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
 				if(gService.serviceType == G_SERVICE_TYPE_REDIS){
@@ -1103,7 +1118,12 @@
 				
 				var rsSpec = gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{};
 				var psSpec = gCommon.getObjectByIdx(gService.persistenceSpecOfPodMap,0)||{};
-				$('#configInfo').zdbui_setContents({cpu:rsSpec.cpu,memory:rsSpec.memory,disk:gService.persistentVolumeClaims.length==0?'사용안함':psSpec.size});
+				gServiceScale.cpu = rsSpec.cpu;
+				gServiceScale.memory = rsSpec.memory;
+				gServiceScale.cpuVal = cloudUtil.parseInt(gServiceScale.cpu);
+				gServiceScale.memoryVal = cloudUtil.parseInt(gServiceScale.memory);
+				gServiceScale.disk = psSpec.size;
+				$('#configInfo').zdbui_setContents({cpu:gServiceScale.cpu,memory:gServiceScale.memory,disk:gService.persistentVolumeClaims.length==0?'사용안함':gServiceScale.disk});
 				var podData = (function(){
 					var list = [];
 					var pods = gService.pods;
@@ -1160,7 +1180,7 @@
 									if(gService.serviceType == 'redis' && (ob.role != 'master' || gService.persistentVolumeClaims.length == 0)){
 										ob.disk = '사용안함';
 									}else if(dl && dl[ob.name]){
-										ob.disk = (dl[ob.name].used / (1024*1000)).toFixed(2) + " / " + psSpec.size;
+										ob.disk = (dl[ob.name].used / (1024*1000)).toFixed(2) + " / " + gServiceScale.disk;
 										ob.diskUpdateTime = dl[ob.name].updateTime; 
 									};
 								}catch(e){ 
@@ -1188,10 +1208,20 @@
 				
 				//tabScale 스케일
 				if($('#zdbServiceTabs').getCurrentTabContent()!= '#tabScale'){
-					fn_setSlider('memory',gSliderConstants[gParam.serviceType].memory.getIndex(rsSpec.memory));
+					fn_setSlider('memory',gServiceScale.memoryVal);
+					$('#tabScale').find('input[name="scaleCpu"]').val(gServiceScale.cpuVal);
+					$('#tabScale').find('input[name="scaleMemory"]').val(gServiceScale.memoryVal);
 					$('#clusterSlaveCount').val(gService.clusterSlaveCount);
 					//todo temp
-					setScaleButton();
+					var isCustom = gSliderConstants[gParam.serviceType].cpu.value.indexOf(gServiceScale.cpuVal) < 0
+								 ||gSliderConstants[gParam.serviceType].memory.value.indexOf(gServiceScale.memoryVal) < 0;
+					if(isCustom){
+						$('#tabScale input[name=scaleType][value=custom]').trigger('click');
+					}else{
+						$('#tabScale input[name=scaleType][value=progress]').trigger('click');
+					};
+					
+					//setScaleButton();
 				}
 			}
 			//서비스 display
@@ -1262,12 +1292,10 @@
 					});
 				},{okBtnMsg:"추가"}));
 			});
-			//publicConnectionInfo
 			/*tabService end*/
 			
 			/*tabScale start 스케일 */
 			var memorySlider = document.getElementById('memorySlider');
-			
 			var sliderConstants = gSliderConstants[gParam.serviceType];
 			noUiSlider.create(memorySlider, {
 				start:[1],
@@ -1289,12 +1317,15 @@
 			}).on('slide', function ( values, handle ) {
 				fn_setSliderText('memory',parseInt(values[handle]));
 			});
-			function fn_setSlider(type,idx){
+			//set슬라이더 값 
+			function fn_setSlider(type,value){
 				var slider = $('#'+type+'Slider')[0];
-				if(idx < 0)idx = 0;
+				var idx = sliderConstants[type].getIndex(value);
+				
 				slider.noUiSlider.set(idx);
 				fn_setSliderText(type,idx)
 			};
+			//set슬라이더 값 텍스트
 			function fn_setSliderText(type,idx){
 				$('#'+type+'Info').html(sliderConstants[type].getValue(idx));
 				setScaleButton();
@@ -1302,11 +1333,17 @@
 			
 			$('#updateScaleUp').on('click',function(){
 				if($(this).hasClass('Disabled'))return;
+				
 				if(gCommon.confirm('Scale Up/Down이 수행되면 서비스가 재시작됩니다. 계속 진행하시겠습니까?',function(){
-					var data = $.extend({},gParam,{
-						cpu:gSliderConstants[gParam.serviceType].cpu.value[parseInt(memorySlider.noUiSlider.get())],
-						memory:gSliderConstants[gParam.serviceType].memory.value[parseInt(memorySlider.noUiSlider.get())]
-					});
+					var data = $.extend({},gParam,{});
+					var scaleType = $('#tabScale').find('input[name=scaleType]:checked').val();
+					if(scaleType == 'custom'){
+						data.cpu = cloudUtil.parseInt($('#tabScale').find('input[name=scaleCpu]').val());
+						data.memory = cloudUtil.parseInt($('#tabScale').find('input[name=scaleMemory]').val());
+					}else if(scaleType == 'progress'){
+						data.cpu = gSliderConstants[gParam.serviceType].cpu.value[parseInt(memorySlider.noUiSlider.get())],
+						data.memory = gSliderConstants[gParam.serviceType].memory.value[parseInt(memorySlider.noUiSlider.get())]
+					};
 					$a.ajax({
 						url: '/zdbapi/updateScaleUp',
 						data:data,
@@ -1345,6 +1382,7 @@
 				}));
 			});
 			
+			//레디스 경우 최대 노드 카운트를 가져온다
 			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
 				$a.ajax({
 					url: '/zdbapi/getNodeCount',
@@ -1355,16 +1393,27 @@
 				});				
 			};
 			
-			$('#clusterSlaveCount').on('input',function(evt){
+			$('#tabScale').find('input[type=text]').on('input',function(evt){
 				setScaleButton();
 			});
 			$('#clusterSlaveCountSpinner').find('.Up,.Down').on('click',function(evt){
 				setScaleButton();
 			});
+			//스케일 적용 버튼 활성 비활성
 			function setScaleButton(){
-				var orgMemory = gSliderConstants[gParam.serviceType].memory.getIndex((gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{}).memory)||0; 
-				var chgMemory = parseInt(memorySlider.noUiSlider.get());
-				if(orgMemory == chgMemory || chgMemory < 1){
+				var chgData = {};
+				var scaleType = $('#tabScale').find('input[name=scaleType]:checked').val();
+				if(scaleType == 'custom'){
+					chgData.cpu = cloudUtil.parseInt($('#tabScale').find('input[name=scaleCpu]').val());
+					chgData.memory = cloudUtil.parseInt($('#tabScale').find('input[name=scaleMemory]').val());
+				}else if(scaleType == 'progress'){
+					chgData.cpu = gSliderConstants[gParam.serviceType].cpu.value[parseInt(memorySlider.noUiSlider.get())],
+					chgData.memory = gSliderConstants[gParam.serviceType].memory.value[parseInt(memorySlider.noUiSlider.get())]
+				};
+				
+				var isChange = gServiceScale.memoryVal != chgData.memory || gServiceScale.cpuVal != chgData.cpu ;
+				
+				if((scaleType == 'custom' && !$('form[name=scaleForm]').validate()) || !isChange || chgData.memory < 1){
 					$('#updateScaleUp').addClass('Disabled');	
 				}else{
 					$('#updateScaleUp').removeClass('Disabled');
@@ -1381,6 +1430,25 @@
 					};
 				}
 			};
+			$('#tabScale input:radio[name=scaleType]').on('change',function(){
+				setDivScale(this.value);
+				setScaleButton();
+			});
+			$('form[name=scaleForm]').validator({
+			    elements :{ 
+			        'scaleCpu': {rule:{required:true,min:100,max:20000}},
+			        'scaleMemory': {rule:{required:true,min:128,max:32000}}
+			    }
+			});	
+			//스케일 리소스선택or사용자입력
+			function setDivScale(scaleType){
+				$('#tabScale').find('#divScaleProgress,#divScaleCustom').hide();
+				if(scaleType == 'custom'){
+					$('#tabScale').find('#divScaleCustom').show();
+				}else{
+					$('#tabScale').find('#divScaleProgress').show();
+				}
+			}
 			/*tabScale end 스케일*/
 
 			/*tabMonitor start 모니터링*/
