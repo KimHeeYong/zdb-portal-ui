@@ -43,7 +43,7 @@
 						{ title:'서비스이름', key : 'serviceName' , width: '180px', align: 'left'},
 						{ title:'서비스타입', key : 'serviceType' , width: '100px', align: 'center'},
 						{ title:'백업시간', key : 'startTime' , width: '70px', align: 'center'},
-						{ title:'소요시간(분)', key : 'executionTime' , width: '70px', align: 'center'},
+						{ title:'소요시간', key : 'executionTime' , width: '70px', align: 'center'},
 						{ title:'파일사이즈(MB)', key : 'fileSize' , width: '70px', align: 'right', render: function(value){
 							return cloudUtil.truncDecimal(cloudUtil.addComma((value / (1024*1024))),2);
 						}},
