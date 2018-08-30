@@ -7,7 +7,12 @@
 .crboth {
 	clear: both;
 }
-
+.fl{
+	float: left;
+}
+.fr{
+	float: right;
+}
 .tag-wrap {
 	min-height: 20px;
 }
@@ -21,10 +26,12 @@
 	color: #ffffff;
 }
 
+.ml20{
+	margin-left: 20px !important;
+}
 .mr5 {
 	margin-right: 5px;
 }
-
 .ft15 {
 	font-size: 15px !important;
 }
@@ -33,10 +40,18 @@
 	font-size: 20px !important;
 }
 
-.wd300 {
-	width: 700px;
+.wd100{
+	min-width: 100px;
+	width: 100px;
 }
-
+.wd200{
+	min-width: 200px;
+	width: 200px;
+}
+.wd300 {
+	min-width: 300px;
+	width: 300px;
+}
 .mt10 {
 	margin-top: 10px;
 }

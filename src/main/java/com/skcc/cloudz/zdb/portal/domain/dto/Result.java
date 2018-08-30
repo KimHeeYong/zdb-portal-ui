@@ -5,10 +5,12 @@ import java.util.Map;
 
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
+import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.Mycnf;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
+import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 
@@ -48,9 +50,16 @@ public class Result {
 	private List<RequestEvent> operationEvents;
 
 	private List<BackupEntity> backupList;
+
+	private List<ScheduleInfoEntity> scheduleInfoList;
 	
 	private String[] podLog;
+
+	private String[] slowLog;
 	
 	private ScheduleEntity schedule; 
 	
+	private String[] mycnf;
+
+	private List<DBUser> userGrants;
 }

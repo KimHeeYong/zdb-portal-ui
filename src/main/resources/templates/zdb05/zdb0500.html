@@ -1,21 +1,82 @@
-			<div class="top-area">
-                   <h2 class="title">공지사항</h2>
-                   <div class="tag-wrap">
-                   	<span class="tag">Cloud Z DB 관리자가 작성한 공지사항 안내입니다.</span>
-                   </div>
-			</div>
-			<!-- accordion wrap-->
-			<ul class="Accordion cp-accordion">
-				<li>
-					<a>목록</a>
-		            <div class="accor-contents__wrap">
-		            	<!-- grid -->
-		                <div id="gr"></div>
-		            </div>
-				</li>
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<th:block layout:fragment="page_head">
+	<title>백업 스케줄링 목록</title>
+</th:block>
+<th:block layout:fragment="content">
+	<!-- location -->
+	<div class="locations-area">
+		<div class="prj-list">
+			<strong>Namespace : </strong>
+			<button id="namespaces" class="Dropdownbutton namespace"></button>
+			<ul class="dropmenu-list hide">
 			</ul>
-<script type="text/javascript">
-function fn_namespaceChangeCallback(){
-	console.log(22)
-}
-</script>
+		</div>
+	</div>
+	<div class="contents-box">
+		<div class="top-area">
+           <h2 class="title">백업 스케줄링 목록</h2>
+		</div>
+		<div class="accor-contents__wrap">
+			<!-- tab contents info detail-->
+			<!-- grid -->
+			<div id="gridSchedule"></div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var gNamespaces = null; // 네임스페이스 콤보
+		$a.page(function() {
+			this.init = function() {
+				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
+						.addHandler(function(e) {
+							gCommon.setSelectedNamespace(e.currentTarget.id);
+							fn_getScheduleInfoList();
+						}).select({
+							id:gSelectedNamespace
+						});
+				$('.Accordion').expandAll();
+				
+				$('#gridSchedule').alopexGrid({
+					autoColumnIndex: true,
+					height: 635,
+					columnMapping : [  
+						{ title:'서비스이름', key : 'serviceName' , width: '180px', align: 'left'},
+						{ title:'서비스타입', key : 'serviceType' , width: '100px', align: 'center'},
+						{ title:'백업시간', key : 'startTime' , width: '70px', align: 'center'},
+						{ title:'소요시간', key : 'executionTime' , width: '70px', align: 'center'},
+						{ title:'파일사이즈(MB)', key : 'fileSize' , width: '70px', align: 'right', render: function(value){
+							return cloudUtil.truncDecimal(cloudUtil.addComma((value / (1024*1024))),2);
+						}},
+						{ title:'백업용량(MB)', key : 'fileSumSize' , width: '70px', align: 'right', render: function(value){
+							return cloudUtil.truncDecimal(cloudUtil.addComma((value / (1024*1024))),2);
+						}},
+						{ title:'최근백업시간', key : 'registerDate' , width: '100px', align: 'right',render:function(value,data,render,mapping){
+							var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
+							return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
+						}}
+					],
+					message: {
+						nodata: gMessage.gridNodata
+					}
+				});			
+				
+				function fn_getScheduleInfoList(){
+					var param = $('form[name=eventForm]').serializeObject();
+					
+					$a.ajax({
+						url: '/zdbapi/getScheduleInfoList',
+						data:{namespace:gSelectedNamespace},
+						success: function(res){
+							var list = res.scheduleInfoList;
+							$('#gridSchedule').alopexGrid('dataSet',list);
+						}
+					});				
+				};			
+				$('#searchEvent').on('click',function(){
+					fn_getScheduleInfoList();
+				});
+			}
+		});
+	</script>
+</th:block>
+</html>

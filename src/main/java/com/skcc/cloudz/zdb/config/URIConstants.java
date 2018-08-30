@@ -4,6 +4,8 @@ public class URIConstants {
 
 	// namespace list
 	public static final String URI_GET_NAMESPACES = "/api/v1/namespaces";
+
+	public static final String URI_GET_NAMESPACE_RESOURCE = "/iam/metrics/namespaces?userId={userId}";
 	
 	public static final String URI_GET_SERVICES = "/api/v1/service/services";
 
@@ -47,15 +49,27 @@ public class URIConstants {
 	
 	public static final String URI_DELETE_TAG = "/api/v1/{namespace}/tag/{serviceName}";
 
+	public static final String URI_CREATE_PUBLIC_SERVICE = "/api/v1/{namespace}/{serviceType}/{serviceName}/public-service";
+	
+	public static final String URI_DELETE_PUBLIC_SERVICE = "/api/v1/{namespace}/{serviceType}/{serviceName}/public-service";
+
 	public static final String URI_GET_EVENTS = "/api/v1/events?namespace={namespace}&kind={kind}&serviceName={serviceName}&startTime={startTime}&endTime={endTime}&keyword={keyword}";
 
+	public static final String URI_GET_USER_GRANTS = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/userGrants";
+	
 	public static final String URI_GET_OPERATION_EVENTS = "/api/v1/operationEvents?namespace={namespace}&serviceName={serviceName}&startTime={startTime}&endTime={endTime}&keyword={keyword}";
 
 	public static final String URI_GET_POD_LOG = "/api/v1/{namespace}/log/{podname}";
 
+	public static final String URI_GET_SLOW_LOG = "/api/v1/{namespace}/slowlog/{podname}";
+
+	public static final String URI_GET_MY_CNF = "/api/v1/{namespace}/{serviceName}/mycnf";
+	
 	public static final String URI_GET_BACKUP_LIST = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/backup-list";
 
 	public static final String URI_GET_SCHEDULE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/schedule";
+
+	public static final String URI_GET_SCHEDULE_INFO_LIST = "/api/v1/scheduleInfo-list?namespace={namespace}";
 	
 	public static final String URI_IS_AVAILABLE = "/api/v1/{namespace}/avaliable?memory={memory}&cpu={cpu}&clusterEnabled={clusterEnabled}";
 

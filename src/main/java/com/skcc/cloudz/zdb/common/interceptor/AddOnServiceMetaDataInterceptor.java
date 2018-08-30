@@ -68,23 +68,18 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
         try {
             String userAccessRole = securityService.getUserDetails().getAccessRole();
             log.debug("userAccessRole : {}", userAccessRole);
-            
             InputStream inputStream = AddOnServiceMetaDataInterceptor.class.getClassLoader().getResourceAsStream("addOnServiceMetaData.json");
             if (inputStream == null) {
                 throw new Exception();
             }
-            
             List<AddOnServiceMataVo> addOnServiceMataList = mapper.readValue(inputStream, new TypeReference<List<AddOnServiceMataVo>>(){});
              
             for (AddOnServiceMataVo addOnServiceMataVo : addOnServiceMataList) {
-            	AddOnServiceMataVoList.add(this.getAddOnServiceMetaDataSub(addOnServiceMataVo));
-            	if(false) {//temp 권한 패쓰
-            		for (AccessRole accessRole : addOnServiceMataVo.getAccessRoles()) {
-            			if (userAccessRole.equals(accessRole.getName()) && addOnServiceMataVo.isEnable()) {
-            				AddOnServiceMataVoList.add(this.getAddOnServiceMetaDataSub(addOnServiceMataVo));        
-            			}
-            		}
-            	}
+        		for (AccessRole accessRole : addOnServiceMataVo.getAccessRoles()) {
+        			if (userAccessRole.equals(accessRole.getName()) && addOnServiceMataVo.isEnable()) {
+        				AddOnServiceMataVoList.add(this.getAddOnServiceMetaDataSub(addOnServiceMataVo));        
+        			}
+        		}
             }
             
             Collections.sort(AddOnServiceMataVoList);

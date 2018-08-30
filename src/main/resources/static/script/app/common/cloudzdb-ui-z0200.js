@@ -193,6 +193,38 @@ function gfn_getMakeServiceTemplate(ob){
 	 return template;
 }
 
+//네임스페이스 리소스 템플릿
+function gfn_getNamespaceResourceTemplate(ob){
+	if(!ob)return '';
+	
+	var template = ''
+		+'<ul class="name-progress__wrap2">                                                           '
+		+'	<li>                                                                                     '
+		+'		<p class="name-pro__title">CPU Request</p>                                           '
+		+'		<span class="name-pro__info2">{{usedCpuRequests}}/{{hardCpuRequests}}</span>                                              '
+		+'		<div class="Progressbar name-typec" data-default="{{cpuRequestsPercentage}}" data-type="progressbar"></div> '
+		+'	</li>                                                                                    '
+		+'	<li>                                                                                     '
+		+'		<p class="name-pro__title">CPU Limit</p>                                             '
+		+'		<span class="name-pro__info2">{{usedCpuLimits}}/{{hardCpuLimits}}</span>                                              '
+		+'		<div class="Progressbar name-typec" data-default="{{cpuLimitsPercentage}}" data-type="progressbar"></div> '
+		+'	</li>                                                                                    '
+		+'	<li>                                                                                     '
+		+'		<p class="name-pro__title">Memory Request</p>                                        '
+		+'		<span class="name-pro__info2">{{usedMemoryRequests}}/{{hardMemoryRequests}}</span>                                       '
+		+'		<div class="Progressbar name-typec" data-default="{{memoryRequestsPercentage}}" data-type="progressbar"></div> '
+		+'	</li>                                                                                    '
+		+'	<li>                                                                                     '
+		+'		<p class="name-pro__title">Memory Limit</p>                                          '
+		+'		<span class="name-pro__info2">{{usedMemoryLimits}}/{{hardMemoryLimits}}</span>                                       '
+		+'		<div class="Progressbar name-typec" data-default="{{memoryLimitsPercentage}}" data-type="progressbar"></div> '
+		+'	</li>                                                                                    '
+		+'</ul>                                                                                      '
+	 for(var key in ob){
+		 template = template.replaceAll('{{'+key+'}}',ob[key]||'');
+	 };		        
+	 return template;	
+}
 function gfn_getConnectionTemplate(ob){
 	var template = ''                                                                                                     
 	               +'<tr>                                                                                                 '

@@ -8,7 +8,8 @@
     "target": "self",
     "accessRoles": [
       "cluster-admin",
-      "admin"
+      "admin",
+      "member"
     ],
     "enable": true
   },
@@ -21,7 +22,8 @@
     "target": "self",
     "accessRoles": [
       "cluster-admin",
-      "admin"
+      "admin",
+      "member"
     ],
     "enable": true
   },
@@ -35,9 +37,9 @@
     "accessRoles": [
       "cluster-admin",
       "admin",
-      "view"
+      "member"
     ],
-    "enable": false
+    "enable": true
   },
   {
     "id": "zdb0400",
@@ -49,7 +51,20 @@
     "accessRoles": [
       "cluster-admin",
       "admin",
-      "editor"
+      "member"
+    ],
+    "enable": true
+  },
+  {
+    "id": "zdb0500",
+    "name": "백업 스케쥴링 목록",
+    "order": 5,
+    "url": "/zdb05/zdb0500",
+    "folder": "/zdb05",
+    "target": "self",
+    "accessRoles": [
+      "cluster-admin",
+      "admin"
     ],
     "enable": true
   }

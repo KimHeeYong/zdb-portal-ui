@@ -31,6 +31,8 @@ public class CommonConstants {
 
 	public static final String USER_INFO = "userInfo";
 
+	public static final String USER_ID = "userId";
+
 	public static final String TEMPLATE_PATH = "com/skcc/cloudz/zdb/portal/domain/template/";
 
 	public static final String EXCEPTION_URL_STATUS_400 = "/exception/400";

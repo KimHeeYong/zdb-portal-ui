@@ -16,15 +16,18 @@ import org.springframework.web.servlet.ModelAndView;
 import com.skcc.cloudz.zdb.common.exception.ZdbPortalException;
 import com.skcc.cloudz.zdb.common.util.RequestUtil;
 import com.skcc.cloudz.zdb.config.CommonConstants;
+import com.skcc.cloudz.zdb.portal.domain.dto.NamespaceResource;
 import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.skcc.cloudz.zdb.portal.service.ZdbApiService;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
+import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.IResult;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
+import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 
@@ -50,6 +53,16 @@ public class ZdbApiController {
 			throw new ZdbPortalException("네임 스페이스가 존재하지 않습니다.");
 		}
 		mav.addObject(IResult.NAMESPACES ,namespaces);
+		return mav;
+	}
+	@RequestMapping(value="getNamespaceResource")
+	@ResponseBody
+	public ModelAndView getNamespaceResource(HttpServletRequest request)throws Exception {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		NamespaceResource namespaceResource = zdbApiService.getNamespaceResource(param); 
+		mav.addObject(IResult.NAMESPACE_RESOURCE ,namespaceResource);
 		return mav;
 	}
 	
@@ -250,6 +263,27 @@ public class ZdbApiController {
 		
 		return mav;
 	}
+	
+	@RequestMapping(value = "createPublicService")
+	public ModelAndView createPublicService(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.createPublicService(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
+	@RequestMapping(value = "deletePublicService")
+	public ModelAndView deletePublicService(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.deletePublicService(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
 
 	@RequestMapping(value = "getEvents")	
 	public ModelAndView getEvents(HttpServletRequest request) {
@@ -258,6 +292,16 @@ public class ZdbApiController {
 		
 		List<EventMetaData> result = zdbApiService.getEvents(param);
 		mav.addObject(IResult.SERVICE_EVENTS,result);
+		
+		return mav;
+	}
+	@RequestMapping(value = "getUserGrants")	
+	public ModelAndView getUserGrants(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<DBUser> result = zdbApiService.getUserGrants(param);
+		mav.addObject(IResult.USER_GRANTS,result);
 		
 		return mav;
 	}
@@ -283,6 +327,27 @@ public class ZdbApiController {
 		
 		return mav;
 	}
+	@RequestMapping(value = "getSlowLog")	
+	public ModelAndView getSlowLog(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		String [] result = zdbApiService.getSlowLog(param);
+		mav.addObject(IResult.SLOW_LOG,result);
+		
+		return mav;
+	}
+	
+	@RequestMapping(value = "getMycnf")	
+	public ModelAndView getMycnf(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		String [] result = zdbApiService.getMycnf(param);
+		mav.addObject(IResult.MY_CNF,result);
+		
+		return mav;
+	}
 	
 	@RequestMapping(value = "getBackupList")	
 	public ModelAndView getBackupList(HttpServletRequest request) {
@@ -291,6 +356,16 @@ public class ZdbApiController {
 		
 		List<BackupEntity> backupList = zdbApiService.getBackupList(param);
 		mav.addObject("backupList",backupList);
+		
+		return mav;
+	}
+	@RequestMapping(value = "getScheduleInfoList")	
+	public ModelAndView getScheduleInfoList(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<ScheduleInfoEntity> scheduleInfoList = zdbApiService.getScheduleInfoList(param);
+		mav.addObject("scheduleInfoList",scheduleInfoList);
 		
 		return mav;
 	}
@@ -353,4 +428,5 @@ public class ZdbApiController {
 		
         return result;
 	}
+
 }

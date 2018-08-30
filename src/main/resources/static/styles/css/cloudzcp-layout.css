@@ -103,7 +103,7 @@ body.login {background: #ffffff}
 	-moz-border-radius: 0;
 	-ms-border-radius: 0;
 	border-radius: 0;
-	z-index: 2;
+	z-index: 99;
 }
 .dropmenu-list li {
 	cursor: pointer;
@@ -1351,13 +1351,34 @@ a.blank-link {
 	width: 100%;
 	padding-bottom: 20px;
 }
+.name-progress__wrap2 {
+	position: relative;
+	width: 100%;
+	padding-bottom: 20px;
+}
 .name-progress__wrap li {
 	float: left;
 	position: relative;
 	width: 50%;
 	margin-bottom: 10px;
 }
-.name-progress__wrap li:last-child .name-pro__title {text-align: center;}
+.name-progress__wrap2 li { 
+	float: left;
+	position: relative;
+	width: 25%;
+	margin-bottom: 10px;
+}
+.name-pro__title {
+	display: block;
+	margin-bottom: 10px;
+	font-size: 0.87rem;
+}
+.name-progress__wrap .Progressbar {
+	width: calc(100% - 100px);
+}
+.name-progress__wrap2 .Progressbar {
+	width: calc(100% - 80px);
+}
 .name-pro__title {
 	margin-bottom: 10px;
 	font-size: 0.87rem;
@@ -1381,11 +1402,20 @@ a.blank-link {
 .Progressbar.name-typed div {background: #169bd5;}
 .Progressbar.name-typee div {background: #ea0530;}
 .name-pro__info {
-	float: left;
-	position: relative;
-	top: -4px;
+	position: absolute;
+	top: 23px;
+	right: 0;
+	width: 100px;
+	padding-left: 10px;
 	font-size: 0.73rem;
-	margin-right: 10px;
+}
+.name-pro__info2 {
+	position: absolute;
+	top: 23px;
+	right: -5px;
+	width: 80px;
+	padding-left: 10px;
+	font-size: 0.73rem;
 }
 .name-user__info {
 	display: block;

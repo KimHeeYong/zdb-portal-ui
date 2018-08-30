@@ -83,6 +83,7 @@
 			<li data-content="#tabMonitor">모니터링</li>
 			<li data-content="#tabBackup">백업</li>
 			<li data-content="#tabEvent">이벤트</li>
+			<li data-content="#tabUser">사용자</li>
 			<li data-content="#tabSystem">환경설정</li>
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
@@ -150,8 +151,8 @@
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                  
 				                </tr>
-				                </tbody>
-				                <tbody class="publicConnectionInfo">
+			                </tbody>
+			                <tbody class="publicConnectionInfo">
 								<tr>                                                                                                 
 					               	<th rowspan="2">Public Network</th>                                                                       
 					               	<td>       
@@ -166,8 +167,9 @@
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">                                                                   
 						               		<input type="text" class="Textinput" name="publicmasterConnectionLine" readonly="readonly"></input>     
-						               		<button class="Button line-btn connectionLineCopy">복사</button>                          
+						               		<button class="Button line-btn connectionLineCopy">복사</button>                         
 						               	</div>	
+						               	<button class="Button btn-ico__typeb btn-trash ml20" id="publicNetworkDelete" title="Public Network 삭제">삭제</button>
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                                                                                         
 				                </tr>
@@ -179,7 +181,7 @@
 											<label class="ImageRadio"> <input class="Radio" name="con4" value="connectionLine">Command Line </label>
 										</div>					               	
 		               	           		<div class="info-input__wrap connectionString">                                                                                                  
-						               		<input class="Textinput" name="publicslaveConnectionString" readonly="readonly"></input>     
+						               		<input class="Textinput" name="publicslaveConnectionString" readonly="readonly"></input>      
 						               		<button class="Button line-btn connectionStringCopy">복사</button>                          
 						               	</div> 
 						               	<div class="info-input__wrap connectionLine hide">                                                                                              
@@ -188,6 +190,14 @@
 						               	</div>	                          
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                  
+				                </tr>
+			                </tbody>
+			                <tbody class="publicConnectionInfoNone">
+								<tr>                                                                                                 
+					               	<th>Public Network</th>                                                                       
+					               	<td>       
+					               	    <button class="Button btn" id="publicNetworkCreate">Public Network생성</button>                                                                                 
+					               	</td>                                                                                         
 				                </tr>
 			                </tbody>
 						</table>
@@ -215,14 +225,32 @@
 							</colgroup>
 							<tbody>
 								<tr>
-									<th class="Valign-top">할당메모리</th>
+									<th class="Valign-top">리소스</th>
 									<td class="overflow-hidden">
 										<div class="info-wrap">
-											<p class="memory-title">메모리</p>
+											<div class="info-radio__wrap">
+												<label class="ImageRadio"> <input class="Radio" name="scaleType" value="progress" checked="checked">리소스선택</label>
+												<label class="ImageRadio"> <input class="Radio" name="scaleType" value="custom">사용자입력</label>
+											</div>
+											<p class="memory-title">&nbsp;</p>
 											<div class="info-wrap ht60">
-												<div class="memory-info" id="memoryInfo">1GB</div>
-												<div class="progress-wrap">
-													<div class="memory-bar" id="memorySlider"></div>
+												<div id="divScaleProgress">
+													<div class="memory-info" id="memoryInfo">1GB</div>
+													<div class="progress-wrap">
+														<div class="memory-bar" id="memorySlider"></div>
+													</div>
+												</div>
+												<div id="divScaleCustom" class="hide">
+													<form id="scaleForm" name="scaleForm">
+													<div class="wd200 fl">
+														CPU : <input type="text" class="Textinput wd100" id="scaleCpu" name="scaleCpu"/> m
+														<p data-for="scaleCpu" class="warn-text"></p>
+													</div>
+													<div>
+														Memory : <input type="text" class="Textinput wd100" id="scaleMemory" name="scaleMemory"/> Mi
+														<p data-for="scaleMemory" class="warn-text"></p>
+													</div>
+													</form>
 												</div>
 											</div>
 										</div>
@@ -459,7 +487,12 @@
            	<!-- grid -->
             <div id="gridEvent" class="grid grid-line__wrap dash"></div>
 		</div>
-		
+		<div id="tabUser">
+			<h3 class="form-title">사용자 목록 및 권한</h3>
+			<div class="tabs-contents">
+   				<div id="gridUser" class="grid grid-line__wrap"></div>
+   			</div>
+		</div>		
 		<div id="tabSystem">
 			<form name="dbConfig" method="post">
 			<ul>
@@ -692,7 +725,7 @@
 				</li>
 				
 				<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
-					<h3 class="form-title">Parameter</h3>
+					<h3 class="form-title">Parameter <span class="fr"><button class="Button btn" style="margin-top:-4px;" id="popMyCnf">설정 보기</button></span></h3>
 					<div class="accor-contents__wrap">	
 						<table id="serviceConfigTable" class="Table Form-type">
 							<colgroup>
@@ -717,6 +750,7 @@
 	var gNamespaces = null;
 	var gService = null;
 	var gTagList = [];
+	var gServiceScale = {};//scaleUp value
 	$a.page(function() {
 		
 		this.init = function() {
@@ -761,6 +795,11 @@
 						break;						
 					case "tabEvent":
 						$("#gridEvent").alopexGrid( "viewUpdate" );
+						fn_getEventInfo();
+						break;
+					case "tabUser":
+						$("#gridUser").alopexGrid( "viewUpdate" );
+						fn_getUserGrants();
 						break;
 					case "tabSystem":
 						fn_getConfigurationInfo();
@@ -877,6 +916,8 @@
 			        }
 			    });
 			});
+			var isSlowLogHidden = gParam.serviceType != G_SERVICE_TYPE_MARIA;
+			
 			$('#gridResource').alopexGrid({
 				autoColumnIndex: true,
 				autoResize:true,
@@ -893,13 +934,12 @@
 							if(data.colspanCol != true){
 								re = '<button class="btn-ico del"></button>';
 							}
-							//re = '<span class="cell Warning">Error <span><span title="'+cond.reason+":"+cond.message+'"> !</span>';	
 						};
 						return re;
 					}},
 					{ title:'Name', key : 'name', width : '330px', sorting : true, align: 'left', colspanTo : function(value, data, mapping) {
 						if(data.colspanCol){
-							return 'log';
+							return isSlowLogHidden ? 'log' : 'slowLog';
 						};
 					},render: function(value,data){
 						var re = '';
@@ -935,12 +975,28 @@
 					}},
 					{ title:'Log',key:'log',width:'60px', align: 'center',render: function( value, data, render, mapping){
 						var re = $('<button class="btn-ico btn-log">로그</button>').on('click',function(){
-							fn_viewLog(data);
+							console.log(data)
+							if(data.condition && data.condition.status == 'True'){
+								window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
+							}else{
+								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
+							}
 						});
 						return re;
-					}}
+					}},
+					{ title:'Slow Log',key:'slowLog',width:'60px', align: 'center',render: function( value, data, render, mapping){
+						var re = $('<button class="btn-ico btn-log">로그</button>').on('click',function(){
+							if(data.condition && data.condition.status == 'True'){
+								window.open("/zdb02/zdb0200p04?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
+							}else{
+								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
+							}
+						});
+						return re;
+					},hidden:isSlowLogHidden}
 				],
 			});
+			
 			function fn_restartPod(data){
 				gCommon.confirm('재시작 하시겠습니까?',function(){
 					var param = {
@@ -982,7 +1038,6 @@
 						gTagList = service.tags;
 						fn_displayService();
 						fn_getServiceCallback();
-						
 
 						fn_getService();
 					},complete:function(res){
@@ -992,10 +1047,12 @@
 				return deferred.promise();
 			};
 			//서비스 정보 조회
+			var gClient = null;
 			function fn_getService(){
-				var client = gZdbsocket.getConnect();
-				client.connect({}, function(frame){
-					client.subscribe('/service/'+gService.serviceName, function(res) {
+				if(gClient!= null)return;
+				var gClient = gZdbsocket.getConnect();
+				gClient.connect({}, function(frame){
+					gClient.subscribe('/service/'+gService.serviceName, function(res) {
 						var re = JSON.parse(res.body);
 						var service = gfn_convertServiceData(re.result.serviceoverview);
 						gCurrentNamespace = service.namespace;
@@ -1023,19 +1080,24 @@
 								$('input[name='+ob.connectionType+ob.role+'ConnectionLine]').val(ob.connectionLine).attr('data-origin',ob.connectionLine);
 							};
 						};
-						if($('input[name=publicmasterConnectionString]').val()==''){
+						if(gService.publicEnabled != true){
 							$('.publicConnectionInfo').hide();
+							$('.publicConnectionInfoNone').show();
 						}else{
 							$('.publicConnectionInfo').show();
+							$('.publicConnectionInfoNone').hide();
 						};
 						
 						if(gService.clusterEnabled != true){
-							$('#connectionInfoTable').find('tr.slaveConnection').remove();
-							$('#connectionInfoTable').find('th[rowspan]').removeAttr('rowspan');
+							$('#connectionInfoTable').find('tr.slaveConnection').hide();
+							$('#connectionInfoTable').find('th[rowspan]').attr('rowspan',1);
+						}else{
+							$('#connectionInfoTable').find('th[rowspan]').attr('rowspan',2);
 						};
 					}
 				});
 			};
+
 			function fn_getServiceCallback(){
 				 //redis purpose data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
 				if(gService.serviceType == G_SERVICE_TYPE_REDIS){
@@ -1056,7 +1118,12 @@
 				
 				var rsSpec = gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{};
 				var psSpec = gCommon.getObjectByIdx(gService.persistenceSpecOfPodMap,0)||{};
-				$('#configInfo').zdbui_setContents({cpu:rsSpec.cpu,memory:rsSpec.memory,disk:gService.persistentVolumeClaims.length==0?'사용안함':psSpec.size});
+				gServiceScale.cpu = rsSpec.cpu;
+				gServiceScale.memory = rsSpec.memory;
+				gServiceScale.cpuVal = cloudUtil.parseInt(gServiceScale.cpu);
+				gServiceScale.memoryVal = cloudUtil.parseInt(gServiceScale.memory);
+				gServiceScale.disk = psSpec.size;
+				$('#configInfo').zdbui_setContents({cpu:gServiceScale.cpu,memory:gServiceScale.memory,disk:gService.persistentVolumeClaims.length==0?'사용안함':gServiceScale.disk});
 				var podData = (function(){
 					var list = [];
 					var pods = gService.pods;
@@ -1113,7 +1180,7 @@
 									if(gService.serviceType == 'redis' && (ob.role != 'master' || gService.persistentVolumeClaims.length == 0)){
 										ob.disk = '사용안함';
 									}else if(dl && dl[ob.name]){
-										ob.disk = (dl[ob.name].used / (1024*1000)).toFixed(2) + " / " + psSpec.size;
+										ob.disk = (dl[ob.name].used / (1024*1000)).toFixed(2) + " / " + gServiceScale.disk;
 										ob.diskUpdateTime = dl[ob.name].updateTime; 
 									};
 								}catch(e){ 
@@ -1141,10 +1208,20 @@
 				
 				//tabScale 스케일
 				if($('#zdbServiceTabs').getCurrentTabContent()!= '#tabScale'){
-					fn_setSlider('memory',gSliderConstants[gParam.serviceType].memory.getIndex(rsSpec.memory));
+					fn_setSlider('memory',gServiceScale.memoryVal);
+					$('#tabScale').find('input[name="scaleCpu"]').val(gServiceScale.cpuVal);
+					$('#tabScale').find('input[name="scaleMemory"]').val(gServiceScale.memoryVal);
 					$('#clusterSlaveCount').val(gService.clusterSlaveCount);
 					//todo temp
-					setScaleButton();
+					var isCustom = gSliderConstants[gParam.serviceType].cpu.value.indexOf(gServiceScale.cpuVal) < 0
+								 ||gSliderConstants[gParam.serviceType].memory.value.indexOf(gServiceScale.memoryVal) < 0;
+					if(isCustom){
+						$('#tabScale input[name=scaleType][value=custom]').trigger('click');
+					}else{
+						$('#tabScale input[name=scaleType][value=progress]').trigger('click');
+					};
+					
+					//setScaleButton();
 				}
 			}
 			//서비스 display
@@ -1189,12 +1266,36 @@
 					ob.hide(1000);
 				},1000);
 			})			
-			//publicConnectionInfo
+			$('#publicNetworkDelete').on('click',function(){
+				if(gCommon.confirm('Public Network 서비스 삭제시 </br> 외부연동이 단절됩니다. <br/> 삭제하시겠습니까?',function(){
+					$a.ajax({
+						url: '/zdbapi/deletePublicService',
+						data:gService,
+						success: function(res){
+							fn_getServiceFirst().done(function(){
+								fn_getConnectionInfo(); 
+							});
+						}
+					});
+				},{okBtnMsg:"삭제"}));
+			});
+			$('#publicNetworkCreate').on('click',function(){
+				if(gCommon.confirm('Public Network를 추가 하시겠습니까?',function(){
+					$a.ajax({
+						url: '/zdbapi/createPublicService',
+						data:gService,
+						success: function(res){
+							fn_getServiceFirst().done(function(){
+								fn_getConnectionInfo(); 
+							}); 
+						}
+					});
+				},{okBtnMsg:"추가"}));
+			});
 			/*tabService end*/
 			
 			/*tabScale start 스케일 */
 			var memorySlider = document.getElementById('memorySlider');
-			
 			var sliderConstants = gSliderConstants[gParam.serviceType];
 			noUiSlider.create(memorySlider, {
 				start:[1],
@@ -1216,12 +1317,15 @@
 			}).on('slide', function ( values, handle ) {
 				fn_setSliderText('memory',parseInt(values[handle]));
 			});
-			function fn_setSlider(type,idx){
+			//set슬라이더 값 
+			function fn_setSlider(type,value){
 				var slider = $('#'+type+'Slider')[0];
-				if(idx < 0)idx = 0;
+				var idx = sliderConstants[type].getIndex(value);
+				
 				slider.noUiSlider.set(idx);
 				fn_setSliderText(type,idx)
 			};
+			//set슬라이더 값 텍스트
 			function fn_setSliderText(type,idx){
 				$('#'+type+'Info').html(sliderConstants[type].getValue(idx));
 				setScaleButton();
@@ -1229,11 +1333,17 @@
 			
 			$('#updateScaleUp').on('click',function(){
 				if($(this).hasClass('Disabled'))return;
+				
 				if(gCommon.confirm('Scale Up/Down이 수행되면 서비스가 재시작됩니다. 계속 진행하시겠습니까?',function(){
-					var data = $.extend({},gParam,{
-						cpu:gSliderConstants[gParam.serviceType].cpu.value[parseInt(memorySlider.noUiSlider.get())],
-						memory:gSliderConstants[gParam.serviceType].memory.value[parseInt(memorySlider.noUiSlider.get())]
-					});
+					var data = $.extend({},gParam,{});
+					var scaleType = $('#tabScale').find('input[name=scaleType]:checked').val();
+					if(scaleType == 'custom'){
+						data.cpu = cloudUtil.parseInt($('#tabScale').find('input[name=scaleCpu]').val());
+						data.memory = cloudUtil.parseInt($('#tabScale').find('input[name=scaleMemory]').val());
+					}else if(scaleType == 'progress'){
+						data.cpu = gSliderConstants[gParam.serviceType].cpu.value[parseInt(memorySlider.noUiSlider.get())],
+						data.memory = gSliderConstants[gParam.serviceType].memory.value[parseInt(memorySlider.noUiSlider.get())]
+					};
 					$a.ajax({
 						url: '/zdbapi/updateScaleUp',
 						data:data,
@@ -1272,6 +1382,7 @@
 				}));
 			});
 			
+			//레디스 경우 최대 노드 카운트를 가져온다
 			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
 				$a.ajax({
 					url: '/zdbapi/getNodeCount',
@@ -1282,16 +1393,27 @@
 				});				
 			};
 			
-			$('#clusterSlaveCount').on('input',function(evt){
+			$('#tabScale').find('input[type=text]').on('input',function(evt){
 				setScaleButton();
 			});
 			$('#clusterSlaveCountSpinner').find('.Up,.Down').on('click',function(evt){
 				setScaleButton();
 			});
+			//스케일 적용 버튼 활성 비활성
 			function setScaleButton(){
-				var orgMemory = gSliderConstants[gParam.serviceType].memory.getIndex((gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{}).memory)||0; 
-				var chgMemory = parseInt(memorySlider.noUiSlider.get());
-				if(orgMemory == chgMemory || chgMemory < 1){
+				var chgData = {};
+				var scaleType = $('#tabScale').find('input[name=scaleType]:checked').val();
+				if(scaleType == 'custom'){
+					chgData.cpu = cloudUtil.parseInt($('#tabScale').find('input[name=scaleCpu]').val());
+					chgData.memory = cloudUtil.parseInt($('#tabScale').find('input[name=scaleMemory]').val());
+				}else if(scaleType == 'progress'){
+					chgData.cpu = gSliderConstants[gParam.serviceType].cpu.value[parseInt(memorySlider.noUiSlider.get())],
+					chgData.memory = gSliderConstants[gParam.serviceType].memory.value[parseInt(memorySlider.noUiSlider.get())]
+				};
+				
+				var isChange = gServiceScale.memoryVal != chgData.memory || gServiceScale.cpuVal != chgData.cpu ;
+				
+				if((scaleType == 'custom' && !$('form[name=scaleForm]').validate()) || !isChange || chgData.memory < 1){
 					$('#updateScaleUp').addClass('Disabled');	
 				}else{
 					$('#updateScaleUp').removeClass('Disabled');
@@ -1308,6 +1430,25 @@
 					};
 				}
 			};
+			$('#tabScale input:radio[name=scaleType]').on('change',function(){
+				setDivScale(this.value);
+				setScaleButton();
+			});
+			$('form[name=scaleForm]').validator({
+			    elements :{ 
+			        'scaleCpu': {rule:{required:true,min:100,max:20000}},
+			        'scaleMemory': {rule:{required:true,min:128,max:32000}}
+			    }
+			});	
+			//스케일 리소스선택or사용자입력
+			function setDivScale(scaleType){
+				$('#tabScale').find('#divScaleProgress,#divScaleCustom').hide();
+				if(scaleType == 'custom'){
+					$('#tabScale').find('#divScaleCustom').show();
+				}else{
+					$('#tabScale').find('#divScaleProgress').show();
+				}
+			}
 			/*tabScale end 스케일*/
 
 			/*tabMonitor start 모니터링*/
@@ -1363,107 +1504,6 @@
 				}
 			}
 			/*tabMonitor end 모니터링*/
-			
-			/*tabSystem start 환경설정 */
-			var dbConfigForm = $('form[name=dbConfig]');
-			
-			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
-				dbConfigForm.validator({
-				    elements :{ 
-				        'timeout': {rule:{required:true,min:0,max:3600}}
-				       ,'tcp-keepalive': {rule:{required:true,min:0,max:3600}}
-				       ,'maxmemory-samples': {rule:{required:true,min:1,max:10}}
-				       ,'slowlog-log-slower-than': {rule:{required:true,min:-1,max:12000}}
-				       ,'slowlog-max-len': {rule:{required:true,min:1,max:256}}
-				       ,'hash-max-ziplist-entries': {rule:{required:true,min:0,max:65535}}
-				       ,'hash-max-ziplist-value': {rule:{required:true,min:0,max:65535}}
-				       ,'list-max-ziplist-size': {rule:{required:true,min:-5,max:5}}
-				       ,'zset-max-ziplist-entries': {rule:{required:true,min:0,max:65535}}
-				       ,'zset-max-ziplist-value': {rule:{required:true,min:0,max:65535}}
-				    }
-				});				
-			};
-
-			$('#saveVariables').on('click',function(){ //시스템 변수 적용
-				if(!dbConfigForm.validate()){
-					return;
-				};
-				if(gCommon.confirm('시스템 변수를 변경하시겠습니까?',function(){
-					var param = $.extend({},gParam, dbConfigForm.serializeObject());
-					$a.ajax({
-						url: '/zdbapi/updateDBVariables',
-						data:param,
-						success: function(res){
-							gCommon.alert(gMessage.saveSuccess,function(){
-								$('#zdbServiceTabs').setTabByContent('#tabService');
-							});
-						},
-						loadingMessage:'환경설정 적용중입니다.'
-					});
-				}));
-			});
-			function fn_getConfigurationInfo(){
-				$a.ajax({
-					url: '/zdbapi/getDBVariables',
-					data:gParam,
-					success: function(res){
-						var dbConfigurations = res.dbConfigurations
-						if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
-							if(dbConfigurations){
-								$('#serviceConfigTable tbody').html('');
-								var sels = {
-									character_set_server:{options:[{key:'utf8'},{key:'euckr'},{key:'utf8mb4'},{key:'utf16'}]},
-									'collation-server':{options:[{key:'utf8_general_ci'},{key:'utf8_bin'},{key:'euckr_korean_ci'},{key:'euckr_bin'}
-													,{key:'utf8mb4_general_ci'},{key:'utf8mb4_bin'},{key:'utf16_general_ci'},{key:'utf16_bin'}]},
-									innodb_buffer_pool_instances:{options:[{key:'1'},{key:'2'},{key:'4'},{key:'8'}]},
-									innodb_flush_method:{options:[{key:'fsync'},{key:'O_DSYNC'}, {key:'O_DIRECT'} ,{key:'O_DIRECT_NO_FSYNC'}]},
-									query_cache_type:{options:[{key:'0',val:'OFF'},{key:'1',val:'ON'},{key:'2',val:'DEMAND'}]},
-									thread_handling:{options:[{key:'no-threads'},{key:'one-thread-per-connection'},{key:'pool-of-threads'}]},
-									'transaction-isolation':{options:[{key:'READ-UNCOMMITTED'},{key:'READ-COMMITTED'}
-																,{key:'REPEATABLE-READ'},{key:'SERIALIZABLE'}]}
-								};
-								for(var i = 0 ; i < dbConfigurations.length;i++){
-									var ob = dbConfigurations[i];
-									var tr = '';
-									if(sels[ob.name]){
-										tr = '<tr><th>'+ob.name+'</th><td><div class="Divselect" style="min-width:200px;"> <select name="'+ob.name+'" >'
-										for(var j = 0 ; j < sels[ob.name].options.length; j++){
-											var opts = sels[ob.name].options[j];
-											tr +='<option value="'+opts.key+'" '+(ob.value==opts.key?"selected":"")+'>'+(opts.val||opts.key)+'</option>';
-										};
-										tr += '</select><span></span></div>'+'<span class="info-text"> '+ob.valueRange+'</span></td></tr>';
-									}else{
-										tr = ' <tr> <th>'+ob.name+'</th> <td>'
-									       + '		<input type="text" id="'+ob.name+'" name="'+ob.name+'" class="Textinput" value="'+ob.value+'"/>'
-									       + '		<span class="info-text">'+ob.valueRange+'</span> '
-									       + '		<p data-for="'+ob.name+'" class="warn-text"></p>'
-									       + '	</td> </tr>';
-									}
-									$('#serviceConfigTable tbody').append(tr);
-								};
-								$a.convert($('#serviceConfigTable tbody').find('.Divselect'));
-								setDbConfigurationFilter();
-								$('select[name=character_set_server]').on('change',function(){
-									setDbConfigurationFilter();
-								});
-								var dt = gCommon.findObjectByKeyOb(dbConfigurations,{name:'collation-server'});
-								if(dt){
-									$('select[name=collation-server]').val(dt.value).parent().refresh();
-								};
-								function setDbConfigurationFilter(isRefresh){
-									$('select[name=collation-server] option').hide().filter(function(){
-										return $(this).val().indexOf($('select[name=character_set_server]').val()+'_')>-1;
-									}).show().filter(':first').prop('selected',true);
-									$('select[name=collation-server]').parent().refresh();
-								};
-							}
-						}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
-							dbConfigForm.zdbui_setContents(dbConfigurations);							
-						}
-					}
-				});
-			};
-			/*tabSystem end 환경설정 */
 			
 			/* tabBackup start backup */
 			var backupForm = $('form[name=backupForm]');
@@ -1768,6 +1808,152 @@
 			$('input[name=keyword]').pressEnter(function(evt){
 				fn_getEventInfo();
 			});
+			/*tabEvent end 이벤트*/
+			
+			/*tabSystem start 환경설정 */
+			
+			/*tabUser start 사용자 */
+			$('#gridUser').alopexGrid({
+				autoColumnIndex: true,
+				autoResize:true,
+				fitTableWidth :true,
+				height: 400,
+				columnMapping : [  
+					{ title:'USER', key : 'user' , width: '100px', align: 'left'},
+					{ title:'HOST', key : 'host' , width: '100px', align: 'left'},
+					{ title:'SELECT', key : 'select' , width: '70px', align: 'center'},
+					{ title:'INSERT', key : 'insert' , width: '70px', align: 'center'},
+					{ title:'UPDATE', key : 'update' , width: '70px', align: 'center'},
+					{ title:'DELETE', key : 'delete' , width: '70px', align: 'center'},
+					{ title:'EXECUTE', key : 'execute' , width: '70px', align: 'center'},
+					{ title:'CREATE', key : 'create' , width: '70px', align: 'center'},
+					{ title:'ALTER', key : 'alter' , width: '70px', align: 'center'},
+					{ title:'DROP', key : 'drop' , width: '70px', align: 'center'},
+					{ title:'INDEX', key : 'index' , width: '70px', align: 'center', hidden:true},
+					{ title:'CREATE VIEW', key : 'createView' , width: '70px', align: 'center'},
+					{ title:'TRIGGER', key : 'trigger' , width: '70px', align: 'center'},
+					{ title:'GRANT', key : 'grant' , width: '70px', align: 'center'},
+					{ title:'CREATE USER', key : 'createUser' , width: '70px', align: 'center'}
+				],
+				message: {
+					nodata: gMessage.gridNodata
+				}
+			});	
+			function fn_getUserGrants(){
+				$a.ajax({
+					url: '/zdbapi/getUserGrants',
+					data: gService,
+					success: function(res){
+						var list = res.userGrants;
+						$('#gridUser').alopexGrid('dataSet',list);
+					}
+				});				
+			};				
+			/*tabUser end 사용자*/
+			
+			var dbConfigForm = $('form[name=dbConfig]');
+			
+			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
+				dbConfigForm.validator({
+				    elements :{ 
+				        'timeout': {rule:{required:true,min:0,max:3600}}
+				       ,'tcp-keepalive': {rule:{required:true,min:0,max:3600}}
+				       ,'maxmemory-samples': {rule:{required:true,min:1,max:10}}
+				       ,'slowlog-log-slower-than': {rule:{required:true,min:-1,max:12000}}
+				       ,'slowlog-max-len': {rule:{required:true,min:1,max:256}}
+				       ,'hash-max-ziplist-entries': {rule:{required:true,min:0,max:65535}}
+				       ,'hash-max-ziplist-value': {rule:{required:true,min:0,max:65535}}
+				       ,'list-max-ziplist-size': {rule:{required:true,min:-5,max:5}}
+				       ,'zset-max-ziplist-entries': {rule:{required:true,min:0,max:65535}}
+				       ,'zset-max-ziplist-value': {rule:{required:true,min:0,max:65535}}
+				    }
+				});				
+			};
+
+			$('#saveVariables').on('click',function(){ //시스템 변수 적용
+				if(!dbConfigForm.validate()){
+					return;
+				};
+				if(gCommon.confirm('시스템 변수를 변경하시겠습니까?</br> <span class="Color-warning">* 적용을 위한 서비스 재기동으로 3~5분간<br/>서비스가 중단 됩니다.</span>',function(){
+					var param = $.extend({},gParam, dbConfigForm.serializeObject());
+					$a.ajax({
+						url: '/zdbapi/updateDBVariables',
+						data:param,
+						success: function(res){
+							gCommon.alert(gMessage.saveSuccess,function(){
+								$('#zdbServiceTabs').setTabByContent('#tabService');
+							});
+						},
+						loadingMessage:'환경설정 적용중입니다.'
+					});
+				}));
+			});
+			function fn_getConfigurationInfo(){
+				$a.ajax({
+					url: '/zdbapi/getDBVariables',
+					data:gParam,
+					success: function(res){
+						var dbConfigurations = res.dbConfigurations
+						if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+							if(dbConfigurations){
+								$('#serviceConfigTable tbody').html('');
+								var sels = {
+									character_set_server:{options:[{key:'utf8'},{key:'euckr'},{key:'utf8mb4'},{key:'utf16'}]},
+									'collation-server':{options:[{key:'utf8_general_ci'},{key:'utf8_bin'},{key:'euckr_korean_ci'},{key:'euckr_bin'}
+													,{key:'utf8mb4_general_ci'},{key:'utf8mb4_bin'},{key:'utf16_general_ci'},{key:'utf16_bin'}]},
+									innodb_buffer_pool_instances:{options:[{key:'1'},{key:'2'},{key:'4'},{key:'8'}]},
+									innodb_flush_method:{options:[{key:'fsync'},{key:'O_DSYNC'}, {key:'O_DIRECT'} ,{key:'O_DIRECT_NO_FSYNC'}]},
+									query_cache_type:{options:[{key:'0',val:'OFF'},{key:'1',val:'ON'},{key:'2',val:'DEMAND'}]},
+									thread_handling:{options:[{key:'no-threads'},{key:'one-thread-per-connection'},{key:'pool-of-threads'}]},
+									'transaction-isolation':{options:[{key:'READ-UNCOMMITTED'},{key:'READ-COMMITTED'}
+																,{key:'REPEATABLE-READ'},{key:'SERIALIZABLE'}]}
+								};
+								for(var i = 0 ; i < dbConfigurations.length;i++){
+									var ob = dbConfigurations[i];
+									var tr = '';
+									if(sels[ob.name]){
+										tr = '<tr><th>'+ob.name+'</th><td><div class="Divselect" style="min-width:200px;"> <select name="'+ob.name+'" >'
+										for(var j = 0 ; j < sels[ob.name].options.length; j++){
+											var opts = sels[ob.name].options[j];
+											tr +='<option value="'+opts.key+'" '+(ob.value==opts.key?"selected":"")+'>'+(opts.val||opts.key)+'</option>';
+										};
+										tr += '</select><span></span></div>'+'<span class="info-text"> '+ob.valueRange+'</span></td></tr>';
+									}else{
+										tr = ' <tr> <th>'+ob.name+'</th> <td>'
+									       + '		<input type="text" id="'+ob.name+'" name="'+ob.name+'" class="Textinput" value="'+ob.value+'"/>'
+									       + '		<span class="info-text">'+ob.valueRange+'</span> '
+									       + '		<p data-for="'+ob.name+'" class="warn-text"></p>'
+									       + '	</td> </tr>';
+									}
+									$('#serviceConfigTable tbody').append(tr);
+								};
+								$a.convert($('#serviceConfigTable tbody').find('.Divselect'));
+								setDbConfigurationFilter();
+								$('select[name=character_set_server]').on('change',function(){
+									setDbConfigurationFilter();
+								});
+								var dt = gCommon.findObjectByKeyOb(dbConfigurations,{name:'collation-server'});
+								if(dt){
+									$('select[name=collation-server]').val(dt.value).parent().refresh();
+								};
+								function setDbConfigurationFilter(isRefresh){
+									$('select[name=collation-server] option').hide().filter(function(){
+										return $(this).val().indexOf($('select[name=character_set_server]').val()+'_')>-1;
+									}).show().filter(':first').prop('selected',true);
+									$('select[name=collation-server]').parent().refresh();
+								};
+							}
+						}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
+							dbConfigForm.zdbui_setContents(dbConfigurations);							
+						}
+					}
+				});
+			};
+			$('#popMyCnf').on('click',function(){
+				window.open("/zdb02/zdb0200p05?namespace="+gService.namespace+"&serviceName="+gService.serviceName);
+			});
+			/*tabSystem end 환경설정 */
+			
 			//page Start
 			fn_getServiceFirst().done(function(){
 				var cookieTabId = $.cookie('selected2010tab')||'tabService';

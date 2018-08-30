@@ -17,19 +17,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skcc.cloudz.zdb.api.iam.domain.vo.ApiResponseVo;
 import com.skcc.cloudz.zdb.common.component.ZdbRestConnector;
 import com.skcc.cloudz.zdb.common.security.service.SecurityService;
 import com.skcc.cloudz.zdb.common.util.StringUtil;
 import com.skcc.cloudz.zdb.config.CommonConstants;
 import com.skcc.cloudz.zdb.config.URIConstants;
 import com.skcc.cloudz.zdb.portal.domain.dto.ApiTemplate;
+import com.skcc.cloudz.zdb.portal.domain.dto.NamespaceResource;
 import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
+import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
+import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 
@@ -41,6 +47,7 @@ public class ZdbApiService{
 
 	@Value("${zdb-api-server.url}") String apiServer;
 	@Value("${zdb-demon-server.url}") String demonServer;
+	@Value("${props.iam.baseUrl}") String iamBaseUrl;
     @Autowired SecurityService securityService;
     @Autowired ZdbRestConnector connector;
     
@@ -53,6 +60,24 @@ public class ZdbApiService{
 		};
 		
 		return list;
+	}
+
+	public NamespaceResource getNamespaceResource(Map<String, String> param) {
+		NamespaceResource result = null;
+		List<NamespaceResource> list = Collections.emptyList();
+		param.put(CommonConstants.USER_ID, securityService.getUserDetails().getUserId());
+		ApiResponseVo responseDTO = connector.getForObject(iamBaseUrl + URIConstants.URI_GET_NAMESPACE_RESOURCE, ApiResponseVo.class,param);
+		
+		if(responseDTO != null && responseDTO.getData() != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			list = mapper.convertValue(responseDTO.getData().get("items"), new TypeReference<List<NamespaceResource>>(){});
+			result = list.stream()
+					.filter((namespaceResource)-> param.get(CommonConstants.NAMESPACE).equals(namespaceResource.getName()))
+					.findAny()
+					.orElse(null);
+		};
+		
+		return result;
 	}
 	
 	public List<ServiceOverview> getServices(Map<String,String> param) {
@@ -258,6 +283,26 @@ public class ZdbApiService{
 	    ob = connector.exchange(apiServer + URIConstants.URI_DELETE_TAG, HttpMethod.DELETE, entity,  ZdbRestDTO.class,param).getBody();
 		return ob;
 	}
+	
+	public ZdbRestDTO createPublicService(Map<String, String> param) {
+		ZdbRestDTO ob = null;
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<Map<String, String>> entity = new HttpEntity<>(param, headers);
+		ob = connector.exchange(apiServer + URIConstants.URI_CREATE_PUBLIC_SERVICE, HttpMethod.POST, entity,  ZdbRestDTO.class,param).getBody();
+		return ob;
+	}
+	
+	public ZdbRestDTO deletePublicService(Map<String, String> param) {
+		ZdbRestDTO ob = null;
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<Map<String, String>> entity = new HttpEntity<>(param, headers);
+		ob = connector.exchange(apiServer + URIConstants.URI_DELETE_PUBLIC_SERVICE, HttpMethod.DELETE, entity,  ZdbRestDTO.class,param).getBody();
+		return ob;
+	}
 
 	public List<EventMetaData> getEvents(Map<String, String> param) {
 		List<EventMetaData> list = Collections.emptyList();
@@ -265,6 +310,16 @@ public class ZdbApiService{
 		
 		if(zdbRestDTO!=null) {
 			list = zdbRestDTO.getResult().getServiceEvents();
+		};
+		
+		return list;
+	}
+	public List<DBUser> getUserGrants(Map<String, String> param) {
+		List<DBUser> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_USER_GRANTS,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			list = zdbRestDTO.getResult().getUserGrants();
 		};
 		
 		return list;
@@ -291,6 +346,28 @@ public class ZdbApiService{
 		return result;
 	}
 
+	public String[] getSlowLog(Map<String, String> param) {
+		String[] result = {};
+		System.out.println(param);
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_SLOW_LOG,ZdbRestDTO.class,param);
+		System.out.println(zdbRestDTO);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getSlowLog();
+		};
+		return result;
+	}	
+
+	public String[] getMycnf(Map<String, String> param) {
+		String[] result = {};
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_MY_CNF,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getMycnf();
+		};
+		return result;
+	}
+	
 	public List<BackupEntity> getBackupList(Map<String, String> param) {
 		List<BackupEntity> result = null;
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_BACKUP_LIST,ZdbRestDTO.class,param);
@@ -301,6 +378,21 @@ public class ZdbApiService{
 		return result;
 	}
 
+	public List<ScheduleInfoEntity> getScheduleInfoList(Map<String, String> param) {
+		List<ScheduleInfoEntity> result = null;
+		
+		if(CommonConstants.NAMESPACE_ALL.equals(param.get(CommonConstants.NAMESPACE))) {
+			param.put(CommonConstants.NAMESPACE, "all");
+		};
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_SCHEDULE_INFO_LIST,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getScheduleInfoList();
+		};
+		return result;
+	}
+	
 	public ScheduleEntity getSchedule(Map<String, String> param) {
 		ScheduleEntity result = null;
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_SCHEDULE,ZdbRestDTO.class,param);
@@ -358,6 +450,7 @@ public class ZdbApiService{
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USER_NAMESPACES, HttpMethod.POST,null,ZdbRestDTO.class).getBody();
 		return zdbRestDTO;
 	}
+
 
 }
 
