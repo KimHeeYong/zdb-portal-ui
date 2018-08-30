@@ -1874,7 +1874,7 @@
 				if(!dbConfigForm.validate()){
 					return;
 				};
-				if(gCommon.confirm('시스템 변수를 변경하시겠습니까?</br> <span class="Color-warning">* 적용시 서비스 재부팅으로 인해 3~5분간<br/> 서비스가 중단됩니다.</span>',function(){
+				if(gCommon.confirm('시스템 변수를 변경하시겠습니까?</br> <span class="Color-warning">* 적용을 위한 서비스 재기동으로 3~5분간<br/>서비스가 중단 됩니다.</span>',function(){
 					var param = $.extend({},gParam, dbConfigForm.serializeObject());
 					$a.ajax({
 						url: '/zdbapi/updateDBVariables',
