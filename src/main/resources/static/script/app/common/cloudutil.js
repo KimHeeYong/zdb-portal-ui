@@ -1,6 +1,17 @@
 var cloudUtil = {
+	isEmpty:function(val){
+		  if(typeof(val) == 'undefined' || val === null){
+		      return true; 
+		  } else if(typeof(val) == 'number' || typeof(val) == 'boolean'){ 
+		      return false; 
+		  } else if(typeof(val.length) != 'undefined'){
+	          return val.length == 0;
+	      } else{
+	    	  return false;
+	      }
+	},
 	nvlString:function(val,def){ //문자형 반환,빈값일 경우 def값
-		return ''+(!val?(def):val);
+		return cloudUtil.isEmpty(val)?(cloudUtil.isEmpty(def)?'':''+def):''+val;
 	},
 	addComma:function(val){ //3자리 콤마 추가
 		val = cloudUtil.nvlString(val);
@@ -19,7 +30,7 @@ var cloudUtil = {
 		return cloudUtil.nvlString(val).replaceAll(/[^\d]/,'');
 	},
 	parseInt:function(val){
-		return parseInt(cloudUtil.onlyNumerString(val));
+		return parseInt(cloudUtil.nvlString(cloudUtil.onlyNumerString(val),'0'));
 	}
 }
 

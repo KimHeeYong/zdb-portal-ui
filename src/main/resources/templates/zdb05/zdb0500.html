@@ -43,16 +43,18 @@
 						{ title:'서비스이름', key : 'serviceName' , width: '180px', align: 'left'},
 						{ title:'서비스타입', key : 'serviceType' , width: '100px', align: 'center'},
 						{ title:'백업시간', key : 'startTime' , width: '70px', align: 'center'},
-						{ title:'소요시간', key : 'executionTime' , width: '70px', align: 'center'},
+						{ title:'소요시간', key : 'executionTime' , width: '70px', align: 'center', render:function(value){
+							return cloudUtil.parseInt(value)== 0 ?'-':value;
+						}},
 						{ title:'파일사이즈(MB)', key : 'fileSize' , width: '70px', align: 'right', render: function(value){
-							return cloudUtil.truncDecimal(cloudUtil.addComma((value / (1024*1024))),2);
+							return cloudUtil.isEmpty(value) ? '-' : cloudUtil.truncDecimal(cloudUtil.addComma((value / (1024*1024))),2);
 						}},
 						{ title:'백업용량(MB)', key : 'fileSumSize' , width: '70px', align: 'right', render: function(value){
-							return cloudUtil.truncDecimal(cloudUtil.addComma((value / (1024*1024))),2);
+							return cloudUtil.isEmpty(value) ? '-' : cloudUtil.truncDecimal(cloudUtil.addComma((value / (1024*1024))),2);
 						}},
-						{ title:'최근백업시간', key : 'registerDate' , width: '100px', align: 'right',render:function(value,data,render,mapping){
+						{ title:'최근백업시간', key : 'startDatetime' , width: '100px', align: 'right',render:function(value,data,render,mapping){
 							var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
-							return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
+							return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '-';
 						}}
 					],
 					message: {
