@@ -157,7 +157,7 @@ public class ZdbApiController {
 		if(CommonConstants.SERVICE_TYPE_MARIA.equals(param.get(CommonConstants.SERVICE_TYPE))) {
 			mav.addObject(CommonConstants.DB_CONFIGURATIONS ,dbConfigurations.getMariaDBConfig());	
 		}else if(CommonConstants.SERVICE_TYPE_REDIS.equals(param.get(CommonConstants.SERVICE_TYPE))) {
-			mav.addObject(CommonConstants.DB_CONFIGURATIONS ,dbConfigurations.getRedisConfig());	
+			mav.addObject(CommonConstants.DB_CONFIGURATIONS ,(Map<String,String>)dbConfigurations.getRedisConfig());	
 		};
 		
 		return mav;
@@ -345,6 +345,16 @@ public class ZdbApiController {
 		
 		String [] result = zdbApiService.getMycnf(param);
 		mav.addObject(IResult.MY_CNF,result);
+		
+		return mav;
+	}
+	@RequestMapping(value = "getAllDBVariables")	
+	public ModelAndView getAllDBVariables(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<String> result = zdbApiService.getAllDBVariables(param);
+		mav.addObject(IResult.REDIS_CONFIG,result);
 		
 		return mav;
 	}

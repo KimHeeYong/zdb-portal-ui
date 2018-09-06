@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Mycnf</title>	
+	<title>dbVariable</title>	
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<!-- alopexui_theme default -->
 	<link rel="stylesheet" href="/styles/css/alopex/alopex-ui-default.css">
@@ -28,7 +28,7 @@
 	<script type="text/javascript" src="/script/app/common/cloudzdb-ui.js"></script>
 	<script type="text/javascript" src="/script/app/common/constants.js"></script>
 	<style type="text/css"> 
-		#popLogRefresh{
+		#popRefresh{
 			vertical-align: middle;
 		}
 		#title {
@@ -56,23 +56,40 @@
 			$('#popLogClose').on('click',function(){
 				window.close();
 			});
-			$('body').on('click','#popLogRefresh',function(){
+			$('body').on('click','#popRefresh',function(){
 				showLog();
 			});
 			showLog();
 			
 			function showLog(){
-				var title = gParam.namespace+" > "+ gParam.serviceName + " mycnf";
+				var title = gParam.namespace+' > '+ gParam.serviceName + ' ';
+				var url = '';
+				var re = '';
+				
+				switch(gParam.serviceType){
+					case 'redis':
+						title = title + 'allVariables';
+						url = '/zdbapi/getAllDBVariables';
+						re = 'redisConfig';
+						break;
+					case 'mariadb':
+						title = title + 'mycnf';
+						url = '/zdbapi/getMycnf';
+						re = 'mycnf';
+						break;
+				}
+				
 				$('title,#title').html(title);
-				$('#title').append('<button class="btn-ico btn-refresh" id="popLogRefresh" alt="새로고침" style="margin-right:15px;float:right;"></button>');
+				$('#title').append('<button class="btn-ico btn-refresh" id="popRefresh" alt="새로고침" style="margin-right:15px;float:right;"></button>');
 				$('#log').html('');
 				$a.ajax({
-					url: '/zdbapi/getMycnf',
+					url: url,
 					data : gParam,
 					success: function(res){
-						if(res.mycnf){
-							for(var i = 0 ; i < res.mycnf.length;i++){
-								$('#log').append('<p>'+res.mycnf[i]+'</p>');
+						var list = res[re];
+						if(list){
+							for(var i = 0 ; i < list.length;i++){
+								$('#log').append('<p>'+list[i]+'</p>');
 							};
 						};
 					}

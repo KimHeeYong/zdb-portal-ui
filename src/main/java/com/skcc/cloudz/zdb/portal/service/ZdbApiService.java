@@ -367,6 +367,15 @@ public class ZdbApiService{
 		};
 		return result;
 	}
+	public List<String> getAllDBVariables(Map<String, String> param) {
+		List<String>  result = null;
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_ALL_DB_VARIABLES,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			result = (List<String>)zdbRestDTO.getResult().getRedisConfig();
+		};
+		return result;
+	}
 	
 	public List<BackupEntity> getBackupList(Map<String, String> param) {
 		List<BackupEntity> result = null;

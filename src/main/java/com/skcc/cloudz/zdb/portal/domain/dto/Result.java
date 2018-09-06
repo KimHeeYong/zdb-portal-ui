@@ -37,7 +37,7 @@ public class Result {
 	
 	private List<Mycnf> mariaDBConfig;
 	
-	private Map<String,String> redisConfig;
+	private Object redisConfig;
 	
 	private List<Usage> metricsCpuUsage;
 
