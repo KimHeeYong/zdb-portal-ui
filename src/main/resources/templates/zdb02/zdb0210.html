@@ -1181,7 +1181,8 @@
 									if(gService.serviceType == 'redis' && (ob.role != 'master' || gService.persistentVolumeClaims.length == 0)){
 										ob.disk = '사용안함';
 									}else if(dl && dl[ob.name]){
-										ob.disk = cloudUtil.truncDecimal((dl[ob.name].used / (1024*1000)),2) + " / " + (gServiceScale.disk||'N/A');
+										ob.disk = cloudUtil.truncDecimal((dl[ob.name].used / (1024*1000)),2) + ' / ' + (gServiceScale.disk||'N/A') 
+										        + (dl[ob.name].useRate? ' ('+dl[ob.name].useRate+')' : '' ) ;
 										ob.diskUpdateTime = dl[ob.name].updateTime; 
 									};
 								}catch(e){ 
