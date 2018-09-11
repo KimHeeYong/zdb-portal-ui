@@ -975,7 +975,6 @@
 					}},
 					{ title:'Log',key:'log',width:'60px', align: 'center',render: function( value, data, render, mapping){
 						var re = $('<button class="btn-ico btn-log">로그</button>').on('click',function(){
-							console.log(data)
 							if(data.condition && data.condition.status == 'True'){
 								window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
 							}else{
@@ -1153,7 +1152,7 @@
 					return list; 
 				}());
 				
-				//cpu,memory 셋팅 - 임시 
+				//cpu,memory,disk resource 셋팅  
 				podData = (function(data){
 					var list = [];
 					//return list;//temp
@@ -1181,8 +1180,9 @@
 									if(gService.serviceType == 'redis' && (ob.role != 'master' || gService.persistentVolumeClaims.length == 0)){
 										ob.disk = '사용안함';
 									}else if(dl && dl[ob.name]){
-										ob.disk = cloudUtil.truncDecimal((dl[ob.name].used / (1024*1000)),2) + ' / ' + (gServiceScale.disk||'N/A') 
-										        + (dl[ob.name].useRate? ' ('+dl[ob.name].useRate+')' : '' ) ;
+										var hasUseRate = dl[ob.name].useRate?true:false;
+										ob.disk = cloudUtil.truncDecimal((dl[ob.name].used / (1024*1000)),2) + ' / ' + (hasUseRate? cloudUtil.convertSize(dl[ob.name].size) :(gServiceScale.disk||'N/A')) 
+										        + (hasUseRate? ' ('+dl[ob.name].useRate+')' : '' ) ;
 										ob.diskUpdateTime = dl[ob.name].updateTime; 
 									};
 								}catch(e){ 

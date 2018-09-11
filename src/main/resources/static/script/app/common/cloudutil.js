@@ -22,6 +22,9 @@ var cloudUtil = {
 		return cloudUtil.nvlString(val).replaceAll(',', '');
 	},
 	truncDecimal:function(val,idx){ // 소수점 idx 자리까지 표시
+		if(!idx || idx < 1){
+			idx = -1;
+		};
 		val = cloudUtil.nvlString(val);
 		if(val.indexOf('.') < 0) return val;
 		return val.substring(0, (val.indexOf('.')+idx+1));
@@ -31,6 +34,24 @@ var cloudUtil = {
 	},
 	parseInt:function(val){
 		return parseInt(cloudUtil.nvlString(cloudUtil.onlyNumerString(val),'0'));
+	},
+	convertSize:function(size,idx) {
+		if(size instanceof String){
+			size = cloudUtil.parseInt(size);
+		};
+		
+		if( size > 1024 * 1000 * 1000 * 1000) {
+			size = cloudUtil.truncDecimal((size / 1024 / 1000 / 1000 / 1000),idx) +"Pi";
+		} else if( size > 1024 * 1000 * 1000) {
+			size = cloudUtil.truncDecimal((size / 1024 / 1000 /1000),idx) +"Ti";
+		} else if( size > 1024 * 1000) {
+			size = cloudUtil.truncDecimal((size / 1024 / 1000),idx) +"Gi";
+		} else if( size > 1024) {
+			size = cloudUtil.truncDecimal((size / 1024),idx) +"Mi";
+		} else {
+			size = size+"Ki";
+		}
+		return size;
 	}
 }
 
