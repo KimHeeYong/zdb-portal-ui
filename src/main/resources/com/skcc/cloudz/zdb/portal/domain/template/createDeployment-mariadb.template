@@ -1,4 +1,5 @@
 {
+	"version": ${version},
  	"serviceType": ${serviceType},
  	"serviceName": ${serviceName},
  	"namespace": ${namespace},
