@@ -1168,6 +1168,8 @@
 							},
 							success:function(res){
 								try{
+									if(!res||!res.podMetrics)return;
+									
 									var cl = res.podMetrics.metricsCpuUsage;
 									var ml = res.podMetrics.metricsMemoryUsage ;
 									var dl = gService.diskUsageOfPodMap;

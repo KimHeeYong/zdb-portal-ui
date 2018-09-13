@@ -163,10 +163,14 @@ public class ZdbApiService{
 	public Result getPodMetrics(Map<String, String> param) {
 		Result ob = null;
 		
-		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_POD_METRICS, ZdbRestDTO.class,param);
-		if(zdbRestDTO != null) {
-			ob = zdbRestDTO.getResult();
-		};
+		try {
+			ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_POD_METRICS, ZdbRestDTO.class,param);
+			if(zdbRestDTO != null) {
+				ob = zdbRestDTO.getResult();
+			};
+		} catch (Exception e) {
+			// podMetrics error 무시하도록 처리
+		}
 		return ob;
 	}
 
