@@ -1098,6 +1098,20 @@
 			};
 
 			function fn_getServiceCallback(){
+				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정)설정
+				var tabDisList = ['tabScale','tabBackup','tabUser','tabSystem']; 
+				var isStatusGreen = gService.status == 'green'; 
+				for(var ti = 0; ti < $('#zdbServiceTabs').getLength(); ti++ ){
+					if(isStatusGreen || tabDisList.indexOf($('#zdbServiceTabs').getTabContentByIndex(ti).id) < 0){
+						$('#zdbServiceTabs').setEnabled(true,ti);
+					}else{
+						$('#zdbServiceTabs').setEnabled(false,ti);
+					}
+				};
+				//service 상태가 green이 아니고 현재 탭이 disable탭에 속하면 서비스 탭으로 이동
+				if(!isStatusGreen && tabDisList.indexOf($('#zdbServiceTabs').getCurrentTabContent().replace('#','')) > 0){  
+					$('#zdbServiceTabs').setTabByContent('#tabService');
+				};
 				 //redis purpose data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
 				if(gService.serviceType == G_SERVICE_TYPE_REDIS){
 					
