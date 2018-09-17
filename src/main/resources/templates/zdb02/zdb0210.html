@@ -124,11 +124,11 @@
 										</div>
 										<div class="info-input__wrap connectionString">	
 						               		<input class="Textinput" name="privatemasterConnectionString" readonly="readonly"></input>     
-						               		<button class="Button line-btn connectionStringCopy">복사</button>
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">	
 						               		<input type="text" class="Textinput" name="privatemasterConnectionLine" readonly="readonly"></input>     
-						               		<button class="Button line-btn connectionLineCopy">복사</button>                          
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                         
 						               	</div>
 						               	<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
 					               	</td>                                                                                         
@@ -142,11 +142,11 @@
 										</div>					               		
 					               		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="privateslaveConnectionString" readonly="readonly"></input>     
-						               		<button class="Button line-btn connectionStringCopy">복사</button>                          
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                          
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">
 						               		<input type="text" class="Textinput" name="privateslaveConnectionLine" readonly="readonly"></input>     
-						               		<button class="Button line-btn connectionLineCopy">복사</button>                          
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                          
 						               	</div>	
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                  
@@ -163,13 +163,13 @@
 										</div>
         						   		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="publicmasterConnectionString" readonly="readonly"></input>     
-						               		<button class="Button line-btn connectionStringCopy">복사</button>                          
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                          
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">                                                                   
 						               		<input type="text" class="Textinput" name="publicmasterConnectionLine" readonly="readonly"></input>     
-						               		<button class="Button line-btn connectionLineCopy">복사</button>                         
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                         
 						               	</div>	
-						               	<button class="Button btn-ico__typeb btn-trash ml20" id="publicNetworkDelete" title="Public Network 삭제">삭제</button>
+						               	<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete" title="Public Network 삭제">삭제</button>
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                                                                                         
 				                </tr>
@@ -182,11 +182,11 @@
 										</div>					               	
 		               	           		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="publicslaveConnectionString" readonly="readonly"></input>      
-						               		<button class="Button line-btn connectionStringCopy">복사</button>                          
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                          
 						               	</div> 
 						               	<div class="info-input__wrap connectionLine hide">                                                                                              
 						               		<input type="text" class="Textinput" name="publicslaveConnectionLine" readonly="readonly"></input>     
-						               		<button class="Button line-btn connectionLineCopy">복사</button>
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>
 						               	</div>	                          
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                  
@@ -926,8 +926,8 @@
 				columnMapping : [
 					{ title:'', key : 'status' , width: '40px', align: 'center',render : function( value, data, render, mapping) {
 						var re = '';
-						if(!data.condition){
-							re = '준비중';
+						if(!data.condition||data.role == 'master'){
+							re = '<i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:#c09853;padding-top:5px;font-size:1.3em"></i>';
 						}else if(data.condition && data.condition.status == 'True'){
 							re = '<button class="Button btn-ico btn-config__save"></button>';
 						}else{
