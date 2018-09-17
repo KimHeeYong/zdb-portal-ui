@@ -352,9 +352,7 @@ public class ZdbApiService{
 
 	public String[] getSlowLog(Map<String, String> param) {
 		String[] result = {};
-		System.out.println(param);
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_SLOW_LOG,ZdbRestDTO.class,param);
-		System.out.println(zdbRestDTO);
 		
 		if(zdbRestDTO!=null) {
 			result = zdbRestDTO.getResult().getSlowLog();

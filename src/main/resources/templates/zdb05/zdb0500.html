@@ -3,6 +3,9 @@
 <th:block layout:fragment="page_head">
 	<title>백업 스케줄링 목록</title>
 </th:block>
+<th:block layout:fragment="page_js">
+	<script src="/script/app/common/cloudzdb-ui-z0200.js"></script>
+</th:block>
 <th:block layout:fragment="content">
 	<!-- location -->
 	<div class="locations-area">
@@ -40,7 +43,15 @@
 					autoColumnIndex: true,
 					height: 635,
 					columnMapping : [  
-						{ title:'서비스이름', key : 'serviceName' , width: '180px', align: 'left'},
+						{ title:'네임스페이스', key : 'namespace' , width: '180px', align: 'left', hidden:true},
+						{ title:'서비스이름', key : 'serviceName' , width: '180px', align: 'left',render:function(value,data){
+							var re = $('<a class="grid" style="a.inherited:no"/>').html(value).on('click',function(){
+								fn_setSelected2010Tab('tabBackup');
+								gCommon.movePage('/zdb02/zdb0210',data);
+							});
+							return re;
+							
+						}},
 						{ title:'서비스타입', key : 'serviceType' , width: '100px', align: 'center'},
 						{ title:'백업시간', key : 'startTime' , width: '70px', align: 'center'},
 						{ title:'소요시간', key : 'executionTime' , width: '70px', align: 'center', render:function(value){
@@ -59,18 +70,25 @@
 					],
 					message: {
 						nodata: gMessage.gridNodata
+					},
+					defaultSorting:{
+						sortingColumn: "serviceName",
+						sortingDirection: 'asc'
 					}
 				});			
 				
 				function fn_getScheduleInfoList(){
 					var param = $('form[name=eventForm]').serializeObject();
-					
+
 					$a.ajax({
 						url: '/zdbapi/getScheduleInfoList',
 						data:{namespace:gSelectedNamespace},
 						success: function(res){
 							var list = res.scheduleInfoList;
 							$('#gridSchedule').alopexGrid('dataSet',list);
+
+							var showCol = gSelectedNamespace == G_NAMESPACE_ALL ?'showCol':'hideCol';
+							$("#gridSchedule").alopexGrid(showCol, 'namespace');
 						}
 					});				
 				};			
