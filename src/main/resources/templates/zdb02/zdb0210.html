@@ -926,7 +926,7 @@
 				columnMapping : [
 					{ title:'', key : 'status' , width: '40px', align: 'center',render : function( value, data, render, mapping) {
 						var re = '';
-						if(!data.condition||data.role == 'master'){
+						if(!data.condition){
 							re = '<i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:#c09853;padding-top:5px;font-size:1.3em"></i>';
 						}else if(data.condition && data.condition.status == 'True'){
 							re = '<button class="Button btn-ico btn-config__save"></button>';
