@@ -412,6 +412,8 @@ body.login {background: #ffffff}
 	border: 1px solid #cccccc;
 	background: #eeeeee url("/styles/images/ico-btn.png") no-repeat;
 }
+.Button.btn-clipboard {background-position: -379px -53px;}
+.Button.btn-clipboard:hover, .Button.btn-clipboard:active {background-position: -409px -53px;}
 .Button.btn-trash {background-position: -290px 8px;}
 .Button.btn-trash:hover, .Button.btn-trash:active {background-position: -320px 8px;}
 .Button.btn-adduser, .Button.btn-adduser:hover, .Button.btn-adduser:active {background-position: 6px 6px;}
