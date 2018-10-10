@@ -1118,12 +1118,16 @@
 				
 				var rsSpec = gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{};
 				var psSpec = gCommon.getObjectByIdx(gService.persistenceSpecOfPodMap,0)||{};
+				var pvSpec = gCommon.getObjectByIdx(gService.persistentVolumeClaims,0)||{};
 				gServiceScale.cpu = rsSpec.cpu;
 				gServiceScale.memory = rsSpec.memory;
 				gServiceScale.cpuVal = cloudUtil.parseInt(gServiceScale.cpu);
 				gServiceScale.memoryVal = cloudUtil.parseInt(gServiceScale.memory);
 				gServiceScale.disk = psSpec.size;
-				gServiceScale.storageClass = psSpec.storageClass;
+				gServiceScale.storageClass = '';
+				if(pvSpec.spec){
+					gServiceScale.storageClass = gStorageClassConstants[pvSpec.spec.storageClassName];
+				}
 				
 				$('#configInfo').zdbui_setContents(
 						{ cpu:gServiceScale.cpu
