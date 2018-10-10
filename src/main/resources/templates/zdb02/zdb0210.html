@@ -71,6 +71,10 @@
 						<strong>스토리지 : </strong>
 						<span data="disk"></span>
 					</li>
+					<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
+						<strong>스토리지 QoS : 	</strong>
+						<span data="storageClass"></span>
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -460,26 +464,6 @@
 						</div>
 					</div>
 					<div class="info-list__select">
-						<!-- 
-						<div class="Divselect">
-						    <select name="kind">
-								<option value="-">전체</option> 
-								<option value="StatefulSet">StatefulSet</option>
-								<option value="Service">Service</option>
-								<option value="ReplicaSet">ReplicaSet</option>
-								<option value="Pod">Pod</option>
-								<option value="PersistentVolumeClaim">PVC</option>
-								<option value="PersistentVolume">PV</option>
-								<option value="Node">Node</option>
-								<option value="Ingress">Ingress</option>
-								<option value="Deployment">Deployment</option>
-								<option value="DaemonSet">DaemonSet</option>
-								<option value="ConfigMap">ConfigMap</option>
-								<option value="Cluster">Cluster</option>
-						    </select>
-						    <span></span>
-						</div>
-						 -->
 						<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요."/><button class="Button btn-search" id="searchEvent">검색</button>
 					</div>
            		</div>
@@ -1139,8 +1123,15 @@
 				gServiceScale.cpuVal = cloudUtil.parseInt(gServiceScale.cpu);
 				gServiceScale.memoryVal = cloudUtil.parseInt(gServiceScale.memory);
 				gServiceScale.disk = psSpec.size;
+				gServiceScale.storageClass = psSpec.storageClass;
 				
-				$('#configInfo').zdbui_setContents({cpu:gServiceScale.cpu,memory:gServiceScale.memory,disk:gService.persistentVolumeClaims.length==0?'사용안함':gServiceScale.disk});
+				$('#configInfo').zdbui_setContents(
+						{ cpu:gServiceScale.cpu
+						 ,memory:gServiceScale.memory
+						 ,disk:gService.persistentVolumeClaims.length==0?'사용안함':gServiceScale.disk
+						 ,storageClass:gServiceScale.storageClass
+						}
+					);
 				var podData = (function(){
 					var list = [];
 					var pods = gService.pods;
