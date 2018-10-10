@@ -158,8 +158,8 @@
 							<tr>
 								<th>버전</th>
 								<td>
-									<div class="Divselect">
-										<select id="version" name="version" disabled="disabled">
+									<div class="Divselect" id="version" name="version">
+										<select>
 											<option value="10.2.14">10.2.14</option>
 										</select>
 										<span></span>
@@ -169,8 +169,8 @@
 							<tr>
 								<th>캐릭터셋</th>
 								<td>
-									<div class="Divselect">
-										<select id="characterSet" name="characterSet">
+									<div class="Divselect" id="characterSet" name="characterSet">
+										<select>
 											<option value="utf8">utf8</option>
 											<option value="euckr">euckr</option>
 											<option value="utf8mb4">utf8mb4</option>
@@ -233,6 +233,19 @@
 												<div class="memory-bar" id="diskSlider"></div>
 											</div>
 										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>스토리지 QoS</th>
+								<td>
+									<div class="Divselect" id="storageClass" name="storageClass">
+										<select>
+											<option value="ibmc-block-bronze">2 IOPS/GB</option>
+											<option value="ibmc-block-silver">4 IOPS/GB</option>
+											<option value="ibmc-block-gold">10 IOPS/GB</option>
+										</select>
+										<span></span>
 									</div>
 								</td>
 							</tr>
@@ -313,7 +326,10 @@ $a.page(function() {
 				return;
 			};
 			
-			var dt = $.extend({},param,{clusterEnabled:($("input[name=clusterEnabled]:checked").val()=="true"),memory:sliderConstants.memory.value[param.podSpecIdx],cpu:sliderConstants.cpu.value[param.podSpecIdx]});
+			var dt = $.extend({},param,{clusterEnabled:($('input[name=clusterEnabled]:checked').val()=='true')
+									   ,memory:sliderConstants.memory.value[param.podSpecIdx],cpu:sliderConstants.cpu.value[param.podSpecIdx]
+									   ,storageClassStr:$('select[name=storageClass] option:checked').text()
+									  });
 			$a.ajax({
 				url: '/zdbapi/isAvailable',
 				data: dt,

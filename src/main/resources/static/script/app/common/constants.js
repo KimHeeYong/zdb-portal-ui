@@ -67,6 +67,11 @@ var gSliderConstants = {
 		}
 	}
 };
+var gStorageClassConstants = {
+	 'ibmc-block-bronze':'2 IOPS/GB'
+	,'ibmc-block-silver':'4 IOPS/GB'
+	,'ibmc-block-gold':'10 IOPS/GB'
+};
 var gMessage = {
 	validPage : '잘못된 접근 입니다.',
 	saveSuccess: '정상적으로 저장되었습니다.',

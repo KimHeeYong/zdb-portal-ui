@@ -28,10 +28,12 @@
  	}],
  	"persistenceSpec": [{
  		"podType": "master",
- 		"size": ${disk}
+ 		"size": ${disk},
+ 		"storageClass": ${storageClass}
  	}, {
  		"podType": "slave",
- 		"size": ${disk}
+ 		"size": ${disk},
+ 		"storageClass": ${storageClass}
  	}],
  	"mariaDBConfig": {
  		"mariadbDatabase": ${dbName}
