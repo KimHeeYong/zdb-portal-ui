@@ -148,11 +148,12 @@ $a.page(function() {
 			gCommon.alert(gMessage.validPage);
 		};
 		var sliderConstants = gSliderConstants[gParam.serviceType];
+		var isCluster = gParam.clusterEnabled == 'true';
 		
 		var data = $.extend({},gParam,{
-			specMemory:sliderConstants.memory.getValue(gParam.podSpecIdx),
+			specMemory:sliderConstants.memory.getValue(gParam.podSpecIdx,isCluster),
 			memory:sliderConstants.memory.value[gParam.podSpecIdx],
-			specCpu:sliderConstants.cpu.getValue(gParam.podSpecIdx),
+			specCpu:sliderConstants.cpu.getValue(gParam.podSpecIdx,isCluster),
 			cpu:sliderConstants.cpu.value[gParam.podSpecIdx],
 			serviceName:gParam.serviceName,
 			exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
@@ -161,11 +162,11 @@ $a.page(function() {
 		});
 		
 		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
-			data.specDisk = sliderConstants.disk.getValue(gParam.diskSpecIdx)
+			data.specDisk = sliderConstants.disk.getValue(gParam.diskSpecIdx,isCluster)
 			data.disk = sliderConstants.disk.value[gParam.diskSpecIdx];
 		}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS && gParam.purpose == 'DATA'){
 			data.disk = data.podSpecIdx < 5 ? 20 : 40;
-			data.specDisk = data.disk + 'Gi';
+			data.specDisk = (data.disk * (isCluster?2:1)) + 'Gi';
 		};
 		if(data.disk){
 			$('.dataInfo').show();
