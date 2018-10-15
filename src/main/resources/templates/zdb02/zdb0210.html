@@ -1786,15 +1786,19 @@
 						}
 						return re;
 					}},
-					{ title:'일시', key : 'endTime' , width: '150px', align: 'left',render:function(value){
+					{ title:'일시', key : 'endTime' , width: '140px', align: 'left',render:function(value){
 						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
 						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
 					}},
-					{ title:'이벤트', key : 'operation' , width: '150px', align: 'left'},
-					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',tooltip:function(value,data){
-						return data.history;
+					{ title:'이벤트', key : 'operation' , width: '100px', align: 'left'},
+					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',render:function(value,data){
+						var re = value;
+						if(data.history){
+							re= re + '<span class="ico_title" title="'+data.history+'" style="padding-top:33px;"></span>'
+						}
+						return re;
 					}},
-					{ title:'User ID', key : 'userId' , width: '150px', align: 'left'}
+					{ title:'User ID', key : 'userId' , width: '250px', align: 'left'}
 				],
 				message: {
 					nodata: gMessage.gridNodata
