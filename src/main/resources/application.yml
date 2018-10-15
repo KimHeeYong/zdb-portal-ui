@@ -113,7 +113,7 @@ props:
 #      redirectUri: ${HOME_URL:http://console.${spring.profiles}.jp-tok.containers.mybluemix.net}/k8s-login
       redirectUri: http://zdb.cloudzcp.io/k8s-login
   iam:
-    baseUrl: https://zcp-iam.cloudzcp.io:443
+    baseUrl: http://zcp-iam.zcp-system
 
 cloudzcp:
   url: https://console.cloudzcp.io
