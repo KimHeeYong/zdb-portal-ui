@@ -1791,7 +1791,10 @@
 						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
 					}},
 					{ title:'이벤트', key : 'operation' , width: '150px', align: 'left'},
-					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left'}
+					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',tooltip:function(value,data){
+						return data.history;
+					}},
+					{ title:'User ID', key : 'userId' , width: '150px', align: 'left'}
 				],
 				message: {
 					nodata: gMessage.gridNodata
