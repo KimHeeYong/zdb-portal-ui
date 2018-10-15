@@ -13,6 +13,9 @@
 			border: 1px solid #cccccc;
 			background-position: -25px -173px; 
 		}
+		.TooltipEvt{
+			font-size:1.0em;
+		}
 	</style>  
 </th:block>
 <th:block layout:fragment="page_js">
@@ -470,6 +473,7 @@
            		</form>
            	<!-- grid -->
             <div id="gridEvent" class="grid grid-line__wrap dash"></div>
+            <div class="Tooltip" id="evtTooltip" data-position="bottom|left"></div>
 		</div>
 		<div id="tabUser">
 			<h3 class="form-title">사용자 목록 및 권한</h3>
@@ -1774,6 +1778,13 @@
 				autoResize:true,
 				fitTableWidth :true,
 				height: 400,
+				renderMapping : {
+					'evtMsgTooltip' : {
+						renderer: function(value, data, render, mapping) {
+							return '<div id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+value+(data.history?'<span class="ico_title" style="padding-top:33px;"/>':'')+'</div>';
+						}
+					}
+				},
 				columnMapping : [  
 					{ title:'', key : 'status' , width: '30px', align: 'center',render:function(value){
 						var re = '';
@@ -1791,17 +1802,24 @@
 						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
 					}},
 					{ title:'이벤트', key : 'operation' , width: '100px', align: 'left'},
-					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',render:function(value,data){
-						var re = value;
-						if(data.history){
-							re= re + '<span class="ico_title" title="'+data.history+'" style="padding-top:33px;"></span>'
-						}
-						return re;
-					}},
+					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',tooltip:false,render: {type: "evtMsgTooltip"}},
 					{ title:'User ID', key : 'userId' , width: '250px', align: 'left'}
 				],
 				message: {
 					nodata: gMessage.gridNodata
+				}
+			}).on('mouseover', '.bodycell .TooltipEvt',function(e){
+				var evObj = AlopexGrid.parseEvent(e);
+				var data = evObj.data;
+				var mapping = evObj.mapping;
+				var $tooltip = $('#evtTooltip');
+
+				if (mapping.key === 'resultMessage' && data.history!=null){
+					$tooltip.html(data['history']); 
+					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
+					$tooltip.open();	
+				}else {
+					$tooltip.close();
 				}
 			});			
 			
