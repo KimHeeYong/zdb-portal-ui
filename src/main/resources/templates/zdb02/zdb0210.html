@@ -1815,7 +1815,8 @@
 				var $tooltip = $('#evtTooltip');
 
 				if (mapping.key === 'resultMessage' && data.history!=null){
-					$tooltip.html(data['history']); 
+					var val = data['history']||'';
+					$tooltip.html(val.replaceAll('\n','</br>')); 
 					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
 					$tooltip.open();	
 				}else {
