@@ -100,6 +100,7 @@
 							<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
 								<th>스토리지 QoS</th>
 								<td data="storageClassStr"></td>
+								<td id="storageClassDesc"></td>
 							</tr>
 						</tbody>
 					</table>
@@ -162,8 +163,8 @@ $a.page(function() {
 		});
 		
 		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
-			data.specDisk = sliderConstants.disk.getValue(gParam.diskSpecIdx,isCluster)
 			data.disk = sliderConstants.disk.value[gParam.diskSpecIdx];
+			data.specDisk = sliderConstants.disk.getValue(gParam.diskSpecIdx,isCluster)
 		}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS && gParam.purpose == 'DATA'){
 			data.disk = data.podSpecIdx < 5 ? 20 : 40;
 			data.specDisk = (data.disk * (isCluster?2:1)) + 'Gi';
@@ -173,7 +174,12 @@ $a.page(function() {
 			data.priceDisk = (data.disk * 0.00059 * 720).toFixed(2);
 		};
 		
-		$('#serviceTable').zdbui_setContents(data);
+		var table = $('#serviceTable');
+		table.zdbui_setContents(data);
+		if(table.find('td[data=storageClassStr]').length > 0){
+			var descT = ' <span class="warn-text ft15">('+(cloudUtil.parseInt(data.specDisk) * cloudUtil.parseInt(data.storageClassStr)) + 'Gb IOPS 스토리지 성능을 보장 합니다.)</span>'
+			table.find('td[data=storageClassStr]').append(descT);
+		};
 		
 		$('#btnPrev').on('click',function(){
 			gCommon.movePage('/zdb01/zdb0111',gParam);
