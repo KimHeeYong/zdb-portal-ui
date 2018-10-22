@@ -302,6 +302,9 @@ $.fn.extend({
     	var item = this;
     	
     	var tagName = item[0].tagName.toLowerCase();
+    	if(tagName == 'div' && item.hasClass('Divselect')){
+    		tagName='divSelect';
+    	};
 		if('div,span,td,textarea'.indexOf(tagName) > -1){
 			item.html(val);
 		}else if('input' == tagName){
@@ -314,6 +317,8 @@ $.fn.extend({
 			}
 		}else if('select' == tagName){
 			item.val(val);
+		}else if('divSelect' == tagName){
+			item.setSelected(val);
 		};
 		return this;
     },
@@ -331,6 +336,11 @@ $.fn.extend({
 	    $(':disabled[name]', this).each(function () { 
 	        data.push({ name: this.name, value: $(this).val() });
 	    });
+	    $('div.Divselect', this).each(function () { 
+	    	var tob = $(this).find('select');
+	    	data.push({name:this.id||$(this).attr('name'),value:tob.val()});
+	    });
+	    
 	    return data;
 	},
 	pressEnter : function(fn){

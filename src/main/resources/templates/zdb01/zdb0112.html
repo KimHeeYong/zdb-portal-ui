@@ -40,7 +40,6 @@
 			</ul>
 		</div>	
 		<p class="info-text__typeb">아래와 같이 서비스 생성을 시작합니다.</p>
-		<!-- accordion-->
 		<ul id="serviceTable">
 			<li>
 				<h3 class="form-title double-line">확인</h3>
@@ -98,6 +97,11 @@
 								<th>할당디스크</th>
 								<td data="specDisk"></td>
 							</tr>
+							<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
+								<th>스토리지 QoS</th>
+								<td data="storageClassStr"></td>
+								<td id="storageClassDesc"></td>
+							</tr>
 						</tbody>
 					</table>
 				</div>
@@ -144,31 +148,38 @@ $a.page(function() {
 		if(!gNamespaces.getText()){
 			gCommon.alert(gMessage.validPage);
 		};
-		$('.Accordion').expandAll();
-		
 		var sliderConstants = gSliderConstants[gParam.serviceType];
+		var isCluster = gParam.clusterEnabled == 'true';
+		
 		var data = $.extend({},gParam,{
-			specMemory:sliderConstants.memory.getValue(gParam.podSpecIdx),
+			specMemory:sliderConstants.memory.getValue(gParam.podSpecIdx,isCluster),
 			memory:sliderConstants.memory.value[gParam.podSpecIdx],
-			specCpu:sliderConstants.cpu.getValue(gParam.podSpecIdx),
+			specCpu:sliderConstants.cpu.getValue(gParam.podSpecIdx,isCluster),
 			cpu:sliderConstants.cpu.value[gParam.podSpecIdx],
 			serviceName:gParam.serviceName,
 			exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
 			backupEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
+			storageClassStr:(gStorageClassConstants[gParam.storageClass])
 		});
+		
 		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
-			data.specDisk = sliderConstants.disk.getValue(gParam.diskSpecIdx)
 			data.disk = sliderConstants.disk.value[gParam.diskSpecIdx];
+			data.specDisk = sliderConstants.disk.getValue(gParam.diskSpecIdx,isCluster)
 		}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS && gParam.purpose == 'DATA'){
 			data.disk = data.podSpecIdx < 5 ? 20 : 40;
-			data.specDisk = data.disk + 'Gi';
+			data.specDisk = (data.disk * (isCluster?2:1)) + 'Gi';
 		};
 		if(data.disk){
 			$('.dataInfo').show();
 			data.priceDisk = (data.disk * 0.00059 * 720).toFixed(2);
 		};
 		
-		$('#serviceTable').zdbui_setContents(data);
+		var table = $('#serviceTable');
+		table.zdbui_setContents(data);
+		if(table.find('td[data=storageClassStr]').length > 0){
+			var descT = ' <span class="warn-text ft15">('+(cloudUtil.parseInt(data.specDisk) * cloudUtil.parseInt(data.storageClassStr)) + 'Gb IOPS 스토리지 성능을 보장 합니다.)</span>'
+			table.find('td[data=storageClassStr]').append(descT);
+		};
 		
 		$('#btnPrev').on('click',function(){
 			gCommon.movePage('/zdb01/zdb0111',gParam);

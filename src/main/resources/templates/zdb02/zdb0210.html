@@ -13,6 +13,9 @@
 			border: 1px solid #cccccc;
 			background-position: -25px -173px; 
 		}
+		.TooltipEvt{
+			font-size:1.0em;
+		}
 	</style>  
 </th:block>
 <th:block layout:fragment="page_js">
@@ -70,6 +73,10 @@
 					<li>
 						<strong>스토리지 : </strong>
 						<span data="disk"></span>
+					</li>
+					<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
+						<strong>스토리지 QoS : 	</strong>
+						<span data="storageClass"></span>
 					</li>
 				</ul>
 			</div>
@@ -460,32 +467,13 @@
 						</div>
 					</div>
 					<div class="info-list__select">
-						<!-- 
-						<div class="Divselect">
-						    <select name="kind">
-								<option value="-">전체</option> 
-								<option value="StatefulSet">StatefulSet</option>
-								<option value="Service">Service</option>
-								<option value="ReplicaSet">ReplicaSet</option>
-								<option value="Pod">Pod</option>
-								<option value="PersistentVolumeClaim">PVC</option>
-								<option value="PersistentVolume">PV</option>
-								<option value="Node">Node</option>
-								<option value="Ingress">Ingress</option>
-								<option value="Deployment">Deployment</option>
-								<option value="DaemonSet">DaemonSet</option>
-								<option value="ConfigMap">ConfigMap</option>
-								<option value="Cluster">Cluster</option>
-						    </select>
-						    <span></span>
-						</div>
-						 -->
 						<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요."/><button class="Button btn-search" id="searchEvent">검색</button>
 					</div>
            		</div>
            		</form>
            	<!-- grid -->
             <div id="gridEvent" class="grid grid-line__wrap dash"></div>
+            <div class="Tooltip" id="evtTooltip" data-position="bottom|left"></div>
 		</div>
 		<div id="tabUser">
 			<h3 class="form-title">사용자 목록 및 권한</h3>
@@ -1134,13 +1122,24 @@
 				
 				var rsSpec = gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{};
 				var psSpec = gCommon.getObjectByIdx(gService.persistenceSpecOfPodMap,0)||{};
+				var pvSpec = gCommon.getObjectByIdx(gService.persistentVolumeClaims,0)||{};
 				gServiceScale.cpu = rsSpec.cpu;
 				gServiceScale.memory = rsSpec.memory;
 				gServiceScale.cpuVal = cloudUtil.parseInt(gServiceScale.cpu);
 				gServiceScale.memoryVal = cloudUtil.parseInt(gServiceScale.memory);
 				gServiceScale.disk = psSpec.size;
+				gServiceScale.storageClass = '';
+				if(pvSpec.spec){
+					gServiceScale.storageClass = gStorageClassConstants[pvSpec.spec.storageClassName];
+				}
 				
-				$('#configInfo').zdbui_setContents({cpu:gServiceScale.cpu,memory:gServiceScale.memory,disk:gService.persistentVolumeClaims.length==0?'사용안함':gServiceScale.disk});
+				$('#configInfo').zdbui_setContents(
+						{ cpu:gServiceScale.cpu
+						 ,memory:gServiceScale.memory
+						 ,disk:gService.persistentVolumeClaims.length==0?'사용안함':gServiceScale.disk
+						 ,storageClass:gServiceScale.storageClass
+						}
+					);
 				var podData = (function(){
 					var list = [];
 					var pods = gService.pods;
@@ -1779,6 +1778,13 @@
 				autoResize:true,
 				fitTableWidth :true,
 				height: 400,
+				renderMapping : {
+					'evtMsgTooltip' : {
+						renderer: function(value, data, render, mapping) {
+							return '<div id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+value+(data.history?'<span class="ico_title" style="padding-top:33px;"/>':'')+'</div>';
+						}
+					}
+				},
 				columnMapping : [  
 					{ title:'', key : 'status' , width: '30px', align: 'center',render:function(value){
 						var re = '';
@@ -1791,15 +1797,30 @@
 						}
 						return re;
 					}},
-					{ title:'일시', key : 'endTime' , width: '150px', align: 'left',render:function(value){
+					{ title:'일시', key : 'endTime' , width: '140px', align: 'left',render:function(value){
 						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
 						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
 					}},
-					{ title:'이벤트', key : 'operation' , width: '150px', align: 'left'},
-					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left'}
+					{ title:'이벤트', key : 'operation' , width: '100px', align: 'left'},
+					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',tooltip:false,render: {type: "evtMsgTooltip"}},
+					{ title:'User ID', key : 'userId' , width: '250px', align: 'left'}
 				],
 				message: {
 					nodata: gMessage.gridNodata
+				}
+			}).on('mouseover', '.bodycell .TooltipEvt',function(e){
+				var evObj = AlopexGrid.parseEvent(e);
+				var data = evObj.data;
+				var mapping = evObj.mapping;
+				var $tooltip = $('#evtTooltip');
+
+				if (mapping.key === 'resultMessage' && data.history!=null){
+					var val = data['history']||'';
+					$tooltip.html(val.replaceAll('\n','</br>')); 
+					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
+					$tooltip.open();	
+				}else {
+					$tooltip.close();
 				}
 			});			
 			

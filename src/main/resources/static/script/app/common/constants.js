@@ -2,8 +2,12 @@ var G_SERVICE_TYPE_MARIA = 'mariadb';
 var G_SERVICE_TYPE_REDIS = 'redis';
 
 var _gSliderConstantsCommonRange = { 'min': 0, '14%': 1, '28%': 2, '42%': 3, '56%': 4, '70%': 5, '85%':6, 'max': 7 };
-var _gSliderConstantsCommonGetValue = function(index){
-	return this.value[index]+this.unit;
+var _gSliderConstantsCommonGetValue = function(index,isCluster){
+	var val = this.value[index]
+	if(isCluster){
+		val = val * 2;
+	}
+	return val+this.unit;
 };
 var _gSliderConstantsCommonGetIndex = function(val){
 	val = cloudUtil.parseInt(val);
@@ -66,6 +70,11 @@ var gSliderConstants = {
 			getIndex : _gSliderConstantsCommonGetIndex
 		}
 	}
+};
+var gStorageClassConstants = {
+	 'ibmc-block-bronze':'2 IOPS/GB'
+	,'ibmc-block-silver':'4 IOPS/GB'
+	,'ibmc-block-gold':'10 IOPS/GB'
 };
 var gMessage = {
 	validPage : '잘못된 접근 입니다.',
