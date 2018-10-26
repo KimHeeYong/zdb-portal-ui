@@ -2,6 +2,12 @@
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
 	<title></title>
+	<style type="text/css">
+		table.WarpTable{
+			border-top: 1px solid #cccccc;
+			border-bottom: 1px solid #cccccc;
+		}
+	</style>
 </th:block>
 <th:block layout:fragment="content">
 	<!-- location -->
@@ -44,63 +50,79 @@
 			<li>
 				<h3 class="form-title double-line">확인</h3>
 				<div class="accor-contents__wrap">
-					<table class="Table Form-type">
+					<table class="Form-type">
 						<colgroup>
-							<col style="width: 200px;">
-							<col>
+							<col style="width: 100%;">
+							<col style="width:*">
 						</colgroup>
 						<tbody>
 							<tr>
-								<th>종류</th>
-								<td> 
-									<span th:if="${#request.getParameter('serviceType')} == 'mariadb'" th:text="MariaDB"></span>
-									<span th:if="${#request.getParameter('serviceType')} == 'redis'" th:text="Redis"></span>
+								<td>
+									<table class="Table Form-type">
+									<colgroup>
+										<col style="width: 200px;">
+										<col style="width: *;">
+									</colgroup>
+									<tbody>
+										<tr>
+											<th>종류</th>
+											<td> 
+												<span th:if="${#request.getParameter('serviceType')} == 'mariadb'" th:text="MariaDB"></span>
+												<span th:if="${#request.getParameter('serviceType')} == 'redis'" th:text="Redis"></span>
+											</td>
+										</tr>
+										<tr>
+											<th>서비스이름</th>
+											<td data="serviceName"></td>
+										</tr>
+										<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
+											<th>DB명</th>
+											<td data="dbName"></td>
+										</tr>
+										<tr>
+											<th>버전</th>
+											<td data="version"></td>
+										</tr>
+										<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
+											<th>캐릭터셋</th>
+											<td data="characterSet"></td>
+										</tr>							
+										<tr th:if="${#request.getParameter('serviceType')} == 'redis'">
+											<th>용도</th>
+											<td data="purpose"></td>
+										</tr>
+										<tr>
+											<th>백업 여부</th>
+											<td data="backupEnabledStr"></td>
+										</tr>
+										<tr>
+											<th>Public 접근 허용</th>
+											<td data="exposeTypeStr"></td>
+										</tr>
+										<tr>
+											<th>클러스터</th>
+											<td data="clusterEnabledStr"></td>
+										</tr>
+										<tr>
+											<th>할당메모리</th>
+											<td data="specMemory"></td>
+										</tr>
+										<tr th:if="${#request.getParameter('serviceType')=='mariadb' || #request.getParameter('purpose') == 'DATA'}">
+											<th>할당디스크</th>
+											<td data="specDisk"></td>
+										</tr>
+										<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
+											<th>스토리지 QoS</th>
+											<td data="storageClassStr"></td>
+										</tr>
+									</tbody>
+								</table>
 								</td>
-							</tr>
-							<tr>
-								<th>서비스이름</th>
-								<td data="serviceName"></td>
-							</tr>
-							<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
-								<th>DB명</th>
-								<td data="dbName"></td>
-							</tr>
-							<tr>
-								<th>버전</th>
-								<td data="version"></td>
-							</tr>
-							<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
-								<th>캐릭터셋</th>
-								<td data="characterSet"></td>
-							</tr>							
-							<tr th:if="${#request.getParameter('serviceType')} == 'redis'">
-								<th>용도</th>
-								<td data="purpose"></td>
-							</tr>
-							<tr>
-								<th>백업 여부</th>
-								<td data="backupEnabledStr"></td>
-							</tr>
-							<tr>
-								<th>Public 접근 허용</th>
-								<td data="exposeTypeStr"></td>
-							</tr>
-							<tr>
-								<th>클러스터</th>
-								<td data="clusterEnabled"></td>
-							</tr>
-							<tr>
-								<th>할당메모리</th>
-								<td data="specMemory"></td>
-							</tr>
-							<tr th:if="${#request.getParameter('serviceType')=='mariadb' || #request.getParameter('purpose') == 'DATA'}">
-								<th>할당디스크</th>
-								<td data="specDisk"></td>
-							</tr>
-							<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
-								<th>스토리지 QoS</th>
-								<td data="storageClassStr"></td>
-								<td id="storageClassDesc"></td>
+								<td style="vertical-align: top;">
+									<!-- 
+									<img src="/styles/images/ab.png" width="400px" height="300px;"/>
+									 -->
+								</td>
 							</tr>
 						</tbody>
 					</table>
@@ -159,6 +181,7 @@ $a.page(function() {
 			serviceName:gParam.serviceName,
 			exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
 			backupEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
+			clusterEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
 			storageClassStr:(gStorageClassConstants[gParam.storageClass])
 		});
 		
@@ -177,7 +200,7 @@ $a.page(function() {
 		var table = $('#serviceTable');
 		table.zdbui_setContents(data);
 		if(table.find('td[data=storageClassStr]').length > 0){
-			var descT = ' <span class="warn-text ft15">('+(cloudUtil.parseInt(data.specDisk) * cloudUtil.parseInt(data.storageClassStr)) + 'Gb IOPS 스토리지 성능을 보장 합니다.)</span>'
+			var descT = ' <span class="ft15">('+(cloudUtil.parseInt(data.specDisk) * cloudUtil.parseInt(data.storageClassStr)) + 'Gb IOPS 스토리지 성능을 보장 합니다.)</span>'
 			table.find('td[data=storageClassStr]').append(descT);
 		};
 		
