@@ -27,7 +27,7 @@ public class SessionUserDataInterceptor extends HandlerInterceptorAdapter{
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 		HttpSession session = request.getSession();
-		if(session.getAttribute(CommonConstants.USER_INFO)== null) {
+		//if(session.getAttribute(CommonConstants.USER_INFO)== null) {
 			OpenIdConnectUserDetailsVo userInfo = securityService.getUserDetails();
 			if(userInfo != null) {
 				session.setAttribute(CommonConstants.USER_INFO, userInfo);
@@ -38,7 +38,7 @@ public class SessionUserDataInterceptor extends HandlerInterceptorAdapter{
 					//do nothing.
 				}
 			}
-		};
+		//};
 	}
 	
 	public void updateUserNamespaces() {

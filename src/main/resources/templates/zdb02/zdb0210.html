@@ -914,6 +914,12 @@
 				columnMapping : [
 					{ title:'', key : 'status' , width: '40px', align: 'center',render : function( value, data, render, mapping) {
 						var re = '';
+						if(data.status == 'green'){
+							re = '<button class="Button btn-ico btn-config__save" title=""></button>';
+						}else if(data.status == 'red'){
+							re = '<button class="btn-ico del" title=""></button>';
+						}
+						/*
 						if(!data.condition){
 							re = '<i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:#c09853;padding-top:5px;font-size:1.3em"></i>';
 						}else if(data.condition && data.condition.status == 'True'){
@@ -923,9 +929,11 @@
 								re = '<button class="btn-ico del"></button>';
 							}
 						};
+						
+						*/
 						return re;
 					}},
-					{ title:'Name', key : 'name', width : '330px', sorting : true, align: 'left', colspanTo : function(value, data, mapping) {
+					{ title:'Name', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
 						if(data.colspanCol){
 							return isSlowLogHidden ? 'log' : 'slowLog';
 						};
@@ -934,10 +942,11 @@
 						if (data.colspanCol == true) {
 							re = '<span class="warn-text"> Message : '+data.condition.reason+":"+data.condition.message+'</span>';
 						}else{
-							re = value;
+							re = (data.isPod?' ▬ ':'')+value;
 						};
 						return re;
 					}},
+					{ title:'Replicas', key : 'replicas' , width: '60px', align: 'center'},
 					{ title:'Role', key : 'role' , width: '100px', align: 'center'},
 					{ title:'Node', key : 'node' , width: '130px', align: 'center'},
 					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
@@ -956,12 +965,14 @@
 						}
 					}}, 
 					{ title:'Restart',key:'restart',width:'60px', align: 'center',render: function( value, data, render, mapping){
+						if(!data.isPod)return'';
 						var re = $('<button class="btn-ico btn-refresh">재시작</button>').on('click',function(){
 							fn_restartPod(data);
 						});
 						return re;
 					}},
-					{ title:'Log',key:'log',width:'60px', align: 'center',render: function( value, data, render, mapping){
+					{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
+						if(!data.isPod)return'';
 						var re = $('<button class="btn-ico btn-log">로그</button>').on('click',function(){
 							if(data.condition && data.condition.status == 'True'){
 								window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
@@ -971,7 +982,8 @@
 						});
 						return re;
 					}},
-					{ title:'Slow Log',key:'slowLog',width:'60px', align: 'center',render: function( value, data, render, mapping){
+					{ title:'Slow Log',key:'slowLog',width:'80px', align: 'center',render: function( value, data, render, mapping){
+						if(!data.isPod)return'';
 						var re = $('<button class="btn-ico btn-log">로그</button>').on('click',function(){
 							if(data.condition && data.condition.status == 'True'){
 								window.open("/zdb02/zdb0200p04?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
@@ -1141,7 +1153,7 @@
 						}
 					);
 				var podData = (function(){
-					var list = [];
+					var list = [];					
 					var pods = gService.pods;
 					for(var i = 0 ; i < pods.length; i++){
 						var pod = pods[i];
@@ -1158,11 +1170,12 @@
 							role = pod.metadata.labels.component;
 						};
 						list.push({
+							isPod:true,
 							name: pod.metadata.name,
 							condition: condition,
-							role: role,
 							node: pod.spec.nodeName,
-							colspanCol: false
+							colspanCol: false,
+							stName: pod.metadata.name.replace(/(\-[\d]+)/g,'')
 						});	
 					}
 					return list; 
@@ -1214,13 +1227,41 @@
 				}(podData));
 				//error row 임의 생성
 				var tList = [];
-				for(var i = 0 ; i < podData.length;i++){
-					var pod = podData[i];
-					tList.push(pod);
-					if(pod.condition && pod.condition.status != 'True'){ 
-						var tPod = $.extend({},pod,{colspanCol:true})
-						tList.push(tPod);
-					};
+
+				var statefulSets = gService.statefulSets;
+				for(var i = 0 ; i < statefulSets.length; i++){
+					var statefulSet = statefulSets[i];
+					var replicas = statefulSet.spec.replicas;
+					var role = ""; 
+					if(gService.serviceType == 'redis'){
+						if(statefulSet.metadata.labels.role == "metrics")continue;
+						else if(statefulSet.metadata.labels.role == 'slave'){
+							role = 'slave(readOnly)'; 
+						}else{
+							role = statefulSet.metadata.labels.role
+						}
+					}else{
+						role = statefulSet.metadata.labels.component;
+					};		
+					var dt = {
+							isPod:false,
+							status: (replicas > 0 && replicas == statefulSet.status.readyReplicas ? 'green' : 'red'),
+							name:statefulSet.metadata.name,
+							replicas:replicas,
+							role: role,
+							cpu:gServiceScale.cpu,
+							memory:gServiceScale.memory,
+							colspanCol:false
+						};
+					tList.push(dt);
+					var pod = gCommon.findObjectByKeyOb(podData,{stName:dt.name});
+					if(pod != null){
+						tList.push(pod);
+						if(pod.condition && pod.condition.status != 'True'){ 
+							var tPod = $.extend({},pod,{colspanCol:true})
+							tList.push(tPod);
+						};
+					}
 				};
 				
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset 
