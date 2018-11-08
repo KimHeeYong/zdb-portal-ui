@@ -462,6 +462,14 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 
-
+	public String[] getZDBConfig(Map<String, String> param) {
+		String[] result = {};
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_ZDB_CONFIG,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getZdbConfig();
+		};
+		return result;
+	}
 }
 

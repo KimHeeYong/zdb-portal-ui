@@ -439,4 +439,14 @@ public class ZdbApiController {
         return result;
 	}
 
+	@RequestMapping(value = "getZDBConfig")
+	public ModelAndView getZDBConfig(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		String[] zdbConfig = zdbApiService.getZDBConfig(param);
+		mav.addObject("zdbConfig",zdbConfig);
+		
+		return mav;
+	}
 }

@@ -62,4 +62,6 @@ public class Result {
 	private String[] mycnf;
 
 	private List<DBUser> userGrants;
+	
+	private String[] zdbConfig;
 }
