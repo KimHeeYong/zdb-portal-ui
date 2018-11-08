@@ -41,15 +41,15 @@ props:
   keycloak:
     zcp:
       clientId: account
-      clientSecret: 0227b024-6483-4e96-827b-3bc4dd73637e
-      accessTokenUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
-      userAuthorizationUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
-      redirectUri: ${HOME_URL:http://localhost:8181}/k8s-login
+      clientSecret: 71ad1e42-d239-4a7d-99f9-e1e50ad7ca93
+      accessTokenUri: https://pou-dev-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
+      userAuthorizationUri: https://pou-dev-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
+      redirectUri: ${HOME_URL:http://localhost:8181}/login
   iam:
-    baseUrl: https://zcp-iam.cloudzcp.io:443
+    baseUrl: https://pou-dev-internal-iam.cloudzcp.io:443
 
 cloudzcp:
-  url: https://console.cloudzcp.io
+  url: https://pou-dev-console.cloudzcp.io
 grafana:
   url: http://grafana-zdb.cloudzcp.io
 ---  
@@ -77,48 +77,18 @@ props:
   keycloak:
     zcp:
       clientId: account
-      clientSecret: 0227b024-6483-4e96-827b-3bc4dd73637e
-      accessTokenUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
-      userAuthorizationUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
-      redirectUri: ${HOME_URL:http://console.${spring.profiles}.jp-tok.containers.mybluemix.net}/k8s-login
+      clientSecret: 71ad1e42-d239-4a7d-99f9-e1e50ad7ca93
+      accessTokenUri: https://pou-dev-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
+      userAuthorizationUri: https://pou-dev-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
+      redirectUri: ${HOME_URL:http://console.${spring.profiles}.jp-tok.containers.mybluemix.net}/login
   iam:
-    baseUrl: https://zcp-iam.cloudzcp.io:443
+    baseUrl: https://pou-dev-internal-iam.cloudzcp.io:443
 
 cloudzcp:
-  url: https://console.cloudzcp.io
+  url: https://pou-dev-console.cloudzcp.io
 grafana:
-  url: http://grafana-zdb.cloudzcp.io
----
-spring:
-  profiles: zcp-demo
-server:
-  port: 8080
-zdb-api-server:
-  url: http://api.${spring.profiles}.jp-tok.containers.mybluemix.net
+  url: http://pou-dev-zdb-monitoring.cloudzcp.io
 
-logging:
-  config: classpath:logback-prod.xml  
-  
-zdb-demon-server:
-  url: http://agent.${spring.profiles}.jp-tok.containers.mybluemix.net
-
-props:
-  appName: zdb-portal
-  keycloak:
-    zcp:
-      clientId: account
-      clientSecret: 0227b024-6483-4e96-827b-3bc4dd73637e
-      accessTokenUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
-      userAuthorizationUri: https://keycloak.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
-#      redirectUri: ${HOME_URL:http://console.${spring.profiles}.jp-tok.containers.mybluemix.net}/k8s-login
-      redirectUri: http://zdb.cloudzcp.io/k8s-login
-  iam:
-    baseUrl: http://zcp-iam.zcp-system
-
-cloudzcp:
-  url: https://console.cloudzcp.io
-grafana:
-  url: http://grafana-zdb.cloudzcp.io
   
 ---
 spring:
@@ -142,7 +112,7 @@ props:
       clientSecret: ${iam.secret}
       accessTokenUri: https://${iam.domain}.${domain.custom}/auth/realms/zcp/protocol/openid-connect/token
       userAuthorizationUri: https://${iam.domain}.${domain.custom}/auth/realms/zcp/protocol/openid-connect/auth
-      redirectUri: https://${zdb.domain}.${domain.custom}/k8s-login
+      redirectUri: https://${zdb.domain}.${domain.custom}/login
   iam:
     baseUrl: http://zcp-iam.zcp-system
 

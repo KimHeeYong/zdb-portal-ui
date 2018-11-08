@@ -29,7 +29,7 @@ public class LogoutHandler implements LogoutSuccessHandler {
             iamApiService.logout(vo.getUserId());
         }
         
-        String redirectUrl = request.getContextPath() + "/k8s-login";
+        String redirectUrl = request.getContextPath() + "/login";
         response.setStatus(HttpStatus.OK.value());
         response.sendRedirect(redirectUrl);
     }

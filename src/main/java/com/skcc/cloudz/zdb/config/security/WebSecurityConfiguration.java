@@ -37,7 +37,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     
         http
             .httpBasic()
-                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/k8s-login"))
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
             .and()
                 .logout()
                 .logoutUrl("/logout")
@@ -61,7 +61,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     
     @Bean
     public OpenIdConnectFilter openIdConnectFilter() {
-        final OpenIdConnectFilter filter = new OpenIdConnectFilter("/k8s-login");
+        final OpenIdConnectFilter filter = new OpenIdConnectFilter("/login");
         filter.setRestTemplate(restTemplate);
         
         return filter;
