@@ -9,6 +9,10 @@ $ bx cr login
 $ docker image tag zdb-portal-ui:latest registry.au-syd.bluemix.net/zdb-dev/zdb-portal-ui:latest
 $ docker image push registry.au-syd.bluemix.net/zdb-dev/zdb-portal-ui:latest
 ```
+
+docker image tag zdb-portal-ui:<VERSION> registry.au-syd.bluemix.net/cloudzdb/zdb-portal-ui:<VERSION>
+docker image push registry.au-syd.bluemix.net/cloudzdb/zdb-portal-ui:<VERSION>
+
 ## Deployment
 ```
 $ kubectl delete deployment zdb-portal-ui-deployment -n zdb-system
