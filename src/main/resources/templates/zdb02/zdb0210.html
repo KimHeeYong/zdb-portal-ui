@@ -942,7 +942,7 @@
 						if (data.colspanCol == true) {
 							re = '<span class="warn-text"> Message : '+data.condition.reason+":"+data.condition.message+'</span>';
 						}else{
-							re = (data.isPod?' ▬ ':'')+value;
+							re = (data.isPod?'':'')+value;
 						};
 						return re;
 					}},
@@ -1253,14 +1253,21 @@
 							memory:gServiceScale.memory,
 							colspanCol:false
 						};
-					tList.push(dt);
-					var pod = gCommon.findObjectByKeyOb(podData,{stName:dt.name});
+					var pod = null;
+					if(dt.status == 'green') {
+						pod = gCommon.findObjectByKeyOb(podData,{stName:dt.name});
+					}
 					if(pod != null){
+						pod.status = dt.status;
+						pod.role = dt.role;
+						pod.replicas=dt.replicas;
 						tList.push(pod);
 						if(pod.condition && pod.condition.status != 'True'){ 
 							var tPod = $.extend({},pod,{colspanCol:true})
 							tList.push(tPod);
 						};
+					} else {
+						tList.push(dt);
 					}
 				};
 				
