@@ -11,7 +11,7 @@ import com.skcc.cloudz.zdb.config.CommonConstants;
 
 public class ApiTemplate {
 
-	public static String MATCHER_PATTERN = "\\$\\{([a-zA-Z]+)\\}";
+	public static String MATCHER_PATTERN = "\\$\\{([a-zA-Z_]+)\\}";
 
 	public static String getCreateDeployment(String serviceType) {
 		String templateUrl = null;
@@ -32,6 +32,20 @@ public class ApiTemplate {
 		String inputJson = "";
 		try {
 			templateUrl = String.format("updateScaleUp-%s.template",serviceType); 	
+			InputStream is = new ClassPathResource(CommonConstants.TEMPLATE_PATH + templateUrl).getInputStream();
+			inputJson = IOUtils.toString(is, StandardCharsets.UTF_8.name());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	
+    	return inputJson.toString();
+	}
+
+	public static String getUpdateZDBConfig() {
+		String templateUrl = null;
+		String inputJson = "";
+		try {
+			templateUrl = String.format("updateZDBConfig.template"); 	
 			InputStream is = new ClassPathResource(CommonConstants.TEMPLATE_PATH + templateUrl).getInputStream();
 			inputJson = IOUtils.toString(is, StandardCharsets.UTF_8.name());
 		} catch (IOException e) {

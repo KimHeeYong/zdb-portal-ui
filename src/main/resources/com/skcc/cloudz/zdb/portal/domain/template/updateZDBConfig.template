@@ -1,0 +1,30 @@
+[
+      {
+        "namespace": ${namespace},
+        "dbType": "mariadb",
+        "config": "free_resource_check",
+        "configName": "Resource 가용량 체크",
+        "value": ${free_resource_check}
+      },
+      {
+        "namespace": ${namespace},
+        "dbType": "mariadb",
+        "config": "public_network_enabled",
+        "configName": "Public Network 사용 여부",
+        "value": ${public_network_enabled}
+      },
+      {
+        "namespace": ${namespace},
+        "dbType": "mariadb",
+        "config": "backup_duration",
+        "configName": "Backup 보관 기간",
+        "value": ${backup_duration}
+      },
+      {
+        "namespace": ${namespace},
+        "dbType": "mariadb",
+        "config": "backup_time",
+        "configName": "Backup 시각",
+        "value": ${backup_time}
+      }
+]

@@ -6,10 +6,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,6 +32,7 @@ import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
+import com.zdb.core.domain.ZDBConfig;
 
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.client.dsl.PodResource;
@@ -444,9 +447,30 @@ public class ZdbApiController {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
-		String[] zdbConfig = zdbApiService.getZDBConfig(param);
+		List<ZDBConfig> zdbConfig = zdbApiService.getZDBConfig(param);
 		mav.addObject("zdbConfig",zdbConfig);
 		
 		return mav;
 	}
+	@RequestMapping(value = "createZDBConfig", method = RequestMethod.POST)
+	public ModelAndView createZDBConfig(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.createZDBConfig(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
+	@RequestMapping(value = "updateZDBConfigs", method = RequestMethod.PUT)
+	public ModelAndView updateZDBConfigs(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.updateZDBConfigs(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
+	
 }

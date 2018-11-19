@@ -13,6 +13,7 @@ import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
+import com.zdb.core.domain.ZDBConfig;
 
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.client.dsl.PodResource;
@@ -63,5 +64,5 @@ public class Result {
 
 	private List<DBUser> userGrants;
 	
-	private String[] zdbConfig;
+	private List<ZDBConfig> zdbConfig;
 }

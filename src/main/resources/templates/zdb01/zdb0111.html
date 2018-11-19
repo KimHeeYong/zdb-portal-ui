@@ -102,7 +102,7 @@
 									</div>
 								</td>
 							</tr>
-							<tr>
+							<tr id="trExpose">
 								<th>Public 접근 허용</th>
 								<td>
 									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-on">ON</button></div>
@@ -190,7 +190,7 @@
 									</div>
 								</td>
 							</tr>						
-							<tr>
+							<tr id="trExpose">
 								<th>Public 접근 허용</th>
 								<td>
 									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-on">ON</button></div>
@@ -269,13 +269,17 @@
 	
 <script type="text/javascript">
 var gNamespaces = null;     // 네임스페이스 콤보
+var gConfigData = null;
 $a.page(function() {
 	this.init = function() {
 		//네임스페이스 콤보 설정
 		gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAll:false});
 		gNamespaces.addHandler(function(e){
 							  gCommon.setSelectedNamespace(e.currentTarget.id);
+							  //location.href = location.href;
+							  
 							  setDefaultServiceName();
+							  setDefaultValue();
 						  })
 						 .select({id:gSelectedNamespace}); 
 		if(!gNamespaces.getText()){
@@ -296,6 +300,18 @@ $a.page(function() {
 		}).find('input[name=serviceName]').on('keyup',function(){
 			setDefaultServiceName();
 		});
+		//config값 적용
+		function setDefaultValue(){
+			gConfigData = gCommon.getConfigData();
+			if(gConfigData.public_network_enabled == 'true'){
+				setExposeType('public');
+				$('#trExpose').show();
+			}else{
+				setExposeType('private');
+				$('#trExpose').hide();
+			}
+			
+		}
 		function setDefaultServiceName(){
 			var ob = $('input[name=serviceName]'); 
 			var defVal = gSelectedNamespace + '-';
@@ -330,18 +346,24 @@ $a.page(function() {
 									   ,memory:sliderConstants.memory.value[param.podSpecIdx],cpu:sliderConstants.cpu.value[param.podSpecIdx]
 									   ,storageClassStr:$('select[name=storageClass] option:checked').text()
 									  });
-			$a.ajax({
-				url: '/zdbapi/isAvailable',
-				data: dt,
-				success: function(res){
-					var re = res.result;
-					if(re.code != '0'){
-						gCommon.alert(re.message);
-					}else{
-						gCommon.movePage('/zdb01/zdb0112',param)
+			
+			if(gConfigData.free_resource_check == 'true'){
+				$a.ajax({
+					url: '/zdbapi/isAvailable',
+					data: dt,
+					success: function(res){
+						var re = res.result;
+						if(re.code != '0'){
+							gCommon.alert(re.message);
+						}else{
+							gCommon.movePage('/zdb01/zdb0112',param)
+						}
 					}
-				}
-			});
+				});	
+			}else{
+				gCommon.movePage('/zdb01/zdb0112',param)
+			}
+			
 		});
 		$('input[name=purpose]').on('change',function(e){
 			setPurpose(this.value);
@@ -403,7 +425,9 @@ $a.page(function() {
 		memorySlider.noUiSlider.set(gParam.podSpecIdx||1)
 		setSliderValue(gParam.podSpecIdx||1);
 		form.zdbui_setContents(gParam);
-		setExposeType(gParam.exposeType);
+		if(gParam.exposeType){
+			setExposeType(gParam.exposeType);
+		}
 		setBackupEnabled(gParam.backupEnabled);
 		setClusterEnabled(gParam.clusterEnabled);
 		if(gParam.serviceType==G_SERVICE_TYPE_REDIS){

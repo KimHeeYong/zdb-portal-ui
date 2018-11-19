@@ -24,6 +24,7 @@
 		var gApiServerUrl = [[${@environment.getProperty('zdb-api-server.url')}]];
 		var gGrafanaUrl = [[${@environment.getProperty('grafana.url')}]];
 		var gUserId = [[${session.userInfo.userId}]];
+		var gIsAdmin = ([[${session.userInfo.accessRole}]]) == 'cluster-admin';
 		/*]]>*/
 	</script>
 	<script type="text/javascript" src="/script/app/common/cloudzdb-ui-z0200.js"></script>
@@ -55,8 +56,8 @@
 		</div>
 		<div class="Panel service-panel">
 			<div class="Panel-content">
-				<div class="config-wrap">
-					<button class="btn-ico btn-refresh" id="restartService" title="재시작">재시작</button>
+				<div class="config-wrap" th:if="${session.userInfo.accessRole=='cluster-admin'}" >
+					<button class="btn-ico btn-refresh" id="restartService" title="재시작">재시작 </button>
 					<button class="Button btn-ico__typeb btn-trash" id="deleteService" title="삭제">삭제</button>
 				</div>
 			</div>
@@ -964,7 +965,7 @@
 							return moment(lt).format('YYYY-MM-DD HH:mm:ss');
 						}
 					}}, 
-					{ title:'Restart',key:'restart',width:'60px', align: 'center',render: function( value, data, render, mapping){
+					{ title:'Restart',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping){
 						if(!data.isPod)return'';
 						var re = $('<button class="btn-ico btn-refresh">재시작</button>').on('click',function(){
 							fn_restartPod(data);

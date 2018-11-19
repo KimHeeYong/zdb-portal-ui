@@ -53,8 +53,11 @@ $a.page(function(){
 var gOverlay = null;
 var gParam = {};
 var G_NAMESPACE_ALL = "_DEFAULT_ALL";
+var G_GLOBAL = 'global';
+var gConfigColumn = ['free_resource_check','public_network_enabled','backup_duration','backup_time'];
 var gSelectedNamespace = null;
 var gPopData = '';
+
 var gCommon = $a.page(function(){ 
 	this.init = function(){ //초기화 루틴 수행
 		gSelectedNamespace = $.cookie('selectedNamespace')||G_NAMESPACE_ALL;
@@ -189,6 +192,45 @@ var gCommon = $a.page(function(){
 		});	
 		return selector;
 	};
+	
+	this.getConfigData = function(namespace){
+		var namespace = gSelectedNamespace == G_NAMESPACE_ALL ? G_GLOBAL : gSelectedNamespace; 
+
+		var result = gCommon.getConfigDataAjax(namespace);
+		if(result == null){
+			result = gCommon.getConfigDataAjax(G_GLOBAL);
+			result.isExists = false;
+		}else{
+			result.isExists = true;
+		}
+		return result;
+	}	
+	this.getConfigDataAjax = function(namespace){
+		var result = null;
+		$a.ajax({
+			url : '/zdbapi/getZDBConfig',
+			async:false,
+			data : {
+				namespace : namespace
+			},
+			success : function(res) {
+				var list = res.zdbConfig || [];
+				
+				if(list.length == 0){
+					result = null;
+				}else{
+					result = {};
+					for(var i = 0 ; i < list.length;i++){
+						var ob = list[i];
+						if(gConfigColumn.indexOf(ob.config) > -1){
+							result[ob.config] = ob.value;	
+						}
+					}
+				}
+			}
+		});	
+		return result;
+	}
 	this.copyToClipboard = function(selector) {
 		if(!selector)return;
 		if(selector.val()==''){

@@ -38,6 +38,7 @@ import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
+import com.zdb.core.domain.ZDBConfig;
 
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.client.dsl.PodResource;
@@ -462,14 +463,45 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 
-	public String[] getZDBConfig(Map<String, String> param) {
-		String[] result = {};
+	public List<ZDBConfig> getZDBConfig(Map<String, String> param) {
+		List<ZDBConfig> result = Collections.emptyList();
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_ZDB_CONFIG,ZdbRestDTO.class,param);
 		
 		if(zdbRestDTO!=null) {
 			result = zdbRestDTO.getResult().getZdbConfig();
 		};
 		return result;
+	}
+
+	public ZdbRestDTO createZDBConfig(Map<String, String> param) {
+		StringBuffer template = new StringBuffer();
+		Pattern expr = Pattern.compile(ApiTemplate.MATCHER_PATTERN);
+		Matcher mat = expr.matcher(ApiTemplate.getUpdateZDBConfig());
+		while (mat.find()) {
+			mat.appendReplacement(template, StringUtil.doubleQuote(param.get(mat.group(1))));
+		};
+		mat.appendTail(template);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> entity = new HttpEntity<>(template.toString(), headers);
+		return connector.exchange(apiServer + URIConstants.URI_CREATE_ZDB_CONFIG, HttpMethod.POST, entity,  ZdbRestDTO.class,param).getBody();
+	}
+	
+	public ZdbRestDTO updateZDBConfigs(Map<String, String> param) {
+		StringBuffer template = new StringBuffer();
+	    Pattern expr = Pattern.compile(ApiTemplate.MATCHER_PATTERN);
+		Matcher mat = expr.matcher(ApiTemplate.getUpdateZDBConfig());
+		while (mat.find()) {
+			mat.appendReplacement(template, StringUtil.doubleQuote(param.get(mat.group(1))));
+		};
+		mat.appendTail(template);
+		
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
+	    HttpEntity<String> entity = new HttpEntity<>(template.toString(), headers);
+	    
+		return connector.exchange(apiServer + URIConstants.URI_UPDATE_ZDB_CONFIGS, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();
 	}
 }
 
