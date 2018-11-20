@@ -126,13 +126,16 @@
 		var gConfigData = null;
 		$a.page(function() {
 			this.init = function() {
-				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
+				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAdminAll:true})
 						.addHandler(function(e) {
 							gCommon.setSelectedNamespace(e.currentTarget.id);
 							fn_getZDBConfig();
 						}).select({
 							id : gSelectedNamespace
 						});
+				if(gNamespaces.text()==''){
+					gNamespaces.select(0);
+				};	
 				
 				gForm.find('div.onoff-wrap > button').click(function(e){	
 					fn_setOnOff($(this).data('target'),''+$(this).hasClass('btn-off'));

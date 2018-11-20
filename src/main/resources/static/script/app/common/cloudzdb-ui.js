@@ -161,7 +161,7 @@ var gCommon = $a.page(function(){
 	//네임스페이스 제외 
 	var hardFilterList = ['default','ibm-cert-store','ibm-system','kube-public','kube-system'];
 	this.getNamespaceCombo = function(selector,options){
-		var defOpt = {incAll:true};
+		var defOpt = {incAll:true,incAdminAll:false};
 		var opt = $.extend({},defOpt,options);
 		$a.ajax({
 			url: '/zdbapi/getNamespaces',
@@ -180,7 +180,14 @@ var gCommon = $a.page(function(){
 							text:ob.metadata.name
 						});
 					};
-					if(opt.incAll){
+					if(opt.incAdminAll){//admin일 경우에만 전체 보이도록 
+						if(gIsAdmin){
+							namespaceList.push({
+								id:G_NAMESPACE_ALL,
+								text:'전체'
+							});
+						}
+					} else if(opt.incAll){
 						namespaceList.push({
 							id:G_NAMESPACE_ALL,
 							text:'전체'

@@ -41,6 +41,12 @@
 		}
 	});
 	</script>
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		var gUserId = [[${session.userInfo.userId}]];
+		var gIsAdmin = ([[${session.userInfo.accessRole}]]) == 'cluster-admin';
+		/*]]>*/
+	</script>
 	
 </head>
 <body th:fragment="mainBody">

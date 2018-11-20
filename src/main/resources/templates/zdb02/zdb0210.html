@@ -23,8 +23,6 @@
 		/*<![CDATA[*/
 		var gApiServerUrl = [[${@environment.getProperty('zdb-api-server.url')}]];
 		var gGrafanaUrl = [[${@environment.getProperty('grafana.url')}]];
-		var gUserId = [[${session.userInfo.userId}]];
-		var gIsAdmin = ([[${session.userInfo.accessRole}]]) == 'cluster-admin';
 		/*]]>*/
 	</script>
 	<script type="text/javascript" src="/script/app/common/cloudzdb-ui-z0200.js"></script>
