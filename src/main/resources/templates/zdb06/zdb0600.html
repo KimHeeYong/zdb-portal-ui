@@ -163,13 +163,11 @@
 				function fn_saveConfigData(){
 					gCommon.confirm('저장 하시겠습니까?',function(res){
 						if(gConfigData.isExists){
-							method = 'PUT';
 							url = '/zdbapi/updateZDBConfigs';
 						}else{
-							method = 'POST';
 							url = '/zdbapi/createZDBConfig';
 						}
-						var method = gIsUpdate ? 'PUT' : 'POST';
+						var method = gConfigData.isExists ? 'PUT' : 'POST';
 						var data = gForm.serializeObject();
 						data.namespace = gSelectedNamespace == G_NAMESPACE_ALL ? G_GLOBAL : gSelectedNamespace;
 						data.backup_time = moment(gForm.find('#backup_time').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
@@ -179,8 +177,10 @@
 							method:method,
 							data : data,
 							success : function(res) {
-								console.log(res);
-								
+								if(res.result && res.result.code=='0'){
+									gCommon.alert(res.result.message);
+									gConfigData = gCommon.getConfigData();
+								}
 							}
 						});
 					});

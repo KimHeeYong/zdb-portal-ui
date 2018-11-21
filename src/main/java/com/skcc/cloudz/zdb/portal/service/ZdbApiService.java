@@ -483,7 +483,7 @@ public class ZdbApiService{
 		mat.appendTail(template);
 		
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 		HttpEntity<String> entity = new HttpEntity<>(template.toString(), headers);
 		return connector.exchange(apiServer + URIConstants.URI_CREATE_ZDB_CONFIG, HttpMethod.POST, entity,  ZdbRestDTO.class,param).getBody();
 	}
@@ -492,13 +492,14 @@ public class ZdbApiService{
 		StringBuffer template = new StringBuffer();
 	    Pattern expr = Pattern.compile(ApiTemplate.MATCHER_PATTERN);
 		Matcher mat = expr.matcher(ApiTemplate.getUpdateZDBConfig());
+		
 		while (mat.find()) {
 			mat.appendReplacement(template, StringUtil.doubleQuote(param.get(mat.group(1))));
 		};
 		mat.appendTail(template);
 		
 	    HttpHeaders headers = new HttpHeaders();
-	    headers.setContentType(MediaType.APPLICATION_JSON);
+	    headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 	    HttpEntity<String> entity = new HttpEntity<>(template.toString(), headers);
 	    
 		return connector.exchange(apiServer + URIConstants.URI_UPDATE_ZDB_CONFIGS, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();

@@ -89,7 +89,7 @@
 			<li data-content="#tabMonitor">모니터링</li>
 			<li data-content="#tabBackup">백업</li>
 			<li data-content="#tabEvent">이벤트</li>
-			<li data-content="#tabUser">사용자</li>
+			<li data-content="#tabUser" th:if="${#request.getParameter('serviceType')!='redis'}">사용자</li>
 			<li data-content="#tabSystem">환경설정</li>
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
@@ -158,7 +158,7 @@
 					               	</td>                  
 				                </tr>
 			                </tbody>
-			                <tbody class="publicConnectionInfo">
+			                <tbody class="publicConnectionInfo publicNetworkTbody hide">
 								<tr>                                                                                                 
 					               	<th rowspan="2">Public Network</th>                                                                       
 					               	<td>       
@@ -198,7 +198,7 @@
 					               	</td>                  
 				                </tr>
 			                </tbody>
-			                <tbody class="publicConnectionInfoNone">
+			                <tbody class="publicConnectionInfoNone publicNetworkTbody hide">
 								<tr>                                                                                                 
 					               	<th>Public Network</th>                                                                       
 					               	<td>       
@@ -738,6 +738,7 @@
 	var gService = null;
 	var gTagList = [];
 	var gServiceScale = {};//scaleUp value
+	var gConfigData = null;
 	$a.page(function() {
 		
 		this.init = function() {
@@ -749,6 +750,7 @@
 									  gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
 		   						  });
 			$('.Accordion').expandAll();
+			gConfigData = gCommon.getConfigData();
 			var data = {
 					namespace:gParam.namespace,
 					serviceType:gParam.serviceType,
@@ -1078,7 +1080,10 @@
 								$('input[name='+ob.connectionType+ob.role+'ConnectionLine]').val(ob.connectionLine).attr('data-origin',ob.connectionLine);
 							};
 						};
-						if(gService.publicEnabled != true){
+
+						if(gConfigData.public_network_enabled == 'false'){
+							$('tbody.publicNetworkTbody').hide();
+						}else if(gService.publicEnabled != true){
 							$('.publicConnectionInfo').hide();
 							$('.publicConnectionInfoNone').show();
 						}else{

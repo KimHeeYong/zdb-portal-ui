@@ -181,7 +181,7 @@ $a.page(function() {
 			serviceName:gParam.serviceName,
 			exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
 			backupEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
-			clusterEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
+			clusterEnabledStr:(gParam.clusterEnabled=='true'?'사용':'미사용'),
 			storageClassStr:(gStorageClassConstants[gParam.storageClass])
 		});
 		
