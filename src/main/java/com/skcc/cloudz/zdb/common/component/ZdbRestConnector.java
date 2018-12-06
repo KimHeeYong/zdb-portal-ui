@@ -116,7 +116,4 @@ public class ZdbRestConnector extends RestTemplate{
 			headers.set("defaultNamespace", userInfo.getDefaultNamespace());
 		}
 	}
-	private String txId() {
-		return UUID.randomUUID().toString();
-	}
 }
