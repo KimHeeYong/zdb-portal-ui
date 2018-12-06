@@ -89,7 +89,7 @@
 			<li data-content="#tabMonitor">모니터링</li>
 			<li data-content="#tabBackup">백업</li>
 			<li data-content="#tabEvent">이벤트</li>
-			<li data-content="#tabUser" th:if="${#request.getParameter('serviceType')!='redis'}">사용자</li>
+			<li data-content="#tabUser">사용자</li>
 			<li data-content="#tabSystem">환경설정</li>
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
@@ -1119,16 +1119,18 @@
 				if(!isStatusGreen && tabDisList.indexOf($('#zdbServiceTabs').getCurrentTabContent().replace('#','')) > 0){  
 					$('#zdbServiceTabs').setTabByContent('#tabService');
 				};
-				 //redis purpose data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
+				 //redis - user탭 삭제, purpose - data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
 				if(gService.serviceType == G_SERVICE_TYPE_REDIS){
 					
+					let delTab = ['tabUser'];
 					if(gService.purpose != 'DATA'){
-						for(var ti = 0; ti < $('#zdbServiceTabs').getLength(); ti++ ){
-							if($('#zdbServiceTabs').getTabContentByIndex(ti).id == 'tabBackup'){
-								$('#zdbServiceTabs').removeTab(ti);
-							};
-						};
 						$('#tabSystem #divAdvancedConfig').hide();
+						delTab.push('tabBackup');
+					};
+					for(var ti = 0; ti < $('#zdbServiceTabs').getLength(); ti++ ){
+						if(delTab.indexOf($('#zdbServiceTabs').getTabContentByIndex(ti).id) > -1){
+							$('#zdbServiceTabs').removeTab(ti);
+						};
 					};
 					
 					if(gService.clusterEnabled != true){
