@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +13,21 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.skcc.cloudz.zdb.common.security.service.SecurityService;
 import com.skcc.cloudz.zdb.common.security.vo.OpenIdConnectUserDetailsVo;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
+import com.zdb.core.domain.IResult;
+import com.zdb.core.domain.Result;
 
 @Component
 public class ZdbRestConnector extends RestTemplate{
@@ -53,6 +58,14 @@ public class ZdbRestConnector extends RestTemplate{
 		} catch (HttpStatusCodeException e) {
 			ZdbRestDTO resultMap = new Gson().fromJson(e.getResponseBodyAsString(), ZdbRestDTO.class);
 			result = new ResponseEntity(resultMap, e.getStatusCode());
+		} catch(ResourceAccessException e) {
+			throw new ResourceAccessException("API서버 연결 중 오류가 발생하였습니다."); 
+		} catch(Exception e) {
+			try {
+				throw new Exception("알수 없는 오류가 발생 하였습니다.");
+			} catch (Exception e1) {
+				
+			}
 		}
 		
 		return result;
@@ -103,5 +116,4 @@ public class ZdbRestConnector extends RestTemplate{
 			headers.set("defaultNamespace", userInfo.getDefaultNamespace());
 		}
 	}
-	
 }
