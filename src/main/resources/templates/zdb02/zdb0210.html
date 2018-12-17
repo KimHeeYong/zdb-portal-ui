@@ -54,6 +54,7 @@
 		</div>
 		<div class="Panel service-panel">
 			<div class="Panel-content">
+				<div style="float: left;word-break:break-all;font-size: 14px;" id="divInfoMsg"></div>
 				<div class="config-wrap" th:if="${session.userInfo.accessRole=='cluster-admin'}" >
 					<button class="btn-ico btn-refresh" id="restartService" title="재시작">재시작 </button>
 					<button class="Button btn-ico__typeb btn-trash" id="deleteService" title="삭제">삭제</button>
@@ -801,7 +802,7 @@
 			$('#deleteService').on('click',function(){
 			    $a.popup({
 			        url: "/zdb02/zdb0200p03",
-			        data:{credential:$("#credential").val()},
+			        data:{credential:$("#credential").val(),msg:'서비스를 삭제하시려면',okBtnMsg:'삭제'},
 			        iframe: false,
 			        width: 500,
 			        height: 300,
@@ -822,19 +823,26 @@
 			    });
 			});
 			$('#restartService').on('click',function(){
-				gCommon.confirm('서비스를 재시작 하시겠습니까?',function(res){
-					$a.ajax({
-						url: '/zdbapi/restartService',
-						data : data,
-						success: function(res){
-							if(res.result.code=='4'){
-								gCommon.alert(res.result.message);
-								return;
-							};
-							//fn_getService();	
-						}
-					});
-				});
+			    $a.popup({
+			        url: "/zdb02/zdb0200p03",
+			        data:{credential:$("#credential").val(),msg:'서비스를 재시작 하시려면',okBtnMsg:'재시작'},
+			        iframe: false,
+			        width: 500,
+			        height: 300,
+			        movable:true,
+			        title : '',
+			        callback : function(res){
+			        	if(res == "Y"){
+							$a.ajax({
+								url: '/zdbapi/restartService',
+								data:data,
+								success: function(res){
+									gCommon.alert('재시작 요청이 완료 되었습니다.');
+								}
+							})
+			        	};
+			        }
+			    });		
 			});
 			//서비스 목록내 태그 삭제
 			$('body').on('click','button.tagDel',function(){
@@ -920,18 +928,6 @@
 						}else if(data.status == 'red'){
 							re = '<button class="btn-ico del" title=""></button>';
 						}
-						/*
-						if(!data.condition){
-							re = '<i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:#c09853;padding-top:5px;font-size:1.3em"></i>';
-						}else if(data.condition && data.condition.status == 'True'){
-							re = '<button class="Button btn-ico btn-config__save"></button>';
-						}else{
-							if(data.colspanCol != true){
-								re = '<button class="btn-ico del"></button>';
-							}
-						};
-						
-						*/
 						return re;
 					}},
 					{ title:'Name', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
@@ -998,25 +994,36 @@
 			});
 			
 			function fn_restartPod(data){
-				gCommon.confirm('재시작 하시겠습니까?',function(){
-					var param = {
-							serviceType:gService.serviceType,
-							namespace:gService.namespace,
-							serviceName:gService.serviceName,
-							podName:data.name
-					}
-					$a.ajax({
-						url: '/zdbapi/restartPod',
-						data:param,
-						success: function(res){
-							if(res.result.code=='4'){
-								gCommon.alert(res.result.message);
-								return;
-							};
-							gCommon.alert('재시작 요청 하였습니다.');
-						}
-					});
-				});
+			    $a.popup({
+			        url: "/zdb02/zdb0200p03",
+			        data:{credential:$("#credential").val(),msg:'재시작 하시려면',okBtnMsg:'재시작'},
+			        iframe: false,
+			        width: 500,
+			        height: 300,
+			        movable:true,
+			        title : '',
+			        callback : function(res){
+			        	if(res == "Y"){
+							var param = {
+									serviceType:gService.serviceType,
+									namespace:gService.namespace,
+									serviceName:gService.serviceName,
+									podName:data.name
+							}
+							$a.ajax({
+								url: '/zdbapi/restartPod',
+								data:param,
+								success: function(res){
+									if(res.result.code=='4'){
+										gCommon.alert(res.result.message);
+										return;
+									};
+									gCommon.alert('재시작 요청 하였습니다.');
+								}
+							});
+			        	};
+			        }
+			    });				
 			}
 			function fn_viewLog(data){
 				window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
@@ -1102,6 +1109,18 @@
 			};
 
 			function fn_getServiceCallback(){
+				if(gService.status != 'green'){
+					let infoMsg = $('#divInfoMsg');
+					let msg = gService.statusMessage||'';
+					let t = $('<div class="Tooltip"></div>').html(msg);
+					infoMsg.after(t);
+					$a.convert(t);
+					let m = msg.split('</br>');
+					if(m && m.length > 1){
+						msg = m[0]+'</br>'+m[1];
+					}
+					infoMsg.html(msg);
+				}
 				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정)설정
 				var tabDisList = ['tabScale','tabBackup','tabUser','tabSystem']; 
 				if(gService.serviceType == G_SERVICE_TYPE_MARIA){ //mariadb 면 tabSystem 이동되도록

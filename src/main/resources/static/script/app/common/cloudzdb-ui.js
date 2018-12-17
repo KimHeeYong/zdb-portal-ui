@@ -180,6 +180,10 @@ var gCommon = $a.page(function(){
 							text:ob.metadata.name
 						});
 					};
+					namespaceList.push({
+						id:'gdi-dwp-dp-prod',
+						text:'gdi-dwp-dp-prod'
+					})
 					if(opt.incAdminAll){//admin일 경우에만 전체 보이도록 
 						if(gIsAdmin){
 							namespaceList.push({
