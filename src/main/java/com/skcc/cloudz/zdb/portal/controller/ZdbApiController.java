@@ -53,7 +53,7 @@ public class ZdbApiController {
 		
 		List<Namespace> namespaces = zdbApiService.getNamespaces(param); 
 		if(namespaces == null || namespaces.size() < 1) {
-			throw new ZdbPortalException("네임 스페이스가 존재하지 않습니다.");
+			throw new ZdbPortalException("네임스페이스가 존재하지 않습니다.<br>네임스페이스 등록 및 권한 할당이 필요합니다.");
 		}
 		mav.addObject(IResult.NAMESPACES ,namespaces);
 		return mav;
