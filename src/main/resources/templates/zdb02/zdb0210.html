@@ -943,8 +943,25 @@
 						};
 						return re;
 					}},
-					{ title:'Replicas', key : 'replicas' , width: '60px', align: 'center'},
-					{ title:'Role', key : 'role' , width: '100px', align: 'center'},
+					{ title:'Replicas', key : 'replicas' , width: '65px', align: 'center'},
+					{ title:'Role', key : 'role' , width: '90px', align: 'center'},
+					{ title:'', key : '' , width: '30px', align: 'center', render : function(value, data){
+						if(data.svc != '') {
+							return ' ➞ ';
+						} else {
+							return '';
+						}						
+					}},
+					{ title:'Service LB', key : '' , width: '100px', align: 'center', render : function(value, data){
+						if(data.svc != '') {
+							if(data.serviceType == 'redis') {
+								return data.svc.spec.selector.role;
+							} else if(data.serviceType == 'mariadb') {
+								return data.svc.spec.selector.component;
+							}
+						} 
+						return '';
+					}},
 					{ title:'Node', key : 'node' , width: '130px', align: 'center'},
 					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
 					{ title:'Memory(Mi)', key : 'memory' , width: '120px', align: 'center'},
@@ -1189,7 +1206,7 @@
 							else if(pod.metadata.labels.role == 'slave'){
 								role = 'slave(readOnly)'; 
 							}else{
-								role = pod.metadata.labels.role
+								role = pod.metadata.labels.role;
 							}
 						}else{
 							role = pod.metadata.labels.component;
@@ -1252,40 +1269,71 @@
 				}(podData));
 				//error row 임의 생성
 				var tList = [];
-
+				
+				var services = gService.services;
 				var statefulSets = gService.statefulSets;
+				
 				for(var i = 0 ; i < statefulSets.length; i++){
 					var statefulSet = statefulSets[i];
 					var replicas = statefulSet.spec.replicas;
 					var role = ""; 
+					var svc = "";
 					if(gService.serviceType == 'redis'){
 						if(statefulSet.metadata.labels.role == "metrics")continue;
 						else if(statefulSet.metadata.labels.role == 'slave'){
 							role = 'slave(readOnly)'; 
 						}else{
-							role = statefulSet.metadata.labels.role
+							role = statefulSet.spec.selector.matchLabels.role;
 						}
 					}else{
 						role = statefulSet.metadata.labels.component;
 					};		
+
+					for(var j = 0 ; j < services.length; j++){
+						var service = services[j];
+						var svc_role = '';
+						if(gService.serviceType == 'redis'){
+							if( service.metadata.name.endsWith('master') ) {
+								svc_role = 'master';
+							} else if( service.metadata.name.endsWith('slave') ) {
+								svc_role = 'slave';
+							}
+						} else if(gService.serviceType == 'mariadb'){
+							svc_role = service.metadata.labels.component
+						}
+						
+						if(role == svc_role) {
+							svc = service;
+							break;
+						}
+						
+					}
+					
+					var pod = null;
+					
 					var dt = {
 							isPod:false,
 							status: (replicas > 0 && replicas == statefulSet.status.readyReplicas ? 'green' : 'red'),
 							name:statefulSet.metadata.name,
 							replicas:replicas,
 							role: role,
+							svc: svc,
+							serviceType: gService.serviceType,
 							cpu:gServiceScale.cpu,
 							memory:gServiceScale.memory,
 							colspanCol:false
 						};
-					var pod = null;
+
 					if(dt.status == 'green') {
 						pod = gCommon.findObjectByKeyOb(podData,{stName:dt.name});
 					}
+					
 					if(pod != null){
 						pod.status = dt.status;
 						pod.role = dt.role;
+						pod.svc = dt.svc;
 						pod.replicas=dt.replicas;
+						pod.serviceType = gService.serviceType;
 						tList.push(pod);
 						if(pod.condition && pod.condition.status != 'True'){ 
 							var tPod = $.extend({},pod,{colspanCol:true})
@@ -1295,6 +1343,86 @@
 						tList.push(dt);
 					}
 				};
+				
+				
+				////redis////////////////////////////////
+				var deployments = gService.deployments;
+				
+				for(var i = 0 ; i < deployments.length; i++){
+					var deployment = deployments[i];
+					var replicas = deployment.spec.replicas;
+					var role = ""; 
+					var svc = "";
+					if(gService.serviceType == 'redis'){
+						if(deployment.metadata.labels.role == "metrics")continue;
+						else if(deployment.metadata.labels.role == 'slave'){
+							role = 'slave(readOnly)'; 
+						}else{
+							role = deployment.spec.selector.matchLabels.role;
+						}
+					}		
+
+					for(var j = 0 ; j < services.length; j++){
+						var service = services[j];
+						var svc_role = '';
+						if(gService.serviceType == 'redis'){
+							if( service.metadata.name.endsWith('master') ) {
+								svc_role = 'master';
+							} else if( service.metadata.name.endsWith('slave') ) {
+								svc_role = 'slave';
+							}
+						} 
+						
+						if(role == svc_role) {
+							svc = service;
+							break;
+						}
+					}
+					
+					var pod = null;
+					
+					var dt = {
+							isPod: false,
+							status: (replicas > 0 && replicas == deployment.status.readyReplicas ? 'green' : 'red'),
+							name: deployment.metadata.name,
+							replicas: replicas,
+							role: role,
+							svc: svc,
+							serviceType: gService.serviceType,
+							cpu: gServiceScale.cpu,
+							memory: gServiceScale.memory,
+							colspanCol:false
+						};
+
+					if(dt.status == 'green') {
+						//pod = gCommon.findObjectByKeyOb(podData, {stName:dt.name});
+						
+						for(var k = 0 ; k < podData.length; k++){
+							var p = podData[k];
+							if(p.name.startsWith(dt.name)) {
+								pod = p;
+								
+								break;
+							}
+						}
+					}
+					
+					if(pod != null){
+						pod.status = dt.status;
+						pod.role = dt.role;
+						pod.svc = dt.svc;
+						pod.replicas=dt.replicas;
+						pod.serviceType = gService.serviceType;
+						tList.push(pod);
+						if(pod.condition && pod.condition.status != 'True'){ 
+							var tPod = $.extend({},pod,{colspanCol:true})
+							tList.push(tPod);
+						};
+					} else {
+						tList.push(dt);
+					}
+				};
+				////////////////////////////////////
 				
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset 
 				//tabService end
