@@ -56,7 +56,7 @@
 		<h1 class="logo"><img src="/styles/images/cloudzlogo.png" alt="CLOUD Z Database"></h1>
 		<!-- utils -->
 		<div class="header-utils">
-			<a class="user" th:text="${session.userInfo.username}"></a>
+			<a class="user" th:text="${session.userInfo.firstName}"></a>
 			<div class="user-menus">
 				<ul class="dropmenu-list">
 					<li class="selected"> <a th:href="${@environment.getProperty('cloudzcp.url')} + |/my/profile|"> 나의 정보<span class="newpop"></span></a></li>
