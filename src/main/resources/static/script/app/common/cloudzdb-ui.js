@@ -92,7 +92,8 @@ var gCommon = $a.page(function(){
 					if(res && res.result && (res.result.resultCode == 'exception')){
 						gCommon.alert(res.result.resultMessage);							
 					}else if(res && res.result && (res.result.code == 4)){
-						gCommon.alert(res.result.message);
+                        //gCommon.alert(res.result.message);
+                        opt.success(res);
 					}else{
 						opt.success(res);
 					}
@@ -210,7 +211,7 @@ var gCommon = $a.page(function(){
 		var result = gCommon.getConfigDataAjax(namespace);
 		if(result == null){
 			result = gCommon.getConfigDataAjax(G_GLOBAL);
-			result.isExists = false;
+			if(result) result.isExists = false;
 		}else{
 			result.isExists = true;
 		}
@@ -319,9 +320,12 @@ var gCommon = $a.page(function(){
 	        }
 	    });
 	};
+	let isAlertPopExists = false;
 	this.alert = function(message,fnCallback){
+		if(isAlertPopExists)return;
 		gPopData = {};
 		gPopData.message = message;
+		isAlertPopExists = true;
 	    $a.popup({
 	        url: "/zdbcom/alert",
 	        data:message,
@@ -330,6 +334,7 @@ var gCommon = $a.page(function(){
 	        height: 230,
 	        title : '',
 	        callback: function(){
+	        	isAlertPopExists = false;
 	        	if(fnCallback){
 	        		fnCallback();
 	        	}

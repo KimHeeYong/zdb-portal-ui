@@ -441,6 +441,17 @@ public class ZdbApiController {
 		
         return result;
 	}
+	
+	@RequestMapping(value = "restoreFromBackup")
+	public ModelAndView restoreFromBackup(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.restoreFromBackup(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		
+		return mav;
+	}
 
 	@RequestMapping(value = "getZDBConfig")
 	public ModelAndView getZDBConfig(HttpServletRequest request) {

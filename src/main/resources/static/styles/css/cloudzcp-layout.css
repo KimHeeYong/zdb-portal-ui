@@ -2054,6 +2054,16 @@ a.view-detail:active {
 	font-size: 1.07rem;
 	color: #666666;
 }
+.info-list .Divselect,
+.info-list .Divselect:hover,
+.info-list .Divselect:active {
+	width: 150px;
+	height: 36px;
+	line-height: 28px;
+	border-color: #888888;
+	vertical-align: middle;
+	line-height: 1.6;
+}
 .config-title {
 	float: left;
 	margin-right: 6px;

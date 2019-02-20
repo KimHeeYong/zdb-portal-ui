@@ -52,6 +52,24 @@ var cloudUtil = {
 			size = size+"Ki";
 		}
 		return size;
+    },//올바른 정규식 형태인지 체크
+	checkRegExp:function(val){ 
+		var isRegExp = true;
+		try{
+			new RegExp(val);
+		}catch(e){
+			isRegExp = false
+		}
+		return isRegExp;
+	}, 
+	dtFormat:function(val,optVal){
+		let dfOpt = {
+			fromFormat:	'YYYYMMDDHHmmss',
+			toFormat:'YYYY-MM-DD HH:mm:ss'
+		}
+		let opt = $.extend({},dfOpt,optVal);
+		let isValid = moment(val,opt.fromFormat).isValid();
+		return isValid ? moment(val,opt.fromFormat).format(opt.toFormat) : '';
 	}
 }
 

@@ -398,22 +398,23 @@
            	<!-- tab contents info detail-->
          	<form name="backupForm" method="post">
            	<div class="ctn-info__wrap">
-         		<div class="info-list">
+         		<div class="mr30 info-list">
          			<span class="config-title">백업설정 :</span>
 					<div class="onoff-wrap"><button class="Button btn-off">OFF</button></div>
 					<div class="hide">
 						<select name="useYn"> <option value="Y">Y</option> <option value="N">N</option> </select>
 					</div>									
 				</div>
-				<div class="info-list" style="margin-right:0px;"><span class="config-title">보관기간:</span> 
+				<div class="mr30 info-list"><span class="config-title">보관기간:</span> 
 					<div class="Spinner" data-min="0" data-max="60" data-step="1" id="storePeriodSpinner">
 					    <input id="storePeriod" name="storePeriod" value="1" style="width:80px;">
 					    <a class="Up"></a>
 					    <a class="Down"></a>
 					</div>
+					<span class="fr">일</span>
 				</div>
-				<span class="info-list">일</span>
-				<div class="info-list"><span class="config-title"> 백업 시간:</span>
+				<div class="mr30 info-list">
+					<span class="config-title">전체 백업 시간:</span>
 					<div class="Spinner Time" data-locale="en" id="startTime" data-hours="24H" data-bind="time:date">
 					    <input data-hour>
 					    <span data-seperator>:</span>
@@ -423,14 +424,29 @@
 					    <a class="Down"></a>
 					</div>
 				</div>
-				<div class="info-list">
+				<div class="mr30 info-list">
+					<span class="config-title">증분 백업:</span>
+					<div class="Divselect" id="incrementPeriod" name="incrementPeriod">
+						<select>
+							<option value="0">미사용</option>
+							<option value="1">1시간</option>
+							<option value="2">2시간</option>
+							<option value="6">6시간</option>
+							<option value="12">12시간</option>
+						</select>
+						<span></span>
+					</div>
 					<button class="Button btn bg-red Disabled" id="saveSchedule">수정</button>
 				</div>
-				<div class="info-list__select">
+				<div class="info-list__select">	
 					<button class="Button btn" id="updateBackup">지금 백업하기</button>
 					<button class="Button btn" id="searchBackup">조회</button>
-				</div>
+				</div>	
           	</div>					
+           	<div class="info-list__select mt10" >
+           		<input class="Checkbox" type="checkbox" id="backupSearchType" checked="checked"/>증분백업포함
+				<!-- button class="Button btn-search" id="searchBackup">검색</button-->
+           	</div>
           	</form>
            	<!-- grid -->
             <div id="gridBackup" class="grid grid-line__wrap dash"></div>
@@ -1732,7 +1748,9 @@
 			backupForm.find('#searchBackup').on('click',function(){
 				fn_getBackupInfo();
 			});
-
+			backupForm.find('#backupSearchType').on('change',function(e){
+				fn_filterBackupInfo();
+			});
 			//on off button
 			backupForm.find('.onoff-wrap > button').click(function(e){
 				e.preventDefault();
@@ -1784,9 +1802,11 @@
 				if(val=='Y'){
 					backupForm.find('#storePeriodSpinner').setEnabled(true);
 					backupForm.find('#startTime').setEnabled(true);
+					backupForm.find('#incrementPeriod').setEnabled(true);
 				}else{
 					backupForm.find('#storePeriodSpinner').setEnabled(false);
 					backupForm.find('#startTime').setEnabled(false);
+					backupForm.find('#incrementPeriod').setEnabled(false);
 				}
 			};
 			$('#gridBackup').alopexGrid({
@@ -1795,25 +1815,32 @@
 				fitTableWidth :true,
 				height: 400,
 				columnMapping : [
-					{ title:'백업종류', key : 'scheduleYn' , width: '100px', align: 'center',render:function(value,data,render,mapping){
-						var t = value=='Y' ? '예약백업' : '즉시백업';
+					{ title:'백업종류', key : 'type' , width: '100px', align: 'center',render:function(value,data,render,mapping){						
+						let t = '';
+						switch(value){
+						    case 'INCR':
+						    	t = '증분백업';
+						    	break;
+						    case 'FULL':
+						    	t = '전체백업';
+						    	break;
+						    default :
+						    	t = '즉시백업'
+						    	break;
+						}
 						return '<button class="Button gridbtn btn">'+t+'</button>';
 					}},
 					{ title:'요청시간', key : 'acceptedDatetime' , width: '130px', align: 'center',render:function(value,data,render,mapping){
-						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
-						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
+						return cloudUtil.dtFormat(value);
 					}},
 					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
-						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
+						return cloudUtil.dtFormat(value);
 					}},
 					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
-						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
+						return cloudUtil.dtFormat(value);
 					}},
 					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
-						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
+						return cloudUtil.dtFormat(value);
 					}},
 					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
 						var val = '';
@@ -1831,7 +1858,8 @@
 						return re;
 					}},
 					{ title:'다운로드', key : 'archiveFileSize' , width: '90px', align: 'center',render:function(value,data,render,mapping){
-						var re = $('<button class="Button btn-download '+(data.status != 'OK'?'Disabled':'')+'">다운로드</button>').on('click',function(){
+						let t = cloudUtil.isEmpty(data.type)? '다운로드' : '복원';
+						var re = $('<button class="Button btn-download '+(data.status != 'OK'?'Disabled':'')+'">'+t+'</button>').on('click',function(){
 							fn_downloadBackupFile(data);
 						});
 						return re;
@@ -1929,11 +1957,13 @@
 					data:param,
 					success: function(res){
 						if(res.result.code=='4'){
-							gCommon.alert(res.result.message);
+							gCommon.alert(res.result.message,function(){
+								fn_getBackupScheduleInfo();
+							});
 							return;
 						};
 						gCommon.alert('백업 설정이 수정되었습니다.',function(){
-							fn_getBackupScheduleInfo()
+							fn_getBackupScheduleInfo();
 						});
 					}
 				});	
@@ -1945,9 +1975,17 @@
 					success: function(res){
 						var list = res.backupList;
 						$('#gridBackup').alopexGrid('dataSet',list);
+						fn_filterBackupInfo();
 					}
 				});				
 			};	
+			function fn_filterBackupInfo(){
+				$('#gridBackup').alopexGrid('setFilter', 'backupFilter', function(){
+					if($('#backupSearchType').is(':checked') == true){
+						return true;
+					}
+				});
+			}
 			function fn_deleteBackupFile(data){
 				if(data.status!='OK')return;
 				gCommon.confirm('선택한 백업을 삭제 하시겠습니까?',function(){
@@ -1968,8 +2006,38 @@
 			};
 			function fn_downloadBackupFile(data){
 				if(data.status!='OK')return;
-				var param = $.extend({},gParam,{backupId:data.backupId})
-				gCommon.movePage('/zdbapi/downloadBackup',param);
+				let isDownload = cloudUtil.isEmpty(data.type);
+				let param = $.extend({},gParam,{backupId:data.backupId})
+				if(isDownload){
+					gCommon.movePage('/zdbapi/downloadBackup',param);
+				}else{
+					$a.popup({
+				        url: "/zdb02/zdb0200p03",
+				        data:{credential:$("#credential").val(),
+				        	  msg:'서비스를 (' + cloudUtil.dtFormat(data.acceptedDatetime) + ')시점으로 복원 하시려면',
+				        	  okBtnMsg:'복원'},
+				        iframe: false,
+				        width: 550,
+				        height: 300,
+				        movable:true,
+				        title : '',
+				        callback : function(res){
+				        	if(res == "Y"){
+								$a.ajax({
+									url: '/zdbapi/restoreFromBackup',
+									data:data,
+									success: function(res){
+										if(res.result.code == '4'){
+											gCommon.alert(res.result.message);
+										}else{
+											gCommon.alert('복원 요청이 완료 되었습니다.');
+										}
+									}
+								})
+				        	};
+				        }
+				    });					
+				}
 			};
 			/* tabBackup end backup */
 			
@@ -1999,8 +2067,7 @@
 						return re;
 					}},
 					{ title:'일시', key : 'endTime' , width: '140px', align: 'left',render:function(value){
-						var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
-						return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '';
+						return cloudUtil.dtFormat(value);
 					}},
 					{ title:'이벤트', key : 'operation' , width: '100px', align: 'left'},
 					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',tooltip:false,render: {type: "evtMsgTooltip"}},
