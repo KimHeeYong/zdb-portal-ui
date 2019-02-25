@@ -100,6 +100,7 @@
 				<li>
 					<h3 class="form-title">Connection</h3>
 					<div class="accor-contents__wrap">
+						<form name="formService">
 						<table id="connectionInfoTable" class="Table Form-type">
 							<colgroup>
 								<col style="width: 200px;"> </col>
@@ -119,7 +120,12 @@
 								</tr>
 								<tr>
 									<th> 접속포트</th>
-									<td data="port"></td>
+									<td data="port" th:if="${#request.getParameter('serviceType')} == 'redis'"> </td>
+									<td th:if="${#request.getParameter('serviceType')} != 'redis'">
+										<input type="text" class="Textinput" name="port" id="port">
+										<button class="Button line-btn" id="portUpdate">변경</button>
+										<p data-for="port" class="warn-text"></p>
+									</td>
 								</tr>
 								<tr>                                                                                                 
 					               	<th rowspan="2">Private Network</th>      
@@ -137,6 +143,15 @@
 						               		<input type="text" class="Textinput" name="privatemasterConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                         
 						               	</div>
+						               	<div class="fl hide" id="divFailoverArea">
+            				           		<div id="divFailoverBtn" class="hide">
+							               		<button class="Button btn">Failover</button>
+						               			<span class="Tooltip hide">Master DB가 장애로 서비스가 불가능한 상태가 되면,<br/> failover를 수행하여 slave DB를 master DB로 승격시켜<br/> 서비스 다운타임을 최소화 합니다.</span>
+						               		</div>
+						               		<div id="divFailbackBtn" class="hide">
+						               			<button class="Button btn">Failback</button>
+						               		</div>
+						               	</div>	
 						               	<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
 					               	</td>                                                                                         
 				                </tr>
@@ -208,6 +223,34 @@
 				                </tr>
 			                </tbody>
 						</table>
+						</form>
+					</div>
+				</li>
+				<li id="divFailover" class="hide">
+					<h3 class="form-title">Failover</h3>
+					<div class="accor-contents__wrap">
+						<table id="connectionInfoTable" class="Table Form-type">
+							<colgroup>
+								<col style="width: 200px;"> </col>
+								<col></col>
+							</colgroup>
+							<tbody>
+								<tr>
+									<th>Auto Failover</th>
+									<td>
+										<div class="onoff-wrap fl mr30"><button class="Button btn-off" data-target="failOverEnable">OFF</button></div>
+										<div class="hide">
+											<select name="failOverEnable"> <option value="Y">Y</option> <option value="N">N</option> </select>
+										</div>
+										<div class="Icon ico-cloudz alarm fl mt5 mr5"></div>
+										<div class="fl">
+										Master 노드 장애발생시 임계 시간동안 서비스가 복구되지 않을 경우<br/> 
+										자동으로 Slave 노드로 서비스를 전환합니다.(설정 변경시 서비스 재시작 필요)
+										</div>  
+									</td>
+								</tr>
+							</tbody>
+						</table>										
 					</div>
 				</li>
 				<li>
@@ -400,7 +443,7 @@
            	<div class="ctn-info__wrap">
          		<div class="mr30 info-list">
          			<span class="config-title">백업설정 :</span>
-					<div class="onoff-wrap"><button class="Button btn-off">OFF</button></div>
+					<div class="onoff-wrap"><button class="Button btn-off" data-target="useYn">OFF</button></div>
 					<div class="hide">
 						<select name="useYn"> <option value="Y">Y</option> <option value="N">N</option> </select>
 					</div>									
@@ -778,6 +821,7 @@
 			$('#zdbServiceTabs').on('tabchange', function(e, index, index2){
 				fn_displayTabs(index);
 			});
+		
 			function fn_displayTabs(index){
 				var tabId = $('#zdbServiceTabs').getTabContentByIndex(index).id;
 				fn_setSelected2010Tab(tabId);
@@ -816,47 +860,31 @@
 				gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
 			});			
 			$('#deleteService').on('click',function(){
-			    $a.popup({
-			        url: "/zdb02/zdb0200p03",
+				gCommon.credentialConfirm({
 			        data:{credential:$("#credential").val(),msg:'서비스를 삭제하시려면',okBtnMsg:'삭제'},
-			        iframe: false,
-			        width: 500,
-			        height: 300,
-			        movable:true,
-			        title : '',
 			        callback : function(res){
-			        	if(res == "Y"){
-							$a.ajax({
-								url: '/zdbapi/deleteServiceInstance',
-								data:gParam,
-								success: function(res){
-									gCommon.alert('삭제 요청이 완료 되었습니다.');
-									gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
-								}
-							})
-			        	};
+						$a.ajax({
+							url: '/zdbapi/deleteServiceInstance',
+							data:gParam,
+							success: function(res){
+								gCommon.alert('삭제 요청이 완료 되었습니다.');
+								gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
+							}
+						})
 			        }
 			    });
 			});
 			$('#restartService').on('click',function(){
-			    $a.popup({
-			        url: "/zdb02/zdb0200p03",
+				gCommon.credentialConfirm({
 			        data:{credential:$("#credential").val(),msg:'서비스를 재시작 하시려면',okBtnMsg:'재시작'},
-			        iframe: false,
-			        width: 500,
-			        height: 300,
-			        movable:true,
-			        title : '',
 			        callback : function(res){
-			        	if(res == "Y"){
-							$a.ajax({
-								url: '/zdbapi/restartService',
-								data:data,
-								success: function(res){
-									gCommon.alert('재시작 요청이 완료 되었습니다.');
-								}
-							})
-			        	};
+						$a.ajax({
+							url: '/zdbapi/restartService',
+							data:data,
+							success: function(res){
+								gCommon.alert('재시작 요청이 완료 되었습니다.');
+							}
+						})
 			        }
 			    });		
 			});
@@ -895,6 +923,13 @@
 				$(this).val('').parent().hide();
 			});			
 			/* tabService start */
+			let tabService = $('#tabService');
+			let formService = $('form[name=formService]');
+			formService.validator({
+			    elements :{ 
+			        'port': {rule:{required:true}}
+			    }
+			});						
 			$('#togglePwd').on('click',function(){
 				var isShowPwd = $('#credential').attr('type')=='password';
 				if(isShowPwd){
@@ -928,6 +963,22 @@
 			        	};
 			        }
 			    });
+			});
+			$('#portUpdate').on('click',function(){
+				if(!formService.validate())return;
+				gCommon.credentialConfirm({
+			        data:{credential:$("#credential").val(),msg:'port를 변경 하시려면',okBtnMsg:'변경'},
+			        callback : function(res){
+						$a.ajax({
+							url: '/zdbapi/changePort',
+							method:'PUT',
+							data:$.extend({},gParam,{port:$('#port').val()}),
+							success: function(res){
+								gCommon.alert('포트가 변경 되었습니다.');
+							}
+						})
+			        }
+			    });	
 			});
 			var isSlowLogHidden = gParam.serviceType != G_SERVICE_TYPE_MARIA;
 			
@@ -1241,6 +1292,7 @@
 				
 				//cpu,memory,disk resource 셋팅  
 				podData = (function(data){
+					return data;
 					var list = [];
 					//return list;//temp
 					for(var i = 0 ; i < data.length;i++){
@@ -1322,11 +1374,9 @@
 							svc = service;
 							break;
 						}
-						
 					}
 					
 					var pod = null;
-					
 					var dt = {
 							isPod:false,
 							status: (replicas > 0 && replicas == statefulSet.status.readyReplicas ? 'green' : 'red'),
@@ -1359,11 +1409,8 @@
 						tList.push(dt);
 					}
 				};
-				
-				
-				////redis////////////////////////////////
-				var deployments = gService.deployments;
-				
+				let deployments = gService.deployments;
+				let isMasterRed = false;
 				for(var i = 0 ; i < deployments.length; i++){
 					var deployment = deployments[i];
 					var replicas = deployment.spec.replicas;
@@ -1396,7 +1443,6 @@
 					}
 					
 					var pod = null;
-					
 					var dt = {
 							isPod: false,
 							status: (replicas > 0 && replicas == deployment.status.readyReplicas ? 'green' : 'red'),
@@ -1411,16 +1457,17 @@
 						};
 
 					if(dt.status == 'green') {
-						//pod = gCommon.findObjectByKeyOb(podData, {stName:dt.name});
-						
 						for(var k = 0 ; k < podData.length; k++){
 							var p = podData[k];
 							if(p.name.startsWith(dt.name)) {
 								pod = p;
-								
 								break;
 							}
 						}
+					}
+					
+					if(dt.status == 'red' && svc == 'master'){
+						isMasterRed = true;
 					}
 					
 					if(pod != null){
@@ -1438,9 +1485,31 @@
 						tList.push(dt);
 					}
 				};
-				////////////////////////////////////
-				
-				$('#gridResource').alopexGrid('dataSet',tList);//dataset 
+				$('#gridResource').alopexGrid('dataSet',tList);//dataset
+				//auto failover 설정
+				if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gConfigData.failoverEnabled==true && gService.statefulSets.length > 1){
+					setOnOffButton('failOverEnable',(gService.failoverEnabled==true?'Y':'N'));
+					$('#divFailover').show();
+					if(isMasterRed){
+						$('#divFailoverArea').show();
+						$a.ajax({
+							url:'/zdbapi/serviceFailOverStatus',
+							method:'get',
+							data:gParam,
+							success:function(res){
+								if(res.result.status == 'MasterToMaster'){
+									$('#divFailoverBtn').show();
+									$('#divFailbackBtn').hide();
+								}else{
+									$('#divFailoverBtn').hide();
+									$('#divFailbackBtn').show();
+								}							
+							}
+						});
+					}
+				}else{
+					$('#divFailover').hide();
+				}
 				//tabService end
 				
 				//tabScale 스케일
@@ -1503,7 +1572,7 @@
 					ob.hide(1000);
 				},1000);
 			})			
-			$('#publicNetworkDelete').on('click',function(){
+			tabService.find('#publicNetworkDelete').on('click',function(){
 				if(gCommon.confirm('Public Network 서비스 삭제시 </br> 외부연동이 단절됩니다. <br/> 삭제하시겠습니까?',function(){
 					$a.ajax({
 						url: '/zdbapi/deletePublicService',
@@ -1516,7 +1585,7 @@
 					});
 				},{okBtnMsg:"삭제"}));
 			});
-			$('#publicNetworkCreate').on('click',function(){
+			tabService.find('#publicNetworkCreate').on('click',function(){
 				if(gCommon.confirm('Public Network를 추가 하시겠습니까?',function(){
 					$a.ajax({
 						url: '/zdbapi/createPublicService',
@@ -1529,6 +1598,58 @@
 					});
 				},{okBtnMsg:"추가"}));
 			});
+			tabService.find('.onoff-wrap > button').click(function(e){
+				e.preventDefault();
+				let isEnable = 'Y';
+				if($(this).hasClass('btn-on')) {
+					isEnable = 'N';
+				};				
+				let param = $.extend({},gParam,{enable:isEnable == 'Y'});
+				gCommon.credentialConfirm({
+			        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:'변경'},
+			        callback : function(res){
+						$a.ajax({
+							url: '/zdbapi/updateAutoFailoverEnable',
+							method:'PUT',
+							data:param,
+							success: function(res){
+								if(res.result.code == '4'){
+									gCommon.alert(res.result.message);
+								}else{
+									gCommon.alert('설정이 변경 되었습니다.');
+									if($(this).hasClass('btn-on')) {
+										setOnOffButton('failOverEnable','N');
+									} else {
+										setOnOffButton('failOverEnable','Y');
+									}
+									gConfigData = gCommon.getConfigData();
+								}
+							}
+						})
+			        }
+			    });		
+			});
+			tabService.find('#divFailoverBtn button').on('click',function(e){
+				e.preventDefault();
+				gCommon.credentialConfirm({
+					data:{credential:$("#credential").val(), msg:'failover 수행을 하시려면', okBtnMsg:'변경'},
+					callback : function(res){
+						$a.ajax({
+							url: '/zdbapi/serviceChangeMasterToSlave',
+							method:'PUT',
+							data:gParam,
+							success: function(res){
+								console.log(res)
+								if(res.result.code == '4'){
+									gCommon.alert(res.result.message);
+								}else{
+									gCommon.alert('설정이 변경 되었습니다.');
+								}
+							}
+						})	
+					}
+				});
+			})
 			/*tabService end*/
 			
 			/*tabScale start 스케일 */
@@ -1751,7 +1872,6 @@
 			backupForm.find('#backupSearchType').on('change',function(e){
 				fn_filterBackupInfo();
 			});
-			//on off button
 			backupForm.find('.onoff-wrap > button').click(function(e){
 				e.preventDefault();
 				if($(this).hasClass('btn-on')) {
@@ -1764,23 +1884,19 @@
 				var msg = val == 'Y'? '백업 설정을 활성화 하시겠습니까?': '백업 설정을 비활성화 하시겠습니까?';
 				gCommon.confirm(msg,function(yn){
 					if(yn == 'Y'){
-						setBackupUseYn(val);
+						setOnOffButton('useYn',val);
 						fn_saveSchedule();				
 					};
 				});
 			}
-			function setBackupUseYn(val){
-				if(val=='Y'){
-					backupForm.find('select[name=useYn]').zdbui_setComponent('Y');
-					backupForm.find('.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
-					backupStatus = val;
+			function setOnOffButton(name,bOn){
+				$('select[name='+name+']').zdbui_setComponent(bOn);	
+				if(bOn == 'Y'){
+					$('button[data-target='+name+']').removeClass('btn-off').addClass('btn-on').text('ON');
 				}else{
-					backupForm.find('select[name=useYn]').zdbui_setComponent('N');
-					backupForm.find('.onoff-wrap > button').removeClass('btn-on').addClass('btn-off').text('OFF');
-					backupStatus = val;
+					$('button[data-target='+name+']').removeClass('btn-on').addClass('btn-off').text('OFF');
 				}
-				setBackupBtnEnable();
-			};
+			}
 			
 			function setBackupBtnEnable(){
 				if(backupStatus=='Y'){
@@ -1917,7 +2033,7 @@
 							data = res.schedule;
 						};
 						backupForm.zdbui_setContents(data);
-						setBackupUseYn(data.useYn||'N');
+						setOnOffButton('useYn',data.useYn||'N');
 						backupForm.find('#startTime').setData({date :data.startTime});
 					}
 				});					
@@ -1980,9 +2096,11 @@
 				});				
 			};	
 			function fn_filterBackupInfo(){
-				$('#gridBackup').alopexGrid('setFilter', 'backupFilter', function(){
+				$('#gridBackup').alopexGrid('setFilter', 'backupFilter', function(data){
 					if($('#backupSearchType').is(':checked') == true){
 						return true;
+					}else{
+						return data.type != 'INCR';
 					}
 				});
 			}
@@ -2011,30 +2129,23 @@
 				if(isDownload){
 					gCommon.movePage('/zdbapi/downloadBackup',param);
 				}else{
-					$a.popup({
-				        url: "/zdb02/zdb0200p03",
+					gCommon.credentialConfirm({
 				        data:{credential:$("#credential").val(),
 				        	  msg:'서비스를 (' + cloudUtil.dtFormat(data.acceptedDatetime) + ')시점으로 복원 하시려면',
 				        	  okBtnMsg:'복원'},
-				        iframe: false,
 				        width: 550,
-				        height: 300,
-				        movable:true,
-				        title : '',
 				        callback : function(res){
-				        	if(res == "Y"){
-								$a.ajax({
-									url: '/zdbapi/restoreFromBackup',
-									data:data,
-									success: function(res){
-										if(res.result.code == '4'){
-											gCommon.alert(res.result.message);
-										}else{
-											gCommon.alert('복원 요청이 완료 되었습니다.');
-										}
+							$a.ajax({
+								url: '/zdbapi/restoreFromBackup',
+								data:data,
+								success: function(res){
+									if(res.result.code == '4'){
+										gCommon.alert(res.result.message);
+									}else{
+										gCommon.alert('복원 요청이 완료 되었습니다.');
 									}
-								})
-				        	};
+								}
+							})
 				        }
 				    });					
 				}

@@ -210,11 +210,12 @@ var gCommon = $a.page(function(){
 
 		var result = gCommon.getConfigDataAjax(namespace);
 		if(result == null){
-			result = gCommon.getConfigDataAjax(G_GLOBAL);
-			if(result) result.isExists = false;
+			result = gCommon.getConfigDataAjax(G_GLOBAL)||{};
+			result.isExists = false;
 		}else{
 			result.isExists = true;
 		}
+		result.failoverEnabled = true;//dwtemp 
 		return result;
 	}	
 	this.getConfigDataAjax = function(namespace){
@@ -241,6 +242,9 @@ var gCommon = $a.page(function(){
 				}
 			}
 		});	
+		if(result){
+			
+		}
 		return result;
 	}
 	this.copyToClipboard = function(selector) {
@@ -320,6 +324,26 @@ var gCommon = $a.page(function(){
 	        }
 	    });
 	};
+	this.credentialConfirm = function(option){
+		let defOpt = {
+		        url: "/zdb02/zdb0200p03",
+		        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면'},
+		        iframe: false,
+		        width: 500,
+		        height: 300,
+		        movable:true,
+		        title : ''
+		    };		
+		let opt = $.extend({},defOpt,option);
+		if(opt.callback){
+			opt.callback=function(res){
+				if(res == 'Y'){
+					option.callback(res);
+				}
+			}
+		}
+	    $a.popup(opt);		
+	}
 	let isAlertPopExists = false;
 	this.alert = function(message,fnCallback){
 		if(isAlertPopExists)return;

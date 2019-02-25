@@ -483,5 +483,47 @@ public class ZdbApiController {
 		
 		return mav;
 	}
+	@RequestMapping(value = "updateAutoFailoverEnable", method = RequestMethod.PUT)
+	public ModelAndView updateAutoFailoverEnable(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.updateAutoFailoverEnable(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
+
+	@RequestMapping(value = "serviceFailOverStatus", method = RequestMethod.GET)
+	public ModelAndView serviceFailOverStatus(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.serviceFailOverStatus(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
+	
+	@RequestMapping(value = "serviceChangeMasterToSlave", method = RequestMethod.PUT)
+	public ModelAndView serviceChangeMasterToSlave(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.serviceChangeMasterToSlave(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
+	@RequestMapping(value = "changePort", method = RequestMethod.PUT)
+	public ModelAndView changePort(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.changePort(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
 	
 }

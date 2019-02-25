@@ -511,5 +511,28 @@ public class ZdbApiService{
 		return connector.exchange(apiServer + URIConstants.URI_UPDATE_ZDB_CONFIGS, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();
 	}
 
+	public ZdbRestDTO updateAutoFailoverEnable(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_AUTO_FAIL_OVER_ENABLE, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+
+	public ZdbRestDTO serviceFailOverStatus(Map<String, String> param) {
+		ZdbRestDTO result = connector.getForObject(apiServer + URIConstants.URI_GET_SERVICE_FAIL_OVER_STATUS,ZdbRestDTO.class,param);
+		return result;
+	}
+
+	public ZdbRestDTO serviceChangeMasterToSlave(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_SERVICE_CHANGE_MASTERTOSLAVE, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+
+	public ZdbRestDTO changePort(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_CHANGE_PORT, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+
 }
 
