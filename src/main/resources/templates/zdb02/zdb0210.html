@@ -1486,7 +1486,7 @@
 				};
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset
 				//auto failover 설정
-				if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gConfigData.auto_failover_enabled==true && gService.statefulSets.length > 1){
+				if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gConfigData.auto_failover_enabled=='true' && gService.statefulSets.length > 1){
 					setOnOffButton('failOverEnable',(gService.failoverEnabled==true?'Y':'N'));
 					$('#divFailover').show();
 					if(isMasterRed){
@@ -2383,4 +2383,17 @@
 		};
 		
 	});
+	function getM(){
+		$a.ajax({
+			url: '/zdbapi/getPodMetrics',
+			method:'get',
+			data:{
+				namespace:gParam.namespace,
+				podName:'zdb-ha-failover-mariadb-master-0'
+			},
+			success:function(res){
+				console.log(res)
+			}
+		});		
+	}
 </script>
