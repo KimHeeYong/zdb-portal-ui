@@ -526,4 +526,27 @@ public class ZdbApiController {
 		return mav;
 	}
 	
+	
+	@RequestMapping(value = "serviceOn", method = RequestMethod.PUT)
+	public ModelAndView serviceOn(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.serviceOn(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
+	@RequestMapping(value = "serviceOff", method = RequestMethod.PUT)
+	public ModelAndView serviceOff(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.serviceOff(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
+	
+	
 }

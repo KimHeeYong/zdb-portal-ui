@@ -983,10 +983,64 @@
 			var isSlowLogHidden = gParam.serviceType != G_SERVICE_TYPE_MARIA;
 			
 			$('#gridResource').alopexGrid({
+				enableDefaultContextMenu:false,
+				enableContextMenu:true,
 				autoColumnIndex: true,
 				autoResize:true,
 				fitTableWidth :true,
 				height: 400,
+				contextMenu : [
+					{
+						title: "START" ,
+						processor: function(data, $cell, grid) {
+							gCommon.credentialConfirm({
+						        data:{credential:$("#credential").val(), msg:'서비스 On 요청을 하시려면', okBtnMsg:'START'},
+						        callback : function(res){
+									$a.ajax({
+										url: '/zdbapi/serviceOn',
+										method:'PUT', data:($.extend({},gParam,{stsName:data.name})),
+										success: function(res){
+											console.log(res)
+											if(res.result.code == '4'){
+												gCommon.alert(res.result.message);
+											}else{
+												gCommon.alert('서비스 On 요청하였습니다.');
+											}
+										}
+									})
+						        }
+						    });
+						},
+						use: function(data, $cell, grid) {
+							return data.status == 'red';
+						}
+					},
+					{
+						title: "STOP" ,
+						processor: function(data, $cell, grid) {
+							gCommon.credentialConfirm({
+						        data:{credential:$("#credential").val(), msg:'서비스 Off 요청을 하시려면', okBtnMsg:'STOP'},
+						        callback : function(res){
+									$a.ajax({
+										url: '/zdbapi/serviceOff',
+										method:'PUT', data:($.extend({},gParam,{stsName:data.name})),
+										success: function(res){
+											console.log(res)
+											if(res.result.code == '4'){
+												gCommon.alert(res.result.message);
+											}else{
+												gCommon.alert('서비스 Off 요청하였습니다.');
+											}
+										}
+									})
+						        }
+						    });
+						},
+						use: function(data, $cell, grid) {
+							return data.status == 'green';
+						}
+					}
+				],
 				columnMapping : [
 					{ title:'', key : 'status' , width: '40px', align: 'center',render : function( value, data, render, mapping) {
 						var re = '';
@@ -1293,44 +1347,30 @@
 				//cpu,memory,disk resource 셋팅  
 				podData = (function(data){
 					var list = [];
-					//return list;//temp
 					for(var i = 0 ; i < data.length;i++){
 						var ob = data[i];
-						$a.ajax({
-							url: '/zdbapi/getPodMetrics',
-							async:false,
-							method:'get',
-							data:{
-								namespace:gParam.namespace,
-								podName:ob.name
-							},
-							success:function(res){
-								try{
-									if(!res||!res.podMetrics)return;
-									
-									var cl = res.podMetrics.metricsCpuUsage;
-									var ml = res.podMetrics.metricsMemoryUsage ;
-									var dl = gService.diskUsageOfPodMap;
-									if(cl){
-										ob.cpu = (cl.length ? cl[cl.length-1].value:'') / 1000 + ' / ' + gService.resourceSpecOfPodMap[ob.name].cpu;
-									};
-									if(ml && ml.length > 0){
-										ob.memory = cloudUtil.truncDecimal(((ml.length? ml[ml.length-1].value:'') / (1024*1000)),2) + ' / ' + gService.resourceSpecOfPodMap[ob.name].memory;
-									};
-									if(gService.serviceType == 'redis' && (ob.role != 'master' || gService.persistentVolumeClaims.length == 0)){
-										ob.disk = '사용안함';
-									}else if(dl && dl[ob.name]){
-										var hasUseRate = dl[ob.name].useRate?true:false;
-										ob.disk = cloudUtil.truncDecimal((dl[ob.name].used / (1024*1000)),2) + ' / ' + (hasUseRate? cloudUtil.convertSize(dl[ob.name].size) :(gServiceScale.disk||'N/A')) 
-										        + (hasUseRate? ' ('+dl[ob.name].useRate+')' : '' ) ;
-										ob.diskUpdateTime = dl[ob.name].updateTime; 
-									};
-								}catch(e){ 
-									//console.log(e);
-								}
-								list.push(ob);
-							}
-						});
+						try{
+							var cl = gService.metricsCpuUsage;
+							var ml = gService.metricsMemoryUsage;
+							var dl = gService.diskUsageOfPodMap;
+							if(cl){
+								ob.cpu = (cl.length ? cl[cl.length-1].value:'') / 1000 + ' / ' + gService.resourceSpecOfPodMap[ob.name].cpu;
+							};
+							if(ml && ml.length > 0){
+								ob.memory = cloudUtil.truncDecimal(((ml.length? ml[ml.length-1].value:'') / (1024*1000)),2) + ' / ' + gService.resourceSpecOfPodMap[ob.name].memory;
+							};
+							if(gService.serviceType == 'redis' && (ob.role != 'master' || gService.persistentVolumeClaims.length == 0)){
+								ob.disk = '사용안함';
+							}else if(dl && dl[ob.name]){
+								var hasUseRate = dl[ob.name].useRate?true:false;
+								ob.disk = cloudUtil.truncDecimal((dl[ob.name].used / (1024*1000)),2) + ' / ' + (hasUseRate? cloudUtil.convertSize(dl[ob.name].size) :(gServiceScale.disk||'N/A')) 
+								        + (hasUseRate? ' ('+dl[ob.name].useRate+')' : '' ) ;
+								ob.diskUpdateTime = dl[ob.name].updateTime; 
+							};
+						}catch(e){ 
+							
+						}
+						list.push(ob);
 					};
 					return list;
 				}(podData));

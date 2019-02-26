@@ -534,5 +534,17 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 
+	public ZdbRestDTO serviceOn(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_SERVICE_ON, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+
+	public ZdbRestDTO serviceOff(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_SERVICE_OFF, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+
 }
 
