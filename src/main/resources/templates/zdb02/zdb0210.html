@@ -1066,13 +1066,6 @@
 					}},
 					{ title:'Replicas', key : 'replicas' , width: '65px', align: 'center'},
 					{ title:'Role', key : 'role' , width: '90px', align: 'center'},
-					{ title:'', key : '' , width: '30px', align: 'center', render : function(value, data){
-						if(data.svc != '') {
-							return ' ➞ ';
-						} else {
-							return '';
-						}						
-					}},
 					{ title:'Service LB', key : '' , width: '100px', align: 'center', render : function(value, data){
 						if(data.svc != '') {
 							if(data.serviceType == 'redis') {
