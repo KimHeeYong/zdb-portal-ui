@@ -109,10 +109,10 @@
 										<th>Auto Failover</th>
 										<td>
 											<div class="onoff-wrap">
-												<button class="Button btn-on" data-target="free_resource_check">ON</button>
+												<button class="Button btn-on" data-target="auto_failover_enabled">ON</button>
 											</div>
 											<div class="hide">
-												<select name="free_resource_check"> 
+												<select name="auto_failover_enabled"> 
 													<option value="true">Y</option> 
 													<option value="false">N</option> 
 												</select>
@@ -162,6 +162,7 @@
 					gForm.zdbui_setContents(gConfigData);
 					fn_setOnOff('free_resource_check',gConfigData['free_resource_check']);
 					fn_setOnOff('public_network_enabled',gConfigData['public_network_enabled']);
+					fn_setOnOff('auto_failover_enabled',gConfigData['auto_failover_enabled']);
 					gForm.find('div#backup_time').setData({date :gConfigData['backup_time']});
 				}
 				function fn_setOnOff(name,bOn){
