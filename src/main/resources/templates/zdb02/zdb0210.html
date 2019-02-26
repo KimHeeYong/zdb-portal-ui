@@ -1292,7 +1292,6 @@
 				
 				//cpu,memory,disk resource 셋팅  
 				podData = (function(data){
-					return data;
 					var list = [];
 					//return list;//temp
 					for(var i = 0 ; i < data.length;i++){
@@ -1487,7 +1486,7 @@
 				};
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset
 				//auto failover 설정
-				if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gConfigData.failoverEnabled==true && gService.statefulSets.length > 1){
+				if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gConfigData.auto_failover_enabled==true && gService.statefulSets.length > 1){
 					setOnOffButton('failOverEnable',(gService.failoverEnabled==true?'Y':'N'));
 					$('#divFailover').show();
 					if(isMasterRed){
@@ -1639,7 +1638,6 @@
 							method:'PUT',
 							data:gParam,
 							success: function(res){
-								console.log(res)
 								if(res.result.code == '4'){
 									gCommon.alert(res.result.message);
 								}else{
@@ -1864,8 +1862,8 @@
 			/*tabMonitor end 모니터링*/
 			
 			/* tabBackup start backup */
-			var backupForm = $('form[name=backupForm]');
-			var backupStatus = 'N';//Y 수정가능상태, N 수정불가 상태, I 수정중상태
+			let backupForm = $('form[name=backupForm]');
+			let backupStatus = 'N';//Y 수정가능상태, N 수정불가 상태, I 수정중상태
 			backupForm.find('#searchBackup').on('click',function(){
 				fn_getBackupInfo();
 			});
@@ -2033,12 +2031,14 @@
 							data = res.schedule;
 						};
 						backupForm.zdbui_setContents(data);
-						setOnOffButton('useYn',data.useYn||'N');
+						backupStatus = data.useYn||'N';
+						setOnOffButton('useYn',backupStatus);
+						setBackupBtnEnable();
 						backupForm.find('#startTime').setData({date :data.startTime});
 					}
 				});					
 			};
-			$('body').on('click','button#saveSchedule',function(){
+			$('button#saveSchedule').on('click',function(){
 				if(backupStatus=='I'){
 					gCommon.confirm('백업 설정을 수정 하시겠습니까?',function(){
 						fn_saveSchedule();				

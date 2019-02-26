@@ -26,5 +26,12 @@
         "config": "backup_time",
         "configName": "Backup 시각",
         "value": ${backup_time}
+      },
+      {
+        "namespace": ${namespace},
+        "dbType": "mariadb",
+        "config": "auto_failover_enabled",
+        "configName": "Auto Failover 사용여부",
+        "value": ${auto_failover_enabled}
       }
 ]
