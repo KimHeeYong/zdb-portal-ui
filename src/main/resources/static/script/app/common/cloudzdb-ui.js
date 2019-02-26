@@ -54,7 +54,7 @@ var gOverlay = null;
 var gParam = {};
 var G_NAMESPACE_ALL = "_DEFAULT_ALL";
 var G_GLOBAL = 'global';
-var gConfigColumn = ['free_resource_check','public_network_enabled','backup_duration','backup_time'];
+var gConfigColumn = ['free_resource_check','public_network_enabled','backup_duration','backup_time','auto_failover_enabled'];
 var gSelectedNamespace = null;
 var gPopData = '';
 
