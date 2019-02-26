@@ -32,6 +32,9 @@
 .mr5 {
 	margin-right: 5px;
 }
+.mr30 {
+	margin-right: 30px;
+}
 .ft15 {
 	font-size: 15px !important;
 }
@@ -51,6 +54,9 @@
 .wd300 {
 	min-width: 300px;
 	width: 300px;
+}
+.mt5 {
+	margin-top: 5px;
 }
 .mt10 {
 	margin-top: 10px;

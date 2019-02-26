@@ -200,7 +200,8 @@ $a.page(function() {
 		var table = $('#serviceTable');
 		table.zdbui_setContents(data);
 		if(table.find('td[data=storageClassStr]').length > 0){
-			var descT = ' <span class="ft15">('+(cloudUtil.parseInt(data.specDisk) * cloudUtil.parseInt(data.storageClassStr)) + 'Gb IOPS 스토리지 성능을 보장 합니다.)</span>'
+			var descT = ' <span class="ft15">('+(cloudUtil.parseInt(data.specDisk) * cloudUtil.parseInt(data.storageClassStr)/(gParam.clusterEnabled=='true'?2:1)) 
+				      + 'Gb IOPS 스토리지 성능을 보장 합니다.)</span>'
 			table.find('td[data=storageClassStr]').append(descT);
 		};
 		

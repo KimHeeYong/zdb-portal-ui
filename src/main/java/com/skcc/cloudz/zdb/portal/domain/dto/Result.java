@@ -65,4 +65,6 @@ public class Result {
 	private List<DBUser> userGrants;
 	
 	private List<ZDBConfig> zdbConfig;
+	
+	private String status;
 }
