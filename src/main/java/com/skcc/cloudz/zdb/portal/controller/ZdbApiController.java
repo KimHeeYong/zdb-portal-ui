@@ -557,6 +557,14 @@ public class ZdbApiController {
 		
 		return mav;
 	}
-	
-	
+	@RequestMapping(value = "workerpools", method = RequestMethod.GET)
+	public ModelAndView workerpools(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.workerpools(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
 }

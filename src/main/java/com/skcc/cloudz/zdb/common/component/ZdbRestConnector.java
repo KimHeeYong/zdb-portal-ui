@@ -55,6 +55,7 @@ public class ZdbRestConnector extends RestTemplate{
 		ResponseEntity<T> result = null;
 		try {
 			result = super.exchange(url, method, newRequestEntity, responseType, uriVariables);
+			System.out.println(newRequestEntity);
 		} catch (HttpStatusCodeException e) {
 			ZdbRestDTO resultMap = new Gson().fromJson(e.getResponseBodyAsString(), ZdbRestDTO.class);
 			result = new ResponseEntity(resultMap, e.getStatusCode());

@@ -551,5 +551,10 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 
+	public ZdbRestDTO workerpools(Map<String, String> param) {
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_WORKERPOOLS, ZdbRestDTO.class,param);
+		return zdbRestDTO;
+	}
+
 }
 

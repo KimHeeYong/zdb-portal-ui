@@ -9,6 +9,7 @@
  		{
  		"podType": "master",
  		"resourceSpec": [{
+ 			"workerPool":${workerPool},
  			"resourceType": "requests",
  			"cpu": ${cpu},
  			"memory": ${memory}
@@ -17,6 +18,7 @@
  		{
  		"podType": "slave",
  		"resourceSpec": [{
+ 			"workerPool":${workerPool},
  			"resourceType": "requests",
  			"cpu": ${cpu},
  			"memory": ${memory}

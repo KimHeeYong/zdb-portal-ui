@@ -107,6 +107,10 @@
 											<th>할당메모리</th>
 											<td data="specMemory"></td>
 										</tr>
+										<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
+											<th>Worker Pools</th>
+											<td data="workerPool"></td>
+										</tr>
 										<tr th:if="${#request.getParameter('serviceType')=='mariadb' || #request.getParameter('purpose') == 'DATA'}">
 											<th>할당디스크</th>
 											<td data="specDisk"></td>

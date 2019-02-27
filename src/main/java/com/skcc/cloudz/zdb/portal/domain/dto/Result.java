@@ -67,4 +67,6 @@ public class Result {
 	private List<ZDBConfig> zdbConfig;
 	
 	private String status;
+	
+	private List<String> workerPools;
 }

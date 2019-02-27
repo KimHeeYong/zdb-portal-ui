@@ -107,5 +107,7 @@ public class URIConstants {
 	
 	public static final String URI_SERVICE_OFF = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/{stsName}/off";
 
+	public static final String URI_GET_WORKERPOOLS = "/api/v1/workerpools";
+
 	
 }

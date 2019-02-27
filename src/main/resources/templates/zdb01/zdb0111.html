@@ -211,6 +211,15 @@
 								</td>
 							</tr>
 							<tr>
+								<th>Worker Pools</th>
+								<td>
+									<div class="Divselect" id="workerPool" name="workerPool">
+										<select></select>
+										<span></span>
+									</div>
+								</td>
+							</tr>							
+							<tr>
 								<th class="ht140">할당메모리</th>
 								<td>
 									<div class="info-wrap">
@@ -285,6 +294,25 @@ $a.page(function() {
 		if(!gNamespaces.getText()){
 			gCommon.alert(gMessage.validPage);
 		};
+		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+			$a.ajax({
+				url: '/zdbapi/workerpools',
+				async: false,
+				method:'get',
+				success:function(res){
+					let workerPool = $('#workerPool');
+					let list = res.result.result.workerPools;
+					let l = [];
+					if(list && list.length > 0){
+						for(o in list){
+							let t = list[o]
+							workerPool.find('select').append($('<option>',{value:t,text:t}));							
+						}
+					};
+					workerPool.setSelected(workerPool.find('option:eq(0)').val())
+				}
+			});	
+		}
 		var form = $('form[name=serviceForm]');
 		form.validator({// form에 validator 할 경우
 		    elements :{ // 아래와같이 input,select의 name 값으로 각기 다른 validator 적용가능.
