@@ -42,14 +42,14 @@ props:
     zcp:
       clientId: account
       clientSecret: 71ad1e42-d239-4a7d-99f9-e1e50ad7ca93
-      accessTokenUri: https://pog-dev-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
-      userAuthorizationUri: https://pog-dev-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
+      accessTokenUri: https://cbt-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
+      userAuthorizationUri: https://cbt-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
       redirectUri: ${HOME_URL:http://localhost:8181}/login
   iam:
-    baseUrl: https://pog-dev-internal-iam.cloudzcp.io:443
+    baseUrl: https://cbt-internal-iam.cloudzcp.io:443
 
 cloudzcp:
-  url: https://pog-dev-console.cloudzcp.io
+  url: https://cbt-console.cloudzcp.io
 grafana:
   url: http://grafana-zdb.cloudzcp.io
 ---  
@@ -78,16 +78,16 @@ props:
     zcp:
       clientId: account
       clientSecret: 71ad1e42-d239-4a7d-99f9-e1e50ad7ca93
-      accessTokenUri: https://pog-dev-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
-      userAuthorizationUri: https://pog-dev-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
+      accessTokenUri: https://cbt-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
+      userAuthorizationUri: https://cbt-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
       redirectUri: ${HOME_URL:http://console.${spring.profiles}.jp-tok.containers.mybluemix.net}/login
   iam:
-    baseUrl: https://pog-dev-internal-iam.cloudzcp.io:443
+    baseUrl: https://cbt-internal-iam.cloudzcp.io:443
 
 cloudzcp:
-  url: https://pog-dev-console.cloudzcp.io
+  url: https://cbt-console.cloudzcp.io
 grafana:
-  url: http://pog-dev-zdb-monitoring.cloudzcp.io
+  url: http://cbt-zdb-monitoring.cloudzcp.io
 
   
 ---
