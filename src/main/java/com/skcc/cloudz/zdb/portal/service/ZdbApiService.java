@@ -528,6 +528,11 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 
+	public ZdbRestDTO serviceChangeSlaveToMaster(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_SERVICE_CHANGE_SLAVETOMASTER, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
 	public ZdbRestDTO changePort(Map<String, String> param) {
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_CHANGE_PORT, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();

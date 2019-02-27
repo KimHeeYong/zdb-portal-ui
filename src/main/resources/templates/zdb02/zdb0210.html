@@ -150,6 +150,7 @@
 						               		</div>
 						               		<div id="divFailbackBtn" class="hide">
 						               			<button class="Button btn">Failback</button>
+						               			<span class="Tooltip hide">서비스 L/B를 Master DB 로 복원합니다.</span>
 						               		</div>
 						               	</div>	
 						               	<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
@@ -1526,20 +1527,7 @@
 					$('#divFailover').show();
 					if(isMasterRed){
 						$('#divFailoverArea').show();
-						$a.ajax({
-							url:'/zdbapi/serviceFailOverStatus',
-							method:'get',
-							data:gParam,
-							success:function(res){
-								if(res.result.status == 'MasterToMaster'){
-									$('#divFailoverBtn').show();
-									$('#divFailbackBtn').hide();
-								}else{
-									$('#divFailoverBtn').hide();
-									$('#divFailbackBtn').show();
-								}							
-							}
-						});
+						inquiryFailover();
 					}
 				}else{
 					$('#divFailover').hide();
@@ -1673,16 +1661,56 @@
 							method:'PUT',
 							data:gParam,
 							success: function(res){
-								if(res.result.code == '4'){
-									gCommon.alert(res.result.message);
-								}else{
-									gCommon.alert('설정이 변경 되었습니다.');
-								}
+								gCommon.alert(res.result.message);
+								setTimeout(function(){
+									inquiryFailover();
+								},500);
 							}
 						})	
 					}
 				});
 			})
+			tabService.find('#divFailbackBtn button').on('click',function(e){
+				e.preventDefault();
+				gCommon.credentialConfirm({
+					data:{credential:$("#credential").val(), msg:'failback 수행을 하시려면', okBtnMsg:'변경'},
+					callback : function(res){
+						$a.ajax({
+							url: '/zdbapi/serviceChangeSlaveToMaster',
+							method:'PUT',
+							data:gParam,
+							success: function(res){
+								gCommon.alert(res.result.message);
+								setTimeout(function(){
+									inquiryFailover();
+								},500);
+							}
+						})	
+					}
+				});
+			})
+			function inquiryFailover(){
+				$a.ajax({
+					url:'/zdbapi/serviceFailOverStatus',
+					async:false,
+					method:'get',
+					data:gParam,
+					success:function(res){
+						if(res.result.code=='4'){
+							gCommon.alert(res.result.message);
+							return;
+						}else{
+							if(res.result.result.status == 'MasterToMaster'){
+								$('#divFailoverBtn').show();
+								$('#divFailbackBtn').hide();
+							}else{
+								$('#divFailoverBtn').hide();
+								$('#divFailbackBtn').show();
+							}							
+						}
+					}
+				});
+			}
 			/*tabService end*/
 			
 			/*tabScale start 스케일 */
@@ -2418,17 +2446,4 @@
 		};
 		
 	});
-	function getM(){
-		$a.ajax({
-			url: '/zdbapi/getPodMetrics',
-			method:'get',
-			data:{
-				namespace:gParam.namespace,
-				podName:'zdb-ha-failover-mariadb-master-0'
-			},
-			success:function(res){
-				console.log(res)
-			}
-		});		
-	}
 </script>
