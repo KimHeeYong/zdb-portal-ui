@@ -1000,7 +1000,6 @@
 										url: '/zdbapi/serviceOn',
 										method:'PUT', data:($.extend({},gParam,{stsName:data.name})),
 										success: function(res){
-											console.log(res)
 											if(res.result.code == '4'){
 												gCommon.alert(res.result.message);
 											}else{
@@ -1025,7 +1024,6 @@
 										url: '/zdbapi/serviceOff',
 										method:'PUT', data:($.extend({},gParam,{stsName:data.stName})),
 										success: function(res){
-											console.log(res)
 											if(res.result.code == '4'){
 												gCommon.alert(res.result.message);
 											}else{
@@ -1374,6 +1372,7 @@
 				
 				var services = gService.services;
 				var statefulSets = gService.statefulSets;
+				var isMasterRed = false;
 				
 				for(var i = 0 ; i < statefulSets.length; i++){
 					var statefulSet = statefulSets[i];
@@ -1423,9 +1422,12 @@
 							memory:gServiceScale.memory,
 							colspanCol:false
 						};
-
 					if(dt.status == 'green') {
 						pod = gCommon.findObjectByKeyOb(podData,{stName:dt.name});
+					}else{
+						if(dt.status == 'red' && dt.role == 'master'){
+							isMasterRed = true;
+						}						
 					}
 					
 					if(pod != null){
@@ -1443,8 +1445,8 @@
 						tList.push(dt);
 					}
 				};
+				
 				let deployments = gService.deployments;
-				let isMasterRed = false;
 				for(var i = 0 ; i < deployments.length; i++){
 					var deployment = deployments[i];
 					var replicas = deployment.spec.replicas;
@@ -1469,7 +1471,6 @@
 								svc_role = 'slave';
 							}
 						} 
-						
 						if(role == svc_role) {
 							svc = service;
 							break;
@@ -1498,12 +1499,11 @@
 								break;
 							}
 						}
+					}else{
+						if(dt.status == 'red' && dt.role == 'master'){
+							isMasterRed = true;
+						}						
 					}
-					
-					if(dt.status == 'red' && svc == 'master'){
-						isMasterRed = true;
-					}
-					
 					if(pod != null){
 						pod.status = dt.status;
 						pod.role = dt.role;
