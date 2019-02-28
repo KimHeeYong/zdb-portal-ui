@@ -883,7 +883,7 @@
 							url: '/zdbapi/restartService',
 							data:data,
 							success: function(res){
-								gCommon.alert('재시작 요청이 완료 되었습니다.');
+								gCommon.alert(res.result.message);
 							}
 						})
 			        }
@@ -975,7 +975,7 @@
 							method:'PUT',
 							data:$.extend({},gParam,{port:$('#port').val()}),
 							success: function(res){
-								gCommon.alert('포트가 변경 되었습니다.');
+								gCommon.alert(res.result.message);
 							}
 						})
 			        }
@@ -1001,10 +1001,8 @@
 										url: '/zdbapi/serviceOn',
 										method:'PUT', data:($.extend({},gParam,{stsName:data.name})),
 										success: function(res){
-											if(res.result.code == '4'){
+											if(res.result.code!='4'){
 												gCommon.alert(res.result.message);
-											}else{
-												gCommon.alert('잠시후 서비스가 시작됩니다.');
 											}
 										}
 									})
@@ -1023,12 +1021,10 @@
 						        callback : function(res){
 									$a.ajax({
 										url: '/zdbapi/serviceOff',
-										method:'PUT', data:($.extend({},gParam,{stsName:data.stName})),
+										method:'PUT', data:($.extend({},gParam,{stsName:data.name})),
 										success: function(res){
-											if(res.result.code == '4'){
+											if(res.result.code!='4'){
 												gCommon.alert(res.result.message);
-											}else{
-												gCommon.alert('잠시후 서비스가 종료됩니다.');
 											}
 										}
 									})
@@ -1144,11 +1140,9 @@
 								url: '/zdbapi/restartPod',
 								data:param,
 								success: function(res){
-									if(res.result.code=='4'){
+									if(res.result.code!='4'){
 										gCommon.alert(res.result.message);
-										return;
 									};
-									gCommon.alert('재시작 요청 하였습니다.');
 								}
 							});
 			        	};
@@ -1635,10 +1629,8 @@
 							method:'PUT',
 							data:param,
 							success: function(res){
-								if(res.result.code == '4'){
+								if(res.result.code!='4'){
 									gCommon.alert(res.result.message);
-								}else{
-									gCommon.alert('설정이 변경 되었습니다.');
 									if($(this).hasClass('btn-on')) {
 										setOnOffButton('failOverEnable','N');
 									} else {
@@ -1696,17 +1688,14 @@
 					method:'get',
 					data:gParam,
 					success:function(res){
-						if(res.result.code=='4'){
-							gCommon.alert(res.result.message);
-							return;
-						}else{
+						if(res.result.code!='4'){
 							if(res.result.result.status == 'MasterToMaster'){
 								$('#divFailoverBtn').show();
 								$('#divFailbackBtn').hide();
 							}else{
 								$('#divFailoverBtn').hide();
 								$('#divFailbackBtn').show();
-							}							
+							}
 						}
 					}
 				});
@@ -1767,14 +1756,12 @@
 						url: '/zdbapi/updateScaleUp',
 						data:data,
 						success: function(res){
-							if(res.result.code=='4'){
-								gCommon.alert(res.result.message);
-								return;
+							if(res.result.code!='4'){
+								gCommon.alert(res.result.message,function(){
+									$('#zdbServiceTabs').setTabByContent('#tabService');
+									fn_getServiceFirst(); 
+								});
 							};
-							gCommon.alert('스케일 정보를 수정 요청 하였습니다.',function(){
-								$('#zdbServiceTabs').setTabByContent('#tabService');
-								fn_getServiceFirst(); 
-							});
 						}
 					});
 				}));
@@ -1789,13 +1776,9 @@
 						url: '/zdbapi/updateScaleOut',
 						data:data,
 						success: function(res){
-							if(res.result.code=='4'){
-								gCommon.alert(res.result.message);
-								return;
+							if(res.result.code!='4'){
+								gCommon.alert('스케일 정보를 수정 요청 하였습니다.');
 							};
-							gCommon.alert('스케일 정보를 수정 요청 하였습니다.',function(){
-								//fn_getService();
-							});
 						}
 					});
 				}));
@@ -2117,12 +2100,10 @@
 						url: '/zdbapi/updateBackup',
 						data:gParam,
 						success: function(res){
-							if(res.result.code=='4'){
-								gCommon.alert(res.result.message);
-								return;
+							if(res.result.code!='4'){
+								gCommon.alert('즉시 백업을 요청하였습니다.');
+								fn_getBackupInfo();
 							};
-							gCommon.alert('즉시 백업을 요청하였습니다.');
-							fn_getBackupInfo();
 						}
 					});	
 				});
@@ -2135,12 +2116,6 @@
 					url: '/zdbapi/updateSchedule',
 					data:param,
 					success: function(res){
-						if(res.result.code=='4'){
-							gCommon.alert(res.result.message,function(){
-								fn_getBackupScheduleInfo();
-							});
-							return;
-						};
 						gCommon.alert('백업 설정이 수정되었습니다.',function(){
 							fn_getBackupScheduleInfo();
 						});
@@ -2175,12 +2150,10 @@
 						url: '/zdbapi/deleteBackup',
 						data:param,
 						success: function(res){
-							if(res.result.code=='4'){
-								gCommon.alert(res.result.message);
-								return;
+							if(res.result.code!='4'){
+								gCommon.alert('백업 삭제를 요청하였습니다.');
+								fn_getBackupInfo();
 							};
-							gCommon.alert('백업 삭제를 요청하였습니다.');
-							fn_getBackupInfo();
 						}
 					});	
 				})
@@ -2202,9 +2175,7 @@
 								url: '/zdbapi/restoreFromBackup',
 								data:data,
 								success: function(res){
-									if(res.result.code == '4'){
-										gCommon.alert(res.result.message);
-									}else{
+									if(res.result.code!='4'){
 										gCommon.alert('복원 요청이 완료 되었습니다.');
 									}
 								}

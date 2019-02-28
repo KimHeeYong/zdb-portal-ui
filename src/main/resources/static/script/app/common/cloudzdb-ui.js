@@ -92,7 +92,7 @@ var gCommon = $a.page(function(){
 					if(res && res.result && (res.result.resultCode == 'exception')){
 						gCommon.alert(res.result.resultMessage);							
 					}else if(res && res.result && (res.result.code == 4)){
-                        //gCommon.alert(res.result.message);
+                        gCommon.alert(res.result.message);
                         opt.success(res);
 					}else{
 						opt.success(res);

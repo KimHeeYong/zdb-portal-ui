@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,12 +30,6 @@ public class Zdb04Controller {
 	@GetMapping("zdb0400")
 	public ModelAndView zdb0200(HttpServletRequest request,HttpServletResponse response) {
 		ModelAndView mav = new ModelAndView();
-		HttpSession session = request.getSession();
-		Enumeration<String> it = session.getAttributeNames();
-		while(it.hasMoreElements()) {
-			String key = it.nextElement();
-			
-		};
 		return mav;
 	}
 }

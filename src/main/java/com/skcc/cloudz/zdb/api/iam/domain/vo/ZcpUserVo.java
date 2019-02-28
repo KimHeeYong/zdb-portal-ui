@@ -2,7 +2,6 @@ package com.skcc.cloudz.zdb.api.iam.domain.vo;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
