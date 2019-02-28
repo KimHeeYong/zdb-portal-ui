@@ -1016,12 +1016,13 @@
 					{
 						title: "Shutdown" ,
 						processor: function(data, $cell, grid) {
+							console.log(data)
 							gCommon.credentialConfirm({
 						        data:{credential:$("#credential").val(), msg:'서비스를 종료 하시려면', okBtnMsg:'서비스 종료'},
 						        callback : function(res){
 									$a.ajax({
 										url: '/zdbapi/serviceOff',
-										method:'PUT', data:($.extend({},gParam,{stsName:data.name})),
+										method:'PUT', data:($.extend({},gParam,{stsName:data.stName})),
 										success: function(res){
 											if(res.result.code!='4'){
 												gCommon.alert(res.result.message);
@@ -1431,6 +1432,7 @@
 						pod.svc = dt.svc;
 						pod.replicas=dt.replicas;
 						pod.serviceType = gService.serviceType;
+						pod.stName = dt.name;
 						tList.push(pod);
 						if(pod.condition && pod.condition.status != 'True'){ 
 							var tPod = $.extend({},pod,{colspanCol:true})
