@@ -99,6 +99,7 @@
 			<ul class="cp-accordion">
 				<li>
 					<h3 class="form-title">Connection</h3>
+					<div class="Tooltip hide" data-base="#failoverTooltip">Master DB가 장애로 서비스가 불가능한 상태가 되면,<br/> failover를 수행하여 slave DB를 master DB로 승격시켜<br/> 서비스 다운타임을 최소화 합니다.</div>
 					<div class="accor-contents__wrap">
 						<form name="formService">
 						<table id="connectionInfoTable" class="Table Form-type">
@@ -145,8 +146,7 @@
 						               	</div>
 						               	<div class="fl hide" id="divFailoverArea">
             				           		<div id="divFailoverBtn" class="hide">
-							               		<button class="Button btn">Failover</button>
-						               			<span class="Tooltip hide">Master DB가 장애로 서비스가 불가능한 상태가 되면,<br/> failover를 수행하여 slave DB를 master DB로 승격시켜<br/> 서비스 다운타임을 최소화 합니다.</span>
+							               		<button class="Button btn" id="failoverTooltip">Failover</button>
 						               		</div>
 						               		<div id="divFailbackBtn" class="hide">
 						               			<button class="Button btn">Failback</button>
