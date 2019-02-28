@@ -243,8 +243,8 @@
 										<div class="hide">
 											<select name="failOverEnable"> <option value="Y">Y</option> <option value="N">N</option> </select>
 										</div>
-										<div class="Icon ico-cloudz alarm fl mt5 mr5"></div>
 										<div class="fl">
+										<span class="Icon ico-cloudz alarm"></span>
 										Master 노드 장애발생시 임계 시간동안 서비스가 복구되지 않을 경우 
 										자동으로 Slave 노드로 서비스를 전환합니다.(최초 설정 변경시 서비스가 재시작 됩니다.)
 										</div>  
@@ -1016,7 +1016,6 @@
 					{
 						title: "Shutdown" ,
 						processor: function(data, $cell, grid) {
-							console.log(data)
 							gCommon.credentialConfirm({
 						        data:{credential:$("#credential").val(), msg:'서비스를 종료 하시려면', okBtnMsg:'서비스 종료'},
 						        callback : function(res){
@@ -1260,7 +1259,7 @@
 					}
 				};
 				//service 상태가 green이 아니고 현재 탭이 disable탭에 속하면 서비스 탭으로 이동
-				if(!isStatusGreen && tabDisList.indexOf($('#zdbServiceTabs').getCurrentTabContent().replace('#','')) > 0){  
+				if(!isStatusGreen && tabDisList.indexOf($.cookie('selected2010tab')) > -1){  
 					$('#zdbServiceTabs').setTabByContent('#tabService');
 				};
 				 //redis - user탭 삭제, purpose - data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
@@ -1367,153 +1366,91 @@
 				var tList = [];
 				
 				var services = gService.services;
-				var statefulSets = gService.statefulSets;
 				var isMasterRed = false;
-				
-				for(var i = 0 ; i < statefulSets.length; i++){
-					var statefulSet = statefulSets[i];
-					var replicas = statefulSet.spec.replicas;
-					var role = ""; 
-					var svc = "";
-					if(gService.serviceType == 'redis'){
-						if(statefulSet.metadata.labels.role == "metrics")continue;
-						else if(statefulSet.metadata.labels.role == 'slave'){
-							role = 'slave(readOnly)'; 
-						}else{
-							role = statefulSet.spec.selector.matchLabels.role;
-						}
-					}else{
-						role = statefulSet.metadata.labels.component;
-					};		
+				var statefulSets = gService.statefulSets;
+				var deployments = gService.deployments;
 
-					for(var j = 0 ; j < services.length; j++){
-						var service = services[j];
-						var svc_role = '';
+				addResourceList('statefulSets',statefulSets);
+				addResourceList('deployments',deployments);
+				function addResourceList(tp,li){
+					for(let i=0;i<li.length;i++){
+						let t = li[i];
+						var replicas = t.spec.replicas;
+						var role = ""; 
+						var svc = "";
 						if(gService.serviceType == 'redis'){
-							if( service.metadata.name.endsWith('master') ) {
-								svc_role = 'master';
-							} else if( service.metadata.name.endsWith('slave') ) {
-								svc_role = 'slave';
+							if(t.metadata.labels.role == "metrics")continue;
+							else if(t.metadata.labels.role == 'slave'){
+								role = 'slave(readOnly)'; 
+							}else{
+								role = t.spec.selector.matchLabels.role;
 							}
-						} else if(gService.serviceType == 'mariadb'){
-							svc_role = service.metadata.labels.component
-						}
-						
-						if(role == svc_role) {
-							svc = service;
-							break;
-						}
-					}
-					
-					var pod = null;
-					var dt = {
-							isPod:false,
-							status: (replicas > 0 && replicas == statefulSet.status.readyReplicas ? 'green' : 'red'),
-							name:statefulSet.metadata.name,
-							replicas:replicas,
-							role: role,
-							svc: svc,
-							serviceType: gService.serviceType,
-							cpu:gServiceScale.cpu,
-							memory:gServiceScale.memory,
-							colspanCol:false
-						};
-					if(dt.status == 'green') {
-						pod = gCommon.findObjectByKeyOb(podData,{stName:dt.name});
-					}else{
-						if(dt.status == 'red' && dt.role == 'master'){
-							isMasterRed = true;
-						}						
-					}
-					
-					if(pod != null){
-						pod.status = dt.status;
-						pod.role = dt.role;
-						pod.svc = dt.svc;
-						pod.replicas=dt.replicas;
-						pod.serviceType = gService.serviceType;
-						pod.stName = dt.name;
-						tList.push(pod);
-						if(pod.condition && pod.condition.status != 'True'){ 
-							var tPod = $.extend({},pod,{colspanCol:true})
-							tList.push(tPod);
-						};
-					} else {
-						tList.push(dt);
-					}
-				};
-				
-				let deployments = gService.deployments;
-				for(var i = 0 ; i < deployments.length; i++){
-					var deployment = deployments[i];
-					var replicas = deployment.spec.replicas;
-					var role = ""; 
-					var svc = "";
-					if(gService.serviceType == 'redis'){
-						if(deployment.metadata.labels.role == "metrics")continue;
-						else if(deployment.metadata.labels.role == 'slave'){
-							role = 'slave(readOnly)'; 
 						}else{
-							role = deployment.spec.selector.matchLabels.role;
-						}
-					}		
+							role = t.metadata.labels.component;
+						};		
 
-					for(var j = 0 ; j < services.length; j++){
-						var service = services[j];
-						var svc_role = '';
-						if(gService.serviceType == 'redis'){
-							if( service.metadata.name.endsWith('master') ) {
-								svc_role = 'master';
-							} else if( service.metadata.name.endsWith('slave') ) {
-								svc_role = 'slave';
+						for(var j = 0 ; j < services.length; j++){
+							var service = services[j];
+							var svc_role = '';
+							if(gService.serviceType == 'redis'){
+								if( service.metadata.name.endsWith('master') ) {
+									svc_role = 'master';
+								} else if( service.metadata.name.endsWith('slave') ) {
+									svc_role = 'slave';
+								}
+							} else if(gService.serviceType == 'mariadb'){
+								svc_role = service.metadata.labels.component
 							}
-						} 
-						if(role == svc_role) {
-							svc = service;
-							break;
-						}
-					}
-					
-					var pod = null;
-					var dt = {
-							isPod: false,
-							status: (replicas > 0 && replicas == deployment.status.readyReplicas ? 'green' : 'red'),
-							name: deployment.metadata.name,
-							replicas: replicas,
-							role: role,
-							svc: svc,
-							serviceType: gService.serviceType,
-							cpu: gServiceScale.cpu,
-							memory: gServiceScale.memory,
-							colspanCol:false
-						};
-
-					if(dt.status == 'green') {
-						for(var k = 0 ; k < podData.length; k++){
-							var p = podData[k];
-							if(p.name.startsWith(dt.name)) {
-								pod = p;
+							
+							if(role == svc_role) {
+								svc = service;
 								break;
 							}
 						}
-					}else{
-						if(dt.status == 'red' && dt.role == 'master'){
-							isMasterRed = true;
+						
+						var pod = null;
+						var dt = {  //메세지용 임의 row 데이터
+								isPod:false,
+								status: (replicas > 0 && replicas == t.status.readyReplicas ? 'green' : 'red'),
+								name:t.metadata.name, replicas:replicas, role: role, svc: svc,
+								serviceType: gService.serviceType,
+								cpu:gServiceScale.cpu,
+								memory:gServiceScale.memory,
+								colspanCol:false
+							};
+						if(dt.status == 'green') {
+							if(tp=='statefulSets'){
+								pod = gCommon.findObjectByKeyOb(podData,{stName:dt.name});
+							}else if(tp=='deployments'){
+								for(var k = 0 ; k < podData.length; k++){
+									var p = podData[k];
+									if(p.name.startsWith(dt.name)) {
+										pod = p;
+										break;
+									}
+								}								
+							}
+						}else{
+							if(dt.status == 'red' && dt.role == 'master'){
+								isMasterRed = true;
+							}						
+						}
+						
+						if(pod != null){
+							pod.status = dt.status;
+							pod.role = dt.role;
+							pod.svc = dt.svc;
+							pod.replicas=dt.replicas;
+							pod.serviceType = gService.serviceType;
+							pod.stName = dt.name;
+							tList.push(pod);
+							if(pod.condition && pod.condition.status != 'True'){ 
+								var tPod = $.extend({},pod,{colspanCol:true})
+								tList.push(tPod);
+							};
+						} else {
+							tList.push(dt);
 						}						
-					}
-					if(pod != null){
-						pod.status = dt.status;
-						pod.role = dt.role;
-						pod.svc = dt.svc;
-						pod.replicas=dt.replicas;
-						pod.serviceType = gService.serviceType;
-						tList.push(pod);
-						if(pod.condition && pod.condition.status != 'True'){ 
-							var tPod = $.extend({},pod,{colspanCol:true})
-							tList.push(tPod);
-						};
-					} else {
-						tList.push(dt);
 					}
 				};
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset

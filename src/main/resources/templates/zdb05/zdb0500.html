@@ -47,7 +47,7 @@
 						{ title:'서비스이름', key : 'serviceName' , width: '180px', align: 'left',render:function(value,data){
 							var re = $('<a class="grid" style="a.inherited:no"/>').html(value).on('click',function(){
 								fn_setSelected2010Tab('tabBackup');
-								gCommon.movePage('/zdb02/zdb0210',data);
+								gCommon.movePage('/zdb02/zdb0210',{namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName});
 							});
 							return re;
 							
