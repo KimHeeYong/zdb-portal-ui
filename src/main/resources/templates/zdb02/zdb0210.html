@@ -121,12 +121,15 @@
 								</tr>
 								<tr>
 									<th> 접속포트</th>
+									<td data="port"> </td>
+									<!-- 
 									<td data="port" th:if="${#request.getParameter('serviceType')} == 'redis'"> </td>
 									<td th:if="${#request.getParameter('serviceType')} != 'redis'">
 										<input type="text" class="Textinput" name="port" id="port">
 										<button class="Button line-btn" id="portUpdate">변경</button>
 										<p data-for="port" class="warn-text"></p>
 									</td>
+									 -->
 								</tr>
 								<tr>                                                                                                 
 					               	<th rowspan="2">Private Network</th>      
@@ -1455,12 +1458,18 @@
 				};
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset
 				//auto failover 설정
-				if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gConfigData.auto_failover_enabled=='true' && gService.statefulSets.length > 1){
-					setOnOffButton('failOverEnable',(gService.failoverEnabled==true?'Y':'N'));
-					$('#divFailover').show();
+				if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gService.statefulSets.length > 1){
+					if(gConfigData.auto_failover_enabled=='true'){
+						setOnOffButton('failOverEnable',(gService.failoverEnabled==true?'Y':'N'));
+						$('#divFailover').show();
+					}else{
+						$('#divFailover').hide();
+					}
 					if(isMasterRed){
 						$('#divFailoverArea').show();
 						inquiryFailover();
+					}else{
+						$('#divFailoverArea').hide();
 					}
 				}else{
 					$('#divFailover').hide();
