@@ -994,8 +994,37 @@
 				fitTableWidth :true,
 				height: 400,
 				contextMenu : [
+					{  title: 'Restart',
+						processor:function(data,$cell,grid){
+							gCommon.credentialConfirm({
+								data:{credential:$("#credential").val(),msg:'재시작 하시려면',okBtnMsg:'재시작'},
+						        callback : function(res){
+						        	if(res == "Y"){
+										var param = {
+												serviceType:gService.serviceType,
+												namespace:gService.namespace,
+												serviceName:gService.serviceName,
+												podName:data.name
+										}
+										$a.ajax({
+											url: '/zdbapi/restartPod',
+											data:param,
+											success: function(res){
+												if(res.result.code!='4'){
+													gCommon.alert(res.result.message);
+												};
+											}
+										});
+						        	};
+						        }
+						    });								
+						},
+						use: function(data,$cell,grid){
+							return $cell.data('alopexgrid-columnindex')==10;
+						}
+					},
 					{
-						title: "START" ,
+						title: "Start" ,
 						processor: function(data, $cell, grid) {
 							gCommon.credentialConfirm({
 						        data:{credential:$("#credential").val(), msg:'서비스 시작 하시려면', okBtnMsg:'서비스 시작'},
@@ -1013,7 +1042,7 @@
 						    });
 						},
 						use: function(data, $cell, grid) {
-							return data.status == 'red';
+							return $cell.data('alopexgrid-columnindex')==10 && data.status == 'red';
 						}
 					},
 					{
@@ -1035,7 +1064,7 @@
 						    });
 						},
 						use: function(data, $cell, grid) {
-							return data.status == 'green';
+							return $cell.data('alopexgrid-columnindex')==10 && data.status == 'green';
 						}
 					}
 				],
@@ -1090,12 +1119,27 @@
 							return moment(lt).format('YYYY-MM-DD HH:mm:ss');
 						}
 					}}, 
-					{ title:'Restart',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping){
-						if(!data.isPod)return'';
-						var re = $('<button class="btn-ico btn-refresh">재시작</button>').on('click',function(){
-							fn_restartPod(data);
+					{ title:'Restart',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping,cell){
+						let t = $('<button class="Button btn-ico__typeb btn-listview open"></button>');
+						
+						let ob = arguments
+						t.on('click',function(e){
+							//e.preventDefault();
+							let ob = $(this)
+							setTimeout(function(){
+								ob.trigger('contextmenu');
+								$('.alopexgrid-contextmenu').focus();
+							},100);
+							
+							//$(this).parent().trigger('contextmenu');
+							//$(this).parent().focus();
 						});
-						return re;
+						
+						//if(!data.isPod)return'';
+						//var re = $('<button class="btn-ico btn-refresh">재시작</button>').on('click',function(){
+						//	fn_restartPod(data);
+						//});
+						return t;
 					}},
 					{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
 						if(!data.isPod)return'';
@@ -1123,34 +1167,7 @@
 			});
 			
 			function fn_restartPod(data){
-			    $a.popup({
-			        url: "/zdb02/zdb0200p03",
-			        data:{credential:$("#credential").val(),msg:'재시작 하시려면',okBtnMsg:'재시작'},
-			        iframe: false,
-			        width: 500,
-			        height: 300,
-			        movable:true,
-			        title : '',
-			        callback : function(res){
-			        	if(res == "Y"){
-							var param = {
-									serviceType:gService.serviceType,
-									namespace:gService.namespace,
-									serviceName:gService.serviceName,
-									podName:data.name
-							}
-							$a.ajax({
-								url: '/zdbapi/restartPod',
-								data:param,
-								success: function(res){
-									if(res.result.code!='4'){
-										gCommon.alert(res.result.message);
-									};
-								}
-							});
-			        	};
-			        }
-			    });				
+		
 			}
 			function fn_viewLog(data){
 				window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
@@ -1465,11 +1482,17 @@
 					}else{
 						$('#divFailover').hide();
 					}
-					if(isMasterRed){
+					if(isMasterRed || gService.serviceFailOverStatus == 'MasterToSlave'){
 						$('#divFailoverArea').show();
-						inquiryFailover();
 					}else{
 						$('#divFailoverArea').hide();
+					}
+					if(gService.serviceFailOverStatus == 'MasterToSlave'){
+						$('#divFailoverBtn').hide();
+						$('#divFailbackBtn').show();
+					}else{
+						$('#divFailoverBtn').show();
+						$('#divFailbackBtn').hide();
 					}
 				}else{
 					$('#divFailover').hide();
@@ -1601,10 +1624,7 @@
 							method:'PUT',
 							data:gParam,
 							success: function(res){
-								gCommon.alert(res.result.message);
-								setTimeout(function(){
-									inquiryFailover();
-								},500);
+								gCommon.alert(res.result.message);								
 							}
 						})	
 					}
@@ -1621,33 +1641,11 @@
 							data:gParam,
 							success: function(res){
 								gCommon.alert(res.result.message);
-								setTimeout(function(){
-									inquiryFailover();
-								},500);
 							}
 						})	
 					}
 				});
 			})
-			function inquiryFailover(){
-				$a.ajax({
-					url:'/zdbapi/serviceFailOverStatus',
-					async:false,
-					method:'get',
-					data:gParam,
-					success:function(res){
-						if(res.result.code!='4'){
-							if(res.result.result.status == 'MasterToMaster'){
-								$('#divFailoverBtn').show();
-								$('#divFailbackBtn').hide();
-							}else{
-								$('#divFailoverBtn').hide();
-								$('#divFailbackBtn').show();
-							}
-						}
-					}
-				});
-			}
 			/*tabService end*/
 			
 			/*tabScale start 스케일 */
@@ -2059,7 +2057,7 @@
 			function fn_saveSchedule(){
 				var param = $.extend({},gParam,backupForm.serializeObject());
 				param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
-				
+				param.incrementYn = backupForm.find('#incrementPeriod select').val() == '0' ? 'N' : 'Y';
 				$a.ajax({
 					url: '/zdbapi/updateSchedule',
 					data:param,
