@@ -398,9 +398,9 @@ $.fn.extend({
 				
 			}
 		}else if('select' == tagName){
-			item.val(val);
+			item.val(val+'');
 		}else if('divSelect' == tagName){
-			item.setSelected(val);
+			item.setSelected(val+'');
 		};
 		return this;
     },
