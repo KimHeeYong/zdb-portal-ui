@@ -455,7 +455,7 @@ public class ZdbApiService{
 	}
 
 	public ZdbRestDTO restoreFromBackup(Map<String, String> param) {
-		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_RESTORE_FROM_BACKUP,ZdbRestDTO.class,param);
+		ZdbRestDTO zdbRestDTO = connector.getForObject(demonServer + URIConstants.URI_RESTORE_FROM_BACKUP,ZdbRestDTO.class,param);
 		
 		return zdbRestDTO;
 	}	
