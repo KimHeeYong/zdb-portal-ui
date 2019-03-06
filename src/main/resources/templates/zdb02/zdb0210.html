@@ -1020,6 +1020,7 @@
 						    });								
 						},
 						use: function(data,$cell,grid){
+							//console.log($cell.data('alopexgrid-columnindex'));
 							return $cell.data('alopexgrid-columnindex')==10;
 						}
 					},
@@ -1120,16 +1121,14 @@
 						}
 					}}, 
 					{ title:'Restart',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping,cell){
-						let t = $('<button class="Button btn-ico__typeb btn-listview open"></button>');
-						
-						let ob = arguments
+						let t = $('<button class="Button btn-ico__typeb btn-listview buttonMenu"></button>');
+						/*
 						t.on('click',function(e){
-							//e.preventDefault();
+							e.preventDefault();
 							let ob = $(this)
-							setTimeout(function(){
-								ob.trigger('contextmenu');
-								$('.alopexgrid-contextmenu').focus();
-							},100);
+							ob.parent().trigger('contextmenu');
+							
+							//ob.trigger('contextmenu');
 							
 							//$(this).parent().trigger('contextmenu');
 							//$(this).parent().focus();
@@ -1139,6 +1138,7 @@
 						//var re = $('<button class="btn-ico btn-refresh">재시작</button>').on('click',function(){
 						//	fn_restartPod(data);
 						//});
+						*/
 						return t;
 					}},
 					{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
@@ -1164,11 +1164,10 @@
 						return re;
 					},hidden:isSlowLogHidden}
 				],
+			}).on('mousedown', '.buttonMenu',function(e){
+				//console.log($(e.currentTarget).parent().trigger('contextmenu'))
 			});
 			
-			function fn_restartPod(data){
-		
-			}
 			function fn_viewLog(data){
 				window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podname="+data.name);
 			}
@@ -1964,7 +1963,11 @@
 						return re;
 					}},
 					{ title:'다운로드', key : 'archiveFileSize' , width: '90px', align: 'center',render:function(value,data,render,mapping){
-						let t = cloudUtil.isEmpty(data.type)? '다운로드' : '복원';
+						let t = '다운로드';
+						if(['FULL','INCR'].indexOf(data.type) > -1){
+							t = '복원';
+						}
+						
 						var re = $('<button class="Button btn-download '+(data.status != 'OK'?'Disabled':'')+'">'+t+'</button>').on('click',function(){
 							fn_downloadBackupFile(data);
 						});
@@ -2106,7 +2109,10 @@
 			};
 			function fn_downloadBackupFile(data){
 				if(data.status!='OK')return;
-				let isDownload = cloudUtil.isEmpty(data.type);
+				let isDownload = true;
+				if(['FULL','INCR'].indexOf(data.type) > -1){
+					isDownload = false;
+				}
 				let param = $.extend({},gParam,{backupId:data.backupId})
 				if(isDownload){
 					gCommon.movePage('/zdbapi/downloadBackup',param);
