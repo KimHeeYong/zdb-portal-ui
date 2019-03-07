@@ -1020,7 +1020,6 @@
 						    });								
 						},
 						use: function(data,$cell,grid){
-							//console.log($cell.data('alopexgrid-columnindex'));
 							return $cell.data('alopexgrid-columnindex')==10;
 						}
 					},
@@ -1122,23 +1121,13 @@
 					}}, 
 					{ title:'Restart',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping,cell){
 						let t = $('<button class="Button btn-ico__typeb btn-listview buttonMenu"></button>');
-						/*
 						t.on('click',function(e){
 							e.preventDefault();
-							let ob = $(this)
-							ob.parent().trigger('contextmenu');
-							
-							//ob.trigger('contextmenu');
-							
-							//$(this).parent().trigger('contextmenu');
-							//$(this).parent().focus();
+							$(this).parent().trigger('contextmenu');
+							let d = $('.alopexgrid-contextmenu-wrapper');
+							d.css({left:e.pageX,top:e.pageY});
 						});
 						
-						//if(!data.isPod)return'';
-						//var re = $('<button class="btn-ico btn-refresh">재시작</button>').on('click',function(){
-						//	fn_restartPod(data);
-						//});
-						*/
 						return t;
 					}},
 					{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
@@ -1164,8 +1153,6 @@
 						return re;
 					},hidden:isSlowLogHidden}
 				],
-			}).on('mousedown', '.buttonMenu',function(e){
-				//console.log($(e.currentTarget).parent().trigger('contextmenu'))
 			});
 			
 			function fn_viewLog(data){
@@ -1188,8 +1175,6 @@
 						gTagList = service.tags;
 						fn_displayService();
 						fn_getServiceCallback();
-
-						fn_getService();
 					},complete:function(res){
 						deferred.resolve(res.responseJSON);
 					}
@@ -1202,14 +1187,17 @@
 				if(gClient!= null)return;
 				var gClient = gZdbsocket.getConnect();
 				gClient.connect({}, function(frame){
-					gClient.subscribe('/service/'+gService.serviceName, function(res) {
-						var re = JSON.parse(res.body);
-						var service = gfn_convertServiceData(re.result.serviceoverview);
-						gCurrentNamespace = service.namespace;
-						gService = service;
-						gTagList = service.tags;
-						fn_displayService();
-						fn_getServiceCallback();
+					//gClient.subscribe('/service/'+gService.serviceName, function(res) {
+					//	var re = JSON.parse(res.body);
+					//	var service = gfn_convertServiceData(re.result.serviceoverview);
+					//	gCurrentNamespace = service.namespace;
+					//	gService = service;
+					//	gTagList = service.tags;
+					//	fn_displayService();
+					//	fn_getServiceCallback();
+					//});
+					gClient.subscribe('/service/'+gService.serviceName+'/refresh', function(res) {
+						fn_getServiceFirst();
 					});
 				});
 			}
@@ -2365,6 +2353,7 @@
 			fn_getServiceFirst().done(function(){
 				var cookieTabId = $.cookie('selected2010tab')||'tabService';
 				$('#zdbServiceTabs').setTabByContent('#'+cookieTabId);
+				fn_getService();
 			});
 		};
 		
