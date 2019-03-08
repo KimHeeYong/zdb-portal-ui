@@ -1243,9 +1243,9 @@
 				if(gService.status != 'green'){
 					let infoMsg = $('#divInfoMsg');
 					let msg = gService.statusMessage||'';
-					let t = $('<div class="Tooltip"></div>').html(msg);
-					infoMsg.after(t);
-					$a.convert(t);
+					//let t = $('<div class="Tooltip"></div>').html(msg);
+					//infoMsg.after(t);
+					//$a.convert(t);
 					let m = msg.split('</br>');
 					if(m && m.length > 1){
 						msg = m[0]+'</br>'+m[1];
