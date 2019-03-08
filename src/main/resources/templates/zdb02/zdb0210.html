@@ -1956,7 +1956,7 @@
 						var re = '<span style="font:inherit;'+st+'">'+val+'</span>' 
 						return re;
 					}},
-					{ title:'다운로드', key : 'archiveFileSize' , width: '90px', align: 'center',render:function(value,data,render,mapping){
+					{ title:'복원/다운로드', key : 'archiveFileSize' , width: '90px', align: 'center',render:function(value,data,render,mapping){
 						let t = '다운로드';
 						if(['FULL','INCR'].indexOf(data.type) > -1){
 							t = '복원';
