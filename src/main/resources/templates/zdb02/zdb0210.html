@@ -935,21 +935,26 @@
 			    }
 			});						
 			$('#togglePwd').on('click',function(){
-				var isShowPwd = $('#credential').attr('type')=='password';
-				if(isShowPwd){
-					$('#credential').attr('type','text');
+				setConnectionString(true)
+			});
+			function setConnectionString(isSwitch){
+				let isShowCredential = $('#credential').attr('type')=='text';
+				if(isSwitch){
+					$('#credential').attr('type',isShowCredential?'password':'text');
+					isShowCredential = !isShowCredential;
+				}				
+				if(isShowCredential){
 					$('#connectionInfoTable').find('input[data-origin]').each(function(){
 						var ob = $(this);
 						ob.val(ob.val().replace('[password]',$('#credential').val()));
 					});
 				}else{
-					$('#credential').attr('type','password');
 					$('#connectionInfoTable').find('input[data-origin]').each(function(){
 						var ob = $(this);
 						ob.val(ob.data('origin'));
 					});
 				}
-			});
+			}
 			$('#credentialUpdate').on('click',function(){
 				var param = $.extend({},gParam);
 				param.newPassword  = $('#credential').val();
@@ -1235,6 +1240,7 @@
 						}else{
 							$('#connectionInfoTable').find('th[rowspan]').attr('rowspan',2);
 						};
+						setConnectionString();
 					}
 				});
 			};
