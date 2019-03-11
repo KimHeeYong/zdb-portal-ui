@@ -57,7 +57,7 @@ var G_GLOBAL = 'global';
 var gConfigColumn = ['free_resource_check','public_network_enabled','backup_duration','backup_time','auto_failover_enabled'];
 var gSelectedNamespace = null;
 var gPopData = '';
-
+var gIgnoreOverlay = false;
 var gCommon = $a.page(function(){ 
 	this.init = function(){ //초기화 루틴 수행
 		gSelectedNamespace = $.cookie('selectedNamespace')||G_NAMESPACE_ALL;
@@ -78,6 +78,7 @@ var gCommon = $a.page(function(){
 			    		loadingMessage = opt.loadingMessage;
 			    	};
 			    	$('#loading-message').html(loadingMessage);
+			    	gIgnoreOverlay = opt.ignoreOverlay;
 			    },
 			    complete:function(copt){
 			    	
@@ -102,9 +103,11 @@ var gCommon = $a.page(function(){
 			$.ajax(option);
 		}
 		$(document).ajaxStart(function(as){
-			gCommon.overlay(as);
+			if(gIgnoreOverlay != true){
+				gCommon.overlay();
+			}
 		}).ajaxStop(function(ae) { 
-			gCommon.removeOverlay(ae);
+			gCommon.removeOverlay();
 		});
 		//gParam 에 get파라미터 셋팅
 		gParam = this.getParameterJson();
@@ -148,7 +151,7 @@ var gCommon = $a.page(function(){
 	    });
 	    return vars;
 	}
-	this.overlay = function(opt){
+	this.overlay = function(){
 		gOverlay = $('body #loading').show();
 	};
 	this.removeOverlay = function(){
@@ -181,10 +184,6 @@ var gCommon = $a.page(function(){
 							text:ob.metadata.name
 						});
 					};
-					namespaceList.push({
-						id:'gdi-dwp-dp-prod',
-						text:'gdi-dwp-dp-prod'
-					})
 					if(opt.incAdminAll){//admin일 경우에만 전체 보이도록 
 						if(gIsAdmin){
 							namespaceList.push({
@@ -215,7 +214,6 @@ var gCommon = $a.page(function(){
 		}else{
 			result.isExists = true;
 		}
-		result.failoverEnabled = true;//dwtemp 
 		return result;
 	}	
 	this.getConfigDataAjax = function(namespace){
@@ -242,9 +240,6 @@ var gCommon = $a.page(function(){
 				}
 			}
 		});	
-		if(result){
-			
-		}
 		return result;
 	}
 	this.copyToClipboard = function(selector) {

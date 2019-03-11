@@ -940,21 +940,26 @@
 			    }
 			});						
 			$('#togglePwd').on('click',function(){
-				var isShowPwd = $('#credential').attr('type')=='password';
-				if(isShowPwd){
-					$('#credential').attr('type','text');
+				setConnectionString(true)
+			});
+			function setConnectionString(isSwitch){
+				let isShowCredential = $('#credential').attr('type')=='text';
+				if(isSwitch){
+					$('#credential').attr('type',isShowCredential?'password':'text');
+					isShowCredential = !isShowCredential;
+				}				
+				if(isShowCredential){
 					$('#connectionInfoTable').find('input[data-origin]').each(function(){
 						var ob = $(this);
 						ob.val(ob.val().replace('[password]',$('#credential').val()));
 					});
 				}else{
-					$('#credential').attr('type','password');
 					$('#connectionInfoTable').find('input[data-origin]').each(function(){
 						var ob = $(this);
 						ob.val(ob.data('origin'));
 					});
 				}
-			});
+			}
 			$('#credentialUpdate').on('click',function(){
 				var param = $.extend({},gParam);
 				param.newPassword  = $('#credential').val();
@@ -1240,6 +1245,7 @@
 						}else{
 							$('#connectionInfoTable').find('th[rowspan]').attr('rowspan',2);
 						};
+						setConnectionString();
 					}
 				});
 			};
@@ -1248,9 +1254,9 @@
 				if(gService.status != 'green'){
 					let infoMsg = $('#divInfoMsg');
 					let msg = gService.statusMessage||'';
-					let t = $('<div class="Tooltip"></div>').html(msg);
-					infoMsg.after(t);
-					$a.convert(t);
+					//let t = $('<div class="Tooltip"></div>').html(msg);
+					//infoMsg.after(t);
+					//$a.convert(t);
 					let m = msg.split('</br>');
 					if(m && m.length > 1){
 						msg = m[0]+'</br>'+m[1];
@@ -1955,7 +1961,7 @@
 						var re = '<span style="font:inherit;'+st+'">'+val+'</span>' 
 						return re;
 					}},
-					{ title:'다운로드', key : 'archiveFileSize' , width: '90px', align: 'center',render:function(value,data,render,mapping){
+					{ title:'복원/다운로드', key : 'archiveFileSize' , width: '90px', align: 'center',render:function(value,data,render,mapping){
 						let t = '다운로드';
 						if(['FULL','INCR'].indexOf(data.type) > -1){
 							t = '복원';
