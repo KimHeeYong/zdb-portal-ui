@@ -215,6 +215,7 @@ $a.page(function() {
 		$('#btnCreate').on('click',function(){                          
 			$a.ajax({
 				url: '/zdbapi/createDeployment',
+				method:'post',
 				data:data,
 				success: function(res){
 					var re = res.result;

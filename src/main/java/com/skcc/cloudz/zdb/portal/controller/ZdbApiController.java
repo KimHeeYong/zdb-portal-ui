@@ -34,6 +34,7 @@ import com.zdb.core.domain.Tag;
 import com.zdb.core.domain.ZDBConfig;
 
 import io.fabric8.kubernetes.api.model.Namespace;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +45,7 @@ public class ZdbApiController {
 
 	@Autowired ZdbApiService zdbApiService;
 	
-	@RequestMapping(value="getNamespaces", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE })
+	@RequestMapping(value="getNamespaces", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE }, method = RequestMethod.GET)
 	@ResponseBody
 	public ModelAndView getNamespaces(HttpServletRequest request)throws Exception {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
@@ -57,7 +58,7 @@ public class ZdbApiController {
 		mav.addObject(IResult.NAMESPACES ,namespaces);
 		return mav;
 	}
-	@RequestMapping(value="getNamespaceResource")
+	@RequestMapping(value="getNamespaceResource", method = RequestMethod.GET)
 	@ResponseBody
 	public ModelAndView getNamespaceResource(HttpServletRequest request)throws Exception {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
@@ -68,7 +69,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping("getServiceoverviews")
+	@RequestMapping(value="getServiceoverviews", method = RequestMethod.GET)
 	public ModelAndView getServiceoverviews(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -80,7 +81,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getServiceoverview")
+	@RequestMapping(value = "getServiceoverview", method = RequestMethod.GET)
 	public ModelAndView getServiceoverview(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -90,7 +91,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getConnectionInfo")
+	@RequestMapping(value = "getConnectionInfo", method = RequestMethod.GET)
 	public ModelAndView getConnectionInfo(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -100,7 +101,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getNodeCount")
+	@RequestMapping(value = "getNodeCount", method = RequestMethod.GET)
 	public ModelAndView getNodeCount(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -110,7 +111,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "restartService")
+	@RequestMapping(value = "restartService", method = RequestMethod.GET)
 	public ModelAndView restartService(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -120,7 +121,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "restartPod")
+	@RequestMapping(value = "restartPod", method = RequestMethod.GET)
 	public ModelAndView restartPod(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -130,7 +131,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getPodResource")
+	@RequestMapping(value = "getPodResource", method = RequestMethod.GET)
 	public ModelAndView getPodResource(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -140,7 +141,17 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getPodMetrics")
+	@RequestMapping(value = "getPods", method = RequestMethod.GET)
+	public ModelAndView getPods(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<Pod> podList = zdbApiService.getPods(param);
+		mav.addObject(IResult.PODS ,podList);
+		return mav;
+	}
+	
+	@RequestMapping(value = "getPodMetrics", method = RequestMethod.GET)
 	public ModelAndView getPodMetrics(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -150,7 +161,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getDBVariables")
+	@RequestMapping(value = "getDBVariables", method = RequestMethod.GET)
 	public ModelAndView getDBVariables(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -234,7 +245,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "deleteServiceInstance")
+	@RequestMapping(value = "deleteServiceInstance", method = RequestMethod.DELETE)
 	public ModelAndView deleteServiceInstance(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -287,7 +298,7 @@ public class ZdbApiController {
 		return mav;
 	}
 
-	@RequestMapping(value = "getEvents")	
+	@RequestMapping(value = "getEvents", method = RequestMethod.GET)	
 	public ModelAndView getEvents(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -297,7 +308,7 @@ public class ZdbApiController {
 		
 		return mav;
 	}
-	@RequestMapping(value = "getUserGrants")	
+	@RequestMapping(value = "getUserGrants", method = RequestMethod.GET)	
 	public ModelAndView getUserGrants(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -308,7 +319,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getOperationEvents")	
+	@RequestMapping(value = "getOperationEvents", method = RequestMethod.GET)	
 	public ModelAndView getOperationEvents(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -319,7 +330,7 @@ public class ZdbApiController {
 		return mav;
 	}
 
-	@RequestMapping(value = "getPodLog")	
+	@RequestMapping(value = "getPodLog", method = RequestMethod.GET)	
 	public ModelAndView getPodLog(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -329,7 +340,7 @@ public class ZdbApiController {
 		
 		return mav;
 	}
-	@RequestMapping(value = "getSlowLog")	
+	@RequestMapping(value = "getSlowLog", method = RequestMethod.GET)	
 	public ModelAndView getSlowLog(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -340,7 +351,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getMycnf")	
+	@RequestMapping(value = "getMycnf", method = RequestMethod.GET)	
 	public ModelAndView getMycnf(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -350,7 +361,7 @@ public class ZdbApiController {
 		
 		return mav;
 	}
-	@RequestMapping(value = "getAllDBVariables")	
+	@RequestMapping(value = "getAllDBVariables", method = RequestMethod.GET)	
 	public ModelAndView getAllDBVariables(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -361,7 +372,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getBackupList")	
+	@RequestMapping(value = "getBackupList", method = RequestMethod.GET)	
 	public ModelAndView getBackupList(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -371,7 +382,7 @@ public class ZdbApiController {
 		
 		return mav;
 	}
-	@RequestMapping(value = "getScheduleInfoList")	
+	@RequestMapping(value = "getScheduleInfoList", method = RequestMethod.GET)	
 	public ModelAndView getScheduleInfoList(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -382,7 +393,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getSchedule")	
+	@RequestMapping(value = "getSchedule", method = RequestMethod.GET)	
 	public ModelAndView getSchedule(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -452,7 +463,7 @@ public class ZdbApiController {
 		return mav;
 	}
 
-	@RequestMapping(value = "getZDBConfig")
+	@RequestMapping(value = "getZDBConfig", method = RequestMethod.GET)
 	public ModelAndView getZDBConfig(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);

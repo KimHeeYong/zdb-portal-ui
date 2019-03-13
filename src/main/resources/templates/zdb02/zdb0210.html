@@ -902,7 +902,7 @@
 						url: '/zdbapi/deleteTag',
 						data: data, 
 						success: function(res){
-							//fn_getService();
+							fn_getServiceFirst();
 						}
 					});
 				})
@@ -919,7 +919,9 @@
 						url: '/zdbapi/createTag',
 						data: data, 
 						success: function(res){
-				    		//fn_getService();
+							if(res.result.code == '0'){
+								fn_getServiceFirst();								
+							}
 						}
 					});
 				};
@@ -996,7 +998,6 @@
 				enableContextMenu:true,
 				autoColumnIndex: true,
 				autoResize:true,
-				fitTableWidth :true,
 				height: 400,
 				contextMenu : [
 					{  title: 'Restart',
@@ -1911,7 +1912,6 @@
 			$('#gridBackup').alopexGrid({
 				autoColumnIndex : true,
 				autoResize : true,
-				fitTableWidth :true,
 				height: 400,
 				columnMapping : [
 					{ title:'백업종류', key : 'type' , width: '100px', align: 'center',render:function(value,data,render,mapping){						
@@ -2136,7 +2136,6 @@
 			$('#gridEvent').alopexGrid({
 				autoColumnIndex: true,
 				autoResize:true,
-				fitTableWidth :true,
 				height: 400,
 				renderMapping : {
 					'evtMsgTooltip' : {
@@ -2217,7 +2216,6 @@
 			$('#gridUser').alopexGrid({
 				autoColumnIndex: true,
 				autoResize:true,
-				fitTableWidth :true,
 				height: 400,
 				columnMapping : [  
 					{ title:'USER', key : 'user' , width: '100px', align: 'left'},
@@ -2243,7 +2241,8 @@
 			function fn_getUserGrants(){
 				$a.ajax({
 					url: '/zdbapi/getUserGrants',
-					data: gService,
+					method:'get',
+					data: {namespace:gService.namespace,serviceType:gService.serviceType,serviceName:gService.serviceName},
 					success: function(res){
 						var list = res.userGrants;
 						$('#gridUser').alopexGrid('dataSet',list);

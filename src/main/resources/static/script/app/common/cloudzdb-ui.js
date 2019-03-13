@@ -63,7 +63,7 @@ var gCommon = $a.page(function(){
 		gSelectedNamespace = $.cookie('selectedNamespace')||G_NAMESPACE_ALL;
 		$a.ajax = function(opt){
 			var defOpt = {
-				type:"POST",
+				type:"get",
 				dataType:'json',
 			    error: function(res) { // if error occured
 			    	if(res.status == 0){
@@ -114,7 +114,8 @@ var gCommon = $a.page(function(){
 		//AlopexGrid 디폴트 셋팅 ( contextMenu disable)
 		AlopexGrid.setup({
 			enableContextMenu : false,
-			enableDefaultContextMenu : false
+			enableDefaultContextMenu : false,
+			fitTableWidth :true
 		});
 	};
 	this.setSelectedNamespace = function(val){
