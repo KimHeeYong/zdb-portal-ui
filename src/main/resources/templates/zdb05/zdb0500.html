@@ -43,7 +43,6 @@
 					autoColumnIndex: true,
 					height: 635,
 					columnMapping : [  
-						{ title:'네임스페이스', key : 'namespace' , width: '180px', align: 'left', hidden:true},
 						{ title:'서비스이름', key : 'serviceName' , width: '180px', align: 'left',render:function(value,data){
 							var re = $('<a class="grid" style="a.inherited:no"/>').html(value).on('click',function(){
 								fn_setSelected2010Tab('tabBackup');
@@ -53,20 +52,22 @@
 							
 						}},
 						{ title:'서비스타입', key : 'serviceType' , width: '100px', align: 'center'},
-						{ title:'백업시간', key : 'startTime' , width: '70px', align: 'center'},
-						{ title:'소요시간', key : 'executionTime' , width: '70px', align: 'center', render:function(value){
+						{ title:'백업설정', key : 'useYn' , width: '70px', align: 'center',render:function(value){
+							let v = value == 'Y'? 'on':'off'; 
+							let re = $('<div class="onoff-wrap"><button class="Button btn-'+v+'">'+v.toUpperCase()+'</button></div>');
+							return re;
+						}},
+						{ title:'보관기간', key : 'storePeriod' , width: '70px', align: 'center'},
+						{ title:'전체백업시간', key : 'startTime' , width: '70px', align: 'center'},
+						{ title:'증분백업주기', key : 'incrementPeriod' , width: '70px', align: 'center'},
+						{ title:'백업용량(MB)', key : 'fullFileSize' , width: '70px', align: 'center'},
+						{ title:'소요시간', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
 							return cloudUtil.parseInt(value)== 0 ?'-':value;
 						}},
-						{ title:'파일사이즈(MB)', key : 'fileSize' , width: '70px', align: 'right', render: function(value){
-							return cloudUtil.isEmpty(value) ? '-' : cloudUtil.truncDecimal(cloudUtil.addComma((value / (1024*1024))),2);
+						{ title:'백업용량(MB)', key : 'incrFileSize' , width: '70px', align: 'center'},
+						{ title:'소요시간', key : 'incrExecutionTime' , width: '70px', align: 'center', render:function(value){
+							return cloudUtil.parseInt(value)== 0 ?'-':value;
 						}},
-						{ title:'백업용량(MB)', key : 'fileSumSize' , width: '70px', align: 'right', render: function(value){
-							return cloudUtil.isEmpty(value) ? '-' : cloudUtil.truncDecimal(cloudUtil.addComma((value / (1024*1024))),2);
-						}},
-						{ title:'최근백업시간', key : 'startDatetime' , width: '100px', align: 'right',render:function(value,data,render,mapping){
-							var isValid = moment(value,'YYYYMMDDHHmmss').isValid();
-							return isValid ? moment(value,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') : '-';
-						}}
 					],
 					message: {
 						nodata: gMessage.gridNodata
@@ -74,7 +75,10 @@
 					defaultSorting:{
 						sortingColumn: "serviceName",
 						sortingDirection: 'asc'
-					}
+					},headerGroup: [
+						{fromIndex:6, toIndex:7, title:"전체백업"},
+						{fromIndex:8, toIndex:9, title:"증분백업"}
+					],
 				});			
 				
 				function fn_getScheduleInfoList(){
