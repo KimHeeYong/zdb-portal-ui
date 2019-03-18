@@ -1557,7 +1557,7 @@
 				if(gCommon.confirm('Public Network 서비스 삭제시 </br> 외부연동이 단절됩니다. <br/> 삭제하시겠습니까?',function(){
 					$a.ajax({
 						url: '/zdbapi/deletePublicService',
-						data:gService,
+						data:gParam,
 						success: function(res){
 							fn_getServiceFirst().done(function(){
 								fn_getConnectionInfo(); 
@@ -1570,7 +1570,8 @@
 				if(gCommon.confirm('Public Network를 추가 하시겠습니까?',function(){
 					$a.ajax({
 						url: '/zdbapi/createPublicService',
-						data:gService,
+						data:gParam,
+						method:'post',
 						success: function(res){
 							fn_getServiceFirst().done(function(){
 								fn_getConnectionInfo(); 

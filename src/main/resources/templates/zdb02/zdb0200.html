@@ -308,17 +308,17 @@
 		function fn_getServices(){
 			var client = gZdbsocket.getConnect();
 			client.connect({}, function(frame){
-				//client.subscribe('/services', function(res) {
-				//	
-				//	var re = JSON.parse(res.body);
-				//	gServiceList = re.result.serviceoverviews;
-				//	gfn_convertServiceDatas(gServiceList);
-				//	//gTagList = res.tags;
-				//	fn_displayServices();
-				//});
-				client.subscribe('/services/refresh', function(res) {
-					fn_getServicesFirst();
+				client.subscribe('/services', function(res) {
+					
+					var re = JSON.parse(res.body);
+					gServiceList = re.result.serviceoverviews;
+					gfn_convertServiceDatas(gServiceList);
+					//gTagList = res.tags;
+					fn_displayServices();
 				});
+				//client.subscribe('/services/refresh', function(res) {
+				//	fn_getServicesFirst();
+				//});
 			});
 		};
 		//서비스 목록 display
