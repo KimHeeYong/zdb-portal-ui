@@ -234,6 +234,7 @@
 				if(gCommon.findObjectByKeyOb(gExpandServiceList,{serviceName:evt.toggleTreeNodeList[0].serviceName})==null){
 					for(var i=0;i < nTreeDt.length;i++){
 						let o = nTreeDt[i];
+						o.podResource = [];
 						$a.ajax({
 							url:'/zdbapi/getPods',
 							data:{namespace:o.namespace,serviceType:o.serviceType,serviceName:o.serviceName},
@@ -243,11 +244,11 @@
 										try{
 											let r = res.pods[j];
 											let c = r.spec.containers[0].resources;
-											divServiceListGrid.alopexGrid('dataEdit', 
-													{cpuRequest : c.requests.cpu.amount,cpuLimit:c.limits.cpu.amount,memoryRequest:c.requests.memory.amount,memoryLimit:c.limits.memory.amount}, 
-													{serviceName : r.metadata.name})										
+											let t = {cpuRequest : c.requests.cpu.amount,cpuLimit:c.limits.cpu.amount,memoryRequest:c.requests.memory.amount,memoryLimit:c.limits.memory.amount}
+											divServiceListGrid.alopexGrid('dataEdit',t, {serviceName : r.metadata.name})
+											o.podResource[r.metadata.name] = t;		
 										}catch(ex){
-											
+											console.log(ex)
 										}
 									}
 								}
@@ -361,7 +362,8 @@
 				for(var i = 0;i < filterList.length;i++){
 					let t = filterList[i];
 					gridList.push(t);
-					if(gCommon.findObjectByKeyOb(gExpandServiceList,{serviceName:t.serviceName})!=null){
+					let d = gCommon.findObjectByKeyOb(gExpandServiceList,{serviceName:t.serviceName}); 
+					if(d!=null){
 						t.expandedService = 'true';
 					}else{
 						t.expandedService = 'false';
@@ -369,12 +371,16 @@
 					if(t.pods.length > 0){
 						for(var j = 0; j < t.pods.length;j++){
 							let o = t.pods[j];
-							gridList.push({
-								tp:'pod',
-								serviceName:o.metadata.name,
-								shortServiceName:o.metadata.name,//().replace(t.serviceName,''),
-								parentServiceName:t.serviceName
-							});
+							let r = {
+									tp:'pod',
+									serviceName:o.metadata.name,
+									shortServiceName:o.metadata.name,//().replace(t.serviceName,''),
+									parentServiceName:t.serviceName
+								};
+							if(d!=null && t.expandedService == 'true'){
+								r = $.extend({},r,d.podResource[o.metadata.name]);
+							}							
+							gridList.push(r);
 						}						
 					}
 				}
