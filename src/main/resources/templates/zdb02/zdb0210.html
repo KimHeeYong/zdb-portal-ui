@@ -1190,18 +1190,18 @@
 				if(gClient!= null)return;
 				var gClient = gZdbsocket.getConnect();
 				gClient.connect({}, function(frame){
-					//gClient.subscribe('/service/'+gService.serviceName, function(res) {
-					//	var re = JSON.parse(res.body);
-					//	var service = gfn_convertServiceData(re.result.serviceoverview);
-					//	gCurrentNamespace = service.namespace;
-					//	gService = service;
-					//	gTagList = service.tags;
-					//	fn_displayService();
-					//	fn_getServiceCallback();
-					//});
-					gClient.subscribe('/service/'+gService.serviceName+'/refresh', function(res) {
-						fn_getServiceFirst();
+					gClient.subscribe('/service/'+gService.serviceName, function(res) {
+						var re = JSON.parse(res.body);
+						var service = gfn_convertServiceData(re.result.serviceoverview);
+						gCurrentNamespace = service.namespace;
+						gService = service;
+						gTagList = service.tags;
+						fn_displayService();
+						fn_getServiceCallback();
 					});
+					//gClient.subscribe('/service/'+gService.serviceName+'/refresh', function(res) {
+					//	fn_getServiceFirst();
+					//});
 				});
 			}
 			function fn_getConnectionInfo(){
