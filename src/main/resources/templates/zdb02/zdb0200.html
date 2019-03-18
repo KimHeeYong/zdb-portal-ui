@@ -88,7 +88,9 @@
 	var gServiceList = [];      //서비스 목록
 	var gTagList = [];
 	var gSelectedListType = 'card'; 
+	var gExpandServiceList = [];
 	$a.page(function() {
+		let divServiceListGrid;
 		this.init = function() {
 			
 			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
@@ -108,6 +110,7 @@
 			};
 			$('#btnServiceListCard,#btnServiceListGrid').on('click',function(evt){
 				fn_setSelected2000ListType($(this).data('list-type'));
+				fn_displayServices();
 			});
 			var sortLi = $('.sort-list li'); 
 			sortLi.on('click',function(evt){
@@ -122,44 +125,6 @@
 			});			
 			$('#txtServiceFilter').on('input propertychange',function(){
 				fn_displayServices();
-			});
-			//서비스 목록내 태그 삭제
-			$('body').on('click','button.tagDel',function(){
-				var ob = $(this).prev();
-				gCommon.confirm('선택한 태그를 삭제하시겠습니까?',function(){
-					var data = gCommon.findObjectByKeyOb(gTagList,{id:ob.data('id')});
-					data = $.extend({},data,{serviceName:data.releaseName});
-					$a.ajax({
-						url: '/zdbapi/deleteTag',
-						data: data, 
-						success: function(res){
-							gCommon.alert(gMessage.procSuccss);
-							//fn_getServices();
-						}
-					});
-				})
-			});
-			//서비스 목록내 태그 추가
-			$('body').on('click','button.tagAdd',function(e){
-				e.preventDefault();
-				var data = $('#'+$(this).attr('key')).data();
-				$(this).next().show().find('input').focus();
-			});
-			$('body').on('keypress','input.tagAddInput',function(evt){
-				if(evt.which == '13'){
-					var data = $('#'+$(this).attr('key')).data();
-		    		data = $.extend({},data,{releaseName:data.serviceName,tagName:$(this).val()});
-					$a.ajax({
-						url: '/zdbapi/createTag',
-						data: data, 
-						success: function(res){
-				    		gCommon.alert(gMessage.saveSuccess);
-				    		//fn_getServices();
-						}
-					});
-				};
-			}).on('focusout','input.tagAddInput',function(){
-				$(this).val('').parent().hide();
 			});
 			
 			//서비스 목록 클릭
@@ -203,33 +168,48 @@
 					})
 				})
 			});
-			
-			$('#divServiceListGrid').alopexGrid({
+			divServiceListGrid = $('#divServiceListGrid').alopexGrid({
 				autoColumnIndex: true,
 				height: 635,
+				tree : {
+					 useTree : true
+					,idKey : 'serviceName' //노드를 지시하는 유일한 값이 저장된 키값
+					,parentIdKey : 'parentServiceName' //자신의 상위(parent) 노드를 지시하는 ID가 저장된 키값
+					,expandedKey : 'expandedService'
+				},				
 				columnMapping : [  
 					{ title:'', key : 'status' , width: '40px', align: 'center',render : function( value, data, render, mapping) {
 						return '<span class="state '+value+'"></span>';
 					}},
-					{ title:'네임스페이스', key : 'namespace', width: '150px', align: 'left'},
-					{ title:'이름', key : 'shortServiceName', width: '150px', align: 'left', render:function(value,data,render,mapping){
+					//{ title:'네임스페이스', key : 'namespace', width: '100px', align: 'left'},
+					{ title:'이름', key : 'serviceName', width: '230px', align: 'left', render:function(value,data,render,mapping){
 						var re = $('<a href="#" title="'+value+'">'+value+'</a>').on('click',function(){
 							fn_moveServiceDetail(data,false);
 						});
+						if(data.tp == 'pod'){
+							re = value;
+						}
 						return re;
-					}},
+					}, treeColumn : true},
+					{ title:'Requests', key:'cpuRequest',width:'70px',align:'center',hidden:true},
+					{ title:'Limits', key:'cpuLimit',width:'70px',align:'center',hidden:true},
+					{ title:'Requests', key:'memoryRequest',width:'70px',align:'center',hidden:true},
+					{ title:'Limits', key:'memoryLimit',width:'70px',align:'center',hidden:true},
 					{ title:'서비스종류', key : 'serviceType', width: '100px', align: 'center'},
 					{ title:'버전', key : 'version', width: '110px', align: 'center'},
 					{ title:'구동시간', key : 'elapsedTime', width: '80px', align: 'center'},
 					{ title:'생성일시', key : 'crtTime', width: '150px', align: 'center'},
 					{ title:'백업', key : 'backupEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
+						if(data.tp == 'pod') return;
 						return value == true ? 'Y' : 'N';
 					}},
 					{ title:'Public', key : 'publicEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
+						if(data.tp == 'pod') return;
 						return value == true ? 'Y' : 'N';
 					}},
 					{ title:'태그', key : 'tagNames', width: '100px', align: 'left'},
 					{ title:'모니터링', key : '', width: '80px', align: 'center',render:function(value,data,render,mapping){
+						if(data.tp == 'pod') return;
 						var re = $('<button class="btn-ico btn-viewdetail" title="'+data.serviceName+'">모니터링</button>').on('click',function(){
 							fn_moveServiceDetail(data,true);
 						});
@@ -239,8 +219,44 @@
 				message: {
 					nodata: gMessage.gridNodata
 				}
-			});	
-
+			})
+			divServiceListGrid.on('toggleTreeNode',function(e){
+				let nTreeDt = divServiceListGrid.alopexGrid('dataGet',{_state:{expandedTreeNode:true}}); 
+				let isHidden = nTreeDt.length == 0 
+				divServiceListGrid.alopexGrid('updateColumn', {hidden:isHidden}, ['cpuRequest', 'cpuLimit', 'memoryRequest','memoryLimit']);
+				if(isHidden){
+					divServiceListGrid.alopexGrid('updateOption', {headerGroup: null} );
+				}else{
+					divServiceListGrid.alopexGrid('updateOption', {headerGroup: [ {fromIndex:2, toIndex:3, title:"CPU"}, {fromIndex:4, toIndex:5, title:"MEMORY"} ]});
+				}
+					
+				let evt = AlopexGrid.parseEvent(e);
+				if(gCommon.findObjectByKeyOb(gExpandServiceList,{serviceName:evt.toggleTreeNodeList[0].serviceName})==null){
+					for(var i=0;i < nTreeDt.length;i++){
+						let o = nTreeDt[i];
+						$a.ajax({
+							url:'/zdbapi/getPods',
+							data:{namespace:o.namespace,serviceType:o.serviceType,serviceName:o.serviceName},
+							success:function(res){
+								if(res.pods && res.pods.length > 0){
+									for(var j=0;j< res.pods.length;j++){
+										try{
+											let r = res.pods[j];
+											let c = r.spec.containers[0].resources;
+											divServiceListGrid.alopexGrid('dataEdit', 
+													{cpuRequest : c.requests.cpu.amount,cpuLimit:c.limits.cpu.amount,memoryRequest:c.requests.memory.amount,memoryLimit:c.limits.memory.amount}, 
+													{serviceName : r.metadata.name})										
+										}catch(ex){
+											
+										}
+									}
+								}
+							}
+						});
+					}
+				}
+				gExpandServiceList = nTreeDt;
+			})
 			fn_getServicesFirst();
 			fn_getServices();
 			fn_getNamespaceResource();
@@ -292,17 +308,17 @@
 		function fn_getServices(){
 			var client = gZdbsocket.getConnect();
 			client.connect({}, function(frame){
-				//client.subscribe('/services', function(res) {
-				//	
-				//	var re = JSON.parse(res.body);
-				//	gServiceList = re.result.serviceoverviews;
-				//	gfn_convertServiceDatas(gServiceList);
-				//	//gTagList = res.tags;
-				//	fn_displayServices();
-				//});
-				client.subscribe('/services/refresh', function(res) {
-					fn_getServicesFirst();
+				client.subscribe('/services', function(res) {
+					
+					var re = JSON.parse(res.body);
+					gServiceList = re.result.serviceoverviews;
+					gfn_convertServiceDatas(gServiceList);
+					//gTagList = res.tags;
+					fn_displayServices();
 				});
+				//client.subscribe('/services/refresh', function(res) {
+				//	fn_getServicesFirst();
+				//});
 			});
 		};
 		//서비스 목록 display
@@ -318,6 +334,7 @@
 				var namespace = namespaces[i];
 				var ob = filterList[i];
 				var data = {
+						tp:'service',
 						namespace:ob.namespace,
 						serviceType:ob.serviceType,
 						serviceName:ob.serviceName,
@@ -336,8 +353,35 @@
 			
 			serviceListDiv.html('');
 			serviceListDiv.html(dispServiceDiv.html());
-			$('#divServiceListGrid').alopexGrid('dataSet',filterList);
 			$a.convert(serviceListDiv.find('.Tooltip'));
+			
+			if(gSelectedListType == 'grid'){
+				var gridList = [];
+				
+				for(var i = 0;i < filterList.length;i++){
+					let t = filterList[i];
+					gridList.push(t);
+					if(gCommon.findObjectByKeyOb(gExpandServiceList,{serviceName:t.serviceName})!=null){
+						t.expandedService = 'true';
+					}else{
+						t.expandedService = 'false';
+					}
+					if(t.pods.length > 0){
+						for(var j = 0; j < t.pods.length;j++){
+							let o = t.pods[j];
+							gridList.push({
+								tp:'pod',
+								serviceName:o.metadata.name,
+								shortServiceName:o.metadata.name,//().replace(t.serviceName,''),
+								parentServiceName:t.serviceName
+							});
+						}						
+					}
+				}
+				
+				divServiceListGrid.alopexGrid('dataSet',gridList);
+			}
+			
 			gCommon.removeOverlay();
 		}
 		function fn_displayTags(){

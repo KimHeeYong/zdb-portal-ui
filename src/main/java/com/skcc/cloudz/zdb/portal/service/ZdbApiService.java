@@ -41,6 +41,7 @@ import com.zdb.core.domain.Tag;
 import com.zdb.core.domain.ZDBConfig;
 
 import io.fabric8.kubernetes.api.model.Namespace;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 
 @Component
@@ -160,7 +161,16 @@ public class ZdbApiService{
 		};
 		return ob;
 	}
-	
+
+
+	public List<Pod> getPods(Map<String, String> param) {
+		List<Pod> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_PODS, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			list = (List<Pod>)zdbRestDTO.getResult().getPods();
+		};
+		return list;
+	}
 	public Result getPodMetrics(Map<String, String> param) {
 		Result ob = null;
 		

@@ -121,15 +121,12 @@
 								</tr>
 								<tr>
 									<th> 접속포트</th>
-									<td data="port"> </td>
-									<!-- 
 									<td data="port" th:if="${#request.getParameter('serviceType')} == 'redis'"> </td>
 									<td th:if="${#request.getParameter('serviceType')} != 'redis'">
 										<input type="text" class="Textinput" name="port" id="port">
 										<button class="Button line-btn" id="portUpdate">변경</button>
 										<p data-for="port" class="warn-text"></p>
 									</td>
-									 -->
 								</tr>
 								<tr>                                                                                                 
 					               	<th rowspan="2">Private Network</th>      
@@ -907,7 +904,7 @@
 						url: '/zdbapi/deleteTag',
 						data: data, 
 						success: function(res){
-							//fn_getService();
+							fn_getServiceFirst();
 						}
 					});
 				})
@@ -924,7 +921,9 @@
 						url: '/zdbapi/createTag',
 						data: data, 
 						success: function(res){
-				    		//fn_getService();
+							if(res.result.code == '0'){
+								fn_getServiceFirst();								
+							}
 						}
 					});
 				};
@@ -1001,7 +1000,6 @@
 				enableContextMenu:true,
 				autoColumnIndex: true,
 				autoResize:true,
-				fitTableWidth :true,
 				height: 400,
 				contextMenu : [
 					{  title: 'Restart',
@@ -1561,7 +1559,7 @@
 				if(gCommon.confirm('Public Network 서비스 삭제시 </br> 외부연동이 단절됩니다. <br/> 삭제하시겠습니까?',function(){
 					$a.ajax({
 						url: '/zdbapi/deletePublicService',
-						data:gService,
+						data:gParam,
 						success: function(res){
 							fn_getServiceFirst().done(function(){
 								fn_getConnectionInfo(); 
@@ -1574,7 +1572,8 @@
 				if(gCommon.confirm('Public Network를 추가 하시겠습니까?',function(){
 					$a.ajax({
 						url: '/zdbapi/createPublicService',
-						data:gService,
+						data:gParam,
+						method:'post',
 						success: function(res){
 							fn_getServiceFirst().done(function(){
 								fn_getConnectionInfo(); 
@@ -1916,21 +1915,15 @@
 			$('#gridBackup').alopexGrid({
 				autoColumnIndex : true,
 				autoResize : true,
-				fitTableWidth :true,
 				height: 400,
 				columnMapping : [
 					{ title:'백업종류', key : 'type' , width: '100px', align: 'center',render:function(value,data,render,mapping){						
 						let t = '';
 						switch(value){
-						    case 'INCR':
-						    	t = '증분백업';
-						    	break;
-						    case 'FULL':
-						    	t = '전체백업';
-						    	break;
-						    default :
-						    	t = '즉시백업'
-						    	break;
+						    case 'INCR': t = '증분백업'; break;
+						    case 'DUMP': t= '덤프백업'; break;
+						    case 'FULL': t = '전체백업'; break;
+						    default : t = '즉시백업'; break;
 						}
 						return '<button class="Button gridbtn btn">'+t+'</button>';
 					}},
@@ -2043,18 +2036,28 @@
 				}
 			});
 			$('body').on('click','button#updateBackup',function(){
-				gCommon.confirm('백업을 실행 하시겠습니까?',function(res){
-					$a.ajax({
-						url: '/zdbapi/updateBackup',
-						data:gParam,
-						success: function(res){
-							if(res.result.code!='4'){
-								gCommon.alert('즉시 백업을 요청하였습니다.');
-								fn_getBackupInfo();
-							};
-						}
-					});	
-				});
+				$a.popup({
+			        url: "/zdb02/zdb0200p06",
+			        data:gParam,
+			        iframe: false,
+			        width: 500,
+			        height: 300,
+			        title : '',
+			        callback : function(res){
+			        	if(res.result == 'Y'){
+			        		$a.ajax({
+								url: '/zdbapi/updateBackup',
+								data:$.extend({},gParam,{type:res.backupType}),
+								success: function(res){
+									if(res.result.code!='4'){
+										gCommon.alert('즉시 백업을 요청하였습니다.');
+										fn_getBackupInfo();
+									};
+								}
+							});				        		
+			        	}
+			        }
+			    });
 			});
 			function fn_saveSchedule(){
 				var param = $.extend({},gParam,backupForm.serializeObject());
@@ -2141,7 +2144,6 @@
 			$('#gridEvent').alopexGrid({
 				autoColumnIndex: true,
 				autoResize:true,
-				fitTableWidth :true,
 				height: 400,
 				renderMapping : {
 					'evtMsgTooltip' : {
@@ -2222,7 +2224,6 @@
 			$('#gridUser').alopexGrid({
 				autoColumnIndex: true,
 				autoResize:true,
-				fitTableWidth :true,
 				height: 400,
 				columnMapping : [  
 					{ title:'USER', key : 'user' , width: '100px', align: 'left'},
@@ -2248,7 +2249,8 @@
 			function fn_getUserGrants(){
 				$a.ajax({
 					url: '/zdbapi/getUserGrants',
-					data: gService,
+					method:'get',
+					data: {namespace:gService.namespace,serviceType:gService.serviceType,serviceName:gService.serviceName},
 					success: function(res){
 						var list = res.userGrants;
 						$('#gridUser').alopexGrid('dataSet',list);

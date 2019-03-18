@@ -158,7 +158,11 @@ div.grid {
 .color-danger {
 	color: #b94a48;
 }
-
+.header-group[data-alopexgrid-columndepth="0"]{
+	color: inherit !important;
+	background: inherit !important;
+	border-top: 1px solid #cccccc;
+}
 a.grid         { text-decoration:underline; color:blue; font-size: 1.0rem; cursor: pointer;}
 a.grid:link    { text-decoration:none; color:blue }
 a.grid:visited { text-decoration:underline; color:#800080 }

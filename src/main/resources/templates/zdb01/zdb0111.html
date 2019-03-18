@@ -299,7 +299,6 @@ $a.page(function() {
 			$a.ajax({
 				url: '/zdbapi/workerpools',
 				async: false,
-				method:'get',
 				success:function(res){
 					let workerPool = $('#workerPool');
 					let list = res.result.result.workerPools;

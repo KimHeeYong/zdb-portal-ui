@@ -16,6 +16,7 @@ import com.zdb.core.domain.Tag;
 import com.zdb.core.domain.ZDBConfig;
 
 import io.fabric8.kubernetes.api.model.Namespace;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import lombok.Data;
 
@@ -69,4 +70,6 @@ public class Result {
 	private String status;
 	
 	private List<String> workerPools;
+	
+	private List<?> pods;
 }

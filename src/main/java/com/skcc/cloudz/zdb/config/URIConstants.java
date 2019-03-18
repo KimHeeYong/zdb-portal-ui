@@ -22,7 +22,9 @@ public class URIConstants {
 	public static final String URI_GET_SERVICE = "/api/v1/{namespace}/{serviceType}/service/services/{serviceName}";
 
 	public static final String URI_GET_POD_RESOURCE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/pods/resource";
-	
+
+	public static final String URI_GET_PODS = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/pods";
+
 	public static final String URI_RESTART_SERVICE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/restart";
 
 	public static final String URI_RESTART_POD = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/pod/{podName}/restart";
@@ -109,5 +111,4 @@ public class URIConstants {
 
 	public static final String URI_GET_WORKERPOOLS = "/api/v1/workerpools";
 
-	
 }

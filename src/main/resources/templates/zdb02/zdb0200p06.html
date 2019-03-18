@@ -1,0 +1,36 @@
+<div class="popup-wrap">
+	<div class="popup-mcontents">
+		<div class="popup-text">
+			<div>백업을 실행하시겠습니까?</div>
+			<div>
+				백업방식 : 
+				<div class="Divselect" id="backupType" name="backupType" style="height: 35px;width:125px; padding-top: 1px !important;">
+					<select>
+						<option value="FULL">바이너리백업</option>
+						<option value="DUMP">덤프백업</option>
+					</select>
+					<span></span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--button-->
+	<div class="popup-btn__wrap">
+		<button class="Button btn bg-gray ok">확인</button>
+		<button class="Button btn bg-gray no">취소</button>
+	</div>
+	<!--//button-->
+</div>
+<script type="text/javascript">
+$a.page(function() {
+	this.init = function(id,param) {
+		$('button.ok').click(function(){
+			$a.close({result:'Y',backupType:$('#backupType select').val()});
+		});
+		$('button.no').click(function(){
+			$a.close('N');
+		});	
+	}
+});
+	
+</script>
