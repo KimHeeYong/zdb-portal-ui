@@ -1,5 +1,6 @@
 package com.skcc.cloudz.zdb.portal.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.skcc.cloudz.zdb.common.exception.ZdbPortalException;
 import com.skcc.cloudz.zdb.common.util.RequestUtil;
 import com.skcc.cloudz.zdb.config.CommonConstants;
@@ -245,7 +248,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "deleteServiceInstance", method = RequestMethod.DELETE)
+	@RequestMapping(value = "deleteServiceInstance")
 	public ModelAndView deleteServiceInstance(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -277,7 +280,7 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "createPublicService")
+	@RequestMapping(value = "createPublicService", method=RequestMethod.POST)
 	public ModelAndView createPublicService(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
@@ -291,7 +294,6 @@ public class ZdbApiController {
 	public ModelAndView deletePublicService(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
-		
 		ZdbRestDTO result = zdbApiService.deletePublicService(param);
 		mav.addObject(CommonConstants.RESULT,result);
 		
@@ -315,6 +317,19 @@ public class ZdbApiController {
 		
 		List<DBUser> result = zdbApiService.getUserGrants(param);
 		mav.addObject(IResult.USER_GRANTS,result);
+		
+		return mav;
+	}
+	@RequestMapping(value = "saveUserGrants", method = RequestMethod.PUT)	
+	public ModelAndView saveUserGrants(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		Gson gs = new Gson();
+		List p = gs.fromJson(param.get("data"), new TypeToken<List<HashMap>>(){}.getType());
+		
+		//List<DBUser> result = zdbApiService.getUserGrants(param);
+		mav.addObject(CommonConstants.RESULT,"");
 		
 		return mav;
 	}
@@ -577,4 +592,5 @@ public class ZdbApiController {
 		
 		return mav;
 	}
+	
 }
