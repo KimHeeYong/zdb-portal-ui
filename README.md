@@ -14,8 +14,8 @@ docker image tag zdb-portal-ui:<VERSION> registry.au-syd.bluemix.net/cloudzdb/zd
 docker image push registry.au-syd.bluemix.net/cloudzdb/zdb-portal-ui:<VERSION>
 
 
-docker image tag zdb-portal-ui registry.au-syd.bluemix.net/cloudzdb/zdb-portal-ui:1.0.6
-docker image push registry.au-syd.bluemix.net/cloudzdb/zdb-portal-ui:1.0.6
+docker image tag zdb-portal-ui registry.au-syd.bluemix.net/cloudzdb/zdb-portal-ui:1.0.7
+docker image push registry.au-syd.bluemix.net/cloudzdb/zdb-portal-ui:1.0.7
 
 
 ## Deployment
