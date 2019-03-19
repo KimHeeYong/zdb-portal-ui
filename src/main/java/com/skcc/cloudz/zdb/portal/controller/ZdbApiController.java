@@ -1,5 +1,7 @@
 package com.skcc.cloudz.zdb.portal.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -320,14 +322,27 @@ public class ZdbApiController {
 		
 		return mav;
 	}
-	@RequestMapping(value = "saveUserGrants", method = RequestMethod.PUT)	
+	@RequestMapping(value = "saveDBUser", method = RequestMethod.PUT)	
 	public ModelAndView saveUserGrants(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
-		Gson gs = new Gson();
-		List p = gs.fromJson(param.get("data"), new TypeToken<List<HashMap>>(){}.getType());
-		
+		List<Map<String,String>> userList = new Gson().fromJson(param.get("data"), new TypeToken<List<HashMap<String,String>>>(){}.getType());
+		if(userList.size() > 0) {
+			for(Map<String,String> u : userList) {
+				switch(u.get("state")) {
+					case "A":
+						zdbApiService.createDBUser(u);
+						break;
+					case "E":
+						zdbApiService.updateDBUser(u);
+						break;
+					case "D":
+						zdbApiService.deleteDBUser(u);
+						break;
+				}
+			}
+		}
 		//List<DBUser> result = zdbApiService.getUserGrants(param);
 		mav.addObject(CommonConstants.RESULT,"");
 		

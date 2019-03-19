@@ -101,7 +101,7 @@ public class URIConstants {
 	
 	public static final String URI_UPDATE_SERVICE_CHANGE_MASTERTOSLAVE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/svc/masterToslave";
 
-	public static final String URI_UPDATE_SERVICE_CHANGE_SLAVETOMASTER = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/svc/slaveTomaster";
+	public static final String URI_UPDATE_SERVICE_CHANGE_SLAVETOMASTER = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/failback";
 
 	public static final String URI_UPDATE_CHANGE_PORT = "/api/v1/{namespace}/{serviceType}/{serviceName}/changePort";
 
@@ -110,5 +110,11 @@ public class URIConstants {
 	public static final String URI_SERVICE_OFF = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/{stsName}/off";
 
 	public static final String URI_GET_WORKERPOOLS = "/api/v1/workerpools";
+
+	public static final String URI_CREATE_DB_USER = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/accounts/{accountId}";
+	
+	public static final String URI_UPDATE_DB_USER = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/accounts/{accountId}";
+	
+	public static final String URI_DELETE_DB_USER = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/accounts/{accountId}";
 
 }

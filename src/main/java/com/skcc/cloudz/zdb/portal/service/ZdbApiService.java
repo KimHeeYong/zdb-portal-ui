@@ -540,7 +540,7 @@ public class ZdbApiService{
 
 	public ZdbRestDTO serviceChangeSlaveToMaster(Map<String, String> param) {
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
-		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_SERVICE_CHANGE_SLAVETOMASTER, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_SERVICE_CHANGE_SLAVETOMASTER, HttpMethod.GET,entity,ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
 	}
 	public ZdbRestDTO changePort(Map<String, String> param) {
@@ -563,6 +563,25 @@ public class ZdbApiService{
 
 	public ZdbRestDTO workerpools(Map<String, String> param) {
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_WORKERPOOLS, ZdbRestDTO.class,param);
+		return zdbRestDTO;
+	}
+
+	public ZdbRestDTO createDBUser(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_CREATE_DB_USER, HttpMethod.POST,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+		
+	}
+
+	public ZdbRestDTO updateDBUser(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_DB_USER, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+
+	public ZdbRestDTO deleteDBUser(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_DELETE_DB_USER, HttpMethod.DELETE,entity,ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
 	}
 
