@@ -239,9 +239,15 @@
 								<tr>
 									<th>Auto Failover</th>
 									<td>
-										<div class="onoff-wrap fl mr30"><button class="Button btn-off" data-target="failOverEnable">OFF</button></div>
+										<div id="divFailoverRunning" class="fl mr30">
+											<img src="/styles/images/rotation_ani.gif" style="width: 20px;height: 20px;">
+										</div>
+										<div id="divFailoverOnOff" class="onoff-wrap fl mr30"><button class="Button btn-off" data-target="failOverEnable">OFF</button></div>
 										<div class="hide">
-											<select name="failOverEnable"> <option value="Y">Y</option> <option value="N">N</option> </select>
+											<select name="failOverEnable"> 
+												<option value="Y">Y</option> 
+												<option value="N">N</option> 
+											</select>
 										</div>
 										<div class="fl">
 										<span class="Icon ico-cloudz alarm"></span>
@@ -1468,7 +1474,14 @@
 				//auto failover 설정
 				if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gService.statefulSets.length > 1){
 					if(gConfigData.auto_failover_enabled=='true'){
-						setOnOffButton('failOverEnable',(gService.failoverEnabled==true?'Y':'N'));
+						if(gService.failoverEnabled == 'running'){
+							$('#divFailoverRunning').show();
+							$('#divFailoverOnOff').hide();
+						}else{
+							$('#divFailoverRunning').hide();
+							$('#divFailoverOnOff').show();
+							setOnOffButton('failOverEnable',(gService.failoverEnabled=='on'?'Y':'N'));
+						}
 						$('#divFailover').show();
 					}else{
 						$('#divFailover').hide();
@@ -1594,11 +1607,12 @@
 							success: function(res){
 								if(res.result.code!='4'){
 									gCommon.alert(res.result.message);
-									if($(this).hasClass('btn-on')) {
-										setOnOffButton('failOverEnable','N');
-									} else {
-										setOnOffButton('failOverEnable','Y');
-									}
+									//if($(this).hasClass('btn-on')) {
+									//	setOnOffButton('failOverEnable','N');
+									//} else {
+									//	setOnOffButton('failOverEnable','Y');
+									//}
+									fn_getServiceFirst();
 									gConfigData = gCommon.getConfigData();
 								}
 							}
@@ -1616,7 +1630,7 @@
 							method:'PUT',
 							data:gParam,
 							success: function(res){
-								gCommon.alert(res.result.message);								
+								gCommon.alert(res.result.message);	
 							}
 						})	
 					}
