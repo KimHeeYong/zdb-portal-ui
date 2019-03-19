@@ -238,23 +238,24 @@
 							<tbody>
 								<tr>
 									<th>Auto Failover</th>
-									<td width="120">
-										<div class="onoff-wrap fl mr30"><button class="Button btn-on" data-target="failOverEnable" data-type="button" data-classinit="true" type="button" data-converted="true">ON</button></div>
-										<div class="hide">
-											<select name="failOverEnable"> <option value="Y">Y</option> <option value="N">N</option> </select>
-										</div> 
-									</td>
-									<td width="20">
-    									<span class="Icon ico-cloudz alarm" data-type="icon" data-classinit="true" style="display: inline-block;" data-converted="true"></span>
-									</td>    
 									<td>
+										<div id="divFailoverRunning" class="fl mr30">
+											<img src="/styles/images/rotation_ani.gif" style="width: 20px;height: 20px;">
+										</div>
+										<div id="divFailoverOnOff" class="onoff-wrap fl mr30"><button class="Button btn-off" data-target="failOverEnable">OFF</button></div>
+										<div class="hide">
+											<select name="failOverEnable"> 
+												<option value="Y">Y</option> 
+												<option value="N">N</option> 
+											</select>
+										</div>
 										<div class="fl">
-											<b>※ Master 노드 장애발생시 임계 시간동안 서비스가 복구되지 않을 경우 자동으로 Slave 노드로 서비스를 전환합니다.</b><br>
-											<b>※ 실행조건 : 5초 주기 5회 실패시</b><br>
-	                                        <b>※ 최초 설정 변경시 서비스가 재시작 됩니다.</b>
-										</div>                                       
-									</td>    
-								</tr>									
+										<span class="Icon ico-cloudz alarm"></span>
+										Master 노드 장애발생시 임계 시간동안 서비스가 복구되지 않을 경우 
+										자동으로 Slave 노드로 서비스를 전환합니다.(최초 설정 변경시 서비스가 재시작 됩니다.)
+										</div>  
+									</td>
+								</tr>
 							</tbody>
 						</table>										
 					</div>
@@ -1473,7 +1474,14 @@
 				//auto failover 설정
 				if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gService.statefulSets.length > 1){
 					if(gConfigData.auto_failover_enabled=='true'){
-						setOnOffButton('failOverEnable',(gService.failoverEnabled==true?'Y':'N'));
+						if(gService.failoverEnabled == 'running'){
+							$('#divFailoverRunning').show();
+							$('#divFailoverOnOff').hide();
+						}else{
+							$('#divFailoverRunning').hide();
+							$('#divFailoverOnOff').show();
+							setOnOffButton('failOverEnable',(gService.failoverEnabled=='on'?'Y':'N'));
+						}
 						$('#divFailover').show();
 					}else{
 						$('#divFailover').hide();
@@ -1599,11 +1607,12 @@
 							success: function(res){
 								if(res.result.code!='4'){
 									gCommon.alert(res.result.message);
-									if($(this).hasClass('btn-on')) {
-										setOnOffButton('failOverEnable','N');
-									} else {
-										setOnOffButton('failOverEnable','Y');
-									}
+									//if($(this).hasClass('btn-on')) {
+									//	setOnOffButton('failOverEnable','N');
+									//} else {
+									//	setOnOffButton('failOverEnable','Y');
+									//}
+									fn_getServiceFirst();
 									gConfigData = gCommon.getConfigData();
 								}
 							}
@@ -1621,7 +1630,7 @@
 							method:'PUT',
 							data:gParam,
 							success: function(res){
-								gCommon.alert(res.result.message);								
+								gCommon.alert(res.result.message);	
 							}
 						})	
 					}
