@@ -163,8 +163,38 @@ div.grid {
 	background: inherit !important;
 	border-top: 1px solid #cccccc;
 }
+
 a.grid         { text-decoration:underline; color:blue; font-size: 1.0rem; cursor: pointer;}
 a.grid:link    { text-decoration:none; color:blue }
 a.grid:visited { text-decoration:underline; color:#800080 }
 a.grid:hover   { text-decoration:underline; }
 a.grid:active  { text-decoration:underline; }
+
+
+/*그리드 inline 편집용 style */
+.alopexgrid-cell.editing input[type="text"],.alopexgrid-cell.editing input[type="password"]{
+	width:95%;
+	height:24px;
+	box-sizing:unset;
+}	
+.alopexgrid-cell.editing input[type="password"] {
+	border: 1px solid #ecebf0;
+}
+
+.alopexgrid-cell.editing input[type="password"]:hover,
+.alopexgrid-cell.editing input[type="password"]:focus {
+	border: 1px solid #9bcdd4;
+	background: #ffffff;
+}
+
+.alopexgrid-cell.editing input[type="password"].alopexgrid-default-renderer.disabled {
+	color: #727272;
+}
+.alopexgrid-cell.editing .alopexgrid-input-wrapper.alopexgrid-input-checkbox-wrapper input[type="checkbox"]{
+	margin-top:12px;
+}
+.alopexgrid .cell.bodycell.selected,
+.alopexgrid .cell.bodycell.selected.nextrow-selected,
+.alopexgrid .cell.bodycell.selected.prevrow-selected,
+.alopexgrid .cell-selected,
+.alopexgrid .cell-selected-focus {background: #afbfff}

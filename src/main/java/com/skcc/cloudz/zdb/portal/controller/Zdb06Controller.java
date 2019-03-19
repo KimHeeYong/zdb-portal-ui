@@ -25,4 +25,10 @@ public class Zdb06Controller {
 		return mav;
 	}
 	
+
+	@GetMapping("zdb0610")
+	public ModelAndView zdb0610(HttpServletRequest request,HttpServletResponse response) {
+		ModelAndView mav = new ModelAndView();
+		return mav;
+	}
 }
