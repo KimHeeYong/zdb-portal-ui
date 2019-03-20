@@ -1,7 +1,5 @@
 package com.skcc.cloudz.zdb.portal.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

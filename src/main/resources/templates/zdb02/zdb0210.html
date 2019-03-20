@@ -544,6 +544,14 @@
 		<div id="tabUser">
 			<h3 class="form-title">사용자 목록 및 권한</h3>
 			<div class="tabs-contents">
+				<div class="btn-wrap">
+					<div class="btn-right">
+						<button class="Button btn sm" id="btnSearchUser">조회</button>
+						<button class="Button btn sm" id="btnAddUser">추가</button>
+						<button class="Button btn sm" id="btnDeleteUser">삭제</button>
+						<button class="Button btn sm bg-red" id="btnSaveUser">저장</button>
+					</div>
+				</div>			
    				<div id="gridUser" class="grid grid-line__wrap"></div>
    			</div>
 		</div>		
@@ -2230,42 +2238,174 @@
 			/*tabSystem start 환경설정 */
 			
 			/*tabUser start 사용자 */
-			$('#gridUser').alopexGrid({
+			let tabUser = $('#tabUser');
+			let renderCheckbox = function(value){
+				let h = $('<label class="ImageCheckbox"><input class="Checkbox" type="checkbox" data-disabled="true" ' +(value=='Y'?'checked="checked"':'')+'></label>')
+				$a.convert(h);
+				return h;
+			};
+			let allowEditCheck = function(value,data){
+				return data.state == 'A' || (data.user != 'admin');
+			}
+			let editTypeYn = {type:"checkbox",rule:[{value:"Y", checked:true},{value:"N", checked:false}]};
+			let gridUser = $('#gridUser').alopexGrid({
 				autoColumnIndex: true,
 				autoResize:true,
+				rowInlineEdit:true,
+				rowSelectOption:{
+					clickSelect : true,
+					singleSelect : true
+				},
+				cellSelectable:true,
+				restoreFocusOnInvalidInlineEdit :true,
+				leaveDeleted:true,
 				height: 400,
 				columnMapping : [  
-					{ title:'USER', key : 'user' , width: '100px', align: 'left'},
-					{ title:'HOST', key : 'host' , width: '100px', align: 'left'},
-					{ title:'SELECT', key : 'select' , width: '70px', align: 'center'},
-					{ title:'INSERT', key : 'insert' , width: '70px', align: 'center'},
-					{ title:'UPDATE', key : 'update' , width: '70px', align: 'center'},
-					{ title:'DELETE', key : 'delete' , width: '70px', align: 'center'},
-					{ title:'EXECUTE', key : 'execute' , width: '70px', align: 'center'},
-					{ title:'CREATE', key : 'create' , width: '70px', align: 'center'},
-					{ title:'ALTER', key : 'alter' , width: '70px', align: 'center'},
-					{ title:'DROP', key : 'drop' , width: '70px', align: 'center'},
-					{ title:'INDEX', key : 'index' , width: '70px', align: 'center', hidden:true},
-					{ title:'CREATE VIEW', key : 'createView' , width: '70px', align: 'center'},
-					{ title:'TRIGGER', key : 'trigger' , width: '70px', align: 'center'},
-					{ title:'GRANT', key : 'grant' , width: '70px', align: 'center'},
-					{ title:'CREATE USER', key : 'createUser' , width: '70px', align: 'center'}
+					{ title:'state',key:'state',width:'50px',editable:false,hidden:false,render:function(value,data){
+						if (data._state.added){data.state = 'A'}
+						else if (data._state.deleted){data.state='D'}
+						else if (data._state.edited){data.state='E'}
+						else {data.state=''}
+						return data.state;
+					}},
+					{ title:'USER', key : 'user' , width: '100px', align: 'left' ,editable:true	,allowEdit:function(value,data){
+						return data._state.added == true;
+					},valid : function(value, data) {
+						if(value=='') {
+							return false;
+						}
+						return true;
+					}},
+					{ title:'PASSWORD', key : 'password' , width: '100px', align: 'left' ,editable:{type:'text'},valid : function(value, data) {
+						if(value=='' && data.state == 'A') {
+							return false;
+						}
+						return true;
+						},editable: function(value, data) {
+							return '<div><input type="password" class="alopexgrid-default-renderer" value="'+ (value||'') +'"/></div>'; 
+						},editedValue: function(cell, data, render, mapping, grid) {
+							return $(cell).find('input').val();
+						},render:function(value,data){
+							return (value||'').replace(/./g,'*');
+						}
+					},
+					{ title:'HOST', key : 'host' , width: '100px', align: 'left' ,editable:true,allowEdit:allowEditCheck},
+					{ title:'SELECT', key : 'select' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'INSERT', key : 'insert' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'UPDATE', key : 'update' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'DELETE', key : 'delete' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'EXECUTE', key : 'execute' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'CREATE', key : 'create' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'ALTER', key : 'alter' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'DROP', key : 'drop' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'CREATE VIEW', key : 'createView' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'TRIGGER', key : 'trigger' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'GRANT', key : 'grant' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'CREATE USER', key : 'createUser' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck}
 				],
 				message: {
 					nodata: gMessage.gridNodata
 				}
-			});	
+			}).on('cellEditInvalid ', function(e){
+				setTimeout(function(evt){
+					var evObj = AlopexGrid.parseEvent(e);
+					var opt = evObj.data;
+					var mapping = evObj.mapping;
+					var col = mapping.columnIndex;
+					var invalidValue = evObj.value;
+					
+					if(opt._state.deleted == true){
+						return;
+					}
+					if(col == 1){
+						alert('User를 입력하세요');
+					}else if(col == 2){
+						alert('Password를 입력하세요');
+					}
+					gridUser.alopexGrid('focusCell', opt);
+					setTimeout(function(){
+						gridUser.alopexGrid('rowSelect', opt, true)
+						gridUser.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+					},100)
+				},100)
+			}).on('dataChanged',function(e){
+				let isEnalbed = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
+				tabUser.find('#btnSaveUser').setEnabled(isEnalbed);
+			});
+			tabUser.find('#btnAddUser').on('click', function(e){
+				gridUser.alopexGrid('endRowInlineEdit');
+				let isAdding = false;
+				let dt = gridUser.alopexGrid('dataGet');
+				
+				if(dt[0]._state.added == true && dt[0]._state.editing != false){
+					return;
+				}
+				
+				let opt = {_index :{row:0,column:1,data:0,target:0}};
+				let defUserDt = {
+					select:'N', insert:'N',update:'N',delete:'N',execute:'N',create:'N',alter:'N',drop:'N',index:'N',createView:'N',trigger:'N',
+					grant:'N',createUser:'N'
+				};
+				gridUser.alopexGrid('dataAdd', defUserDt, opt);
+				gridUser.alopexGrid('startRowInlineEdit',opt);
+				setTimeout(function(){
+					gridUser.alopexGrid('rowSelect', opt, true)
+					gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
+				},100)
+			});
+			tabUser.find('#btnDeleteUser').on('click',function(e){
+				gridUser.alopexGrid('endRowInlineEdit');
+				let dg = gridUser.alopexGrid( 'dataGet' , {_state:{selected:true}});
+				if(dg.length == 0){
+					gCommon.alert('선택된 행이 없습니다.');return;
+				};
+				let dt = dg[0];
+				if(dt.user == 'admin' && dt.host == '%'){
+					gCommon.alert('admin 계정은 삭제 할 수 없습니다.');return;
+				}
+				let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
+				gridUser.alopexGrid(d,{_state: {selected:true}}); 
+			})
+			tabUser.find('#btnSearchUser').on('click',function(e){
+				fn_getUserGrants(); 
+			})
+			tabUser.find('#btnSaveUser').on('click',function(e){
+				fn_saveUser();
+			})
 			function fn_getUserGrants(){
 				$a.ajax({
 					url: '/zdbapi/getUserGrants',
 					method:'get',
-					data: {namespace:gService.namespace,serviceType:gService.serviceType,serviceName:gService.serviceName},
+					data: gParam,
 					success: function(res){
-						var list = res.userGrants;
+						let list = res.userGrants;
 						$('#gridUser').alopexGrid('dataSet',list);
 					}
 				});				
-			};				
+			};			
+			function fn_saveUser(){
+				gridUser.alopexGrid('endRowInlineEdit');
+				gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+					let data = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+					if(data.length > 0){
+						for(let i in data){
+							let d = $.extend(data[i],gParam);
+							d.accountId = d.user;
+							d.password = d.password == null ? '' : d.password;
+						};
+						$a.ajax({
+							url: '/zdbapi/saveDBUser',
+							method:'put',
+							data: {data:JSON.stringify(data)},
+							success: function(res){
+								fn_getUserGrants();
+							}
+						});	
+					};						
+				})
+			};			
+
+			fn_getUserGrants();
 			/*tabUser end 사용자*/
 			
 			var dbConfigForm = $('form[name=dbConfig]');

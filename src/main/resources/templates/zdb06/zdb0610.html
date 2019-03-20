@@ -46,7 +46,6 @@
 		var gIsUpdate = true;
 		var gConfigData = null;
 		$a.page(function() {
-			let gService = {namespace:'zdb-test',serviceType:'mariadb',serviceName:'zdb-test-bb'} 
 			this.init = function() {
 				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAdminAll:true})
 				.addHandler(function(e) {
@@ -57,6 +56,14 @@
 				fn_getUserGrants();
 				
 				let tabUser = $('#tabUser');
+				let renderCheckbox = function(value){
+					let h = $('<label class="ImageCheckbox"><input class="Checkbox" type="checkbox" data-disabled="true" ' +(value=='Y'?'checked="checked"':'')+'></label>')
+					$a.convert(h);
+					return h;
+				};
+				let allowEditCheck = function(value,data){
+					return data.state == 'A' || (data.user != 'admin');
+				}
 				let editTypeYn = {type:"checkbox",rule:[{value:"Y", checked:true},{value:"N", checked:false}]};
 				let gridUser = $('#gridUser').alopexGrid({
 					autoColumnIndex: true,
@@ -75,6 +82,7 @@
 							if (data._state.added){data.state = 'A'}
 							else if (data._state.deleted){data.state='D'}
 							else if (data._state.edited){data.state='E'}
+							else {data.state=''}
 							return data.state;
 						}},
 						{ title:'USER', key : 'user' , width: '100px', align: 'left' ,editable:true	,allowEdit:function(value,data){
@@ -91,47 +99,55 @@
 							}
 							return true;
 							},editable: function(value, data) {
-								return '<div><input type="password" class="alopexgrid-default-renderer" value="'+ value +'"/></div>'; 
+								return '<div><input type="password" class="alopexgrid-default-renderer" value="'+ (value||'') +'"/></div>'; 
 							},editedValue: function(cell, data, render, mapping, grid) {
 								return $(cell).find('input').val();
 							},render:function(value,data){
 								return (value||'').replace(/./g,'*');
 							}
 						},
-						{ title:'HOST', key : 'host' , width: '100px', align: 'left' ,editable:true},
-						{ title:'SELECT', key : 'select' , width: '70px', align: 'center',editable:editTypeYn},
-						{ title:'INSERT', key : 'insert' , width: '70px', align: 'center',editable:editTypeYn},
-						{ title:'UPDATE', key : 'update' , width: '70px', align: 'center',editable:editTypeYn},
-						{ title:'DELETE', key : 'delete' , width: '70px', align: 'center',editable:editTypeYn},
-						{ title:'EXECUTE', key : 'execute' , width: '70px', align: 'center',editable:editTypeYn},
-						{ title:'CREATE', key : 'create' , width: '70px', align: 'center',editable:editTypeYn},
-						{ title:'ALTER', key : 'alter' , width: '70px', align: 'center',editable:editTypeYn},
-						{ title:'DROP', key : 'drop' , width: '70px', align: 'center',editable:editTypeYn},
-						{ title:'INDEX', key : 'index' , width: '70px', align: 'center', hidden:true},
-						{ title:'CREATE VIEW', key : 'createView' , width: '70px', align: 'center',editable:editTypeYn},
-						{ title:'TRIGGER', key : 'trigger' , width: '70px', align: 'center',editable:editTypeYn},
-						{ title:'GRANT', key : 'grant' , width: '70px', align: 'center',editable:editTypeYn},
-						{ title:'CREATE USER', key : 'createUser' , width: '70px', align: 'center',editable:editTypeYn}
+						{ title:'HOST', key : 'host' , width: '100px', align: 'left' ,editable:true,allowEdit:allowEditCheck},
+						{ title:'SELECT', key : 'select' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+						{ title:'INSERT', key : 'insert' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+						{ title:'UPDATE', key : 'update' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+						{ title:'DELETE', key : 'delete' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+						{ title:'EXECUTE', key : 'execute' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+						{ title:'CREATE', key : 'create' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+						{ title:'ALTER', key : 'alter' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+						{ title:'DROP', key : 'drop' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+						{ title:'CREATE VIEW', key : 'createView' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+						{ title:'TRIGGER', key : 'trigger' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+						{ title:'GRANT', key : 'grant' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+						{ title:'CREATE USER', key : 'createUser' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck}
 					],
 					message: {
 						nodata: gMessage.gridNodata
 					}
 				}).on('cellEditInvalid ', function(e){
-					var evObj = AlopexGrid.parseEvent(e);
-					var data = evObj.data;
-					var mapping = evObj.mapping;
-					var col = mapping.columnIndex;
-					var invalidValue = evObj.value;
-					
-					if(col == 1){
-						alert('User를 입력하세요');
-					}else if(col == 2){
-						alert('Password를 입력하세요');
-					}
-					console.log(data)
-					gridUser.alopexGrid('focusCell', data);
-					gridUser.alopexGrid('rowSelect', {_state :{selected:true}}, false);
-					gridUser.alopexGrid('rowSelect', data, true)
+					setTimeout(function(evt){
+						var evObj = AlopexGrid.parseEvent(e);
+						var opt = evObj.data;
+						var mapping = evObj.mapping;
+						var col = mapping.columnIndex;
+						var invalidValue = evObj.value;
+						
+						if(opt._state.deleted == true){
+							return;
+						}
+						if(col == 1){
+							alert('User를 입력하세요');
+						}else if(col == 2){
+							alert('Password를 입력하세요');
+						}
+						gridUser.alopexGrid('focusCell', opt);
+						setTimeout(function(){
+							gridUser.alopexGrid('rowSelect', opt, true)
+							gridUser.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+						},100)
+					},100)
+				}).on('dataChanged',function(e){
+					let isEnalbed = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
+					tabUser.find('#btnSaveUser').setEnabled(isEnalbed);
 				});
 				tabUser.find('#btnAddUser').on('click', function(e){
 					gridUser.alopexGrid('endRowInlineEdit');
@@ -142,19 +158,29 @@
 						return;
 					}
 					
-					let opt = { _index : { row : 0 } };
+					let opt = {_index :{row:0,column:1,data:0,target:0}};
 					let defUserDt = {
 						select:'N', insert:'N',update:'N',delete:'N',execute:'N',create:'N',alter:'N',drop:'N',index:'N',createView:'N',trigger:'N',
 						grant:'N',createUser:'N'
 					};
 					gridUser.alopexGrid('dataAdd', defUserDt, opt);
 					gridUser.alopexGrid('startRowInlineEdit',opt);
-					gridUser.alopexGrid('focusCell', opt,'user');
+					setTimeout(function(){
+						gridUser.alopexGrid('rowSelect', opt, true)
+						gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
+					},100)
 				});
 				tabUser.find('#btnDeleteUser').on('click',function(e){
-					let dt = gridUser.alopexGrid( 'dataGet' , {_state:{selected:true}});
-					if(dt.length == 0)return;
-					let d = dt[0]._state.deleted ? 'dataUndelete' : 'dataDelete'; 
+					gridUser.alopexGrid('endRowInlineEdit');
+					let dg = gridUser.alopexGrid( 'dataGet' , {_state:{selected:true}});
+					if(dg.length == 0){
+						gCommon.alert('선택된 행이 없습니다.');return;
+					};
+					let dt = dg[0];
+					if(dt.user == 'admin' && dt.host == '%'){
+						gCommon.alert('admin 계정은 삭제 할 수 없습니다.');return;
+					}
+					let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
 					gridUser.alopexGrid(d,{_state: {selected:true}}); 
 				})
 				tabUser.find('#btnSearchUser').on('click',function(e){
@@ -167,7 +193,7 @@
 					$a.ajax({
 						url: '/zdbapi/getUserGrants',
 						method:'get',
-						data: {namespace:gService.namespace,serviceType:gService.serviceType,serviceName:gService.serviceName},
+						data: gParam,
 						success: function(res){
 							let list = res.userGrants;
 							$('#gridUser').alopexGrid('dataSet',list);
@@ -176,24 +202,24 @@
 				};			
 				function fn_saveUser(){
 					gridUser.alopexGrid('endRowInlineEdit');
-					let data = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{_state:{edited:true}},{_state:{deleted:true}}));
-					if(data.length > 0){
-						for(let i in data){
-							let d = data[i];
-							d.namespace = gParam.namespace,
-							d.serviceType = gParam.serviceType,
-							d.serviceName = gParam.serviceName,
-							d.accountId = d.user;
-						};
-						$a.ajax({
-							url: '/zdbapi/saveDBUser',
-							method:'put',
-							data: {data:JSON.stringify(data)},
-							success: function(res){
-								fn_getUserGrants();
-							}
-						});	
-					};
+					gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+						let data = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+						if(data.length > 0){
+							for(let i in data){
+								let d = $.extend(data[i],gParam);
+								d.accountId = d.user;
+								d.password = d.password == null ? '' : d.password;
+							};
+							$a.ajax({
+								url: '/zdbapi/saveDBUser',
+								method:'put',
+								data: {data:JSON.stringify(data)},
+								success: function(res){
+									fn_getUserGrants();
+								}
+							});	
+						};						
+					})
 				};
 			}
 		});
