@@ -116,5 +116,11 @@ public class URIConstants {
 	public static final String URI_UPDATE_DB_USER = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/accounts/{accountId}";
 	
 	public static final String URI_DELETE_DB_USER = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/accounts/{accountId}";
+	
+	public static final String URI_GET_DATABASES = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/databases";
+
+	public static final String URI_CREATE_DATABASE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/database/{databaseName}";
+
+	public static final String URI_DELETE_DATABASE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/database/{databaseName}";
 
 }

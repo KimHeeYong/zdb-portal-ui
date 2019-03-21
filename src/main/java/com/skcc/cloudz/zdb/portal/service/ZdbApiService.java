@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,7 @@ import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
+import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
@@ -570,7 +572,6 @@ public class ZdbApiService{
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_CREATE_DB_USER, HttpMethod.POST,entity,ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
-		
 	}
 
 	public ZdbRestDTO updateDBUser(Map<String, String> param) {
@@ -582,6 +583,28 @@ public class ZdbApiService{
 	public ZdbRestDTO deleteDBUser(Map<String, String> param) {
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_DELETE_DB_USER, HttpMethod.DELETE,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+
+	public List<Database> getDatabases(Map<String, String> param) {
+		List<Database> result = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_DATABASES,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getDatabases();
+		};
+		return result;
+	}
+
+	public ZdbRestDTO createDatabase(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_CREATE_DATABASE, HttpMethod.POST,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+
+	public ZdbRestDTO deleteDatabase(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_DELETE_DATABASE, HttpMethod.DELETE,entity,ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
 	}
 

@@ -126,7 +126,7 @@
 						{ title:'GRANT', key : 'grant' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
 						{ title:'CREATE USER', key : 'createUser' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck}
 					], message: { nodata: gMessage.gridNodata }
-					}).on('cellEditInvalid ', function(e){
+				}).on('cellEditInvalid ', function(e){
 						setTimeout(function(evt){
 							var evObj = AlopexGrid.parseEvent(e);
 							var opt = evObj.data;
@@ -148,85 +148,85 @@
 								gridUser.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
 							},100)
 						},100)
-					}).on('dataChanged',function(e){
+				}).on('dataChanged',function(e){
 						let isEnalbed = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
 						tabUser.find('#btnSaveUser').setEnabled(isEnalbed);
-					});
-					tabUser.find('#btnAddUser').on('click', function(e){
-						gridUser.alopexGrid('endRowInlineEdit');
-						let isAdding = false;
-						let dt = gridUser.alopexGrid('dataGet');
-						
-						if(dt[0]._state.added == true && dt[0]._state.editing != false){
-							return;
-						}
-						
-						let opt = {_index :{row:0,column:1,data:0,target:0}};
-						let defUserDt = {
-							select:'N', insert:'N',update:'N',delete:'N',execute:'N',create:'N',alter:'N',drop:'N',index:'N',createView:'N',trigger:'N',
-							grant:'N',createUser:'N'
-						};
-						gridUser.alopexGrid('dataAdd', defUserDt, opt);
-						gridUser.alopexGrid('startRowInlineEdit',opt);
-						setTimeout(function(){
-							gridUser.alopexGrid('rowSelect', opt, true)
-							gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
-						},100)
-					});
-					tabUser.find('#btnDeleteUser').on('click',function(e){
-						gridUser.alopexGrid('endRowInlineEdit');
-						let dg = gridUser.alopexGrid( 'dataGet' , {_state:{selected:true}});
-						if(dg.length == 0){
-							gCommon.alert('선택된 행이 없습니다.');return;
-						};
-						let dt = dg[0];
-						if(dt.user == 'admin' && dt.host == '%'){
-							gCommon.alert('admin 계정은 삭제 할 수 없습니다.');return;
-						}
-						let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
-						gridUser.alopexGrid(d,{_state: {selected:true}}); 
-					})
-					tabUser.find('#btnSearchUser').on('click',function(e){
-						fn_getUserGrants(); 
-					})
-					tabUser.find('#btnSaveUser').on('click',function(e){
-						fn_saveUser();
-					})
-					function fn_getUserGrants(){
-						$a.ajax({
-							url: '/zdbapi/getUserGrants',
-							method:'get',
-							data: gParam,
-							success: function(res){
-								let list = res.userGrants;
-								$('#gridUser').alopexGrid('dataSet',list);
-							}
-						});				
-					};			
-					function fn_saveUser(){
-						gridUser.alopexGrid('endRowInlineEdit');
-						gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
-							let data = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
-							if(data.length > 0){
-								for(let i in data){
-									let d = $.extend(data[i],gParam);
-									d.accountId = d.user;
-									d.password = d.password == null ? '' : d.password;
-								};
-								$a.ajax({
-									url: '/zdbapi/saveDBUser',
-									method:'put',
-									data: {data:JSON.stringify(data)},
-									success: function(res){
-										fn_getUserGrants();
-									}
-								});	
-							};						
-						})
+				});
+				tabUser.find('#btnAddUser').on('click', function(e){
+					gridUser.alopexGrid('endRowInlineEdit');
+					let isAdding = false;
+					let dt = gridUser.alopexGrid('dataGet');
+					
+					if(dt[0]._state.added == true && dt[0]._state.editing != false){
+						return;
+					}
+					
+					let opt = {_index :{row:0,column:1,data:0,target:0}};
+					let defUserDt = {
+						select:'N', insert:'N',update:'N',delete:'N',execute:'N',create:'N',alter:'N',drop:'N',index:'N',createView:'N',trigger:'N',
+						grant:'N',createUser:'N'
 					};
-					fn_getUserGrants();
-				}
-				/*tabUser end 사용자*/
+					gridUser.alopexGrid('dataAdd', defUserDt, opt);
+					gridUser.alopexGrid('startRowInlineEdit',opt);
+					setTimeout(function(){
+						gridUser.alopexGrid('rowSelect', opt, true)
+						gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
+					},100)
+				});
+				tabUser.find('#btnDeleteUser').on('click',function(e){
+					gridUser.alopexGrid('endRowInlineEdit');
+					let dg = gridUser.alopexGrid( 'dataGet' , {_state:{selected:true}});
+					if(dg.length == 0){
+						gCommon.alert('선택된 행이 없습니다.');return;
+					};
+					let dt = dg[0];
+					if(dt.user == 'admin' && dt.host == '%'){
+						gCommon.alert('admin 계정은 삭제 할 수 없습니다.');return;
+					}
+					let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
+					gridUser.alopexGrid(d,{_state: {selected:true}}); 
+				})
+				tabUser.find('#btnSearchUser').on('click',function(e){
+					fn_getUserGrants(); 
+				})
+				tabUser.find('#btnSaveUser').on('click',function(e){
+					fn_saveUser();
+				})
+				function fn_getUserGrants(){
+					$a.ajax({
+						url: '/zdbapi/getUserGrants',
+						method:'get',
+						data: gParam,
+						success: function(res){
+							let list = res.userGrants;
+							$('#gridUser').alopexGrid('dataSet',list);
+						}
+					});				
+				};			
+				function fn_saveUser(){
+					gridUser.alopexGrid('endRowInlineEdit');
+					gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+						let data = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+						if(data.length > 0){
+							for(let i in data){
+								let d = $.extend(data[i],gParam);
+								d.accountId = d.user;
+								d.password = d.password == null ? '' : d.password;
+							};
+							$a.ajax({
+								url: '/zdbapi/saveDBUser',
+								method:'put',
+								data: {data:JSON.stringify(data)},
+								success: function(res){
+									fn_getUserGrants();
+								}
+							});	
+						};						
+					})
+				};
+				fn_getUserGrants();
+				/*tabUser end 사용자*/				
+			}
 		});
 	</script>
 </th:block>

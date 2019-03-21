@@ -28,6 +28,7 @@ import com.skcc.cloudz.zdb.portal.service.ZdbApiService;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
+import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.IResult;
 import com.zdb.core.domain.RequestEvent;
@@ -604,5 +605,37 @@ public class ZdbApiController {
 		
 		return mav;
 	}
-	
+
+	@RequestMapping(value = "getDatabases", method = RequestMethod.GET)	
+	public ModelAndView getDatabases(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<Database> result = zdbApiService.getDatabases(param);
+		mav.addObject(IResult.DATABASES,result);
+		
+		return mav;
+	}
+	@RequestMapping(value = "saveDatabase", method = RequestMethod.PUT)	
+	public ModelAndView saveDatabase(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<Map<String,String>> userList = new Gson().fromJson(param.get("data"), new TypeToken<List<HashMap<String,String>>>(){}.getType());
+		List<ZdbRestDTO> dto = new ArrayList<>();
+		if(userList.size() > 0) {
+			for(Map<String,String> u : userList) {
+				switch(u.get("state")) {
+					case "A":
+						System.out.println(u);
+						dto.add(zdbApiService.createDatabase(u)); break;
+					case "D":
+						dto.add(zdbApiService.deleteDatabase(u)); break;
+				}
+			}
+		}
+		mav.addObject(CommonConstants.RESULT,dto);
+		
+		return mav;
+	}	
 }

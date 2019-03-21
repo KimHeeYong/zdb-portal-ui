@@ -50,6 +50,8 @@ public class ZdbRestConnector extends RestTemplate{
 		HttpEntity<?> newRequestEntity = new HttpEntity<>(tempBody,tempHeaders);
 		ResponseEntity<T> result = null;
 		try {
+			System.out.println(url);
+			System.out.println(uriVariables);
 			result = super.exchange(url, method, newRequestEntity, responseType, uriVariables);
 		} catch (HttpStatusCodeException e) {
 			ZdbRestDTO resultMap = new Gson().fromJson(e.getResponseBodyAsString(), ZdbRestDTO.class);

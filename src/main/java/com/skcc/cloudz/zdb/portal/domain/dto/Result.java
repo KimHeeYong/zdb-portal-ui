@@ -6,6 +6,7 @@ import java.util.Map;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
+import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.Mycnf;
 import com.zdb.core.domain.RequestEvent;
@@ -72,4 +73,6 @@ public class Result {
 	private List<String> workerPools;
 	
 	private List<?> pods;
+	
+	private List<Database> databases;
 }
