@@ -2,7 +2,7 @@
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" 
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-	<title>환경설정</title>
+	<title>사용자관리</title>
 </th:block>
 <th:block layout:fragment="page_css">
 </th:block>
@@ -53,8 +53,8 @@
 				}).select({
 					id : gSelectedNamespace
 				});
-				fn_getUserGrants();
 				
+				/*tabUser start 사용자 */
 				let tabUser = $('#tabUser');
 				let renderCheckbox = function(value){
 					let h = $('<label class="ImageCheckbox"><input class="Checkbox" type="checkbox" data-disabled="true" ' +(value=='Y'?'checked="checked"':'')+'></label>')
@@ -87,6 +87,10 @@
 						}},
 						{ title:'USER', key : 'user' , width: '100px', align: 'left' ,editable:true	,allowEdit:function(value,data){
 							return data._state.added == true;
+						},editable: function(value, data) {
+							return '<div><input type="text" class="alopexgrid-default-renderer" maxlength="15" value="'+value+'"/></div>'; 
+						},editedValue: function(cell, data, render, mapping, grid) {
+							return $(cell).find('input').val();
 						},valid : function(value, data) {
 							if(value=='') {
 								return false;
@@ -106,7 +110,9 @@
 								return (value||'').replace(/./g,'*');
 							}
 						},
-						{ title:'HOST', key : 'host' , width: '100px', align: 'left' ,editable:true,allowEdit:allowEditCheck},
+						{ title:'HOST', key : 'host' , width: '100px', align: 'left' ,editable:true,allowEdit:function(value,data){
+							return data._state.added == true;
+						}},
 						{ title:'SELECT', key : 'select' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
 						{ title:'INSERT', key : 'insert' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
 						{ title:'UPDATE', key : 'update' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
@@ -119,109 +125,108 @@
 						{ title:'TRIGGER', key : 'trigger' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
 						{ title:'GRANT', key : 'grant' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
 						{ title:'CREATE USER', key : 'createUser' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck}
-					],
-					message: {
-						nodata: gMessage.gridNodata
-					}
-				}).on('cellEditInvalid ', function(e){
-					setTimeout(function(evt){
-						var evObj = AlopexGrid.parseEvent(e);
-						var opt = evObj.data;
-						var mapping = evObj.mapping;
-						var col = mapping.columnIndex;
-						var invalidValue = evObj.value;
+					], message: { nodata: gMessage.gridNodata }
+					}).on('cellEditInvalid ', function(e){
+						setTimeout(function(evt){
+							var evObj = AlopexGrid.parseEvent(e);
+							var opt = evObj.data;
+							var mapping = evObj.mapping;
+							var col = mapping.columnIndex;
+							var invalidValue = evObj.value;
+							
+							if(opt._state.deleted == true){
+								return;
+							}
+							if(col == 1){
+								alert('User를 입력하세요');
+							}else if(col == 2){
+								alert('Password를 입력하세요');
+							}
+							gridUser.alopexGrid('focusCell', opt);
+							setTimeout(function(){
+								gridUser.alopexGrid('rowSelect', opt, true)
+								gridUser.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+							},100)
+						},100)
+					}).on('dataChanged',function(e){
+						let isEnalbed = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
+						tabUser.find('#btnSaveUser').setEnabled(isEnalbed);
+					});
+					tabUser.find('#btnAddUser').on('click', function(e){
+						gridUser.alopexGrid('endRowInlineEdit');
+						let isAdding = false;
+						let dt = gridUser.alopexGrid('dataGet');
 						
-						if(opt._state.deleted == true){
+						if(dt[0]._state.added == true && dt[0]._state.editing != false){
 							return;
 						}
-						if(col == 1){
-							alert('User를 입력하세요');
-						}else if(col == 2){
-							alert('Password를 입력하세요');
-						}
-						gridUser.alopexGrid('focusCell', opt);
+						
+						let opt = {_index :{row:0,column:1,data:0,target:0}};
+						let defUserDt = {
+							select:'N', insert:'N',update:'N',delete:'N',execute:'N',create:'N',alter:'N',drop:'N',index:'N',createView:'N',trigger:'N',
+							grant:'N',createUser:'N'
+						};
+						gridUser.alopexGrid('dataAdd', defUserDt, opt);
+						gridUser.alopexGrid('startRowInlineEdit',opt);
 						setTimeout(function(){
 							gridUser.alopexGrid('rowSelect', opt, true)
-							gridUser.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+							gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
 						},100)
-					},100)
-				}).on('dataChanged',function(e){
-					let isEnalbed = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
-					tabUser.find('#btnSaveUser').setEnabled(isEnalbed);
-				});
-				tabUser.find('#btnAddUser').on('click', function(e){
-					gridUser.alopexGrid('endRowInlineEdit');
-					let isAdding = false;
-					let dt = gridUser.alopexGrid('dataGet');
-					
-					if(dt[0]._state.added == true && dt[0]._state.editing != false){
-						return;
-					}
-					
-					let opt = {_index :{row:0,column:1,data:0,target:0}};
-					let defUserDt = {
-						select:'N', insert:'N',update:'N',delete:'N',execute:'N',create:'N',alter:'N',drop:'N',index:'N',createView:'N',trigger:'N',
-						grant:'N',createUser:'N'
-					};
-					gridUser.alopexGrid('dataAdd', defUserDt, opt);
-					gridUser.alopexGrid('startRowInlineEdit',opt);
-					setTimeout(function(){
-						gridUser.alopexGrid('rowSelect', opt, true)
-						gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
-					},100)
-				});
-				tabUser.find('#btnDeleteUser').on('click',function(e){
-					gridUser.alopexGrid('endRowInlineEdit');
-					let dg = gridUser.alopexGrid( 'dataGet' , {_state:{selected:true}});
-					if(dg.length == 0){
-						gCommon.alert('선택된 행이 없습니다.');return;
-					};
-					let dt = dg[0];
-					if(dt.user == 'admin' && dt.host == '%'){
-						gCommon.alert('admin 계정은 삭제 할 수 없습니다.');return;
-					}
-					let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
-					gridUser.alopexGrid(d,{_state: {selected:true}}); 
-				})
-				tabUser.find('#btnSearchUser').on('click',function(e){
-					fn_getUserGrants(); 
-				})
-				tabUser.find('#btnSaveUser').on('click',function(e){
-					fn_saveUser();
-				})
-				function fn_getUserGrants(){
-					$a.ajax({
-						url: '/zdbapi/getUserGrants',
-						method:'get',
-						data: gParam,
-						success: function(res){
-							let list = res.userGrants;
-							$('#gridUser').alopexGrid('dataSet',list);
+					});
+					tabUser.find('#btnDeleteUser').on('click',function(e){
+						gridUser.alopexGrid('endRowInlineEdit');
+						let dg = gridUser.alopexGrid( 'dataGet' , {_state:{selected:true}});
+						if(dg.length == 0){
+							gCommon.alert('선택된 행이 없습니다.');return;
+						};
+						let dt = dg[0];
+						if(dt.user == 'admin' && dt.host == '%'){
+							gCommon.alert('admin 계정은 삭제 할 수 없습니다.');return;
 						}
-					});				
-				};			
-				function fn_saveUser(){
-					gridUser.alopexGrid('endRowInlineEdit');
-					gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
-						let data = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
-						if(data.length > 0){
-							for(let i in data){
-								let d = $.extend(data[i],gParam);
-								d.accountId = d.user;
-								d.password = d.password == null ? '' : d.password;
-							};
-							$a.ajax({
-								url: '/zdbapi/saveDBUser',
-								method:'put',
-								data: {data:JSON.stringify(data)},
-								success: function(res){
-									fn_getUserGrants();
-								}
-							});	
-						};						
+						let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
+						gridUser.alopexGrid(d,{_state: {selected:true}}); 
 					})
-				};
-			}
+					tabUser.find('#btnSearchUser').on('click',function(e){
+						fn_getUserGrants(); 
+					})
+					tabUser.find('#btnSaveUser').on('click',function(e){
+						fn_saveUser();
+					})
+					function fn_getUserGrants(){
+						$a.ajax({
+							url: '/zdbapi/getUserGrants',
+							method:'get',
+							data: gParam,
+							success: function(res){
+								let list = res.userGrants;
+								$('#gridUser').alopexGrid('dataSet',list);
+							}
+						});				
+					};			
+					function fn_saveUser(){
+						gridUser.alopexGrid('endRowInlineEdit');
+						gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+							let data = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+							if(data.length > 0){
+								for(let i in data){
+									let d = $.extend(data[i],gParam);
+									d.accountId = d.user;
+									d.password = d.password == null ? '' : d.password;
+								};
+								$a.ajax({
+									url: '/zdbapi/saveDBUser',
+									method:'put',
+									data: {data:JSON.stringify(data)},
+									success: function(res){
+										fn_getUserGrants();
+									}
+								});	
+							};						
+						})
+					};
+					fn_getUserGrants();
+				}
+				/*tabUser end 사용자*/
 		});
 	</script>
 </th:block>

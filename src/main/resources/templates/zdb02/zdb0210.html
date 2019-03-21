@@ -2234,9 +2234,6 @@
 				fn_getEventInfo();
 			});
 			/*tabEvent end 이벤트*/
-			
-			/*tabSystem start 환경설정 */
-			
 			/*tabUser start 사용자 */
 			let tabUser = $('#tabUser');
 			let renderCheckbox = function(value){
@@ -2270,6 +2267,10 @@
 					}},
 					{ title:'USER', key : 'user' , width: '100px', align: 'left' ,editable:true	,allowEdit:function(value,data){
 						return data._state.added == true;
+					},editable: function(value, data) {
+						return '<div><input type="text" class="alopexgrid-default-renderer" maxlength="15" value="'+value+'"/></div>'; 
+					},editedValue: function(cell, data, render, mapping, grid) {
+						return $(cell).find('input').val();
 					},valid : function(value, data) {
 						if(value=='') {
 							return false;
@@ -2289,7 +2290,9 @@
 							return (value||'').replace(/./g,'*');
 						}
 					},
-					{ title:'HOST', key : 'host' , width: '100px', align: 'left' ,editable:true,allowEdit:allowEditCheck},
+					{ title:'HOST', key : 'host' , width: '100px', align: 'left' ,editable:true,allowEdit:function(value,data){
+						return data._state.added == true;
+					}},
 					{ title:'SELECT', key : 'select' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
 					{ title:'INSERT', key : 'insert' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
 					{ title:'UPDATE', key : 'update' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
@@ -2302,35 +2305,32 @@
 					{ title:'TRIGGER', key : 'trigger' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
 					{ title:'GRANT', key : 'grant' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
 					{ title:'CREATE USER', key : 'createUser' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck}
-				],
-				message: {
-					nodata: gMessage.gridNodata
-				}
+				], message: { nodata: gMessage.gridNodata }
 			}).on('cellEditInvalid ', function(e){
-				setTimeout(function(evt){
-					var evObj = AlopexGrid.parseEvent(e);
-					var opt = evObj.data;
-					var mapping = evObj.mapping;
-					var col = mapping.columnIndex;
-					var invalidValue = evObj.value;
-					
-					if(opt._state.deleted == true){
-						return;
-					}
-					if(col == 1){
-						alert('User를 입력하세요');
-					}else if(col == 2){
-						alert('Password를 입력하세요');
-					}
-					gridUser.alopexGrid('focusCell', opt);
-					setTimeout(function(){
-						gridUser.alopexGrid('rowSelect', opt, true)
-						gridUser.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+					setTimeout(function(evt){
+						var evObj = AlopexGrid.parseEvent(e);
+						var opt = evObj.data;
+						var mapping = evObj.mapping;
+						var col = mapping.columnIndex;
+						var invalidValue = evObj.value;
+						
+						if(opt._state.deleted == true){
+							return;
+						}
+						if(col == 1){
+							alert('User를 입력하세요');
+						}else if(col == 2){
+							alert('Password를 입력하세요');
+						}
+						gridUser.alopexGrid('focusCell', opt);
+						setTimeout(function(){
+							gridUser.alopexGrid('rowSelect', opt, true)
+							gridUser.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+						},100)
 					},100)
-				},100)
 			}).on('dataChanged',function(e){
-				let isEnalbed = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
-				tabUser.find('#btnSaveUser').setEnabled(isEnalbed);
+					let isEnalbed = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
+					tabUser.find('#btnSaveUser').setEnabled(isEnalbed);
 			});
 			tabUser.find('#btnAddUser').on('click', function(e){
 				gridUser.alopexGrid('endRowInlineEdit');
@@ -2403,11 +2403,11 @@
 						});	
 					};						
 				})
-			};			
-
+			};
 			fn_getUserGrants();
 			/*tabUser end 사용자*/
 			
+			/*tabSystem start 환경설정 */
 			var dbConfigForm = $('form[name=dbConfig]');
 			
 			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){

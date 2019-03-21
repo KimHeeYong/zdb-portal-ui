@@ -1,5 +1,6 @@
 package com.skcc.cloudz.zdb.portal.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -326,23 +327,21 @@ public class ZdbApiController {
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
 		List<Map<String,String>> userList = new Gson().fromJson(param.get("data"), new TypeToken<List<HashMap<String,String>>>(){}.getType());
+		List<ZdbRestDTO> dto = new ArrayList<>();
 		if(userList.size() > 0) {
 			for(Map<String,String> u : userList) {
 				switch(u.get("state")) {
 					case "A":
-						zdbApiService.createDBUser(u);
-						break;
+						dto.add(zdbApiService.createDBUser(u)); break;
 					case "E":
-						zdbApiService.updateDBUser(u);
-						break;
+						dto.add(zdbApiService.updateDBUser(u)); break;
 					case "D":
-						zdbApiService.deleteDBUser(u);
-						break;
+						dto.add(zdbApiService.deleteDBUser(u)); break;
 				}
 			}
 		}
 		//List<DBUser> result = zdbApiService.getUserGrants(param);
-		mav.addObject(CommonConstants.RESULT,"");
+		mav.addObject(CommonConstants.RESULT,dto);
 		
 		return mav;
 	}
