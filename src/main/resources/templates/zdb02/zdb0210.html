@@ -91,6 +91,7 @@
 			<li data-content="#tabBackup">백업</li>
 			<li data-content="#tabEvent">이벤트</li>
 			<li data-content="#tabUser">사용자</li>
+			<li data-content="#tabDatabase">Database</li>
 			<li data-content="#tabSystem">환경설정</li>
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
@@ -554,6 +555,22 @@
 				</div>			
    				<div id="gridUser" class="grid grid-line__wrap"></div>
    			</div>
+		</div>
+		<div id="tabDatabase">		
+			<h3 class="form-title">Database 목록</h3>
+			<div class="tabs-contents">
+				<div style="width: 500px;">
+					<div class="btn-wrap">
+						<div class="btn-right">
+							<button class="Button btn sm" id="btnSearchDatabase">조회</button>
+							<button class="Button btn sm" id="btnAddDatabase">추가</button>
+							<button class="Button btn sm" id="btnDeleteDatabase">삭제</button>
+							<button class="Button btn sm bg-red" id="btnSaveDatabase">저장</button>
+						</div>
+					</div>
+					<div id="gridDatabase" class="grid grid-line__wrap"></div>
+				</div>
+			</div>		
 		</div>		
 		<div id="tabSystem">
 			<form name="dbConfig" method="post">
@@ -845,27 +862,18 @@
 				
 				switch(tabId){
 					case "tabService":
-						$("#gridResource").alopexGrid( "viewUpdate" );
-						fn_getConnectionInfo();
-						break;
+						$("#gridResource").alopexGrid( "viewUpdate" ); fn_getConnectionInfo(); break;
 					case "tabScale":
 						break;
-					case "tabMonitor":
-						fn_getMonitoring();
-						break;
+					case "tabMonitor": fn_getMonitoring(); break;
 					case "tabBackup":
-						$("#gridBackup").alopexGrid( "viewUpdate" );
-						fn_getBackupScheduleInfo();
-						fn_getBackupInfo();
-						break;						
+						$("#gridBackup").alopexGrid( "viewUpdate" ); fn_getBackupScheduleInfo(); fn_getBackupInfo(); break;
 					case "tabEvent":
-						$("#gridEvent").alopexGrid( "viewUpdate" );
-						fn_getEventInfo();
-						break;
+						$("#gridEvent").alopexGrid( "viewUpdate" ); fn_getEventInfo(); break;
 					case "tabUser":
-						$("#gridUser").alopexGrid( "viewUpdate" );
-						fn_getUserGrants();
-						break;
+						$("#gridUser").alopexGrid( "viewUpdate" ); fn_getUserGrants(); break;
+					case "tabDatabase":
+						$("#gridDatabase").alopexGrid( "viewUpdate" ); fn_getDatabases(); break;
 					case "tabSystem":
 						fn_getConfigurationInfo();
 						break;
@@ -1271,7 +1279,7 @@
 					infoMsg.html(msg);
 				}
 				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정)설정
-				var tabDisList = ['tabScale','tabBackup','tabUser','tabSystem']; 
+				var tabDisList = ['tabScale','tabBackup','tabUser','tabDatabase','tabSystem']; 
 				if(gService.serviceType == G_SERVICE_TYPE_MARIA){ //mariadb 면 tabSystem 이동되도록
 					tabDisList.splice(tabDisList.indexOf('tabSystem'),1);
 				};
@@ -1287,15 +1295,15 @@
 				if(!isStatusGreen && tabDisList.indexOf($.cookie('selected2010tab')) > -1){  
 					$('#zdbServiceTabs').setTabByContent('#tabService');
 				};
-				 //redis - user탭 삭제, purpose - data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
+				 //redis - user,database탭 삭제, purpose - data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
 				if(gService.serviceType == G_SERVICE_TYPE_REDIS){
 					
-					let delTab = ['tabUser'];
+					let delTab = ['tabUser','tabDatabase'];
 					if(gService.purpose != 'DATA'){
 						$('#tabSystem #divAdvancedConfig').hide();
 						delTab.push('tabBackup');
 					};
-					for(var ti = 0; ti < $('#zdbServiceTabs').getLength(); ti++ ){
+					for(var ti = $('#zdbServiceTabs').getLength()-1; ti > -1; ti-- ){
 						if(delTab.indexOf($('#zdbServiceTabs').getTabContentByIndex(ti).id) > -1){
 							$('#zdbServiceTabs').removeTab(ti);
 						};
@@ -2334,7 +2342,6 @@
 			});
 			tabUser.find('#btnAddUser').on('click', function(e){
 				gridUser.alopexGrid('endRowInlineEdit');
-				let isAdding = false;
 				let dt = gridUser.alopexGrid('dataGet');
 				
 				if(dt[0]._state.added == true && dt[0]._state.editing != false){
@@ -2406,7 +2413,130 @@
 			};
 			fn_getUserGrants();
 			/*tabUser end 사용자*/
-			
+			/*tabDatabase start Database*/
+			let tabDatabase = $('#tabDatabase');
+			let gridDatabase = $('#gridDatabase').alopexGrid({
+				autoColumnIndex: true,
+				autoResize:true,
+				rowInlineEdit:true,
+				rowSelectOption:{
+					clickSelect : true,
+					singleSelect : true
+				},
+				cellSelectable:true,
+				restoreFocusOnInvalidInlineEdit :true,
+				leaveDeleted:true,
+				height: 400,
+				columnMapping : [  
+					{ title:'state',key:'state',width:'50px',editable:false,hidden:false,render:function(value,data){
+						if (data._state.added){data.state = 'A'}
+						else if (data._state.deleted){data.state='D'}
+						else if (data._state.edited){data.state='E'}
+						else {data.state=''}
+						return data.state;
+					}},
+					{ title:'NAME', key : 'name' , width: '400px', align: 'left' ,editable:true	,allowEdit:function(value,data){
+						return data._state.added == true;
+					},editable: function(value, data) {
+						return '<div><input type="text" class="alopexgrid-default-renderer" maxlength="15" value="'+value+'"/></div>'; 
+					},editedValue: function(cell) {
+						return $(cell).find('input').val();
+					},valid : function(value, data) {
+						if(value=='') {
+							return false;
+						}
+						return true;
+					}}
+				], message: { nodata: gMessage.gridNodata }
+			}).on('cellEditInvalid ', function(e){
+				setTimeout(function(evt){
+					let evObj = AlopexGrid.parseEvent(e);
+					let opt = evObj.data;
+					let mapping = evObj.mapping;
+					let col = mapping.columnIndex;
+					let invalidValue = evObj.value;
+					
+					if(opt._state.deleted == true){
+						return;
+					}
+					if(col == 1){
+						alert('DATABASE명을 입력하세요');
+					}
+					gridDatabase.alopexGrid('focusCell', opt);
+					setTimeout(function(){
+						gridDatabase.alopexGrid('rowSelect', opt, true)
+						gridDatabase.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+					},100)
+				},100)
+			}).on('dataChanged',function(e){
+				let isEnalbed = AlopexGrid.trimData(gridDatabase.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
+				tabDatabase.find('#btnSaveUser').setEnabled(isEnalbed);
+			});
+			tabDatabase.find('#btnAddDatabase').on('click', function(e){
+				gridDatabase.alopexGrid('endRowInlineEdit');
+				let dt = gridDatabase.alopexGrid('dataGet');
+				
+				if(dt[0]._state.added == true && dt[0]._state.editing != false){ return; } 
+				let opt = {_index :{row:0,column:1,data:0,target:0}};
+				gridDatabase.alopexGrid('dataAdd', {}, opt);
+				gridDatabase.alopexGrid('startRowInlineEdit',opt);
+				setTimeout(function(){
+					gridDatabase.alopexGrid('rowSelect', opt, true)
+					gridDatabase.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
+				},100)
+			});
+			tabDatabase.find('#btnDeleteDatabase').on('click',function(e){
+				gridDatabase.alopexGrid('endRowInlineEdit');
+				let dg = gridDatabase.alopexGrid( 'dataGet' , {_state:{selected:true}});
+				if(dg.length == 0){
+					gCommon.alert('선택된 행이 없습니다.');return;
+				};
+				let dt = dg[0];
+				if(false){
+					gCommon.alert('삭제 할 수 없습니다.');return;
+				}
+				let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
+				gridDatabase.alopexGrid(d,{_state: {selected:true}}); 
+			})
+			tabDatabase.find('#btnSearchDatabase').on('click',function(e){
+				fn_getDatabases(); 
+			})
+			tabDatabase.find('#btnSaveDatabase').on('click',function(e){
+				fn_saveDatabase();
+			})
+			function fn_getDatabases(){
+				$a.ajax({
+					url: '/zdbapi/getDatabases',
+					method:'get',
+					data: gParam,
+					success: function(res){
+						let list = res.databases;
+						gridDatabase.alopexGrid('dataSet',list);
+					}
+				});				
+			};			
+			function fn_saveDatabase(){
+				gridDatabase.alopexGrid('endRowInlineEdit');
+				gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+					let data = AlopexGrid.trimData(gridDatabase.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+					if(data.length > 0){
+						for(let i in data){
+							let d = $.extend(data[i],gParam);
+							d.databaseName = d.name;
+						};
+						$a.ajax({
+							url: '/zdbapi/saveDatabase',
+							method:'put',
+							data: {data:JSON.stringify(data)},
+							success: function(res){
+								fn_getDatabases();
+							}
+						});	
+					};						
+				})
+			};
+			fn_getDatabases();
+			/*tabDatabase end*/						
 			/*tabSystem start 환경설정 */
 			var dbConfigForm = $('form[name=dbConfig]');
 			
