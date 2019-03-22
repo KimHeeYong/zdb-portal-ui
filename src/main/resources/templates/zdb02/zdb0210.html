@@ -476,16 +476,18 @@
 					</div>
 				</div>
 				<div class="mr30 info-list">
-					<span class="config-title">증분 백업:</span>
-					<div class="Divselect" id="incrementPeriod" name="incrementPeriod">
-						<select>
-							<option value="0">미사용</option>
-							<option value="1">1시간</option>
-							<option value="2">2시간</option>
-							<option value="6">6시간</option>
-							<option value="12">12시간</option>
-						</select>
-						<span></span>
+					<div class="hide fl" data-show-service-type="mariadb">
+						<span class="config-title">증분 백업:</span>
+						<div class="Divselect" id="incrementPeriod" name="incrementPeriod">
+							<select>
+								<option value="0">미사용</option>
+								<option value="1">1시간</option>
+								<option value="2">2시간</option>
+								<option value="6">6시간</option>
+								<option value="12">12시간</option>
+							</select>
+							<span></span>
+						</div>
 					</div>
 					<button class="Button btn bg-red Disabled" id="saveSchedule">수정</button>
 				</div>
@@ -494,7 +496,7 @@
 					<button class="Button btn" id="searchBackup">조회</button>
 				</div>	
           	</div>					
-           	<div class="info-list__select mt10" >
+           	<div class="info-list__select mt10 hide" data-show-service-type="mariadb">
            		<input class="Checkbox" type="checkbox" id="backupSearchType" checked="checked"/>증분백업포함
 				<!-- button class="Button btn-search" id="searchBackup">검색</button-->
            	</div>
@@ -834,6 +836,7 @@
 	$a.page(function() {
 		
 		this.init = function() {
+			$('[data-show-service-type*='+gParam.serviceType+']').show();
 			//namespace 변경시 이벤트
 			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
 								 .select({id:gSelectedNamespace})
@@ -950,9 +953,15 @@
 			/* tabService start */
 			let tabService = $('#tabService');
 			let formService = $('form[name=formService]');
+			
+			Validator.addMethod('checkPort', function(element, value) {
+				let n = cloudUtil.parseInt(value);
+				console.log(n == 3306 || (n <= 39999 && n >= 10000))
+			    return (n == 3306 || (n <= 39999 && n >= 10000));
+			});	
 			formService.validator({
 			    elements :{ 
-			        'port': {rule:{required:true}}
+			         port: { rule:{required:true,checkPort:''} , message:{checkPort:'포트는 3306, 10000~39999 허용'} }
 			    }
 			});						
 			$('#togglePwd').on('click',function(){
@@ -1279,7 +1288,7 @@
 					infoMsg.html(msg);
 				}
 				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정)설정
-				var tabDisList = ['tabScale','tabBackup','tabUser','tabDatabase','tabSystem']; 
+				var tabDisList = ['tabBackup','tabUser','tabDatabase','tabSystem']; 
 				if(gService.serviceType == G_SERVICE_TYPE_MARIA){ //mariadb 면 tabSystem 이동되도록
 					tabDisList.splice(tabDisList.indexOf('tabSystem'),1);
 				};
@@ -1937,6 +1946,10 @@
 					backupForm.find('#incrementPeriod').setEnabled(false);
 				}
 			};
+			let downloadTitle = '복원/다운로드';
+			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
+				downloadTitle = '다운로드';
+			}
 			$('#gridBackup').alopexGrid({
 				autoColumnIndex : true,
 				autoResize : true,
@@ -1979,7 +1992,7 @@
 						var re = '<span style="font:inherit;'+st+'">'+val+'</span>' 
 						return re;
 					}},
-					{ title:'복원/다운로드', key : 'archiveFileSize' , width: '90px', align: 'center',render:function(value,data,render,mapping){
+					{ title:downloadTitle, key : 'archiveFileSize' , width: '90px', align: 'center',render:function(value,data,render,mapping){
 						let t = '다운로드';
 						if(['FULL','INCR'].indexOf(data.type) > -1){
 							t = '복원';
@@ -2266,7 +2279,7 @@
 				leaveDeleted:true,
 				height: 400,
 				columnMapping : [  
-					{ title:'state',key:'state',width:'50px',editable:false,hidden:false,render:function(value,data){
+					{ title:'state',key:'state',width:'50px',editable:false,hidden:true,render:function(value,data){
 						if (data._state.added){data.state = 'A'}
 						else if (data._state.deleted){data.state='D'}
 						else if (data._state.edited){data.state='E'}
@@ -2428,7 +2441,7 @@
 				leaveDeleted:true,
 				height: 400,
 				columnMapping : [  
-					{ title:'state',key:'state',width:'50px',editable:false,hidden:false,render:function(value,data){
+					{ title:'state',key:'state',width:'50px',editable:false,hidden:true,render:function(value,data){
 						if (data._state.added){data.state = 'A'}
 						else if (data._state.deleted){data.state='D'}
 						else if (data._state.edited){data.state='E'}
@@ -2510,8 +2523,13 @@
 					method:'get',
 					data: gParam,
 					success: function(res){
+						let bl = ['information_schema','mysql','performance_schema'];
 						let list = res.databases;
-						gridDatabase.alopexGrid('dataSet',list);
+						let filterList = list.filter(function(ob){
+							return bl.indexOf(ob.name)==-1
+						});
+						
+						gridDatabase.alopexGrid('dataSet',filterList);
 					}
 				});				
 			};			
@@ -2535,7 +2553,9 @@
 					};						
 				})
 			};
-			fn_getDatabases();
+			if(gParam.serviceType != G_SERVICE_TYPE_REDIS){
+				fn_getDatabases();
+			}
 			/*tabDatabase end*/						
 			/*tabSystem start 환경설정 */
 			var dbConfigForm = $('form[name=dbConfig]');

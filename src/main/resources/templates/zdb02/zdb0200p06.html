@@ -2,7 +2,7 @@
 	<div class="popup-mcontents">
 		<div class="popup-text">
 			<div>백업을 실행하시겠습니까?</div>
-			<div>
+			<div class="hide" data-show-service-type="mariadb">
 				백업방식 : 
 				<div class="Divselect" id="backupType" name="backupType" style="height: 35px;width:125px; padding-top: 1px !important;">
 					<select>
@@ -24,6 +24,7 @@
 <script type="text/javascript">
 $a.page(function() {
 	this.init = function(id,param) {
+		$('[data-show-service-type*='+gParam.serviceType+']').show();
 		$('button.ok').click(function(){
 			$a.close({result:'Y',backupType:$('#backupType select').val()});
 		});
