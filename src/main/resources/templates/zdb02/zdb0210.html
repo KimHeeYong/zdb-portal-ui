@@ -2446,7 +2446,7 @@
 				leaveDeleted:true,
 				height: 400,
 				columnMapping : [  
-					{ title:'state',key:'state',width:'50px',editable:false,hidden:true,render:function(value,data){
+					{ title:'state',key:'state',width:'0px',editable:false,hidden:false,render:function(value,data){
 						if (data._state.added){data.state = 'A'}
 						else if (data._state.deleted){data.state='D'}
 						else if (data._state.edited){data.state='E'}
@@ -2488,7 +2488,7 @@
 				},100)
 			}).on('dataChanged',function(e){
 				let isEnalbed = AlopexGrid.trimData(gridDatabase.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
-				tabDatabase.find('#btnSaveUser').setEnabled(isEnalbed);
+				tabDatabase.find('#btnSaveDatabase').setEnabled(isEnalbed);
 			});
 			tabDatabase.find('#btnAddDatabase').on('click', function(e){
 				gridDatabase.alopexGrid('endRowInlineEdit');
