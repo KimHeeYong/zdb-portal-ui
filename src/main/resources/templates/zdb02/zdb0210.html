@@ -2284,7 +2284,7 @@
 				leaveDeleted:true,
 				height: 400,
 				columnMapping : [  
-					{ title:'state',key:'state',width:'50px',editable:false,hidden:true,render:function(value,data){
+					{ title:'state',key:'state',width:'0px',editable:false,hidden:false,render:function(value,data){
 						if (data._state.added){data.state = 'A'}
 						else if (data._state.deleted){data.state='D'}
 						else if (data._state.edited){data.state='E'}
@@ -2309,7 +2309,7 @@
 						}
 						return true;
 						},editable: function(value, data) {
-							return '<div><input type="password" class="alopexgrid-default-renderer" value="'+ (value||'') +'"/></div>'; 
+							return '<div><input type="password" class="alopexgrid-default-renderer" value="'+ (value||'') +'" maxlength="15"/></div>'; 
 						},editedValue: function(cell, data, render, mapping, grid) {
 							return $(cell).find('input').val();
 						},render:function(value,data){
