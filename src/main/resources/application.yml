@@ -12,7 +12,16 @@ spring:
      
 server:
   port: 8181
-  
+  tomcat:
+    uri-encoding: UTF-8
+    protocol_header: x-forwarded-proto  
+  servlet:
+    session:
+      timeout: 3600
+  error:
+    whitelabel:
+      enabled: false
+        
 management:
   endpoints:
     enabled-by-default: true
@@ -22,6 +31,9 @@ management:
   endpoint:
     health:
       show-details: always
+    env:
+     enabled: false    
+           
   metrics:
     enable:
       jvm: true
@@ -95,6 +107,27 @@ spring:
   profiles: prod
 server:
   port: 8080
+  tomcat:
+    uri-encoding: UTF-8
+    protocol_header: x-forwarded-proto  
+  servlet:
+    session:
+      timeout: 3600
+  error:
+    whitelabel:
+      enabled: false
+        
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    health:
+      show-details: always
+    env:
+     enabled: false   
 zdb-api-server:
   url: ${api.server}
 
