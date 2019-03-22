@@ -997,7 +997,7 @@
 			$('#portUpdate').on('click',function(){
 				if(!formService.validate())return;
 				gCommon.credentialConfirm({
-			        data:{credential:$("#credential").val(),msg:'port를 변경 하시려면',okBtnMsg:'변경'},
+			        data:{credential:$("#credential").val(),msg:'서비스 포트를 변경 하시려면',okBtnMsg:'변경'},
 			        callback : function(res){
 						$a.ajax({
 							url: '/zdbapi/changePort',
