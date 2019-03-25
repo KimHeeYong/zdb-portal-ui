@@ -627,10 +627,28 @@ public class ZdbApiController {
 			for(Map<String,String> u : userList) {
 				switch(u.get("state")) {
 					case "A":
-						System.out.println(u);
 						dto.add(zdbApiService.createDatabase(u)); break;
 					case "D":
 						dto.add(zdbApiService.deleteDatabase(u)); break;
+				}
+			}
+		}
+		mav.addObject(CommonConstants.RESULT,dto);
+		
+		return mav;
+	}	
+	@RequestMapping(value = "saveBackupSchedule", method = RequestMethod.PUT)	
+	public ModelAndView saveBackupSchedule(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<Map<String,String>> list = new Gson().fromJson(param.get("data"), new TypeToken<List<HashMap<String,String>>>(){}.getType());
+		List<ZdbRestDTO> dto = new ArrayList<>();
+		if(list.size() > 0) {
+			for(Map<String,String> u : list) {
+				switch(u.get("state")) {
+				case "E":
+					dto.add(zdbApiService.updateSchedule(u)); break;
 				}
 			}
 		}

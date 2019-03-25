@@ -180,6 +180,11 @@ a.grid:active  { text-decoration:underline; }
 .alopexgrid-cell.editing input[type="password"] {
 	border: 1px solid #ecebf0;
 }
+.alopexgrid-cell.editing select {
+	border: 1px solid #ecebf0;
+	width:95%;
+	height:28px;
+}
 
 .alopexgrid-cell.editing input[type="password"]:hover,
 .alopexgrid-cell.editing input[type="password"]:focus {

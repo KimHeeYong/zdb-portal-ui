@@ -23,7 +23,12 @@
 		<div class="accor-contents__wrap">
 			<!-- tab contents info detail-->
 			<!-- grid -->
-			<div id="gridSchedule"></div>
+			<div class="btn-wrap" style="margin-bottom:">
+				<div class="btn-right">
+					<button class="Button btn sm bg-red" id="btnSaveSchedule">저장</button>
+				</div>
+			</div>			
+			<div id="gridSchedule" class="mt5"></div>
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -39,10 +44,26 @@
 						});
 				$('.Accordion').expandAll();
 				
-				$('#gridSchedule').alopexGrid({
+				let gridSchedule = $('#gridSchedule').alopexGrid({
 					autoColumnIndex: true,
 					height: 635,
+					autoResize:true,
+					rowInlineEdit:true,
+					rowSelectOption:{
+						clickSelect : true,
+						singleSelect : true
+					},
+					cellSelectable:true,
+					restoreFocusOnInvalidInlineEdit :true,
+					leaveDeleted:true,
 					columnMapping : [  
+						{ title:'state',key:'state',width:'50px',editable:false,hidden:false,render:function(value,data){
+							if (data._state.added){data.state = 'A'}
+							else if (data._state.deleted){data.state='D'}
+							else if (data._state.edited){data.state='E'}
+							else {data.state=''}
+							return data.state;
+						}},						
 						{ title:'서비스이름', key : 'serviceName' , width: '180px', align: 'left',render:function(value,data){
 							var re = $('<a class="grid" style="a.inherited:no"/>').html(value).on('click',function(){
 								fn_setSelected2010Tab('tabBackup');
@@ -52,14 +73,48 @@
 							
 						}},
 						{ title:'서비스타입', key : 'serviceType' , width: '100px', align: 'center'},
-						{ title:'백업설정', key : 'useYn' , width: '70px', align: 'center',render:function(value){
-							let v = value == 'Y'? 'on':'off'; 
-							let re = $('<div class="onoff-wrap"><button class="Button btn-'+v+'">'+v.toUpperCase()+'</button></div>');
+						{ title:'백업설정', key : 'useYn' , width: '70px', align: 'center',render:function(value,data){
+							let re = fn_getUseYnTemp(value);
 							return re;
+						},editable:function(value,data){
+							let re = fn_getUseYnTemp(value).on('click','button.Button',function(e){
+								let t = $(this);
+								let isValueY = t.data('value') == 'Y';
+								let vr = isValueY ? 'off' : 'on';
+								let vrYn = isValueY ? 'N' : 'Y'; 
+								t.removeClass('btn-off').removeClass('btn-on').addClass('btn-'+vr).text(vr.toUpperCase()).data('value',vrYn);
+							});
+							return re;
+						},editedValue:function(cell){
+							return $(cell).find('button').data('value');
 						}},
-						{ title:'보관기간', key : 'storePeriod' , width: '70px', align: 'center'},
-						{ title:'전체백업시간', key : 'startTime' , width: '70px', align: 'center'},
-						{ title:'증분백업주기', key : 'incrementPeriod' , width: '70px', align: 'center'},
+						{ title:'보관기간', key : 'storePeriod' , width: '70px', align: 'center',editable:function(value,data){
+							let re = $('<input data-keyfilter="0-9" class="alopexgrid-default-renderer" type="text" name="storePeriod" value="'+value+'" style="text-align:center;" maxlength="2">');
+							return re;
+						},valid : function(value, data) {
+							if(cloudUtil.isEmpty(value)) {
+								return false;
+							}
+							let v = cloudUtil.parseInt(value);
+							data.storePeriod = v;
+							if(v < 0 || v > 60){
+								return false;
+							}
+							return true;
+						}},
+						{ title:'전체백업시간', key : 'startTime' , width: '70px', align: 'center',editable:function(value,data){
+							let re = $('<input type="text" name="startTime" value="'+value+'" class="alopexgrid-default-renderer" style="text-align:center;">');
+							$a.maskedinput(re[0],'00:00');
+							return re;
+						},editedValue:function(cell){
+							return $(cell).find('input').val();
+						},valid : function(value, data) {
+							return moment(value,'HH:mm').isValid();
+						}},
+						{ title:'증분백업주기', key : 'incrementPeriod' , width: '70px', align: 'center',editable:{
+							type:'select',
+							rule:[{value:'0',text:'미사용'},{value:'1',text:'1시간'},{value:'2',text:'2시간'},{value:'6',text:'6시간'},{value:'12',text:'12시간'}]
+						}},
 						{ title:'백업용량(MB)', key : 'fullFileSize' , width: '70px', align: 'center'},
 						{ title:'소요시간', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
 							return cloudUtil.parseInt(value)== 0 ?'-':value;
@@ -79,8 +134,36 @@
 						{fromIndex:6, toIndex:7, title:"전체백업"},
 						{fromIndex:8, toIndex:9, title:"증분백업"}
 					],
+				}).on('cellEditInvalid ', function(e){
+					setTimeout(function(evt){
+						var evObj = AlopexGrid.parseEvent(e);
+						var opt = evObj.data;
+						var mapping = evObj.mapping;
+						var col = mapping.columnIndex;
+						var invalidValue = evObj.value;
+						
+						if(opt._state.deleted == true){
+							return;
+						}
+						if(mapping.key == 'storePeriod'){
+							alert('보관기간은 0~60 사이로 입력하세요');
+						}else if(mapping.key == 'startTime'){
+							alert('시:분 형식으로 입력하세요')
+						}
+						gridSchedule.alopexGrid('focusCell', opt);
+						setTimeout(function(){
+							gridSchedule.alopexGrid('rowSelect', opt, true)
+							gridSchedule.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+						},100)
+					},100)
+				}).on('dataChanged',function(e){
+					let isEnalbed = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
+					$('#btnSaveSchedule').setEnabled(isEnalbed);
 				});			
-				
+				function fn_getUseYnTemp(value){
+					let v = value == 'Y'? 'on':'off';
+					return $('<div class="onoff-wrap"><button class="Button btn-'+v+'" data-value="'+value+'">'+v.toUpperCase()+'</button></div>');
+				}
 				function fn_getScheduleInfoList(){
 					var param = $('form[name=eventForm]').serializeObject();
 
@@ -89,16 +172,38 @@
 						data:{namespace:gSelectedNamespace},
 						success: function(res){
 							var list = res.scheduleInfoList;
-							$('#gridSchedule').alopexGrid('dataSet',list);
+							gridSchedule.alopexGrid('dataSet',list);
 
 							var showCol = gSelectedNamespace == G_NAMESPACE_ALL ?'showCol':'hideCol';
-							$("#gridSchedule").alopexGrid(showCol, 'namespace');
+							gridSchedule.alopexGrid(showCol, 'namespace');
 						}
 					});				
 				};			
 				$('#searchEvent').on('click',function(){
 					fn_getScheduleInfoList();
 				});
+				$('#btnSaveSchedule').on('click',function(e){
+					fn_saveSchedule();
+				})				
+				function fn_saveSchedule(){
+					gridSchedule.alopexGrid('endRowInlineEdit');
+					gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+						let data = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+						if(data.length > 0){
+							for(let i in data){
+								let d = $.extend(data[i],gParam);
+							};
+							$a.ajax({
+								url: '/zdbapi/saveBackupSchedule',
+								method:'put',
+								data: {data:JSON.stringify(data)},
+								success: function(res){
+									fn_getScheduleInfoList();
+								}
+							});	
+						};						
+					})
+				};				
 			}
 		});
 	</script>

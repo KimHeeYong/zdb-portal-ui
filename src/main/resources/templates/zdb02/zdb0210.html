@@ -231,7 +231,7 @@
 				<li id="divFailover" class="hide">
 					<h3 class="form-title">Failover</h3>
 					<div class="accor-contents__wrap">
-						<table id="connectionInfoTable" class="Table Form-type">
+						<table class="Table Form-type">
 							<colgroup>
 								<col style="width: 200px;"> </col>
 								<col></col>
@@ -1018,7 +1018,9 @@
 							method:'PUT',
 							data:$.extend({},gParam,{port:$('#port').val()}),
 							success: function(res){
-								gCommon.alert(res.result.message);
+								gCommon.alert(res.result.message,function(){
+									fn_getConnectionInfo();				
+								});
 							}
 						})
 			        }
@@ -1394,7 +1396,7 @@
 								var memUsage = ml[ob.name];
 								ob.memory = cloudUtil.truncDecimal(((memUsage.length? memUsage[memUsage.length-1].value:'') / (1024*1000)),2) + ' / ' + gService.resourceSpecOfPodMap[ob.name].memory;
 							};
-							if(gService.serviceType == 'redis' && (ob.role != 'master' || gService.persistentVolumeClaims.length == 0)){
+							if(gService.serviceType == 'redis' && gService.purpose != 'DATA' && gService.persistentVolumeClaims.length == 0){
 								ob.disk = '사용안함';
 							}else if(dl && dl[ob.name]){
 								var hasUseRate = dl[ob.name].useRate?true:false;
