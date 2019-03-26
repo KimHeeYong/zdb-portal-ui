@@ -2067,8 +2067,11 @@
 						}else{
 							data = res.schedule;
 						};
-						backupForm.zdbui_setContents(data);
 						backupStatus = data.useYn||'N';
+						if(data.incrementYn != 'Y'){
+							data.incrementPeriod = '0';
+						}
+						backupForm.zdbui_setContents(data);
 						setOnOffButton('useYn',backupStatus);
 						setBackupBtnEnable();
 						backupForm.find('#startTime').setData({date :data.startTime});
