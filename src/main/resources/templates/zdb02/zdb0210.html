@@ -30,7 +30,7 @@
 	<script src="/script/libs/sockjs/sockjs.js"></script>
 	<script src="/script/libs/sockjs/stomp.js"></script>
 	<script src="/script/app/common/cloudzdb-ui-sock.js"></script>	
-	
+	<script type="text/javascript" src="/script/app/common/cloudzdb-validator.js"></script>
 </th:block>
 <th:block layout:fragment="content">
 <!-- location -->
@@ -961,7 +961,6 @@
 			
 			Validator.addMethod('checkPort', function(element, value) {
 				let n = cloudUtil.parseInt(value);
-				console.log(n == 3306 || (n <= 39999 && n >= 10000))
 			    return (n == 3306 || (n <= 39999 && n >= 10000));
 			});	
 			formService.validator({
@@ -1343,10 +1342,12 @@
 					gServiceScale.storageClass = gStorageClassConstants[pvSpec.spec.storageClassName];
 				}
 				
+				let resorceSpec = gService.resourceSpec||{};
+				let persistenceSpec = gService.persistenceSpec||{};
 				$('#configInfo').zdbui_setContents(
-						{ cpu:gServiceScale.cpu
-						 ,memory:gServiceScale.memory
-						 ,disk:gService.persistentVolumeClaims.length==0?'사용안함':gServiceScale.disk
+						{ cpu:resorceSpec.cpu||''
+						 ,memory:resorceSpec.memory||''
+						 ,disk:gService.persistentVolumeClaims.length==0?'사용안함':persistenceSpec.size||''
 						 ,storageClass:gServiceScale.storageClass
 						}
 					);
@@ -1416,6 +1417,7 @@
 				
 				var services = gService.services;
 				var isMasterRed = false;
+				var isSlaveGreen = false;
 				var statefulSets = gService.statefulSets;
 				var deployments = gService.deployments;
 
@@ -1479,6 +1481,9 @@
 									}
 								}								
 							}
+							if(dt.role == 'slave'){
+								isSlaveGreen = true;
+							}
 						}else{
 							if(dt.status == 'red' && dt.role == 'master'){
 								isMasterRed = true;
@@ -1518,7 +1523,7 @@
 					}else{
 						$('#divFailover').hide();
 					}
-					if(isMasterRed || gService.serviceFailOverStatus == 'MasterToSlave'){
+					if((isMasterRed && isSlaveGreen)|| gService.serviceFailOverStatus == 'MasterToSlave'){
 						$('#divFailoverArea').show();
 					}else{
 						$('#divFailoverArea').hide();
@@ -2580,7 +2585,7 @@
 				    }
 				});				
 			};
-
+			
 			$('#saveVariables').on('click',function(){ //시스템 변수 적용
 				if(!dbConfigForm.validate()){
 					return;
@@ -2611,7 +2616,7 @@
 						var dbConfigurations = res.dbConfigurations
 						if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
 							if(dbConfigurations){
-								$('#serviceConfigTable tbody').html('');
+								let tbody = $('#serviceConfigTable tbody').html(''); 
 								var sels = {
 									character_set_server:{options:[{key:'utf8'},{key:'euckr'},{key:'utf8mb4'},{key:'utf16'}]},
 									'collation-server':{options:[{key:'utf8_general_ci'},{key:'utf8_bin'},{key:'euckr_korean_ci'},{key:'euckr_bin'}
@@ -2620,9 +2625,14 @@
 									innodb_flush_method:{options:[{key:'fsync'},{key:'O_DSYNC'}, {key:'O_DIRECT'} ,{key:'O_DIRECT_NO_FSYNC'}]},
 									query_cache_type:{options:[{key:'0',val:'OFF'},{key:'1',val:'ON'},{key:'2',val:'DEMAND'}]},
 									thread_handling:{options:[{key:'no-threads'},{key:'one-thread-per-connection'},{key:'pool-of-threads'}]},
-									'transaction-isolation':{options:[{key:'READ-UNCOMMITTED'},{key:'READ-COMMITTED'}
-																,{key:'REPEATABLE-READ'},{key:'SERIALIZABLE'}]}
+									'transaction-isolation':{options:[{key:'READ-UNCOMMITTED'},{key:'READ-COMMITTED'} ,{key:'REPEATABLE-READ'},{key:'SERIALIZABLE'}]},
+									autocommit:{options:[{key:'0',val:'OFF'},{key:'1',val:'ON'}]},event_scheduler:{options:[{key:'0',val:'OFF'},{key:'1',val:'ON'}]},
+									local_infile:{options:[{key:'0',val:'OFF'},{key:'1',val:'ON'}]},lower_case_table_names:{options:[{key:'0',val:'OFF'},{key:'1',val:'ON'}]}
 								};
+								let opt = {
+									tmpdir:{css:{width:'300px'}},
+									plugin_dir:{css:{width:'300px'}}
+								}
 								for(var i = 0 ; i < dbConfigurations.length;i++){
 									var ob = dbConfigurations[i];
 									var tr = '';
@@ -2640,11 +2650,37 @@
 									       + '		<p data-for="'+ob.name+'" class="warn-text"></p>'
 									       + '	</td> </tr>';
 									}
-									$('#serviceConfigTable tbody').append(tr);
+									tbody.append(tr);
+									if(opt[ob.name]){
+										let o = opt[ob.name];
+										let obj = tbody.find('#'+ob.name); 
+										if(o.css){
+											obj.css(o.css);
+										}
+									}
 								};
-								$a.convert($('#serviceConfigTable tbody').find('.Divselect'));
+								function getCheckUnitTemple(val){
+									return {rule:{required:true,checkUnitSize:val},message:{checkUnitSize:gValid.checkUnitSize.message}}
+								}
+								dbConfigForm.validator({
+								    elements :{ 
+								    	binlog_cache_size:getCheckUnitTemple('4096:18446744073709547520'),
+								    	bulk_insert_buffer_size:getCheckUnitTemple('0:18446744073709547520'),
+								    	innodb_buffer_pool_size:getCheckUnitTemple('5242880:8192000000000000000'),
+								    	innodb_log_buffer_size:getCheckUnitTemple('262144:4294967295'),
+								    	innodb_log_file_size:getCheckUnitTemple('1048576:549755813888'),
+								    	max_allowed_packet:getCheckUnitTemple('1024:1073741824'),
+								    	max_binlog_size:getCheckUnitTemple('4096:1073741824'),
+								    	max_heap_table_size:getCheckUnitTemple('16384:4294966272'),
+								    	myisam_sort_buffer_size:getCheckUnitTemple('4096:18446744073709547520'), 
+								    	read_buffer_size:getCheckUnitTemple('8200:2147479552'), 
+								    	read_rnd_buffer_size:getCheckUnitTemple('8200:2147483647'), 
+								    	tmp_table_size:getCheckUnitTemple('1024:428867584') 
+								    }
+								});
+								$a.convert(tbody.find('.Divselect'));
 								setDbConfigurationFilter();
-								$('select[name=character_set_server]').on('change',function(){
+								tbody.find('select[name=character_set_server]').on('change',function(){
 									setDbConfigurationFilter();
 								});
 								var dt = gCommon.findObjectByKeyOb(dbConfigurations,{name:'collation-server'});
