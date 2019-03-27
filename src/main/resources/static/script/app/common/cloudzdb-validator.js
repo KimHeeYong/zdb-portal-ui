@@ -24,17 +24,17 @@ $a.page(function() {
 			if(reg==null){
 				return false;
 			}
-			let n = reg[1];
+			let n = bigInt(reg[1]);
 			let unit = 1;
 			if(reg[2] == 'K'){
 				unit = 1024;
 			}else if(reg[2] == 'M'){
 				unit = 1024 * 1024
 			}
-			let r = parseFloat(n * unit);
-			let min = param.split(':')[0];
-			let max = param.split(':')[1];
-		    return (r >= min && r <= max);
+			let r = n.multiply(unit);
+			let min = bigInt(param.split(':')[0]);
+			let max = bigInt(param.split(':')[1]);
+		    return (r.greaterOrEquals(min) && r.lesserOrEquals(max));
 		});
 	};
 });
