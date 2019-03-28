@@ -2014,7 +2014,7 @@
 							fn_downloadBackupFile(data);
 						});
 						return re;
-					}},
+					},tooltip:null},
 					{ title:'삭제', key : 'delete' , width: '90px', align: 'center',render:function(value,data,render,mapping){
 						var re = $('<button class="Button btn-del '+(data.status != 'OK'?'Disabled':'')+'">삭제</button>').on('click',function(){
 							fn_deleteBackupFile(data);
