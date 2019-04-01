@@ -31,6 +31,7 @@
 	<script src="/script/libs/sockjs/stomp.js"></script>
 	<script src="/script/app/common/cloudzdb-ui-sock.js"></script>	
 	<script type="text/javascript" src="/script/app/common/cloudzdb-validator.js"></script>
+	<script type="text/javascript" src="/script/libs/etc/download.min.js"></script>
 </th:block>
 <th:block layout:fragment="content">
 <!-- location -->
@@ -93,6 +94,7 @@
 			<li data-content="#tabUser">사용자</li>
 			<li data-content="#tabDatabase">Database</li>
 			<li data-content="#tabSystem">환경설정</li>
+			<li data-content="#tabLog">로그</li>
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
 		<div id="tabService">
@@ -828,7 +830,26 @@
 			</ul>
 			</form>
 		</div>
-		
+		<div id="tabLog">
+			<h3 class="form-title">로그</h3>
+			<div class="tabs-contents">
+				<div class="mt10">
+					<label class="ImageRadio af-radio-text"><input class="Radio" name="logType" checked="checked" value="error">에러로그</label>
+					<label class="ImageRadio af-radio-text"><input class="Radio" name="logType" value="query">Slow Query</label>
+					<span class="ml20"></span>
+					<button class="Button btn sm" id="btnSearchLog">조회</button>
+					<button class="Button btn sm" id="btnDownloadLog">다운로드</button>
+				</div>
+				<div class="fl" style="width:210px;">
+					<div id="gridLog"></div>
+				</div>
+				<div>
+					<div style="width:calc(100 - 260px);overflow: scroll">
+						<textarea class="Textarea" id="divLog" style="background: black;color: white;height:680px;width:100%;overflow: scroll;"></textarea>
+					</div>
+				</div>				
+			</div>
+		</div>		
 	</div>
 </div>
 <script type="text/javascript">
@@ -1313,7 +1334,7 @@
 				 //redis - user,database탭 삭제, purpose - data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
 				if(gService.serviceType == G_SERVICE_TYPE_REDIS){
 					
-					let delTab = ['tabUser','tabDatabase'];
+					let delTab = ['tabUser','tabDatabase','tabLog'];
 					if(gService.purpose != 'DATA'){
 						$('#tabSystem #divAdvancedConfig').hide();
 						delTab.push('tabBackup');
@@ -2707,7 +2728,63 @@
 				window.open("/zdb02/zdb0200p05?namespace="+gService.namespace+"&serviceType="+gService.serviceType+"&serviceName="+gService.serviceName);
 			});
 			/*tabSystem end 환경설정 */
-			
+			/*tabLog start 사용자 */
+			let tabLog = $('#tabLog');
+			let lastLogData = {
+					logType:null, //마지막 조회 타입	
+					dates:null//마지막 조회 날짜 데이터					
+				} 			
+			let gridLog = $('#gridLog').alopexGrid({
+				autoColumnIndex: true,
+				width: 212,
+				height: 680,
+				enableHeaderSelect:true,
+				columnMapping : [  
+					{ key:'check',width:'30px',selectorColumn : true},
+					{ title:'date',key:'date',width:'160px',align:'center',render:function(value){
+						return moment(value).format('YYYY-MM-DD');
+					}}
+				]
+			});
+			let dateList = [];
+			for(let i = 0; i < 15;i++){
+				let day = moment().subtract(i, 'days').format('YYYYMMDD');
+				dateList.push({date:day});
+			}
+			gridLog.alopexGrid('dataSet',dateList);
+			$('#btnSearchLog').on('click',function(){
+				fn_getLogData();
+			});
+			$('#btnDownloadLog').on('click',function(){
+				if(lastLogData.logType==null){
+					gCommon.alert('조회된 데이터가 없습니다.');
+				}
+				let fileName = lastLogData.logType+'Log-'+moment().format("YYYYMMDDHHmmss")+'.txt';
+				download($('#divLog').html(), fileName, "text/plain");
+			});
+			tabLog.find('input[name=logType]:first').prop('checked',true);
+			function fn_getLogData(){
+				let selDates = fn_getSelectedLogDates();
+				if(selDates.length == 0){
+					gCommon.alert('조회 할 날짜를 선택하세요.');
+				}
+				let param = $.extend({},gParam,{logType:tabLog.find('input[name=logType]:checked').val(),dates:selDates});
+				$a.ajax({
+					url: '/zdbapi/getFileLog',
+					data:param,
+					success:function(res){
+						let re = res.fileLog||'데이터가 없습니다.'
+						$('#divLog').html(re);
+						lastLogData.logType = param.logType; 
+						lastLogData.dates = param.dates;						
+					}
+				})
+			}
+			function fn_getSelectedLogDates(){
+				let l = gridLog.alopexGrid('dataGet',{_state:{selected:true}});
+				return l.map(function(d){return d.date}).join();
+			}
+			/*tabLog end */						
 			//page Start
 			fn_getServiceFirst().done(function(){
 				var cookieTabId = $.cookie('selected2010tab')||'tabService';

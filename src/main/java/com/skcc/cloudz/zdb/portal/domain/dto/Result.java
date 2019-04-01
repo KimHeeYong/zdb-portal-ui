@@ -75,4 +75,6 @@ public class Result {
 	private List<?> pods;
 	
 	private List<Database> databases;
+	
+	private String fileLog;
 }

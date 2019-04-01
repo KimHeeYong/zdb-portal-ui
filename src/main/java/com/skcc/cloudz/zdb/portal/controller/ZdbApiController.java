@@ -655,5 +655,23 @@ public class ZdbApiController {
 		mav.addObject(CommonConstants.RESULT,dto);
 		
 		return mav;
-	}	
+	}
+	
+	@RequestMapping(value = "getFileLog", method = RequestMethod.GET)	
+	public ModelAndView getFileLog(HttpServletRequest request) {
+		ModelAndView mav = null;
+		try {
+			mav = new ModelAndView(CommonConstants.JSON_VIEW);
+			Map<String,String> param = RequestUtil.getMapFromRequest(request);
+			String fileLog = zdbApiService.getFileLog(param);		
+			
+			mav.addObject(IResult.FILE_LOG ,fileLog);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return mav;
+	}
+	
+	
 }

@@ -70,6 +70,13 @@ var cloudUtil = {
 		let opt = $.extend({},dfOpt,optVal);
 		let isValid = moment(val,opt.fromFormat).isValid();
 		return isValid ? moment(val,opt.fromFormat).format(opt.toFormat) : '';
+	},
+	filedownFromText:function(data,fileName){
+		let text = data||'';
+		var link = document.createElement('a');
+		link.setAttribute('download', fileName);
+		link.setAttribute('href', 'data:text/plain;charset=utf-8,'+ encodeURIComponent(text));
+		link.click();
 	}
 }
 

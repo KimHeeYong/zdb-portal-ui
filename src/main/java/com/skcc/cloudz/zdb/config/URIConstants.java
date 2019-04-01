@@ -123,4 +123,6 @@ public class URIConstants {
 
 	public static final String URI_DELETE_DATABASE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/database/{databaseName}";
 
+	public static final String URI_GET_FILE_LOG = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/fileLogs/{logType}/{dates}";
+
 }

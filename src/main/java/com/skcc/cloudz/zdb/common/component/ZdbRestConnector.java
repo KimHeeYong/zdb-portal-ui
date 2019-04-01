@@ -50,8 +50,6 @@ public class ZdbRestConnector extends RestTemplate{
 		HttpEntity<?> newRequestEntity = new HttpEntity<>(tempBody,tempHeaders);
 		ResponseEntity<T> result = null;
 		try {
-//			System.out.println(url);
-//			System.out.println(uriVariables);
 			result = super.exchange(url, method, newRequestEntity, responseType, uriVariables);
 		} catch (HttpStatusCodeException e) {
 			ZdbRestDTO resultMap = new Gson().fromJson(e.getResponseBodyAsString(), ZdbRestDTO.class);
@@ -60,9 +58,10 @@ public class ZdbRestConnector extends RestTemplate{
 			throw new ResourceAccessException("API서버 연결 중 오류가 발생하였습니다."); 
 		} catch(Exception e) {
 			try {
+				e.printStackTrace();
 				throw new Exception("알수 없는 오류가 발생 하였습니다.");
 			} catch (Exception e1) {
-				
+				e1.printStackTrace();
 			}
 		}
 		

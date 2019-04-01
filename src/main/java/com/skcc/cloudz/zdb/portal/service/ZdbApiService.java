@@ -607,4 +607,14 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 
+	public String getFileLog(Map<String, String> param) {
+		String result = "";
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_FILE_LOG,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getFileLog();
+		};
+		return result;
+	}
+
 }
