@@ -3,6 +3,7 @@ package com.skcc.cloudz.zdb.portal.domain.dto;
 import java.util.List;
 import java.util.Map;
 
+import com.zdb.core.domain.AlertingRuleEntity;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
@@ -77,4 +78,8 @@ public class Result {
 	private List<Database> databases;
 	
 	private String fileLog;
+	
+	private List<AlertingRuleEntity> alertRules;
+
+	private AlertingRuleEntity alertRule;
 }

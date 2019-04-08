@@ -1,5 +1,8 @@
 package com.skcc.cloudz.zdb.common.domain.vo;
 
+import lombok.Data;
+
+@Data
 public class AddOnServiceMataSubVo implements Comparable<AddOnServiceMataSubVo> {
     private String id;
     private String name;
@@ -7,57 +10,8 @@ public class AddOnServiceMataSubVo implements Comparable<AddOnServiceMataSubVo> 
     private String url;
     private String target;
     private boolean enable;
+    private String folder;
     
-    public AddOnServiceMataSubVo() {}
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getOrder() {
-        return order;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    public boolean isEnable() {
-        return enable;
-    }
-
-    public void setEnable(boolean enable) {
-        this.enable = enable;
-    }
-
     @Override
     public int compareTo(AddOnServiceMataSubVo addOnServiceMataSubVo) {
         if (this.order < addOnServiceMataSubVo.getOrder()) {

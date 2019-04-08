@@ -125,4 +125,17 @@ public class URIConstants {
 
 	public static final String URI_GET_FILE_LOG = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/fileLogs/{logType}/{dates}";
 
+	public static final String URI_GET_ALL_SERVICES = "/api/v1/allServices";
+
+	public static final String URI_GET_ALERT_RULES = "/api/v1/{namespace}/alert/rules";
+
+	public static final String URI_GET_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
+
+	public static final String URI_CREATE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
+	
+	public static final String URI_UPDATE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
+	
+	public static final String URI_DELETE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
+
+
 }

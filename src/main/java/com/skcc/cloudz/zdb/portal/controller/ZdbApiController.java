@@ -25,6 +25,7 @@ import com.skcc.cloudz.zdb.portal.domain.dto.NamespaceResource;
 import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.skcc.cloudz.zdb.portal.service.ZdbApiService;
+import com.zdb.core.domain.AlertingRuleEntity;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
@@ -667,11 +668,58 @@ public class ZdbApiController {
 			
 			mav.addObject(IResult.FILE_LOG ,fileLog);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return mav;
 	}
 	
+	@RequestMapping(value="getAllServices", method=RequestMethod.GET)
+	public ModelAndView getAllServices(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<ServiceOverview> services = zdbApiService.getAllServices(param);
+		mav.addObject(IResult.SERVICEOVERVIEWS,services);
+		return mav;
+	}	
 	
+	@RequestMapping(value="getAlertRules", method=RequestMethod.GET)
+	public ModelAndView getAlertRules(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<AlertingRuleEntity> services = zdbApiService.getAlertRules(param);
+		mav.addObject(IResult.ALERT_RULES,services);
+		return mav;
+	}		
+	@RequestMapping(value="getAlertRule", method=RequestMethod.GET)
+	public ModelAndView getAlertRule(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		AlertingRuleEntity ar = zdbApiService.getAlertRule(param);
+		mav.addObject(IResult.ALERT_RULE,ar);
+		return mav;
+	}		
+	@RequestMapping(value="createAlertRule", method=RequestMethod.POST)
+	public ModelAndView createAlertRule(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		ZdbRestDTO result = zdbApiService.createAlertRule(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}		
+	@RequestMapping(value="updateAlertRule", method=RequestMethod.PUT)
+	public ModelAndView updateAlertRule(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		ZdbRestDTO result = zdbApiService.updateAlertRule(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}		
+	@RequestMapping(value="deleteAlertRule")
+	public ModelAndView deleteAlertRule(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		ZdbRestDTO result = zdbApiService.deleteAlertRule(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}		
 }

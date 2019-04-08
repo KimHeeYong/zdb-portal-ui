@@ -42,9 +42,49 @@
     "enable": true
   },
   {
+    "id": "zdb0700",
+    "name": "알림",
+    "order": 4,
+    "url": "/zdb07/zdb0700",
+    "folder": "/zdb07",
+    "target": "self",
+	"sub":[
+        {
+		    "id": "zdb0710",
+		    "name": "현황",
+		    "order": 1,
+		    "url": "/zdb07/zdb0710",
+    		"folder": "/zdb07",
+		    "target": "self",
+    		"enable": true
+	    },
+	    {
+		    "id": "zdb0720",
+		    "name": "규칙",
+		    "order": 2,
+		    "url": "/zdb07/zdb0720",
+    		"folder": "/zdb07",
+		    "target": "self",
+    		"enable": true
+	    }
+    ],
+    "accessRoles": [
+      "cluster-admin",
+      "admin",
+      "member"
+    ],
+        
+    "accessRoles": [
+      "cluster-admin",
+      "admin",
+      "member"
+    ],
+    "enable": true
+  },
+  {
     "id": "zdb0400",
     "name": "이벤트",
-    "order": 4,
+    "order": 5,
     "url": "/zdb04/zdb0400",
     "folder": "/zdb04",
     "target": "self",
@@ -58,7 +98,7 @@
   {
     "id": "zdb0500",
     "name": "백업 스케쥴링 목록",
-    "order": 5,
+    "order": 6,
     "url": "/zdb05/zdb0500",
     "folder": "/zdb05",
     "target": "self",

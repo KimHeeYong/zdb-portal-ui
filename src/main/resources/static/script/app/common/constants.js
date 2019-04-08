@@ -1,19 +1,19 @@
-var G_SERVICE_TYPE_MARIA = 'mariadb';
-var G_SERVICE_TYPE_REDIS = 'redis';
+let G_SERVICE_TYPE_MARIA = 'mariadb';
+let G_SERVICE_TYPE_REDIS = 'redis';
 
-var _gSliderConstantsCommonRange = { 'min': 0, '14%': 1, '28%': 2, '42%': 3, '56%': 4, '70%': 5, '85%':6, 'max': 7 };
-var _gSliderConstantsCommonGetValue = function(index,isCluster){
-	var val = this.value[index]
+let _gSliderConstantsCommonRange = { 'min': 0, '14%': 1, '28%': 2, '42%': 3, '56%': 4, '70%': 5, '85%':6, 'max': 7 };
+let _gSliderConstantsCommonGetValue = function(index,isCluster){
+	let val = this.value[index]
 	if(isCluster){
 		val = val * 2;
 	}
 	return val+this.unit;
 };
-var _gSliderConstantsCommonGetIndex = function(val){
+let _gSliderConstantsCommonGetIndex = function(val){
 	val = cloudUtil.parseInt(val);
-	var idx = this.value.indexOf(val);
+	let idx = this.value.indexOf(val);
 	if(idx < 0 && val > 0){
-		for(var i = this.value.length - 1; i > -1; i--){
+		for(let i = this.value.length - 1; i > -1; i--){
 			if(val >= this.value[i]){
 				idx = [i];
 				break;
@@ -23,7 +23,7 @@ var _gSliderConstantsCommonGetIndex = function(val){
 	return idx < 0 ? 0 : idx;
 };
 
-var gSliderConstants = {
+let gSliderConstants = {
 	redis :{
 		memory : {
 			range : _gSliderConstantsCommonRange,
@@ -71,17 +71,16 @@ var gSliderConstants = {
 		}
 	}
 };
-var gStorageClassConstants = {
+let gStorageClassConstants = {
 	 'ibmc-block-bronze':'2 IOPS/GB'
 	,'ibmc-block-silver':'4 IOPS/GB'
 	,'ibmc-block-gold':'10 IOPS/GB'
 };
-var gMessage = {
+let gMessage = {
 	validPage : '잘못된 접근 입니다.',
 	saveSuccess: '정상적으로 저장되었습니다.',
 	notValidInput : '유효하지 않은 입력값이 있습니다.',
 	procSuccss: '정상적으로 처리되었습니다.',
 	gridNodata: '데이터가 없습니다.'
 };
-
 

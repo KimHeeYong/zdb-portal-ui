@@ -2767,6 +2767,7 @@
 				let selDates = fn_getSelectedLogDates();
 				if(selDates.length == 0){
 					gCommon.alert('조회 할 날짜를 선택하세요.');
+					return;
 				}
 				let param = $.extend({},gParam,{logType:tabLog.find('input[name=logType]:checked').val(),dates:selDates});
 				$a.ajax({

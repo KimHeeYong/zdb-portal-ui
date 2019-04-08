@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<th:block layout:fragment="page_head">
+	<title>DB관리</title>
+</th:block>
+<th:block layout:fragment="page_css">
+</th:block>
+<th:block layout:fragment="page_js">
+	<script type="text/javascript" src="/script/app/common/cloudzdb-validator.js"></script>
+</th:block>
+<th:block layout:fragment="content">
+	<!-- Location -->
+	<div class="locations-area">
+		<div class="prj-list">
+			<strong>Namespace : </strong>
+			<button id="namespaces" class="Dropdownbutton namespace"></button>
+			<ul class="dropmenu-list hide">
+			</ul>
+		</div>
+	</div>
+	<!-- Contents -->
+	<div class="contents-box">
+		<!-- Top Area -->
+		<div id="tabDatabase">
+			<!-- rule info area-->
+			<div class="top-area">
+				<h2 class="title">Rule 추가</h2>
+				<div class="tag-wrap">
+					<span class="tag">알람 발생을 위한 신규 Rule을 생성합니다.</span>
+				</div>
+			</div>
+			<!-- add rule table-->
+			<form name="ruleForm" onsubmit="return false;">
+				<fieldset>
+					<table class="Table Form-type topline">
+						<colgroup>
+							<col style="width: 200px;" />
+							<col />
+						</colgroup>
+						<tbody>
+							<tr style="height: 65px;">
+								<th>Rule 종류<strong class="astertisk">*</strong></th>
+								<td>
+									<div class="Divselect" style="width: 310px;">
+										<select name="type" id="type">
+											<option value="">Rule 종류 선택</option>
+											<option value="ZDB-MariaDB-PodHealthCheck">ZDB-MariaDB-PodHealthCheck</option>
+											<option value="ZDB-MariaDB-ContainerHealthCheck">ZDB-MariaDB-ContainerHealthCheck</option>
+											<option value="ZDB-MariaDB-DBHealthCheck">ZDB-MariaDB-DBHealthCheck</option>
+											<option value="ZDB-MariaDB-CPUUsage">ZDB-MariaDB-CPUUsage</option>
+											<option value="ZDB-MariaDB-MemoryUsage">ZDB-MariaDB-MemoryUsage</option>
+											<option value="ZDB-MariaDB-Connections">ZDB-MariaDB-Connections</option>
+											<option value="ZDB-MariaDB-SlowQueries">ZDB-MariaDB-SlowQueries</option>
+											<option value="ZDB-MariaDB-ReplicationStatus">ZDB-MariaDB-ReplicationStatus</option>
+											<option value="ZDB-MariaDB-ReplicationDelay">ZDB-MariaDB-ReplicationDelay</option>
+										</select> <span></span>
+									</div>
+									<p class="warn-text" data-for="type"></p>
+								</td>
+							</tr>
+							<tr style="height: 65px;">
+								<th>Namespace<strong class="astertisk">*</strong></th>
+								<td>
+									<div class="Divselect" style="width: 310px;">
+										<select name="namespace" id="namespace">
+											<option value="">Namespace 선택</option>
+										</select> <span></span>
+									</div>
+									<p class="warn-text" data-for="namespace"></p>
+								</td>
+							</tr>
+							<tr style="height: 65px;">
+								<th>Service<strong class="astertisk">*</strong></th>
+								<td>
+									<div class="Divselect" style="width: 310px;">
+										<select name="serviceName" id="serviceName">
+											<option value="">Service 선택</option>
+										</select> <span></span>
+									</div>
+									<p class="warn-text" data-for="serviceName"></p>
+								</td>
+							</tr>
+							<tr style="height: 65px;" class="hide">
+								<th>Duration<strong class="astertisk">*</strong></th>
+								<td>
+									<div class="Divselect" style="width: 170px;">
+										<select name="duration" id="duration">
+											<!-- <option value="">Duration 선택</option> -->
+											<option value="2m">2m</option>
+											<option value="5m">5m</option>
+											<option value="10m">10m</option>
+										</select> <span></span>
+									</div>
+									<p class="warn-text" data-for="duration"></p>
+								</td>
+							</tr>
+							<tr style="height: 65px;">
+								<th>심각도<strong class="astertisk">*</strong></th>
+								<td>
+									<label class="ImageRadio"> <input class="Radio" name="priority" value="P4" checked="checked" />Low </label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" name="priority" value="P3"/>Warning </label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" name="priority" value="P1" />Critical </label>
+									<label class="info-text gray Margin-left-50">(이미 등록된 심각도는 추가할 수 없습니다.)</label>
+								</td>
+							</tr>
+							<tr style="height: 65px;">
+								<th>임계치<strong class="astertisk">*</strong></th>
+								<td>
+									<div class="Divselect">
+										<select name="condition" id="condition">
+											<option value="&gt;">&gt;</option>
+											<option value="&lt;">&lt;</option>
+										</select> <span></span>
+									</div> 
+									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="value2" id="value2" />
+									<p class="warn-text" data-for="value2"></p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</fieldset>
+				<div class="btn-wrap">
+					<div class="btn-left">
+						<button class="Button btn" id="btnRuleCancel">취소</button>
+					</div>
+					<div class="btn-right">
+						<button class="Button btn bg-red" id="btnRuleSave">확인</button>
+					</div>
+				</div>				
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript">
+		let gNamespaces = null;
+		let gServiceData = {};
+		$a.page(function() {
+			this.init = function() {
+				let isUpdate = !cloudUtil.isEmpty(gParam.alert);
+				let ruleForm = $('form[name=ruleForm]');
+				ruleForm.validator({
+				    elements :{
+				    	type: {rule:{required:true},message:{required:'Rule종류를 선택하세요.'}}, 
+				    	namespace: {rule:{required:true},message:{required:'Namespace를 선택하세요.'}},
+				    	serviceName: {rule:{required:true},message:{required:'Service를 선택하세요.'}},
+				    	//duration: {rule:{required:true},message:{required:'Duration을 선택하세요.'}},
+				    	value2: {rule:{required:true},message:{required:'임계치를 입력하세요.'}}
+				    }
+				}).validate();
+				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
+				 .select({id:gSelectedNamespace})
+				 .addHandler(function(e) {
+					  gCommon.setSelectedNamespace(e.currentTarget.id);
+					  gCommon.movePage('/zdb07/zdb0720',{selectedNamespace:gSelectedNamespace});
+				  });
+				if(gNamespaceList){
+					for(let i = 0;i < gNamespaceList.length;i++){
+						let o = gNamespaceList[i];
+						$('#namespace').append($('<option/>').attr({value:o.id}).html(o.text));		
+					}
+				}				
+				$a.ajax({
+					url:'/zdbapi/getAllServices',
+					success:function(res){
+						if(res && res.serviceoverviews){
+							let list = res.serviceoverviews||[];
+							for(let i = 0;i < list.length;i++){
+								let o = list[i];
+								if(o.serviceType == 'mariadb'){
+									if(!gServiceData[o.namespace]){
+										gServiceData[o.namespace] = new Array();
+									}
+									gServiceData[o.namespace].push(o.serviceName);
+								}
+							}
+						}
+					}
+				});				
+				ruleForm.find('#btnRuleSave').on('click',function(){
+					fn_saveAlertRule();
+				});
+				ruleForm.find('#namespace').on('change',function(e){
+					$('#serviceName').parent().setSelected('');
+					setServiceInNamespace(this.value);
+				});
+				
+				if(isUpdate){
+					fn_getAlertRule();
+				}
+				function setServiceInNamespace(serviceName){
+					$('#serviceName').find('option').filter(function(){return this.value!=''}).remove();
+					let list = gServiceData[serviceName];
+					if(serviceName !='' && list){
+						for(let i = 0 ; i < list.length;i++){
+							let o = list[i];
+							$('#serviceName').append($('<option/>').attr({value:o}).html(o));
+						}
+					}
+				}
+				function fn_getAlertRule(){
+					$a.ajax({
+						url:'/zdbapi/getAlertRule',
+						data:gParam,
+						success:function(res){
+							let o = res.alertRule;
+							ruleForm.zdbui_setContents(o);
+							ruleForm.find('[name=type]').parent().setSelected(o.type);
+							ruleForm.find('[name=namespace]').parent().setSelected(o.namespace);
+							ruleForm.find('[name=serviceName]').parent().setSelected(o.serviceName);
+						}
+					})
+				}
+				function fn_saveAlertRule(){
+					if(!ruleForm.validate()) return;
+					gCommon.confirm('저장 하시겠습니까?',function(){
+			    		let ajaxOpt = {
+		    				success:function(res){
+		    					if(res.result.code == '0000'){
+		    						gCommon.alert('저장되었습니다.');
+		    						location.href = '/zdb07/zdb0720';
+		    					}
+		    				}
+			    		}
+
+			    		let data = $.extend({},ruleForm.serializeObject());
+			    		data.alert = data.type+'-'+data.serviceName;
+			    		if(isUpdate){
+			    			ajaxOpt.url = '/zdbapi/updateAlertRule';
+			    			ajaxOpt.method = 'put';
+			    		}else{
+			    			ajaxOpt.url = '/zdbapi/createAlertRule';
+			    			ajaxOpt.method = 'post';
+			    		}
+			    		ajaxOpt.data = data;
+			    		$a.ajax(ajaxOpt)				
+					});
+				}
+			}
+		});
+	</script>
+</th:block>
+</html>

@@ -2,13 +2,12 @@
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" 
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-	<title>테스트 페이지</title>
+	<title>규칙 목록</title>
 </th:block>
 <th:block layout:fragment="page_css">
 </th:block>
 <th:block layout:fragment="page_js">
 	<script type="text/javascript" src="/script/app/common/cloudzdb-validator.js"></script>
-	<script type="text/javascript" src="/script/libs/etc/download.min.js"></script>
 </th:block>
 <th:block layout:fragment="content">
 	<!-- Location -->
@@ -27,7 +26,7 @@
 			<div class="top-area">
 				<h2 class="title">규칙</h2>
 				<div class="tag-wrap">
-					<span class="tag">알림 발생을 위한 규칙을를 관리합니다.</span>
+					<span class="tag">알림 발생을 위한 규칙을 관리합니다.</span>
 				</div>
 				<div class="btn-wrap__right">
 					<button class="Button btn-ico__typeb btn-rules" id="btnRuleAdd">규칙 추가</button>
@@ -39,42 +38,75 @@
 				<button class="Button btn-search" id="btnRuleSearch">검색</button>
 			</div>
 			<div class="grid-line__wrap">
-				<div id="rule-grid"></div>
+				<div id="ruleGrid"></div>
 			</div>
 		</div>
 	</div>
 	
 	<script type="text/javascript">
-	$.alopex.page(function() {
+	let gNamespaces = null;
+	$a.page(function() {
 		this.init = function(id, param) {
-			$('#rule-grid').alopexGrid({
-				pager : true,
+			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
+			 .select({id:gSelectedNamespace})
+			 .addHandler(function(e) {
+				  gCommon.setSelectedNamespace(e.currentTarget.id);
+				  gCommon.movePage('/zdb07/zdb0720',{selectedNamespace:gSelectedNamespace});
+			  });
+			
+			$('#btnRuleAdd').on('click',function(){
+				location.href = '/zdb07/zdb0721';
+			});
+			let ruleGrid = $('#ruleGrid').alopexGrid({
 				filteringHeader : false,
-				paging : {
-					perPage : 5,
-					pagerCount : 5,
-					pagerSelect : true,
-					pagerTotal : true
-				},
 				message: { nodata: gMessage.gridNodata },
 				enableDefaultContextMenu : false,
 				autoColumnIndex : true,
 				columnMapping : [
 						{ key : 'id', title : 'id', width : '100px', align : 'center', sorting : 'number', hidden : true },
-						{ key : 'type', title : 'Rule 종류', width : '200px', align : 'left', render : function(value, data) { 
-								return '<a href="javascript:zcpPortalGrid.data.detailRule(\'' + data.id + '\');" style="font-size:15px;">' + data.type + '</a>';
+						{ key : 'type', title : '규칙 종류', width : '200px', align : 'left', render : function(value, data) { 
+								let re = $('<a href="#" style="font-size:15px;">' + data.type + '</a>');
+								re.on('click',function(){
+									gCommon.movePage('/zdb07/zdb0721',{namespace:data.namespace,alert:data.alert});
+								});
+								return re;
 							}
 						},
-						{ key : 'severity', title : '심각도', width : '100px', align : 'left' },
+						{ key : 'namespace', title : '네임스페이스', width : '100px', align : 'left' },
+						{ key : 'serviceName', title : '서비스', width : '100px', align : 'left' },
 						{ key : 'value', title : '임계치', width : '100px', align : 'center' },
-						{ key : 'duration', title : 'Duration', width : '100px', align : 'center' },
 						{ key : 'channel', title : '채널', width : '200px', align : 'left' },
-						{ key : 'notification', title : 'Notifications', width : '120px', align : 'center', hidden : true },
-						{ key : 'delete', title : '관리', width : '100px', align : 'center', render : function(value, data) { 
-								return '<button class="btn-ico del" onclick="zcpPortalGrid.data.deleteRule(\'' + data.id + '\');" />';
+						{ key : 'alert', title : '관리', width : '100px', align : 'center', render : function(value, data) { 
+							let re = $('<button class="btn-ico del">').on('click',function(e){
+								gCommon.confirm(value + '<br/> 규칙을 삭제 하시겠습니까?',function(){
+									$a.ajax({
+										url:'/zdbapi/deleteAlertRule',
+										data:{namespace:data.namespace,alert:value},
+										success:function(res){
+											if(res.result.code != '4'){
+												getAlertRules();
+											}
+										}
+									});
+								})
+							});
+							return re;
 							}
 						}],
 				});
+			getAlertRules();
+				
+			function getAlertRules(){
+				$a.ajax({
+					url:'/zdbapi/getAlertRules',
+					data:{namespace:gSelectedNamespace},
+					success:function(res){
+						let list = res.alertRules;
+						ruleGrid.alopexGrid('dataSet',list);	
+					}
+				});
+			}
+			
 			};
 		});	
 

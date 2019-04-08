@@ -22,164 +22,106 @@
 	<!-- Contents -->
 	<div class="contents-box">
 		<!-- Top Area -->
-		<!-- button wrap-->
-		<h3 class="form-title">DB정보</h3>
 		<div id="tabDatabase">
-			<div class="tabs-contents">
-				<div style="width: 500px;">
-					<div class="btn-wrap">
-						<div class="btn-right">
-							<button class="Button btn sm" id="btnSearchDatabase">조회</button>
-							<button class="Button btn sm" id="btnAddDatabase">추가</button>
-							<button class="Button btn sm" id="btnDeleteDatabase">삭제</button>
-							<button class="Button btn sm bg-red" id="btnSaveDatabase">저장</button>
-						</div>
+			<div class="contents-box">
+				<!-- rule info area-->
+				<div class="top-area">
+					<h2 class="title">규칙 추가</h2>
+					<div class="tag-wrap">
+						<span class="tag">알람 발생을 위한 신규 규칙을 생성합니다.</span>
 					</div>
-					<div id="gridDatabase" class="grid grid-line__wrap"></div>
 				</div>
-			</div>		
+				<!-- add rule table-->
+				<form name="ruleForm" onsubmit="return false;">
+					<fieldset>
+						<table class="Table Form-type topline">
+							<colgroup>
+								<col style="width: 200px;" />
+								<col />
+							</colgroup>
+							<tbody>
+								<tr style="height: 65px;">
+									<th>규칙 종류<strong class="astertisk">*</strong></th>
+									<td>
+										<div class="Divselect" style="width: 310px;">
+											<select name="type" id="type">
+												<option value="">규칙 종류 선택</option>
+											</select> <span></span>
+										</div>
+										<p class="info-text" data-for="type"></p>
+									</td>
+								</tr>
+								<tr style="height: 65px;">
+									<th>Namespace<strong class="astertisk">*</strong></th>
+									<td>
+										<div class="Divselect" id="namespaceDiv" style="width: 310px;">
+											<select name="namespace" id="namespace">
+												<option value="">Namespace 선택</option>
+											</select> <span></span>
+										</div>
+										<p class="info-text" data-for="namespace"></p>
+									</td>
+								</tr>
+								<tr style="height: 65px;">
+									<th>Pod<strong class="astertisk">*</strong></th>
+									<td>
+										<div class="Divselect" style="width: 310px;">
+											<select name="pod" id="pod">
+												<option value="">Pod 선택</option>
+											</select> <span id="podSpan"></span>
+										</div>
+										<p class="info-text" data-for="pod"></p>
+									</td>
+								</tr>
+								<tr style="height: 65px;">
+									<th>Duration<strong class="astertisk">*</strong></th>
+									<td>
+										<div class="Divselect" style="width: 170px;">
+											<select name="duration" id="duration">
+												<option value="">Duration 선택</option>
+												<option value="2m">2m</option>
+												<option value="5m">5m</option>
+												<option value="10m">10m</option>
+											</select> <span></span>
+										</div>
+										<p class="info-text" data-for="duration"></p>
+									</td>
+								</tr>
+								<tr style="height: 65px;">
+									<th>심각도<strong class="astertisk">*</strong></th>
+									<td>
+										<label class="ImageRadio" id="warningLabel"> <input class="Radio" name="severity" id="severity" value="warning" checked="checked" />Warning </label> 
+										<label class="ImageRadio Margin-left-40" id="criticalLabel"> <input class="Radio" data-disabled="false" name="severity" id="severity" value="critical" />Critical </label>
+										<label class="info-text gray Margin-left-50">(이미 등록된 심각도는 추가할 수 없습니다.)</label>
+									</td>
+								</tr>
+								<tr style="height: 65px;">
+									<th>임계치<strong class="astertisk">*</strong></th>
+									<td>
+										<div class="Divselect" id="conditionDiv">
+											<select name="condition" id="condition">
+												<option value="&gt;">&gt;</option>
+												<option value="&lt;">&lt;</option>
+											</select> <span></span>
+										</div> <input class="Textinput" style="width: 120px; min-width: 50px;" maxlength="3" name="value2" id="value2" data-keyfilter-rule="digits" />
+										<p class="info-text" data-for="value2"></p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</fieldset>
+				</form>
+				<div class="btn-wrap">
+					<div class="btn-left">
+						<button class="Button btn" id="btnCancel">취소</button>
+					</div>
+					<div class="btn-right">
+						<button class="Button btn bg-red" id="btnCreate">확인</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
-	<script type="text/javascript">
-		var gNamespaces = null; // 네임스페이스 콤보
-		var gForm = $('form[name=configForm]');
-		var gIsUpdate = true;
-		var gConfigData = null;
-		$a.page(function() {
-			this.init = function() {
-				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAdminAll:true})
-				.addHandler(function(e) {
-					gCommon.setSelectedNamespace(e.currentTarget.id);
-				}).select({
-					id : gSelectedNamespace
-				});
-				
-				/*tabDatabase start Database*/
-				let tabDatabase = $('#tabDatabase');
-				let gridDatabase = $('#gridDatabase').alopexGrid({
-					autoColumnIndex: true,
-					autoResize:true,
-					rowInlineEdit:true,
-					rowSelectOption:{
-						clickSelect : true,
-						singleSelect : true
-					},
-					cellSelectable:true,
-					restoreFocusOnInvalidInlineEdit :true,
-					leaveDeleted:true,
-					height: 400,
-					columnMapping : [  
-						{ title:'state',key:'state',width:'50px',editable:false,hidden:false,render:function(value,data){
-							if (data._state.added){data.state = 'A'}
-							else if (data._state.deleted){data.state='D'}
-							else if (data._state.edited){data.state='E'}
-							else {data.state=''}
-							return data.state;
-						}},
-						{ title:'NAME', key : 'name' , width: '400px', align: 'left' ,editable:true	,allowEdit:function(value,data){
-							return data._state.added == true;
-						},editable: function(value, data) {
-							return '<div><input type="text" class="alopexgrid-default-renderer" maxlength="15" value="'+value+'"/></div>'; 
-						},editedValue: function(cell) {
-							return $(cell).find('input').val();
-						},valid : function(value, data) {
-							if(value=='') {
-								return false;
-							}
-							return true;
-						}}
-					], message: { nodata: gMessage.gridNodata }
-				}).on('cellEditInvalid ', function(e){
-					setTimeout(function(evt){
-						let evObj = AlopexGrid.parseEvent(e);
-						let opt = evObj.data;
-						let mapping = evObj.mapping;
-						let col = mapping.columnIndex;
-						let invalidValue = evObj.value;
-						
-						if(opt._state.deleted == true){
-							return;
-						}
-						if(col == 1){
-							alert('DATABASE명을 입력하세요');
-						}
-						gridDatabase.alopexGrid('focusCell', opt);
-						setTimeout(function(){
-							gridDatabase.alopexGrid('rowSelect', opt, true)
-							gridDatabase.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
-						},100)
-					},100)
-				}).on('dataChanged',function(e){
-					let isEnalbed = AlopexGrid.trimData(gridDatabase.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
-					tabDatabase.find('#btnSaveUser').setEnabled(isEnalbed);
-				});
-				tabDatabase.find('#btnAddDatabase').on('click', function(e){
-					gridDatabase.alopexGrid('endRowInlineEdit');
-					let dt = gridDatabase.alopexGrid('dataGet');
-					
-					if(dt[0]._state.added == true && dt[0]._state.editing != false){ return; } 
-					let opt = {_index :{row:0,column:1,data:0,target:0}};
-					gridDatabase.alopexGrid('dataAdd', {}, opt);
-					gridDatabase.alopexGrid('startRowInlineEdit',opt);
-					setTimeout(function(){
-						gridDatabase.alopexGrid('rowSelect', opt, true)
-						gridDatabase.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
-					},100)
-				});
-				tabDatabase.find('#btnDeleteDatabase').on('click',function(e){
-					gridDatabase.alopexGrid('endRowInlineEdit');
-					let dg = gridDatabase.alopexGrid( 'dataGet' , {_state:{selected:true}});
-					if(dg.length == 0){
-						gCommon.alert('선택된 행이 없습니다.');return;
-					};
-					let dt = dg[0];
-					if(false){
-						gCommon.alert('삭제 할 수 없습니다.');return;
-					}
-					let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
-					gridDatabase.alopexGrid(d,{_state: {selected:true}}); 
-				})
-				tabDatabase.find('#btnSearchDatabase').on('click',function(e){
-					fn_getDatabases(); 
-				})
-				tabDatabase.find('#btnSaveDatabase').on('click',function(e){
-					fn_saveDatabase();
-				})
-				function fn_getDatabases(){
-					$a.ajax({
-						url: '/zdbapi/getDatabases',
-						method:'get',
-						data: gParam,
-						success: function(res){
-							let list = res.databases;
-							gridDatabase.alopexGrid('dataSet',list);
-						}
-					});				
-				};			
-				function fn_saveDatabase(){
-					gridDatabase.alopexGrid('endRowInlineEdit');
-					gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
-						let data = AlopexGrid.trimData(gridDatabase.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
-						if(data.length > 0){
-							for(let i in data){
-								let d = $.extend(data[i],gParam);
-								d.databaseName = d.name;
-							};
-							$a.ajax({
-								url: '/zdbapi/saveDatabase',
-								method:'put',
-								data: {data:JSON.stringify(data)},
-								success: function(res){
-									fn_getDatabases();
-								}
-							});	
-						};						
-					})
-				};
-				fn_getDatabases();
-				/*tabDatabase end*/				
-			}
-		});
-	</script>
+	
 </th:block>
 </html>

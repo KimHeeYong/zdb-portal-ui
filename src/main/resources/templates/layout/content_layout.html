@@ -88,7 +88,7 @@
                             <a th:if="${iterStat.index == 0}" th:href="${parent.url} != '' ? ${parent.url} : '#'" th:target="|_${parent.target}|" th:inline="text"><i class="fa fa-plus-circle mr5"></i>[[${parent.name}]]</a>
                             <a th:if="${iterStat.index != 0}" th:href="${parent.url} != '' ? ${parent.url} : '#'" th:target="|_${parent.target}|" th:text="${parent.name}"> </a>
                             <!-- sub -->
-                            <ul class="lnb-sub" th:if="${not #lists.isEmpty(parent.sub)}" th:style="${parent.url == activePathInfo.firstPath} ? 'display:block' : 'display:none'">
+                            <ul class="lnb-sub" th:if="${not #lists.isEmpty(parent.sub)}" th:style="${parent.folder == activePathInfo.firstPath} ? 'display:block' : 'display:none'">
                                 <th:block th:each="child, iterStat : ${parent.sub}">
 	                                <li th:classappend="${child.url == activePathInfo.fullPath ? 'selected':''}">
 	                                    <a th:href="${child.url} != '' ? ${child.url} : '#'" th:target="|_${child.target}|" th:text="|-${child.name}|"></a>

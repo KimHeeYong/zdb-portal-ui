@@ -58,6 +58,7 @@ var gConfigColumn = ['free_resource_check','public_network_enabled','backup_dura
 var gSelectedNamespace = null;
 var gPopData = '';
 var gIgnoreOverlay = false;
+var gNamespaceList;
 var gCommon = $a.page(function(){ 
 	this.init = function(){ //초기화 루틴 수행
 		gSelectedNamespace = $.cookie('selectedNamespace')||G_NAMESPACE_ALL;
@@ -185,6 +186,7 @@ var gCommon = $a.page(function(){
 							text:ob.metadata.name
 						});
 					};
+					gNamespaceList = namespaceList.slice();
 					if(opt.incAdminAll){//admin일 경우에만 전체 보이도록 
 						if(gIsAdmin){
 							namespaceList.push({
@@ -397,6 +399,8 @@ $.fn.extend({
 			item.val(val+'');
 		}else if('divSelect' == tagName){
 			item.setSelected(val+'');
+		}else{
+			item.val(val);
 		};
 		return this;
     },

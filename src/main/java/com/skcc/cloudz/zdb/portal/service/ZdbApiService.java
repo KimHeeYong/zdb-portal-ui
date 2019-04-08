@@ -29,6 +29,7 @@ import com.skcc.cloudz.zdb.portal.domain.dto.ApiTemplate;
 import com.skcc.cloudz.zdb.portal.domain.dto.NamespaceResource;
 import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
+import com.zdb.core.domain.AlertingRuleEntity;
 import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
@@ -87,9 +88,7 @@ public class ZdbApiService{
 		List<ServiceOverview> list = Collections.emptyList();
 		String url = URIConstants.URI_GET_SERVICES_WITH_NAMESPACE; 
 		if(CommonConstants.NAMESPACE_ALL.equals(param.get(CommonConstants.NAMESPACE))) {
-			//dwtemp 임시 네임스페이스 적용
 			String namespaces = connector.getSessionNamespaces();
-
 			param.put(CommonConstants.NAMESPACE, namespaces);
 		};
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + url, ZdbRestDTO.class,param);
@@ -615,6 +614,57 @@ public class ZdbApiService{
 			result = zdbRestDTO.getResult().getFileLog();
 		};
 		return result;
+	}
+
+	public List<ServiceOverview> getAllServices(Map<String, String> param) {
+		List<ServiceOverview> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_ALL_SERVICES, ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			list = zdbRestDTO.getResult().getServiceoverviews();
+		};
+		return list;
+	}
+
+	public List<AlertingRuleEntity> getAlertRules(Map<String, String> param) {
+		List<AlertingRuleEntity> list = Collections.emptyList();
+		if(CommonConstants.NAMESPACE_ALL.equals(param.get(CommonConstants.NAMESPACE))) {
+			String namespaces = connector.getSessionNamespaces();
+			param.put(CommonConstants.NAMESPACE, namespaces);
+		};
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_ALERT_RULES, ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			list = zdbRestDTO.getResult().getAlertRules();
+		};
+		return list;
+	}
+
+	public ZdbRestDTO createAlertRule(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_CREATE_ALERT_RULE, HttpMethod.POST,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+
+	public ZdbRestDTO updateAlertRule(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_ALERT_RULE, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+	public ZdbRestDTO deleteAlertRule(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_DELETE_ALERT_RULE, HttpMethod.DELETE, entity,  ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+
+	public AlertingRuleEntity getAlertRule(Map<String, String> param) {
+		AlertingRuleEntity ob = null;
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_ALERT_RULE, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			ob = zdbRestDTO.getResult().getAlertRule();
+		};
+		return ob;
 	}
 
 }
