@@ -2,7 +2,7 @@
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" 
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-	<title>DB관리</title>
+	<title>규칙관리</title>
 </th:block>
 <th:block layout:fragment="page_css">
 </th:block>
@@ -25,9 +25,9 @@
 		<div id="tabDatabase">
 			<!-- rule info area-->
 			<div class="top-area">
-				<h2 class="title">Rule 추가</h2>
+				<h2 class="title">규칙 추가</h2>
 				<div class="tag-wrap">
-					<span class="tag">알람 발생을 위한 신규 Rule을 생성합니다.</span>
+					<span class="tag">알람 발생을 위한 신규 규칙을 생성합니다.</span>
 				</div>
 			</div>
 			<!-- add rule table-->
@@ -40,11 +40,11 @@
 						</colgroup>
 						<tbody>
 							<tr style="height: 65px;">
-								<th>Rule 종류<strong class="astertisk">*</strong></th>
+								<th>규칙 종류<strong class="astertisk">*</strong></th>
 								<td>
 									<div class="Divselect" style="width: 310px;">
 										<select name="type" id="type">
-											<option value="">Rule 종류 선택</option>
+											<option value="">규칙 종류 선택</option>
 											<option value="ZDB-MariaDB-PodHealthCheck">ZDB-MariaDB-PodHealthCheck</option>
 											<option value="ZDB-MariaDB-ContainerHealthCheck">ZDB-MariaDB-ContainerHealthCheck</option>
 											<option value="ZDB-MariaDB-DBHealthCheck">ZDB-MariaDB-DBHealthCheck</option>
@@ -107,10 +107,10 @@
 							<tr style="height: 65px;">
 								<th>임계치<strong class="astertisk">*</strong></th>
 								<td>
-									<div class="Divselect">
+									<div class="Divselect" data-disabled="true">
 										<select name="condition" id="condition">
+											<option value="==">==</option>
 											<option value="&gt;">&gt;</option>
-											<option value="&lt;">&lt;</option>
 										</select> <span></span>
 									</div> 
 									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="value2" id="value2" />
@@ -140,7 +140,7 @@
 				let ruleForm = $('form[name=ruleForm]');
 				ruleForm.validator({
 				    elements :{
-				    	type: {rule:{required:true},message:{required:'Rule종류를 선택하세요.'}}, 
+				    	type: {rule:{required:true},message:{required:'규칙종류를 선택하세요.'}}, 
 				    	namespace: {rule:{required:true},message:{required:'Namespace를 선택하세요.'}},
 				    	serviceName: {rule:{required:true},message:{required:'Service를 선택하세요.'}},
 				    	//duration: {rule:{required:true},message:{required:'Duration을 선택하세요.'}},
@@ -176,6 +176,9 @@
 						}
 					}
 				});				
+				ruleForm.find('#btnRuleCancel').on('click',function(){
+					location.href='/zdb07/zdb0720'
+				});
 				ruleForm.find('#btnRuleSave').on('click',function(){
 					fn_saveAlertRule();
 				});
@@ -183,8 +186,11 @@
 					$('#serviceName').parent().setSelected('');
 					setServiceInNamespace(this.value);
 				});
-				
+				ruleForm.find('#type').on('change',function(){
+					fn_setRuleValue();
+				})
 				if(isUpdate){
+					fn_setRuleEnabled();
 					fn_getAlertRule();
 				}
 				function setServiceInNamespace(serviceName){
@@ -203,10 +209,12 @@
 						data:gParam,
 						success:function(res){
 							let o = res.alertRule;
-							ruleForm.zdbui_setContents(o);
 							ruleForm.find('[name=type]').parent().setSelected(o.type);
+							fn_setRuleValue();
 							ruleForm.find('[name=namespace]').parent().setSelected(o.namespace);
 							ruleForm.find('[name=serviceName]').parent().setSelected(o.serviceName);
+							ruleForm.find('[name=priority][value='+o.priority+']').setSelected(true);
+							ruleForm.zdbui_setContents(o);
 						}
 					})
 				}
@@ -224,6 +232,7 @@
 
 			    		let data = $.extend({},ruleForm.serializeObject());
 			    		data.alert = data.type+'-'+data.serviceName;
+			    		data.priority = ruleForm.find('[name=priority]').parent().filter(function(){return $(this).hasClass('Checked')}).children().val();
 			    		if(isUpdate){
 			    			ajaxOpt.url = '/zdbapi/updateAlertRule';
 			    			ajaxOpt.method = 'put';
@@ -234,6 +243,33 @@
 			    		ajaxOpt.data = data;
 			    		$a.ajax(ajaxOpt)				
 					});
+				}
+				function fn_setRuleEnabled(){
+					if(isUpdate){
+						ruleForm.find('[name=type],[name=namespace],[name=serviceName]').parent().setEnabled(false);
+						fn_setRuleValue();
+					}
+				}
+				function fn_setRuleValue(){
+					let enabledTypeList = ['ZDB-MariaDB-CPUUsage','ZDB-MariaDB-MemoryUsage','ZDB-MariaDB-Connections','ZDB-MariaDB-SlowQueries'];
+					let typeDef = {
+						'':{enabled:true,condition:'',value:''},
+						'ZDB-MariaDB-PodHealthCheck':{enabled:false,condition:'==',value:'1'},	
+						'ZDB-MariaDB-ContainerHealthCheck':{enabled:false,condition:'==',value:'0'},
+						'ZDB-MariaDB-DBHealthCheck':{enabled:false,condition:'==',value:'0'},
+						'ZDB-MariaDB-CPUUsage':{enabled:true,condition:'>',value:'80'},
+						'ZDB-MariaDB-MemoryUsage':{enabled:true,condition:'>',value:'95'},
+						'ZDB-MariaDB-Connections':{enabled:true,condition:'>',value:'80'},
+						'ZDB-MariaDB-SlowQueries':{enabled:true,condition:'>',value:'0.1'},
+						'ZDB-MariaDB-ReplicationStatus':{enabled:false,condition:'==',value:'0'},
+						'ZDB-MariaDB-ReplicationDelay':{enabled:false,condition:'>',value:'0'}
+					}
+					let typeOb = ruleForm.find('[name=type]');
+					let selectedType = typeDef[typeOb.val()];
+					ruleForm.find('[name=value2]').setEnabled(selectedType.enabled==true);
+					ruleForm.find('[name=value2]').val(selectedType.value);
+					ruleForm.find('[name=condition]').parent().setSelected(selectedType.condition);
+
 				}
 			}
 		});
