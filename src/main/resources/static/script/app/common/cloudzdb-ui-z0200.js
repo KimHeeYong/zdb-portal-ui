@@ -41,7 +41,7 @@ function gfn_convertServiceData(data){
 	}(data.pods));
 	
 	if(masterPod && masterPod.metadata){
-		ob.podname = masterPod.metadata.name;
+		ob.podName = masterPod.metadata.name;
 		var readyCondition = gfn_getReadyCondition(masterPod);
 		ob.lastTransitionTime = readyCondition ? readyCondition.lastTransitionTime:'';
 		 //마지막 구동시간 설정

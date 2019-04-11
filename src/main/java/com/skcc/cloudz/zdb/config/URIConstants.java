@@ -137,5 +137,8 @@ public class URIConstants {
 	
 	public static final String URI_DELETE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
 
+	public static final String URI_GET_PROCESSES = "/api/v1/{namespace}/{serviceType}/process/{podName}";
+
+	public static final String URI_DELETE_PROCESS = "/api/v1/{namespace}/{serviceType}/process/{podName}/{pid}";
 
 }

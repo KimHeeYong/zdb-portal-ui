@@ -667,4 +667,20 @@ public class ZdbApiService{
 		return ob;
 	}
 
+	public List<Map<String, String>> getProcesses(Map<String, String> param) {
+		List<Map<String,String>> list = Collections.emptyList();
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_PROCESSES, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			list = zdbRestDTO.getResult().getProcesses();
+		};
+		return list;
+	}
+
+	public ZdbRestDTO killProcess(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_DELETE_PROCESS, HttpMethod.DELETE, entity,  ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+
 }

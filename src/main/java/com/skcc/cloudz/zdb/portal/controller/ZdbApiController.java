@@ -722,4 +722,20 @@ public class ZdbApiController {
 		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;
 	}		
+	@RequestMapping(value="getProcesses", method=RequestMethod.GET)
+	public ModelAndView getProcesses(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<Map<String,String>> processes = zdbApiService.getProcesses(param);
+		mav.addObject(IResult.PROCESSES,processes);
+		return mav;
+	}		
+	@RequestMapping(value="killProcess", method=RequestMethod.GET)
+	public ModelAndView killProcess(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		ZdbRestDTO result = zdbApiService.killProcess(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}		
 }

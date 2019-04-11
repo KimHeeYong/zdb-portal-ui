@@ -25,21 +25,10 @@
 		<!-- rule info area-->
 		<div id="tabRules">
 			<div class="top-area">
-				<h2 class="title">규칙</h2>
-				<div class="tag-wrap">
-					<span class="tag">알림 발생을 위한 규칙을를 관리합니다.</span>
-				</div>
-				<div class="btn-wrap__right">
-					<button class="Button btn-ico__typeb btn-rules" id="btnRuleAdd">규칙 추가</button>
-				</div>
-			</div>
-			<!-- search-wrap-->
-			<div class="search-wrap Margin-top-40">
-				<input class="Textinput srcinput" name="txtRuleKeyword" id="txtRuleKeyword" placeholder="검색어를 입력하세요." />
-				<button class="Button btn-search" id="btnRuleSearch">검색</button>
+				<h2 class="title">프로세스</h2>
 			</div>
 			<div class="grid-line__wrap">
-				<div id="rule-grid"></div>
+				<div id="gridProcess"></div>
 			</div>
 		</div>
 	</div>
@@ -47,34 +36,53 @@
 	<script type="text/javascript">
 	$.alopex.page(function() {
 		this.init = function(id, param) {
-			$('#rule-grid').alopexGrid({
-				pager : true,
-				filteringHeader : false,
-				paging : {
-					perPage : 5,
-					pagerCount : 5,
-					pagerSelect : true,
-					pagerTotal : true
-				},
+			let gParam = {namespace:'zdb-test',serviceType:'mariadb',serviceName:'zdb-test-accc'}; 
+			let gService = {podName:'zdb-test-change-port-mariadb-master-0'};
+			let gridProcess = $('#gridProcess').alopexGrid({
 				message: { nodata: gMessage.gridNodata },
-				enableDefaultContextMenu : false,
 				autoColumnIndex : true,
 				columnMapping : [
-						{ key : 'id', title : 'id', width : '100px', align : 'center', sorting : 'number', hidden : true },
-						{ key : 'type', title : 'Rule 종류', width : '200px', align : 'left', render : function(value, data) { 
-								return '<a href="javascript:zcpPortalGrid.data.detailRule(\'' + data.id + '\');" style="font-size:15px;">' + data.type + '</a>';
-							}
-						},
-						{ key : 'severity', title : '심각도', width : '100px', align : 'left' },
-						{ key : 'value', title : '임계치', width : '100px', align : 'center' },
-						{ key : 'duration', title : 'Duration', width : '100px', align : 'center' },
-						{ key : 'channel', title : '채널', width : '200px', align : 'left' },
-						{ key : 'notification', title : 'Notifications', width : '120px', align : 'center', hidden : true },
-						{ key : 'delete', title : '관리', width : '100px', align : 'center', render : function(value, data) { 
-								return '<button class="btn-ico del" onclick="zcpPortalGrid.data.deleteRule(\'' + data.id + '\');" />';
-							}
-						}],
+						{ key : 'Id', title : 'Id', width : '50px', align : 'center', sorting : 'number'},
+						{ key : 'User', title : 'User', width : '80px', align : 'left' },
+						{ key : 'Host', title : 'Host', width : '80px', align : 'center' },
+						{ key : 'db', title : 'db', width : '100px', align : 'center' },
+						{ key : 'Command', title : 'Command', width : '100px', align : 'center' },
+						{ key : 'Time', title : 'Time', width : '100px', align : 'center'},
+						{ key : 'State', title : 'State', width : '100px', align : 'center'},
+						{ key : 'Info', title : 'Info', width : '250px', align : 'left'},
+						{ key : 'Id', title : 'Kill', width : '80px', align : 'center',render:function(value,data){
+							return re = $('<button class="Button sm">Kill</button>').on('click',function(){
+								gCommon.credentialConfirm({
+							        data:{credential:$("#credential").val(),msg:'프로세스를 종료하시려면',okBtnMsg:'종료'},
+							        callback : function(res){
+										$a.ajax({
+											url: '/zdbapi/killProcess',
+											data:gParam,
+											success: function(res){
+												if(res.result.code == '0'){
+													getProcesses();
+												}
+											}
+										})
+							        }
+							    });
+							});
+						}}
+						],
 				});
+			getProcesses();
+			function getProcesses(){
+				$a.ajax({
+					url:'/zdbapi/getProcesses',
+					data:$.extend({},gParam,{podName:gService.podName}),
+					success:function(res){
+						console.log (11)
+						let list = res.processes;
+						console.log(list)
+						gridProcess.alopexGrid('dataSet',list);
+					}
+				});
+			}
 			};
 		});	
 
