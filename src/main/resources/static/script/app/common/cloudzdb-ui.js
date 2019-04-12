@@ -343,25 +343,27 @@ var gCommon = $a.page(function(){
 	    $a.popup(opt);		
 	}
 	let isAlertPopExists = false;
-	this.alert = function(message,fnCallback){
+	this.alert = function(message,fnCallback,option){
 		if(isAlertPopExists)return;
+		let defOpt = {
+		        url: "/zdbcom/alert",
+		        data:message,
+		        iframe: false,	        
+		        width: 500,
+		        height: 230,
+		        title : '',
+		        callback: function(){
+		        	isAlertPopExists = false;
+		        	if(fnCallback){
+		        		fnCallback();
+		        	}
+		        }
+		    };
+		let opt = $.extend({},defOpt,option);
 		gPopData = {};
 		gPopData.message = message;
 		isAlertPopExists = true;
-	    $a.popup({
-	        url: "/zdbcom/alert",
-	        data:message,
-	        iframe: false,	        
-	        width: 500,
-	        height: 230,
-	        title : '',
-	        callback: function(){
-	        	isAlertPopExists = false;
-	        	if(fnCallback){
-	        		fnCallback();
-	        	}
-	        }
-	    });
+		$a.popup(opt);
 	};
 });
 

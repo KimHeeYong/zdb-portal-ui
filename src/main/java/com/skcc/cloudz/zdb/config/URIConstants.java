@@ -89,6 +89,10 @@ public class URIConstants {
 	
 	public static final String URI_RESTORE_FROM_BACKUP = "/api/v1/restoreBackup/{backupId}";
 
+	public static final String URI_GET_BACKUP_RESULT = "/api/v1/getBackupResult/{backupId}";
+
+	public static final String URI_GET_BACKUP_LOG = "/api/v1/getBackupLog/{backupId}";
+	
 	public static final String URI_GET_ZDB_CONFIG = "/api/v1/{namespace}/zdbconfigs";
 
 	public static final String URI_UPDATE_ZDB_CONFIGS = "/api/v1/zdbconfig";

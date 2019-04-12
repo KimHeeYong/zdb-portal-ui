@@ -13,8 +13,8 @@
 <script type="text/javascript">
 $a.page(function() {
 	this.init = function() {
-		$('#message').html(gPopData.message);
-		$('button.ok').click(function(){
+		$('#divAlertPop #message').html(gPopData.message);
+		$('#divAlertPop button.ok').click(function(){
 			$a.close('Y');
 		});
 	}

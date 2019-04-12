@@ -2,6 +2,7 @@ package com.skcc.cloudz.zdb.portal.service;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -464,6 +465,23 @@ public class ZdbApiService{
 		 return response;
 	}
 
+	public Map<String,String> getBackupResult(Map<String, String> param) {
+		Map<String,String> backupResult = new HashMap<>();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(demonServer + URIConstants.URI_GET_BACKUP_RESULT,ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			backupResult = zdbRestDTO.getResult().getBackupResult();
+		}
+		return backupResult;
+	}
+	public String[] getBackupLog(Map<String, String> param) {
+		String[] result = null;
+		ZdbRestDTO zdbRestDTO = connector.getForObject(demonServer + URIConstants.URI_GET_BACKUP_LOG,ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getBackupLog();
+		};
+		return result;
+	}
 	public ZdbRestDTO restoreFromBackup(Map<String, String> param) {
 		ZdbRestDTO zdbRestDTO = connector.getForObject(demonServer + URIConstants.URI_RESTORE_FROM_BACKUP,ZdbRestDTO.class,param);
 		
@@ -682,5 +700,6 @@ public class ZdbApiService{
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_DELETE_PROCESS, HttpMethod.DELETE, entity,  ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
 	}
+
 
 }

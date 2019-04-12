@@ -480,6 +480,27 @@ public class ZdbApiController {
 		
         return result;
 	}
+
+	@RequestMapping(value = "getBackupResult", method = RequestMethod.GET)
+	public ModelAndView getBackupResult(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		Map<String,String> backupResult = zdbApiService.getBackupResult(param);
+		mav.addObject("backupResult",backupResult);
+		
+		return mav;
+	}
+	@RequestMapping(value = "getBackupLog", method = RequestMethod.GET)
+	public ModelAndView getBackupLog(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		String [] result = zdbApiService.getBackupLog(param);
+		mav.addObject("backupLog",result);
+		
+        return mav;
+	}	
 	
 	@RequestMapping(value = "restoreFromBackup")
 	public ModelAndView restoreFromBackup(HttpServletRequest request) {
@@ -574,7 +595,6 @@ public class ZdbApiController {
 		
 		return mav;
 	}
-	
 	
 	@RequestMapping(value = "serviceOn", method = RequestMethod.PUT)
 	public ModelAndView serviceOn(HttpServletRequest request) {
@@ -737,5 +757,7 @@ public class ZdbApiController {
 		ZdbRestDTO result = zdbApiService.killProcess(param);
 		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;
-	}		
+	}
+	
+	
 }
