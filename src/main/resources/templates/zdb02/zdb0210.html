@@ -1986,7 +1986,7 @@
 				autoResize : true,
 				height: 400,
 				columnMapping : [
-					{ title:'백업종류', key : 'type' , width: '100px', align: 'center',render:function(value,data,render,mapping){						
+					{ title:'백업유형', key : 'type' , width: '100px', align: 'center',render:function(value,data,render,mapping){						
 						let t = '';
 						switch(value){
 						    case 'INCR': t = '증분백업'; break;
@@ -1995,9 +1995,6 @@
 						    default : t = '즉시백업'; break;
 						}
 						return '<button class="Button gridbtn btn">'+t+'</button>';
-					}},
-					{ title:'요청시간', key : 'acceptedDatetime' , width: '130px', align: 'center',render:function(value,data,render,mapping){
-						return cloudUtil.dtFormat(value);
 					}},
 					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
 						return cloudUtil.dtFormat(value);
@@ -2037,6 +2034,12 @@
 					{ title:'삭제', key : 'delete' , width: '90px', align: 'center',render:function(value,data,render,mapping){
 						var re = $('<button class="Button btn-del '+(data.status != 'OK'?'Disabled':'')+'">삭제</button>').on('click',function(){
 							fn_deleteBackupFile(data);
+						});
+						return re;
+					}},
+					{ title:'결과', key : 'result' , width: '90px', align: 'center',render:function(value,data,render,mapping){
+						var re = $('<button class="Button">보기</button>').on('click',function(){
+							
 						});
 						return re;
 					}}
@@ -2391,7 +2394,7 @@
 				gridUser.alopexGrid('endRowInlineEdit');
 				let dt = gridUser.alopexGrid('dataGet');
 				
-				if(dt[0]._state.added == true && dt[0]._state.editing != false){
+				if(dt[0] && dt[0]._state.added == true && dt[0]._state.editing != false){
 					return;
 				}
 				
@@ -2439,14 +2442,17 @@
 			};			
 			function fn_saveUser(){
 				gridUser.alopexGrid('endRowInlineEdit');
-				gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
-					let data = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
-					if(data.length > 0){
-						for(let i in data){
-							let d = $.extend(data[i],gParam);
-							d.accountId = d.user;
-							d.password = d.password == null ? '' : d.password;
-						};
+				gCommon.credentialConfirm({
+			        data:{credential:$("#credential").val(),msg:'사용자 정보를 변경/추가 하시려면',okBtnMsg:'저장'},
+			        callback : function(res){
+			        	let data = AlopexGrid.trimData(gridUser.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+						if(data.length > 0){
+							for(let i in data){
+								let d = $.extend(data[i],gParam);
+								d.accountId = d.user;
+								d.password = d.password == null ? '' : d.password;
+							};
+						};	
 						$a.ajax({
 							url: '/zdbapi/saveDBUser',
 							method:'put',
@@ -2455,8 +2461,8 @@
 								fn_getUserGrants();
 							}
 						});	
-					};						
-				})
+			        }
+			    });
 			};
 			/*tabUser end 사용자*/
 			/*tabDatabase start Database*/
