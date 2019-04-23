@@ -1126,6 +1126,27 @@
 						use: function(data, $cell, grid) {
 							return $cell.data('alopexgrid-columnindex')==10 && data.status == 'green';
 						}
+					},
+					{   title: "Add Backup disk" ,
+						processor: function(data, $cell, grid) {
+							gCommon.credentialConfirm({
+						        data:{credential:$("#credential").val(), msg:'서비스를 종료 하시려면', okBtnMsg:'서비스 종료'},
+						        callback : function(res){
+									$a.ajax({
+										url: '/zdbapi/serviceOff',
+										method:'PUT', data:($.extend({},gParam,{stsName:data.stName})),
+										success: function(res){
+											if(res.result.code!='4'){
+												gCommon.alert(res.result.message);
+											}
+										}
+									})
+						        }
+						    });
+						},
+						use: function(data, $cell, grid) {
+							return false;
+						}
 					}
 				],
 				columnMapping : [
@@ -1164,14 +1185,14 @@
 						return '';
 					}},
 					{ title:'Node', key : 'node' , width: '130px', align: 'center'},
-					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
-					{ title:'Memory(Mi)', key : 'memory' , width: '120px', align: 'center'},
 					{ title:'Disk(Gi)', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
 						if(data.diskUpdateTime){
 							var isValid = moment(data.diskUpdateTime,'YYYYMMDDHHmmss').isValid();
 							return 'Update Time : '+moment(data.diskUpdateTime,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
 						};
 					}},
+					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
+					{ title:'Memory(Mi)', key : 'memory' , width: '120px', align: 'center'},
 					{ title:'Last Uptime', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
 						var lt = data.condition? data.condition.lastTransitionTime : '';
 						if(lt){
@@ -1179,7 +1200,7 @@
 							return moment(lt).format('YYYY-MM-DD HH:mm:ss');
 						}
 					}}, 
-					{ title:'Restart',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping,cell){
+					{ title:'Action',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping,cell){
 						let t = $('<button class="Button btn-ico__typeb btn-listview buttonMenu"></button>');
 						t.on('click',function(e){
 							e.preventDefault();
@@ -2817,10 +2838,10 @@
 						{ key : 'db', title : 'db', width : '100px', align : 'center' },
 						{ key : 'Command', title : 'Command', width : '100px', align : 'center' },
 						{ key : 'Time', title : 'Time', width : '100px', align : 'center'},
-						{ key : 'State', title : 'State', width : '100px', align : 'center'},
+						{ key : 'State', title : 'State', width : '130px', align : 'center'},
 						{ key : 'Info', title : 'Info', width : '250px', align : 'left'},
 						{ key : 'Id', title : 'Kill', width : '80px', align : 'center',render:function(value,data){
-							return re = $('<button class="Button sm">Kill</button>').on('click',function(){
+							return $('<button class="Button sm">Kill</button>').on('click',function(){
 								gCommon.credentialConfirm({
 							        data:{credential:$("#credential").val(),msg:'프로세스를 종료하시려면',okBtnMsg:'종료'},
 							        callback : function(res){

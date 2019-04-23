@@ -203,3 +203,10 @@ a.grid:active  { text-decoration:underline; }
 .alopexgrid .cell.bodycell.selected.prevrow-selected,
 .alopexgrid .cell-selected,
 .alopexgrid .cell-selected-focus {background: #afbfff}
+
+.alopexgrid-contextmenu li:first-child {
+    border: none;
+}
+.alopexgrid-contextmenu li {
+    border-top: 1px solid #888888;
+}
