@@ -861,6 +861,7 @@
 	</div>
 </div>
 <script type="text/javascript">
+	'use strict'
 	var gCurrentNamespace = '';
 	var gNamespaces = null;
 	var gService = null;
@@ -868,7 +869,6 @@
 	var gServiceScale = {};//scaleUp value
 	var gConfigData = null;
 	$a.page(function() {
-		
 		this.init = function() {
 			$('[data-show-service-type*='+gParam.serviceType+']').show();
 			//namespace 변경시 이벤트
@@ -879,7 +879,7 @@
 									  gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
 		   						  });
 			$('.Accordion').expandAll();
-			gConfigData = gCommon.getConfigData();
+			gConfigData = gCommon.getConfigData(gParam.namespace);
 			var data = {
 					namespace:gParam.namespace,
 					serviceType:gParam.serviceType,
@@ -1265,9 +1265,10 @@
 					url: '/zdbapi/getConnectionInfo',
 					data:gParam,
 					success: function(res){
-						var connectionInfo = res.connectionInfo || {};
+						let connectionInfo = res.connectionInfo || {};
 						connectionInfo.credential = atob(connectionInfo.credetial);
-						connectionList = connectionInfo.connectionList;
+						let connectionList = connectionInfo.connectionList;
+						console.log(atob(connectionInfo.credential))
 						
 						$('#connectionInfoTable').zdbui_setContents(connectionInfo);
 						if(connectionList && connectionList.length>0){
@@ -1663,13 +1664,8 @@
 							success: function(res){
 								if(res.result.code!='4'){
 									gCommon.alert(res.result.message);
-									//if($(this).hasClass('btn-on')) {
-									//	setOnOffButton('failOverEnable','N');
-									//} else {
-									//	setOnOffButton('failOverEnable','Y');
-									//}
 									fn_getServiceFirst();
-									gConfigData = gCommon.getConfigData();
+									gConfigData = gCommon.getConfigData(gParam.namespace);
 								}
 							}
 						})

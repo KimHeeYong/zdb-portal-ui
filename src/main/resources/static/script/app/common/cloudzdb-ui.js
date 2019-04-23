@@ -207,10 +207,10 @@ var gCommon = $a.page(function(){
 		return selector;
 	};
 	
-	this.getConfigData = function(namespace){
-		var namespace = gSelectedNamespace == G_NAMESPACE_ALL ? G_GLOBAL : gSelectedNamespace; 
-
-		var result = gCommon.getConfigDataAjax(namespace);
+	this.getConfigData = function(pNamespace){
+		let namespace = pNamespace||gSelectedNamespace;
+		if(namespace == G_NAMESPACE_ALL) namespace = G_GLOBAL;
+		let result = gCommon.getConfigDataAjax(namespace);
 		if(result == null){
 			result = gCommon.getConfigDataAjax(G_GLOBAL)||{};
 			result.isExists = false;
