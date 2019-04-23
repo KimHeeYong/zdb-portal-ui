@@ -106,7 +106,7 @@
 										</td>
 									</tr>
 									<tr><!-- dwtemp todo -->
-										<th>Auto Failover</th>
+										<th>Auto Failover 설정 UI</th>
 										<td>
 											<div class="onoff-wrap">
 												<button class="Button btn-on" data-target="auto_failover_enabled">ON</button>
@@ -151,8 +151,31 @@
 					gNamespaces.select(0);
 				};	
 				
-				gForm.find('div.onoff-wrap > button').click(function(e){	
-					fn_setOnOff($(this).data('target'),''+$(this).hasClass('btn-off'));
+				gForm.find('div.onoff-wrap > button').click(function(e){
+					let fsList = [];
+					let target = $(this).data('target');
+					if(target == 'auto_failover_enabled' && $(this).hasClass('btn-on') == true){
+						let dt = {namespace:gSelectedNamespace};
+						if(gSelectedNamespace == G_NAMESPACE_ALL){
+							dt.namespace = '-';
+						}
+						$a.ajax({
+							url:'/zdbapi/getAutoFailoverEnabledServices',
+							data:dt,
+							success:function(res){
+								if(res && res.result){
+									fsList = res.result||[];
+								}
+								if(fsList.length > 0){
+									gCommon.alert('Failover 설정된 서비스가 있습니다.<br/><div style="color:#808080;height: 130px;overflow: auto;">'+fsList.join('  , ')+'</div>',null,{height:'300'});
+								}else{
+									fn_setOnOff(target,''+$(this).hasClass('btn-off'));
+								}
+							}
+						})
+					}else{
+						fn_setOnOff(target,''+$(this).hasClass('btn-off'));
+					}
 				});
 				$('#btnSave').on('click',function(){
 					fn_saveConfigData();

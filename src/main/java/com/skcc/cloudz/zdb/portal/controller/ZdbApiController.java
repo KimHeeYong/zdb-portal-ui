@@ -564,6 +564,17 @@ public class ZdbApiController {
 		
 		return mav;
 	}
+
+	@RequestMapping(value = "getAutoFailoverEnabledServices", method = RequestMethod.GET)
+	public ModelAndView getAutoFailoverEnabledServices(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<String> result = zdbApiService.getAutoFailoverEnabledServices(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
 	
 	@RequestMapping(value = "serviceChangeMasterToSlave", method = RequestMethod.PUT)
 	public ModelAndView serviceChangeMasterToSlave(HttpServletRequest request) {

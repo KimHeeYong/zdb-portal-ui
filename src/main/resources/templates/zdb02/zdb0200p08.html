@@ -1,0 +1,48 @@
+<div class="popup-wrap">
+	<div class="popup-mcontents">
+		<div class="popup-text">
+			<form id="backupDiskForm" name="backupDiskForm">
+			<div>Add Backup disk</div>
+			<div>
+				<div> Backup disk
+					<input class="Textinput" type="password" id="credential" name="credential"></input> 
+					<p data-for="credential" class="warn-text"></p>
+				</div>
+				<div> Credential
+					<input class="Textinput" type="password" id="credential" name="credential"></input> 
+					<p data-for="credential" class="warn-text"></p>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+	<!--button-->
+	<div class="popup-btn__wrap">
+		<button class="Button btn bg-gray ok">확인</button>
+		<button class="Button btn bg-gray no">취소</button>
+	</div>
+	<!--//button-->
+</div>
+<script type="text/javascript">
+$a.page(function() {
+	this.init = function(id,param) {
+    	var form = $('form[name=backupDiskForm]');
+    	form.validator({
+		    elements :{ 
+		        'credential': {rule:{required:true,equalTo:param.credential}}
+		    },
+		    message:{
+		    	'equalTo': "credential이 일치하지 않습니다."
+		    }
+		});    	
+		$('[data-show-service-type*='+gParam.serviceType+']').show();
+		$('button.ok').click(function(){
+			$a.close({result:'Y',backupType:$('#backupType select').val()});
+		});
+		$('button.no').click(function(){
+			$a.close('N');
+		});	
+	}
+});
+	
+</script>

@@ -550,6 +550,15 @@ public class ZdbApiService{
 		return result;
 	}
 
+	public List<String> getAutoFailoverEnabledServices(Map<String, String> param) {
+		List<String> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_AUTO_FAIL_OVER_ENABLED_SERVICES, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			list = zdbRestDTO.getResult().getServices();
+		};		
+		return list;
+	}
+	
 	public ZdbRestDTO serviceChangeMasterToSlave(Map<String, String> param) {
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_SERVICE_CHANGE_MASTERTOSLAVE, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
@@ -700,6 +709,4 @@ public class ZdbApiService{
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_DELETE_PROCESS, HttpMethod.DELETE, entity,  ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
 	}
-
-
 }

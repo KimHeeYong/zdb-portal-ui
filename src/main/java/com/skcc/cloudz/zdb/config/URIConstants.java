@@ -101,6 +101,8 @@ public class URIConstants {
 	
 	public static final String URI_UPDATE_AUTO_FAIL_OVER_ENABLE = "/api/v1/failover/{namespace}/{serviceType}/{serviceName}/{enable}";
 
+	public static final String URI_GET_AUTO_FAIL_OVER_ENABLED_SERVICES = "/api/v1/failover/{namespace}/enabled-services"; 
+
 	public static final String URI_GET_SERVICE_FAIL_OVER_STATUS = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/svc/status";
 	
 	public static final String URI_UPDATE_SERVICE_CHANGE_MASTERTOSLAVE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/svc/masterToslave";

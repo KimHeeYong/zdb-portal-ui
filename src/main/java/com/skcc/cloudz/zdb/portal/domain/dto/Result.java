@@ -87,4 +87,6 @@ public class Result {
 	private AlertingRuleEntity alertRule;
 
 	private List<Map<String,String>> processes;
+	
+	private List<String> services;
 }
