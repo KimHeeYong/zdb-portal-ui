@@ -1,17 +1,37 @@
 <div class="popup-wrap">
-	<div class="popup-mcontents">
+	<div>
 		<div class="popup-text">
 			<form id="backupDiskForm" name="backupDiskForm">
 			<div>Add Backup disk</div>
 			<div>
-				<div> Backup disk
-					<input class="Textinput" type="password" id="credential" name="credential"></input> 
-					<p data-for="credential" class="warn-text"></p>
-				</div>
-				<div> Credential
-					<input class="Textinput" type="password" id="credential" name="credential"></input> 
-					<p data-for="credential" class="warn-text"></p>
-				</div>
+				<table class="Table Form-type">
+					<colgroup>
+						<col style="width: 130px;"> </col>
+						<col></col>
+					</colgroup>				
+					<tr>
+						<th>Backup disk</th>
+						<td>
+							<div class="Divselect" id="backupDiskSize" name="backupDiskSize" style="height: 35px;width:125px; padding-top: 1px !important;">
+								<select>
+									<option value="1">1</option>
+									<option value="2">2</option>
+								</select>
+								<span></span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>Credential</th>
+						<td>
+							<input class="Textinput" type="password" id="credential" name="credential"></input> 
+							<p data-for="credential" class="warn-text"></p>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">※Backup disk 추가 시 노드가 재시작됩니다.</td>
+					</tr>
+				</table>
 			</div>
 			</form>
 		</div>

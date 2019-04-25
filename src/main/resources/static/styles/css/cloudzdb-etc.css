@@ -210,3 +210,6 @@ a.grid:active  { text-decoration:underline; }
 .alopexgrid-contextmenu li {
     border-top: 1px solid #888888;
 }
+.cell.bodycell.alopexgrid-cell{
+	text-overflow: ellipsis;
+}

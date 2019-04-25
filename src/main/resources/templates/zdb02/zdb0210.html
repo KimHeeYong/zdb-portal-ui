@@ -1129,18 +1129,18 @@
 					},
 					{   title: "Add Backup disk" ,
 						processor: function(data, $cell, grid) {
-							gCommon.credentialConfirm({
+							$a.popup({
 						        data:{credential:$("#credential").val(), msg:'서비스를 종료 하시려면', okBtnMsg:'서비스 종료'},
+						        url: '/zdb02/zdb0200p08',
+						        data:gParam,
+						        iframe: false,
+						        width: 500,
+						        height: 320,
+						        title : '',
 						        callback : function(res){
-									$a.ajax({
-										url: '/zdb02/zdb0200p08?',
-										method:'PUT', data:($.extend({},gParam,{stsName:data.stName})),
-										success: function(res){
-											if(res.result.code!='4'){
-												gCommon.alert(res.result.message);
-											}
-										}
-									})
+						        	if(res.result == 'Y'){
+						        			        		
+						        	}
 						        }
 						    });
 						},
@@ -2277,12 +2277,12 @@
 							re = '<i class="fa fa-info-circle ft20 color-info" aria-hidden="true"></i>';
 						}
 						return re;
-					}},
-					{ title:'일시', key : 'endTime' , width: '140px', align: 'left',render:function(value){
+					},excludeFitWidth:true},
+					{ title:'일시', key : 'endTime' , width: '170px', align: 'left',render:function(value){
 						return cloudUtil.dtFormat(value);
-					}},
-					{ title:'이벤트', key : 'operation' , width: '100px', align: 'left'},
-					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',tooltip:false,render: {type: "evtMsgTooltip"}},
+					},excludeFitWidth:true},
+					{ title:'이벤트', key : 'operation' , width: '180px', align: 'left'},
+					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',inlineStyle: {'margin-left':'20px'},tooltip:false,render: {type: "evtMsgTooltip"}},
 					{ title:'User ID', key : 'userId' , width: '250px', align: 'left'}
 				],
 				message: {

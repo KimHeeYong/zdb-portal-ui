@@ -87,7 +87,7 @@
 					autoColumnIndex: true,
 					height: 635,
 					columnMapping : [  
-						{ title:'Last seen', key : 'lastTimestamp' , width: '100px', align: 'center'},
+						{ title:'Last seen', key : 'lastTimestamp' , width: '180px', align: 'center',excludeFitWidth:true},
 						{ title:'Kind', key : 'kind' , width: '60px', align: 'left',render:function(value){
 							if(value){
 								return value = value.replace('PersistentVolumeClaim','PVC').replace('PersistentVolume','PV');
