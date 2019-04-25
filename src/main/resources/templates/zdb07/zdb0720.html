@@ -81,7 +81,7 @@
 								gCommon.confirm(value + '<br/> 규칙을 삭제 하시겠습니까?',function(){
 									$a.ajax({
 										url:'/zdbapi/deleteAlertRule',
-										data:{namespace:data.namespace,alert:value},
+										data:{namespace:data.namespace,alert:value,type:data.type,serviceName:data.serviceName},
 										success:function(res){
 											if(res.result.code != '4'){
 												getAlertRules();
