@@ -1416,7 +1416,7 @@
 							condition: condition,
 							node: pod.spec.nodeName,
 							colspanCol: false,
-							stName: pod.metadata.name.replace(/(\-[\d]+)/g,'')
+							stName: pod.metadata.name.replace(/(\-[\d]+)$/g,'')
 						});	
 					}
 					return list; 
