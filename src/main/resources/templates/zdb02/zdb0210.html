@@ -1329,19 +1329,18 @@
 			};
 
 			function fn_getServiceCallback(){
-				//서비스가 green 상태가 아니면 안내 메세지 출력
-				if(gService.status != 'green'){
-					let infoMsg = $('#divInfoMsg');
-					let msg = gService.statusMessage||'';
-					//let t = $('<div class="Tooltip"></div>').html(msg);
-					//infoMsg.after(t);
-					//$a.convert(t);
-					let m = msg.split('</br>');
-					if(m && m.length > 1){
-						msg = m[0]+'</br>'+m[1];
-					}
-					infoMsg.html(msg);
+				//안내 메세지 출력
+				let infoMsg = $('#divInfoMsg');
+				let msg = gService.statusMessage||'';
+				//let t = $('<div class="Tooltip"></div>').html(msg);
+				//infoMsg.after(t);
+				//$a.convert(t);
+				let m = msg.split('</br>');
+				if(m && m.length > 1){
+					msg = m[0]+'</br>'+m[1];
 				}
+				infoMsg.html(msg);
+				
 				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정, 프로세스)설정
 				var tabDisList = ['tabBackup','tabUser','tabDatabase','tabSystem','tabProcess']; 
 				if(gService.serviceType == G_SERVICE_TYPE_MARIA){ //mariadb 면 tabSystem 이동되도록
@@ -2271,7 +2270,7 @@
 				renderMapping : {
 					'evtMsgTooltip' : {
 						renderer: function(value, data, render, mapping) {
-							return '<div id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+value+(data.history?'<span class="ico_title" style="padding-top:33px;"/>':'')+'</div>';
+							return '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+value+(data.history?'<span class="ico_title" style="padding-top:33px;"/>':'')+'</a>';
 						}
 					}
 				},
@@ -2291,7 +2290,7 @@
 						return cloudUtil.dtFormat(value);
 					},excludeFitWidth:true},
 					{ title:'이벤트', key : 'operation' , width: '180px', align: 'left'},
-					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',inlineStyle: {'margin-left':'20px'},tooltip:false,render: {type: "evtMsgTooltip"}},
+					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',inlineStyle: {'padding-left':'10px','padding-right':'10px'},tooltip:false,render: {type: "evtMsgTooltip"}},
 					{ title:'User ID', key : 'userId' , width: '250px', align: 'left'}
 				],
 				message: {
