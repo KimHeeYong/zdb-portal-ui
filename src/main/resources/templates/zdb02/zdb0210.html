@@ -980,6 +980,7 @@
 			/* tabService start */
 			let tabService = $('#tabService');
 			let formService = $('form[name=formService]');
+			let isSlowLogHidden = gParam.serviceType != G_SERVICE_TYPE_MARIA;
 			
 			Validator.addMethod('checkPort', function(element, value) {
 				let n = cloudUtil.parseInt(value);
@@ -1047,8 +1048,15 @@
 			        }
 			    });	
 			});
-			var isSlowLogHidden = gParam.serviceType != G_SERVICE_TYPE_MARIA;
 			
+			let getGridContextButton = function(){
+				return $('<button class="Button btn-ico__typeb btn-listview buttonMenu"></button>').on('click',function(e){
+					e.preventDefault();
+					$(this).parent().trigger('contextmenu');
+					let d = $('.alopexgrid-contextmenu-wrapper');
+					d.css({left:e.pageX,top:e.pageY});
+				});
+			}
 			$('#gridResource').alopexGrid({
 				enableDefaultContextMenu:false,
 				enableContextMenu:true,
@@ -1082,7 +1090,7 @@
 						    });								
 						},
 						use: function(data,$cell,grid){
-							return $cell.data('alopexgrid-columnindex')==10;
+							return $cell.data('alopexgrid-columnindex')==10 && data.status == 'green';
 						}
 					},
 					{   title: "Start" ,
@@ -1147,6 +1155,32 @@
 						use: function(data, $cell, grid) {
 							return false && gService.statefulSets.length > 1;
 						}
+					},
+					{
+						title: 'Pod Log',
+						processor: function(data,$cell,grid){
+							if(data.condition && data.condition.status == 'True'){
+								window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podName="+data.name);
+							}else{
+								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
+							}
+						},
+						use: function(data,$cell,grid){
+							return $cell.data('alopexgrid-columnindex')==11 && data.isPod;	
+						}
+					},
+					{
+						title: 'Slow Log',
+						processor: function(data,$cell,grid){
+							if(data.condition && data.condition.status == 'True'){
+								window.open("/zdb02/zdb0200p04?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podName="+data.name);
+							}else{
+								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
+							}
+						},
+						use: function(data,$cell,grid){
+							return $cell.data('alopexgrid-columnindex')==11 && data.isPod && !isSlowLogHidden;	
+						}
 					}
 				],
 				columnMapping : [
@@ -1201,38 +1235,12 @@
 						}
 					}}, 
 					{ title:'Action',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping,cell){
-						let t = $('<button class="Button btn-ico__typeb btn-listview buttonMenu"></button>');
-						t.on('click',function(e){
-							e.preventDefault();
-							$(this).parent().trigger('contextmenu');
-							let d = $('.alopexgrid-contextmenu-wrapper');
-							d.css({left:e.pageX,top:e.pageY});
-						});
-						
-						return t;
+						return getGridContextButton();
 					}},
 					{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
 						if(!data.isPod)return'';
-						var re = $('<button class="btn-ico btn-log">로그</button>').on('click',function(){
-							if(data.condition && data.condition.status == 'True'){
-								window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podName="+data.name);
-							}else{
-								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
-							}
-						});
-						return re;
-					}},
-					{ title:'Slow Log',key:'slowLog',width:'80px', align: 'center',render: function( value, data, render, mapping){
-						if(!data.isPod)return'';
-						var re = $('<button class="btn-ico btn-log">로그</button>').on('click',function(){
-							if(data.condition && data.condition.status == 'True'){
-								window.open("/zdb02/zdb0200p04?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podName="+data.name);
-							}else{
-								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
-							}
-						});
-						return re;
-					},hidden:isSlowLogHidden}
+						return getGridContextButton();
+					}}
 				],
 			});
 			
@@ -1289,7 +1297,6 @@
 						let connectionInfo = res.connectionInfo || {};
 						connectionInfo.credential = atob(connectionInfo.credetial);
 						let connectionList = connectionInfo.connectionList;
-						console.log(atob(connectionInfo.credential))
 						
 						$('#connectionInfoTable').zdbui_setContents(connectionInfo);
 						if(connectionList && connectionList.length>0){
@@ -1421,7 +1428,6 @@
 					}
 					return list; 
 				}());
-				
 				//cpu,memory,disk resource 셋팅  
 				podData = (function(data){
 					var list = [];
@@ -2059,27 +2065,30 @@
 					}},
 					{ title:'결과', key : 'result' , width: '60px',maxWidth:'60px', align: 'center',hidden:!bakcupLogShow,render:function(value,data,render,mapping){
 						var re = $('<button class="Button">보기</button>').on('click',function(){
-							$a.ajax({
-								url:'/zdbapi/getBackupResult',
-								data:{backupId:data.backupId},
-								success:function(res){
-									let ob = res.backupResult;
-									let r = '<div style="width:100%;text-align:left">'
-										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '백업범위 : ' + ob.backupScope + '<br/>' 
-										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '기준백업 : ' + ob.fromBackup + '<br/>' 
-										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '압축파일크기: ' + ob.archiveFileSize  + '<br/>' 
-										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '요청자: ' + ob.userName  + '<br/>' 
-		                                r+= '</div>'; 
-									gCommon.alert(r,null,{width:500,height:250});
-								}
-							});
+							//$a.ajax({
+							//	url:'/zdbapi/getBackupResult',
+							//	data:{backupId:data.backupId},
+							//	success:function(res){
+							//		let ob = res.backupResult;
+							//		let r = '<div style="width:100%;text-align:left">'
+							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '백업범위 : ' + ob.backupScope + '<br/>' 
+							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '기준백업 : ' + ob.fromBackup + '<br/>' 
+							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '압축파일크기: ' + ob.archiveFileSize  + '<br/>' 
+							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '요청자: ' + ob.userName  + '<br/>' 
+		                    //            r+= '</div>'; 
+							//		gCommon.alert(r,null,{width:500,height:250});
+							//	}
+							//});
+							gCommon.alert('해당 기능은 작업중입니다.');//dwtemp
 						});
 						return re;
 					}},
 					{ title:'로그', key : 'log' , width: '60px',maxWidth:'60px', align: 'center',hidden:!bakcupLogShow,render:function(value,data,render,mapping){
 						var re = $('<button class="Button">로그</button>').on('click',function(){
-							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId);
+							//window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId);
+							gCommon.alert('해당 기능은 작업중입니다.');//dwtemp
 						});
+						
 						return re;
 					}}
 				],
