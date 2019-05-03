@@ -2660,7 +2660,7 @@
 			};
 			
 			$('#saveVariables').on('click',function(){ //시스템 변수 적용
-				if(!dbConfigForm.validate()){
+				if(dbConfigForm.find('[data-for]:visible.invalid').length > 0){
 					return;
 				};
 				let msg = '시스템 변수를 변경하시겠습니까?';
