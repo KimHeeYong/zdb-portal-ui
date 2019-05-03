@@ -73,12 +73,6 @@
       "admin",
       "member"
     ],
-        
-    "accessRoles": [
-      "cluster-admin",
-      "admin",
-      "member"
-    ],
     "enable": true
   },
   {
