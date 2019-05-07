@@ -140,6 +140,8 @@ public class URIConstants {
 	public static final String URI_CREATE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
 	
 	public static final String URI_UPDATE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
+
+	public static final String URI_UPDATE_DEFAULT_ALERT_RULE = "/api/v1/{namespace}/alert/defaultRule/{serviceName}";
 	
 	public static final String URI_DELETE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
 

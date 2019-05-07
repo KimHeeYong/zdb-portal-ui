@@ -673,6 +673,11 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 
+	public ZdbRestDTO updateDefaultAlertRule(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_ALERT_RULE, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
 	public ZdbRestDTO updateAlertRule(Map<String, String> param) {
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_ALERT_RULE, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();
