@@ -1554,10 +1554,17 @@
 					}
 				};
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset
-				//auto failover 설정
-				if(gService.statefulSets.length > 1){
-					console.log(gConfigData.auto_failover_enabled)
-					if(gConfigData.auto_failover_enabled=='true'){
+				
+				//failover 설정
+				//mariadb는 statefulSets이 2개일경우, redis는 deployments가 존재 할 경우 활성화
+				let bFailoverEnable = false;
+				if((gParam.serviceType == G_SERVICE_TYPE_MARIA && gService.statefulSets.length > 1) || 
+				   (gParam.serviceType == G_SERVICE_TYPE_REDIS && gService.deployments.length > 0)){
+					bFailoverEnable = true;
+				}
+				if(bFailoverEnable == true){
+					//auto_failover 는 현재 mariadb만 제공
+					if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gConfigData.auto_failover_enabled=='true'){
 						if(gService.failoverEnabled == 'running'){
 							$('#divFailoverRunning').show();
 							$('#divFailoverOnOff').hide();
@@ -1570,6 +1577,7 @@
 					}else{
 						$('#divFailover').hide();
 					}
+					
 					if((isMasterRed && isSlaveGreen)|| gService.serviceFailOverStatus == 'MasterToSlave'){
 						$('#divFailoverArea').show();
 					}else{

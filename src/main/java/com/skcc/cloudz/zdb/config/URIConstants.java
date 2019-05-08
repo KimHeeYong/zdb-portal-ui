@@ -109,7 +109,9 @@ public class URIConstants {
 	
 	public static final String URI_UPDATE_SERVICE_CHANGE_MASTERTOSLAVE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/svc/masterToslave";
 
-	public static final String URI_UPDATE_SERVICE_CHANGE_SLAVETOMASTER = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/failback";
+	public static final String URI_UPDATE_SERVICE_CHANGE_SLAVETOMASTER = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/svc/slaveTomaster";
+																						
+	public static final String URI_UPDATE_SERVICE_FAILBACK = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/failback";
 
 	public static final String URI_UPDATE_CHANGE_PORT = "/api/v1/{namespace}/{serviceType}/{serviceName}/changePort";
 
