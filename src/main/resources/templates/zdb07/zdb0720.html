@@ -48,7 +48,7 @@
 			 .select({id:gSelectedNamespace})
 			 .addHandler(function(e) {
 				  gCommon.setSelectedNamespace(e.currentTarget.id);
-				  gCommon.movePage('/zdb07/zdb0720',{selectedNamespace:gSelectedNamespace});
+				  getAlertRules();
 			  });
 			
 			$('#btnRuleAdd').on('click',function(){

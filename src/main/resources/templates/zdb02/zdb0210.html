@@ -94,7 +94,7 @@
 			<li data-content="#tabDatabase">Database</li>
 			<li data-content="#tabSystem">환경설정</li>
 			<li data-content="#tabLog">로그</li>
-			<!-- <li data-content="#tabProcess">프로세스</li>-->
+			<li data-content="#tabProcess">프로세스</li>
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
 		<div id="tabService">
@@ -851,7 +851,7 @@
 			</div>
 		</div>		
 		
-		<div id="tabProcess" class="hide">
+		<div id="tabProcess">
 			<h3 class="form-title">프로세스</h3>
 			<div class="tabs-contents">
 				<div id="gridProcess"></div>
@@ -1555,7 +1555,8 @@
 				};
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset
 				//auto failover 설정
-				if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gService.statefulSets.length > 1){
+				if(gService.statefulSets.length > 1){
+					console.log(gConfigData.auto_failover_enabled)
 					if(gConfigData.auto_failover_enabled=='true'){
 						if(gService.failoverEnabled == 'running'){
 							$('#divFailoverRunning').show();

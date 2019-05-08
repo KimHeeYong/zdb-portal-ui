@@ -714,4 +714,14 @@ public class ZdbApiService{
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_DELETE_PROCESS, HttpMethod.DELETE, entity,  ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
 	}
+
+	public List<?> getStorages(Map<String, String> param) {
+		List<?> list = Collections.emptyList();
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_STORAGES, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			list = zdbRestDTO.getResult().getStorages();
+		};
+		return list;
+	}
 }

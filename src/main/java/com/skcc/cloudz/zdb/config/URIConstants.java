@@ -1,5 +1,7 @@
 package com.skcc.cloudz.zdb.config;
 
+import org.springframework.web.bind.annotation.RequestParam;
+
 public class URIConstants {
 
 	// namespace list
@@ -149,4 +151,6 @@ public class URIConstants {
 
 	public static final String URI_DELETE_PROCESS = "/api/v1/{namespace}/{serviceType}/process/{podName}/{pid}";
 
+	public static final String URI_GET_STORAGES = "/api/v1/storages?namespace={namespace}&keyword={keyword}&app={app}&storageClassName={storageClassName}"
+													+"&billingType={billingType}&phase={phase}&stDate={stDate}&edDate={edDate}";	
 }

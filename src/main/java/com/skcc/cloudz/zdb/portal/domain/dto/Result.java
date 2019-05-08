@@ -10,6 +10,7 @@ import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.Mycnf;
+import com.zdb.core.domain.PersistentVolumeClaimEntity;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
@@ -89,4 +90,6 @@ public class Result {
 	private List<Map<String,String>> processes;
 	
 	private List<String> services;
+	
+	private List<PersistentVolumeClaimEntity> storages;
 }
