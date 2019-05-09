@@ -553,6 +553,10 @@
 		</div>
 		<div id="tabUser">
 			<h3 class="form-title">사용자 목록 및 권한</h3>
+			<ul class="ml5">
+				<li> ※ 전체 Database에 관한 권한입니다.  </li>
+				<li> ※ 상세한 권한 설정이 필요시에는 해당 Database에 접속하셔서 설정하셔야 합니다.</li>
+			</ul>
 			<div class="tabs-contents">
 				<div class="btn-wrap">
 					<div class="btn-right">
@@ -2371,7 +2375,7 @@
 				leaveDeleted:true,
 				height: 400,
 				columnMapping : [  
-					{ title:'state',key:'state',width:'0px',editable:false,hidden:false,render:function(value,data){
+					{ title:'state',key:'state',width:'50px',align:'center',editable:false,hidden:false,excludeFitWidth:true,render:function(value,data){
 						if (data._state.added){data.state = 'A'}
 						else if (data._state.deleted){data.state='D'}
 						else if (data._state.edited){data.state='E'}
@@ -2403,21 +2407,21 @@
 							return (value||'').replace(/./g,'*');
 						}
 					},
-					{ title:'HOST', key : 'host' , width: '100px', align: 'left' ,editable:true,allowEdit:function(value,data){
+					{ title:'HOST', key : 'host' , width: '120px', align: 'left' ,editable:true,allowEdit:function(value,data){
 						return data._state.added == true;
 					}},
-					{ title:'SELECT', key : 'select' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'INSERT', key : 'insert' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'UPDATE', key : 'update' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'DELETE', key : 'delete' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'EXECUTE', key : 'execute' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'CREATE', key : 'create' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'ALTER', key : 'alter' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'DROP', key : 'drop' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'CREATE VIEW', key : 'createView' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'TRIGGER', key : 'trigger' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'GRANT', key : 'grant' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'CREATE USER', key : 'createUser' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck}
+					{ title:'SELECT', key : 'select' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'INSERT', key : 'insert' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'UPDATE', key : 'update' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'DELETE', key : 'delete' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'EXECUTE', key : 'execute' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'CREATE', key : 'create' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'ALTER', key : 'alter' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'DROP', key : 'drop' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'CREATE VIEW', key : 'createView' , width: '100px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'TRIGGER', key : 'trigger' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'GRANT', key : 'grant' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'CREATE USER', key : 'createUser' , width: '130px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck}
 				], message: { nodata: gMessage.gridNodata }
 			}).on('cellEditInvalid ', function(e){
 					setTimeout(function(evt){

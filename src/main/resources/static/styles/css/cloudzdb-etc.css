@@ -25,7 +25,9 @@
 	background: #666666;
 	color: #ffffff;
 }
-
+.ml5{
+	margin-left: 5px;
+}
 .ml20{
 	margin-left: 20px !important;
 }
