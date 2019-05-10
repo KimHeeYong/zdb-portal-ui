@@ -730,4 +730,14 @@ public class ZdbApiService{
 		};
 		return list;
 	}
+
+	public Map<String,List<String>> getStoragesData(Map<String, String> param) {
+		Map<String,List<String>> data = null;
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_STORAGES_DATA, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			data = zdbRestDTO.getResult().getStoragesData();
+		};
+		return data;
+	}
 }

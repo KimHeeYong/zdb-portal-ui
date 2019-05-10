@@ -92,4 +92,6 @@ public class Result {
 	private List<String> services;
 	
 	private List<PersistentVolumeClaimEntity> storages;
+	
+	private Map<String,List<String>> storagesData;
 }

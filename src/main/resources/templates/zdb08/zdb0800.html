@@ -24,9 +24,6 @@
 						<div class="Divselect" id="app" name="app">
 							<select>
 								<option value="">전체</option>
-								<option value="mariadb">mariadb</option>
-								<option value="redis">redis</option>
-								<option value="-">-</option>
 							</select>
 							<span></span>
 						</div>
@@ -36,10 +33,6 @@
 						<div class="Divselect" id="billingType" name="billingType">
 							<select>
 								<option value="">전체</option>
-								<option value="hourly">hourly</option>
-								<option value="jp-tok">jp-tok</option>
-								<option value="monthly">monthly</option>
-								<option value="-">-</option>
 							</select>
 							<span></span>
 						</div>
@@ -51,7 +44,6 @@
 								<option value="">전체</option>
 								<option value="Bound">Bound</option>
 								<option value="DELETED">DELETED</option>
-								<option value="-">-</option>
 							</select>
 							<span></span>
 						</div>
@@ -62,12 +54,11 @@
 							<select>
 								<option value="">전체</option>
 								<option value="ibmc-block-silver">ibmc-block-silver</option>
-								<option value="ibmc-block-gold">ibmc-block-gold</option>
 								<option value="ibmc-block-retain-silver">ibmc-block-retain-silver</option>
+								<option value="ibmc-block-gold">ibmc-block-gold</option>
 								<option value="ibmc-file-bronze">ibmc-file-bronze</option>
 								<option value="ibmc-file-silver">ibmc-file-silver</option>
 								<option value="ibmc-file-retain-gold">ibmc-file-retain-gold</option>
-								<option value="-">-</option>
 							</select>
 							<span></span>
 						</div>
@@ -111,6 +102,7 @@
 								  gCommon.setSelectedNamespace(e.currentTarget.id);
 								  getStorageList();
 							  }); 
+				let form = $('form[name=storageForm]');
 				let gridStorage = $('#gridStorage').alopexGrid({
 					autoColumnIndex: true,
 					height: 635,
@@ -134,9 +126,32 @@
 					message: {
 						nodata: gMessage.gridNodata
 					}
-				});			
-				function getStorageList(){
+				});
+				getStorageData();
+				//조회 조건 조회
+				function getStorageData(){
 					var param = $('form[name=storageForm]').serializeObject();
+					param = $.extend({},gParam,param);
+					
+					$a.ajax({
+						url: '/zdbapi/getStoragesData',
+						data:param,
+						success: function(res){
+							if(res){
+								let d = res.storagesData||{};
+								for(let k in d){
+									let l = d[k]||[];
+									let combo = form.find('#'+k+' select');
+									for(let i = 0;i < l.length;i++){
+										combo.append($('<option>',{value:l[i],text:l[i]}));
+									}
+								} 								
+							}
+						}
+					});
+				}
+				function getStorageList(){
+					var param = form.serializeObject();
 					param = $.extend({},gParam,param);
 					param.namespace = gSelectedNamespace == G_NAMESPACE_ALL ? '' : gSelectedNamespace;
 					$a.ajax({
@@ -147,13 +162,10 @@
 							gridStorage.alopexGrid('dataSet',list);
 						}
 					});				
-				};			
-				$('#searchEvent').on('click',function(){
-					getStorageList();
-				});
-				$('input[name=keyword]').pressEnter(function(evt){
-					getStorageList();
-				});			
+				};		
+				
+				$('#searchEvent').on('click',getStorageList);
+				$('input[name=keyword]').pressEnter(getStorageList);			
 			}
 		});
 	</script>
