@@ -785,6 +785,12 @@ public class ZdbApiController {
 		mav.addObject(IResult.STORAGES ,result);
 		return mav;
 	}
-	
-	
+	@RequestMapping(value="getStoragesData", method=RequestMethod.GET)
+	public ModelAndView getStoragesData(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		Map<String, List<String>> result = zdbApiService.getStoragesData(param);
+		mav.addObject(IResult.STORAGES_DATA ,result);
+		return mav;
+	}
 }
