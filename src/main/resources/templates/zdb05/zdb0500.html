@@ -65,10 +65,11 @@
 							return data.state;
 						}},						
 						{ title:'서비스이름', key : 'serviceName' , width: '180px', align: 'left',render:function(value,data){
-							var re = $('<a class="grid" style="a.inherited:no"/>').html(value).on('click',function(){
+							var re = $('<a href="#" title="'+value+'">'+value+'</a>').html(value).on('click',function(){
 								fn_setSelected2010Tab('tabBackup');
 								gCommon.movePage('/zdb02/zdb0210',{namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName});
 							});
+							
 							return re;
 							
 						}},
@@ -131,8 +132,8 @@
 						sortingColumn: "serviceName",
 						sortingDirection: 'asc'
 					},headerGroup: [
-						{fromIndex:6, toIndex:7, title:"전체백업"},
-						{fromIndex:8, toIndex:9, title:"증분백업"}
+						{fromIndex:7, toIndex:8, title:"전체백업"},
+						{fromIndex:9, toIndex:10, title:"증분백업"}
 					],
 				}).on('cellEditInvalid ', function(e){
 					setTimeout(function(evt){

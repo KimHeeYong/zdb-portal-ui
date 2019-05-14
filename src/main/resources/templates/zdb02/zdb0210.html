@@ -2033,15 +2033,9 @@
 						}
 						return '<button class="Button gridbtn btn">'+t+'</button>';
 					}},
-					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						return cloudUtil.dtFormat(value);
-					}},
-					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						return cloudUtil.dtFormat(value);
-					}},
-					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						return cloudUtil.dtFormat(value);
-					}},
+					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
 					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
 						var val = '';
 						if(value < 1024 ) {
@@ -2076,28 +2070,26 @@
 					}},
 					{ title:'결과', key : 'result' , width: '60px',maxWidth:'60px', align: 'center',hidden:!bakcupLogShow,render:function(value,data,render,mapping){
 						var re = $('<button class="Button">보기</button>').on('click',function(){
-							//$a.ajax({
-							//	url:'/zdbapi/getBackupResult',
-							//	data:{backupId:data.backupId},
-							//	success:function(res){
-							//		let ob = res.backupResult;
-							//		let r = '<div style="width:100%;text-align:left">'
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '백업범위 : ' + ob.backupScope + '<br/>' 
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '기준백업 : ' + ob.fromBackup + '<br/>' 
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '압축파일크기: ' + ob.archiveFileSize  + '<br/>' 
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '요청자: ' + ob.userName  + '<br/>' 
-		                    //            r+= '</div>'; 
-							//		gCommon.alert(r,null,{width:500,height:250});
-							//	}
-							//});
-							gCommon.alert('해당 기능은 작업중입니다.');//dwtemp
+							$a.ajax({
+								url:'/zdbapi/getBackupResult',
+								data:{backupId:data.backupId},
+								success:function(res){
+									let ob = res.backupResult;
+									let r = '<table><colgroup><col class="wd150"></col><col width="*"></col></colgroup>'
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '<tr><th class="tl">백업범위</th><td class="tl">' + ob.backupScope + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+='<tr><th class="tl">기준백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+='<tr><th class="tl">압축파일크기</th><td class="tl">' + ob.archiveFileSize  +'</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+='<tr><th class="tl">요청자</th><td class="tl">' + ob.userName  + '</td></tr>' 
+										r+= '</table>';  
+									gCommon.alert(r,null,{width:500,height:250});
+								}
+							});
 						});
 						return re;
 					}},
 					{ title:'로그', key : 'log' , width: '60px',maxWidth:'60px', align: 'center',hidden:!bakcupLogShow,render:function(value,data,render,mapping){
 						var re = $('<button class="Button">로그</button>').on('click',function(){
-							//window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId);
-							gCommon.alert('해당 기능은 작업중입니다.');//dwtemp
+							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
 						});
 						
 						return re;
