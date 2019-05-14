@@ -2861,13 +2861,16 @@
 						{ key : 'Time', title : 'Time', width : '100px', align : 'center'},
 						{ key : 'State', title : '상태', width : '130px', align : 'center'},
 						{ key : 'Info', title : '정보', width : '250px', align : 'left'},
-						{ key : 'Id', title : '종료', width : '80px', align : 'center',render:function(value,data){
+						{ key : '', title : '종료', width : '80px', align : 'center',render:function(value,data){
 							let exIds = ['system user','replicator'];
 							let disabled = '';
 							if(exIds.indexOf(data.User)!=-1){
 								disabled = 'Disabled';
 							}
 							return $('<button class="Button sm '+disabled+'">종료</button>').on('click',function(){
+								if($(this).hasClass('Disabled')){
+									return;
+								}
 								gCommon.credentialConfirm({
 							        data:{credential:$("#credential").val(),msg:'프로세스를 종료하시려면',okBtnMsg:'종료'},
 							        callback : function(res){
