@@ -2845,9 +2845,12 @@
 				rowOption : { 
 					styleclass : function(data, rowOption){
 						let re = '';
-						if((data.State||'').toLowerCase().indexOf('waiting for') > -1 ||
-						   (data.Command||'').toLowerCase() == 'query && time' && data.Time	> 10 ||
-						   (data.State||'').toLowerCase() == 'copying to tmp table on disk'
+						let state = (data.State||'').toLowerCase();
+						let time = (data.Time || 0);
+						if( state.indexOf('waiting for') > -1 || 
+						   (state.indexOf('sending data') > -1 && time >= 10) ||
+						   (state.indexOf('updating') > -1 && time >= 10) ||
+						   (state == 'copying to tmp table on disk')
 						){
 							re = 'warning-color';
 						}
