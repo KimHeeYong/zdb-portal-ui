@@ -1539,7 +1539,7 @@
 								isMasterRed = true;
 							}						
 						}
-						
+												
 						if(pod != null){
 							pod.status = dt.status;
 							pod.role = dt.role;
@@ -2853,16 +2853,21 @@
 				message: { nodata: gMessage.gridNodata },
 				autoColumnIndex : true,
 				columnMapping : [
-						{ key : 'Id', title : 'Id', width : '50px', align : 'center'},
-						{ key : 'User', title : 'User', width : '80px', align : 'left' },
-						{ key : 'Host', title : 'Host', width : '80px', align : 'center' },
-						{ key : 'db', title : 'db', width : '100px', align : 'center' },
-						{ key : 'Command', title : 'Command', width : '100px', align : 'center' },
+						{ key : 'Id', title : '프로세스ID', width : '70px', align : 'center'},
+						{ key : 'User', title : '사용자', width : '80px', align : 'left' },
+						{ key : 'Host', title : '호스트', width : '80px', align : 'center' },
+						{ key : 'db', title : 'DB', width : '100px', align : 'center' },
+						{ key : 'Command', title : '커맨드', width : '100px', align : 'center' },
 						{ key : 'Time', title : 'Time', width : '100px', align : 'center'},
-						{ key : 'State', title : 'State', width : '130px', align : 'center'},
-						{ key : 'Info', title : 'Info', width : '250px', align : 'left'},
-						{ key : 'Id', title : 'Kill', width : '80px', align : 'center',render:function(value,data){
-							return $('<button class="Button sm">Kill</button>').on('click',function(){
+						{ key : 'State', title : '상태', width : '130px', align : 'center'},
+						{ key : 'Info', title : '정보', width : '250px', align : 'left'},
+						{ key : 'Id', title : '종료', width : '80px', align : 'center',render:function(value,data){
+							let exIds = ['system user','replicator'];
+							let disabled = '';
+							if(exIds.indexOf(data.User)!=-1){
+								disabled = 'Disabled';
+							}
+							return $('<button class="Button sm '+disabled+'">종료</button>').on('click',function(){
 								gCommon.credentialConfirm({
 							        data:{credential:$("#credential").val(),msg:'프로세스를 종료하시려면',okBtnMsg:'종료'},
 							        callback : function(res){
