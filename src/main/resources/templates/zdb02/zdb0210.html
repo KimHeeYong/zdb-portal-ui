@@ -2842,6 +2842,18 @@
 			/*tabLog end */		
 			/*tabProcess start */
 			let gridProcess = $('#gridProcess').alopexGrid({
+				rowOption : { 
+					styleclass : function(data, rowOption){
+						let re = '';
+						if((data.State||'').toLowerCase().indexOf('waiting for') > -1 ||
+						   (data.Command||'').toLowerCase() == 'query && time' && data.Time	> 10 ||
+						   (data.State||'').toLowerCase() == 'copying to tmp table on disk'
+						){
+							re = 'warning-color';
+						}
+						return re;
+					}
+				},
 				message: { nodata: gMessage.gridNodata },
 				autoColumnIndex : true,
 				columnMapping : [

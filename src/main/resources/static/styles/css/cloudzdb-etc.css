@@ -235,3 +235,6 @@ a.grid:active  { text-decoration:underline; }
 .cell.bodycell.alopexgrid-cell a{
 	font-size: 1.0em;
 }
+.warning-color{
+	background-color: #ff0e0e75 !important;
+}
