@@ -2841,19 +2841,27 @@
 			}
 			/*tabLog end */		
 			/*tabProcess start */
+			//기본 시스템 계정 여부
+			function fn_isSystemProcess(data){
+				let exIds = ['system user','replicator']; 
+				return exIds.indexOf(data.User) > -1; 
+			}
 			let gridProcess = $('#gridProcess').alopexGrid({
 				rowOption : { 
 					styleclass : function(data, rowOption){
 						let re = '';
 						let state = (data.State||'').toLowerCase();
 						let time = (data.Time || 0);
-						if( state.indexOf('waiting for') > -1 || 
-						   (state.indexOf('sending data') > -1 && time >= 10) ||
-						   (state.indexOf('updating') > -1 && time >= 10) ||
-						   (state == 'copying to tmp table on disk')
-						){
-							re = 'warning-color';
+						console.log(rowOption.style)
+						if(!fn_isSystemProcess(data)){
+							if( state.indexOf('waiting for') > -1 || 
+									   (state.indexOf('sending data') > -1 && time >= 10) ||
+									   (state.indexOf('updating') > -1 && time >= 10) ||
+									   (state == 'copying to tmp table on disk')){
+								re = 'warning-color';
+							}
 						}
+						
 						return re;
 					}
 				},
@@ -2869,9 +2877,8 @@
 						{ key : 'State', title : '상태', width : '130px', align : 'center'},
 						{ key : 'Info', title : '정보', width : '250px', align : 'left'},
 						{ key : '', title : '종료', width : '80px', align : 'center',render:function(value,data){
-							let exIds = ['system user','replicator'];
 							let disabled = '';
-							if(exIds.indexOf(data.User)!=-1){
+							if(fn_isSystemProcess(data) == true){
 								disabled = 'Disabled';
 							}
 							return $('<button class="Button sm '+disabled+'">종료</button>').on('click',function(){
