@@ -102,7 +102,7 @@
 			<ul class="cp-accordion">
 				<li>
 					<h3 class="form-title">Connection</h3>
-					<div class="Tooltip hide" data-base="#failoverTooltip">Master DB가 장애로 서비스가 불가능한 상태가 되면,<br/> failover를 수행하여 slave DB를 master DB로 승격시켜<br/> 서비스 다운타임을 최소화 합니다.</div>
+					<div class="Tooltip hide" data-base="#failoverTooltip">마스터 서버가 서비스가 불가능한 상태가 되면,<br/> Failover를 수행하여 슬레이브 서버를 마스터로 승격시켜<br/> 서비스 다운타임을 최소화 합니다.</div>
 					<div class="accor-contents__wrap">
 						<form name="formService">
 						<table id="connectionInfoTable" class="Table Form-type">
@@ -153,7 +153,7 @@
 						               		</div>
 						               		<div id="divFailbackBtn" class="hide">
 						               			<button class="Button btn">Failback</button>
-						               			<span class="Tooltip hide">서비스 L/B를 Master DB 로 복원합니다.</span>
+						               			<span class="Tooltip hide">서비스 L/B를 마스터로 복원합니다.</span>
 						               		</div>
 						               	</div>	
 						               	<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
@@ -272,9 +272,12 @@
 					<h3 class="form-title">Resource</h3>
 					<div class="accor-contents__wrap">
 						<div id="gridResource" class="grid"></div>
+						<!-- <div class="Tooltip" id="replicationTooltip" data-position="bottom|left"></div> -->
 					</div>
 				</li>
 			</ul>
+			<div class="Tooltip" data-base="#replicationTooltip" id="replicationTooltipMsg" data-position="right" style="z-index:99999999999"></div>
+					
 		</div>
 		<!--스케일 PageID: ZDB-02-20R -->
 		<div id="tabScale">
@@ -1060,6 +1063,7 @@
 					d.css({left:e.pageX,top:e.pageY});
 				});
 			}
+			//$('#replicationTooltip').convert();
 			$('#gridResource').alopexGrid({
 				enableDefaultContextMenu:false,
 				enableContextMenu:true,
@@ -1186,6 +1190,34 @@
 						}
 					}
 				],
+				renderMapping : {
+					'replicationStatus' : {
+						renderer: function(value, data, render, mapping) {
+							var replicationStatus;
+							if (gService.slaveStatus != null) {
+								replicationStatus = gService.slaveStatus.replicationStatus;
+							} else {
+								replicationStatus = '-';
+							}
+							
+							if(gParam.serviceType=='mariadb' && data.role == 'master') {
+								return '-';
+							} else if (gParam.serviceType=='mariadb' && data.role == 'slave' && gService.slaveStatus != null) {
+								if(replicationStatus == 'ok') {
+									return '<div id="replicationTooltip" class="state green"></div>';
+								} else if(replicationStatus == 'warning') {
+									return '<div id="replicationTooltip" class="state yellow"></div>';
+								} else if (replicationStatus == 'error') {
+									return '<div id="replicationTooltip" class="state red"></div>';
+								} else if(replicationStatus == 'over') {
+									return '<div id="replicationTooltip">조회 실패</div>';
+								}else {
+									return replicationStatus;
+								}
+							} 
+						}
+					}
+				},
 				columnMapping : [
 					{ title:'', key : 'status' , width: '40px', align: 'center',render : function( value, data, render, mapping) {
 						var re = '';
@@ -1209,14 +1241,27 @@
 						};
 						return re;
 					}},
-					{ title:'Replicas', key : 'replicas' , width: '65px', align: 'center'},
-					{ title:'Role', key : 'role' , width: '90px', align: 'center'},
-					{ title:'Service LB', key : '' , width: '100px', align: 'center', render : function(value, data){
+					{ title:'Replicas', key : 'replicas' , width: '70px', align: 'center'},
+					{ title:'Replication', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
+					}},
+					{ title:'Role', key : 'role' , width: '90px', align: 'center', render : function(value, data){
+						if(data.role == 'master'){
+							return '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">';
+						} else {
+							return '<img src="/styles/images/slave.png" style="width: 16px;height: 16px;">';
+						}
+					}},
+					{ title:'ServiceLB', key : 'serviceLB' , width: '100px', align: 'center', render : function(value, data){
 						if(data.svc != '') {
 							if(data.serviceType == 'redis') {
 								return data.svc.spec.selector.role;
 							} else if(data.serviceType == 'mariadb') {
-								return data.svc.spec.selector.component;
+								if(data.svc.spec.selector.component == 'master'){
+									return '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">';
+								} else {
+									return '<img src="/styles/images/slave.png" style="width: 16px;height: 16px;">';
+								}
+								
 							}
 						} 
 						return '';
@@ -1558,6 +1603,10 @@
 					}
 				};
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset
+				if (gService.slaveStatus != null) {
+					$('#replicationTooltipMsg').html(gService.slaveStatus.message).tooltip();
+				}
+				
 				
 				//failover 설정
 				//mariadb는 statefulSets이 2개일경우, redis는 deployments가 존재 할 경우 활성화
@@ -2033,15 +2082,9 @@
 						}
 						return '<button class="Button gridbtn btn">'+t+'</button>';
 					}},
-					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						return cloudUtil.dtFormat(value);
-					}},
-					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						return cloudUtil.dtFormat(value);
-					}},
-					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						return cloudUtil.dtFormat(value);
-					}},
+					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
 					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
 						var val = '';
 						if(value < 1024 ) {
@@ -2076,28 +2119,26 @@
 					}},
 					{ title:'결과', key : 'result' , width: '60px',maxWidth:'60px', align: 'center',hidden:!bakcupLogShow,render:function(value,data,render,mapping){
 						var re = $('<button class="Button">보기</button>').on('click',function(){
-							//$a.ajax({
-							//	url:'/zdbapi/getBackupResult',
-							//	data:{backupId:data.backupId},
-							//	success:function(res){
-							//		let ob = res.backupResult;
-							//		let r = '<div style="width:100%;text-align:left">'
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '백업범위 : ' + ob.backupScope + '<br/>' 
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '기준백업 : ' + ob.fromBackup + '<br/>' 
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '압축파일크기: ' + ob.archiveFileSize  + '<br/>' 
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '요청자: ' + ob.userName  + '<br/>' 
-		                    //            r+= '</div>'; 
-							//		gCommon.alert(r,null,{width:500,height:250});
-							//	}
-							//});
-							gCommon.alert('해당 기능은 작업중입니다.');//dwtemp
+							$a.ajax({
+								url:'/zdbapi/getBackupResult',
+								data:{backupId:data.backupId},
+								success:function(res){
+									let ob = res.backupResult;
+									let r = '<table><colgroup><col class="wd150"></col><col width="*"></col></colgroup>'
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '<tr><th class="tl">백업범위</th><td class="tl">' + ob.backupScope + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+='<tr><th class="tl">기준백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+='<tr><th class="tl">압축파일크기</th><td class="tl">' + ob.archiveFileSize  +'</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+='<tr><th class="tl">요청자</th><td class="tl">' + ob.userName  + '</td></tr>' 
+										r+= '</table>';  
+									gCommon.alert(r,null,{width:500,height:250});
+								}
+							});
 						});
 						return re;
 					}},
 					{ title:'로그', key : 'log' , width: '60px',maxWidth:'60px', align: 'center',hidden:!bakcupLogShow,render:function(value,data,render,mapping){
 						var re = $('<button class="Button">로그</button>').on('click',function(){
-							//window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId);
-							gCommon.alert('해당 기능은 작업중입니다.');//dwtemp
+							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
 						});
 						
 						return re;
@@ -2849,7 +2890,30 @@
 			}
 			/*tabLog end */		
 			/*tabProcess start */
+			//기본 시스템 계정 여부
+			function fn_isSystemProcess(data){
+				let exIds = ['system user','replicator']; 
+				return exIds.indexOf(data.User) > -1; 
+			}
 			let gridProcess = $('#gridProcess').alopexGrid({
+				rowOption : { 
+					styleclass : function(data, rowOption){
+						let re = '';
+						let state = (data.State||'').toLowerCase();
+						let time = (data.Time || 0);
+						console.log(rowOption.style)
+						if(!fn_isSystemProcess(data)){
+							if( state.indexOf('waiting for') > -1 || 
+									   (state.indexOf('sending data') > -1 && time >= 10) ||
+									   (state.indexOf('updating') > -1 && time >= 10) ||
+									   (state == 'copying to tmp table on disk')){
+								re = 'warning-color';
+							}
+						}
+						
+						return re;
+					}
+				},
 				message: { nodata: gMessage.gridNodata },
 				autoColumnIndex : true,
 				columnMapping : [
@@ -2862,9 +2926,8 @@
 						{ key : 'State', title : '상태', width : '130px', align : 'center'},
 						{ key : 'Info', title : '정보', width : '250px', align : 'left'},
 						{ key : '', title : '종료', width : '80px', align : 'center',render:function(value,data){
-							let exIds = ['system user','replicator'];
 							let disabled = '';
-							if(exIds.indexOf(data.User)!=-1){
+							if(fn_isSystemProcess(data) == true){
 								disabled = 'Disabled';
 							}
 							return $('<button class="Button sm '+disabled+'">종료</button>').on('click',function(){
