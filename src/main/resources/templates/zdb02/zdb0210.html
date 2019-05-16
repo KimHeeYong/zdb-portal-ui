@@ -25,12 +25,11 @@
 		var gGrafanaUrl = [[${@environment.getProperty('grafana.url')}]];
 		/*]]>*/
 	</script>
-	<script type="text/javascript" src="/script/app/common/cloudzdb-ui-z0200.js"></script>
+	<script type="text/javascript" src="/script/app/common/cloudzdb-ui-z0200.js?v=20190430"></script>
 	<script type="text/javascript" src="/script/libs/etc/nouislider.min.js"></script>
 	<script src="/script/libs/sockjs/sockjs.js"></script>
 	<script src="/script/libs/sockjs/stomp.js"></script>
-	<script src="/script/app/common/cloudzdb-ui-sock.js"></script>	
-	<script type="text/javascript" src="/script/app/common/cloudzdb-validator.js"></script>
+	<script src="/script/app/common/cloudzdb-ui-sock.js?v=20190430"></script>	
 	<script type="text/javascript" src="/script/libs/etc/download.min.js"></script>
 </th:block>
 <th:block layout:fragment="content">
@@ -95,7 +94,7 @@
 			<li data-content="#tabDatabase">Database</li>
 			<li data-content="#tabSystem">환경설정</li>
 			<li data-content="#tabLog">로그</li>
-			<!-- <li data-content="#tabProcess">프로세스</li>-->
+			<li data-content="#tabProcess">프로세스</li>
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
 		<div id="tabService">
@@ -103,7 +102,7 @@
 			<ul class="cp-accordion">
 				<li>
 					<h3 class="form-title">Connection</h3>
-					<div class="Tooltip hide" data-base="#failoverTooltip">Master DB가 장애로 서비스가 불가능한 상태가 되면,<br/> failover를 수행하여 slave DB를 master DB로 승격시켜<br/> 서비스 다운타임을 최소화 합니다.</div>
+					<div class="Tooltip hide" data-base="#failoverTooltip">마스터 서버가 서비스가 불가능한 상태가 되면,<br/> Failover를 수행하여 슬레이브 서버를 마스터로 승격시켜<br/> 서비스 다운타임을 최소화 합니다.</div>
 					<div class="accor-contents__wrap">
 						<form name="formService">
 						<table id="connectionInfoTable" class="Table Form-type">
@@ -154,7 +153,7 @@
 						               		</div>
 						               		<div id="divFailbackBtn" class="hide">
 						               			<button class="Button btn">Failback</button>
-						               			<span class="Tooltip hide">서비스 L/B를 Master DB 로 복원합니다.</span>
+						               			<span class="Tooltip hide">서비스 L/B를 마스터로 복원합니다.</span>
 						               		</div>
 						               	</div>	
 						               	<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
@@ -554,6 +553,10 @@
 		</div>
 		<div id="tabUser">
 			<h3 class="form-title">사용자 목록 및 권한</h3>
+			<ul class="ml5">
+				<li> ※ 전체 Database에 관한 권한입니다.  </li>
+				<li> ※ 상세한 권한 설정이 필요시에는 해당 Database에 접속하셔서 설정하셔야 합니다.</li>
+			</ul>
 			<div class="tabs-contents">
 				<div class="btn-wrap">
 					<div class="btn-right">
@@ -852,7 +855,7 @@
 			</div>
 		</div>		
 		
-		<div id="tabProcess" class="hide">
+		<div id="tabProcess">
 			<h3 class="form-title">프로세스</h3>
 			<div class="tabs-contents">
 				<div id="gridProcess"></div>
@@ -1329,19 +1332,18 @@
 			};
 
 			function fn_getServiceCallback(){
-				//서비스가 green 상태가 아니면 안내 메세지 출력
-				if(gService.status != 'green'){
-					let infoMsg = $('#divInfoMsg');
-					let msg = gService.statusMessage||'';
-					//let t = $('<div class="Tooltip"></div>').html(msg);
-					//infoMsg.after(t);
-					//$a.convert(t);
-					let m = msg.split('</br>');
-					if(m && m.length > 1){
-						msg = m[0]+'</br>'+m[1];
-					}
-					infoMsg.html(msg);
+				//안내 메세지 출력
+				let infoMsg = $('#divInfoMsg');
+				let msg = gService.statusMessage||'';
+				//let t = $('<div class="Tooltip"></div>').html(msg);
+				//infoMsg.after(t);
+				//$a.convert(t);
+				let m = msg.split('</br>');
+				if(m && m.length > 1){
+					msg = m[0]+'</br>'+m[1];
 				}
+				infoMsg.html(msg);
+				
 				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정, 프로세스)설정
 				var tabDisList = ['tabBackup','tabUser','tabDatabase','tabSystem','tabProcess']; 
 				if(gService.serviceType == G_SERVICE_TYPE_MARIA){ //mariadb 면 tabSystem 이동되도록
@@ -1443,7 +1445,7 @@
 							};
 							if(ml && ml[ob.name]){
 								var memUsage = ml[ob.name];
-								ob.memory = cloudUtil.truncDecimal(((memUsage.length? memUsage[memUsage.length-1].value:'') / (1024*1000)),2) + ' / ' + gService.resourceSpecOfPodMap[ob.name].memory;
+								ob.memory = cloudUtil.truncDecimal(((memUsage.length? memUsage[memUsage.length-1].value:'')),2) + 'Mi / ' + gService.resourceSpecOfPodMap[ob.name].memory;
 							};
 							if(gService.serviceType == 'redis' && gService.purpose != 'DATA' && gService.persistentVolumeClaims.length == 0){
 								ob.disk = '사용안함';
@@ -1537,7 +1539,7 @@
 								isMasterRed = true;
 							}						
 						}
-						
+												
 						if(pod != null){
 							pod.status = dt.status;
 							pod.role = dt.role;
@@ -1556,9 +1558,17 @@
 					}
 				};
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset
-				//auto failover 설정
-				if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gService.statefulSets.length > 1){
-					if(gConfigData.auto_failover_enabled=='true'){
+				
+				//failover 설정
+				//mariadb는 statefulSets이 2개일경우, redis는 deployments가 존재 할 경우 활성화
+				let bFailoverEnable = false;
+				if((gParam.serviceType == G_SERVICE_TYPE_MARIA && gService.statefulSets.length > 1) || 
+				   (gParam.serviceType == G_SERVICE_TYPE_REDIS && gService.deployments.length > 0)){
+					bFailoverEnable = true;
+				}
+				if(bFailoverEnable == true){
+					//auto_failover 는 현재 mariadb만 제공
+					if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gConfigData.auto_failover_enabled=='true'){
 						if(gService.failoverEnabled == 'running'){
 							$('#divFailoverRunning').show();
 							$('#divFailoverOnOff').hide();
@@ -1571,6 +1581,7 @@
 					}else{
 						$('#divFailover').hide();
 					}
+					
 					if((isMasterRed && isSlaveGreen)|| gService.serviceFailOverStatus == 'MasterToSlave'){
 						$('#divFailoverArea').show();
 					}else{
@@ -2022,15 +2033,9 @@
 						}
 						return '<button class="Button gridbtn btn">'+t+'</button>';
 					}},
-					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						return cloudUtil.dtFormat(value);
-					}},
-					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						return cloudUtil.dtFormat(value);
-					}},
-					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:function(value,data,render,mapping){
-						return cloudUtil.dtFormat(value);
-					}},
+					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
 					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
 						var val = '';
 						if(value < 1024 ) {
@@ -2065,28 +2070,26 @@
 					}},
 					{ title:'결과', key : 'result' , width: '60px',maxWidth:'60px', align: 'center',hidden:!bakcupLogShow,render:function(value,data,render,mapping){
 						var re = $('<button class="Button">보기</button>').on('click',function(){
-							//$a.ajax({
-							//	url:'/zdbapi/getBackupResult',
-							//	data:{backupId:data.backupId},
-							//	success:function(res){
-							//		let ob = res.backupResult;
-							//		let r = '<div style="width:100%;text-align:left">'
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '백업범위 : ' + ob.backupScope + '<br/>' 
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '기준백업 : ' + ob.fromBackup + '<br/>' 
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '압축파일크기: ' + ob.archiveFileSize  + '<br/>' 
-							//			if(!cloudUtil.isEmpty(ob.backupScope)) r+= '요청자: ' + ob.userName  + '<br/>' 
-		                    //            r+= '</div>'; 
-							//		gCommon.alert(r,null,{width:500,height:250});
-							//	}
-							//});
-							gCommon.alert('해당 기능은 작업중입니다.');//dwtemp
+							$a.ajax({
+								url:'/zdbapi/getBackupResult',
+								data:{backupId:data.backupId},
+								success:function(res){
+									let ob = res.backupResult;
+									let r = '<table><colgroup><col class="wd150"></col><col width="*"></col></colgroup>'
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '<tr><th class="tl">백업범위</th><td class="tl">' + ob.backupScope + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+='<tr><th class="tl">기준백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+='<tr><th class="tl">압축파일크기</th><td class="tl">' + ob.archiveFileSize  +'</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+='<tr><th class="tl">요청자</th><td class="tl">' + ob.userName  + '</td></tr>' 
+										r+= '</table>';  
+									gCommon.alert(r,null,{width:500,height:250});
+								}
+							});
 						});
 						return re;
 					}},
 					{ title:'로그', key : 'log' , width: '60px',maxWidth:'60px', align: 'center',hidden:!bakcupLogShow,render:function(value,data,render,mapping){
 						var re = $('<button class="Button">로그</button>').on('click',function(){
-							//window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId);
-							gCommon.alert('해당 기능은 작업중입니다.');//dwtemp
+							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
 						});
 						
 						return re;
@@ -2271,7 +2274,7 @@
 				renderMapping : {
 					'evtMsgTooltip' : {
 						renderer: function(value, data, render, mapping) {
-							return '<div id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+value+(data.history?'<span class="ico_title" style="padding-top:33px;"/>':'')+'</div>';
+							return '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+value+(data.history?'<span class="ico_title" style="padding-top:33px;"/>':'')+'</a>';
 						}
 					}
 				},
@@ -2291,7 +2294,7 @@
 						return cloudUtil.dtFormat(value);
 					},excludeFitWidth:true},
 					{ title:'이벤트', key : 'operation' , width: '180px', align: 'left'},
-					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',inlineStyle: {'margin-left':'20px'},tooltip:false,render: {type: "evtMsgTooltip"}},
+					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',inlineStyle: {'padding-left':'10px','padding-right':'10px'},tooltip:false,render: {type: "evtMsgTooltip"}},
 					{ title:'User ID', key : 'userId' , width: '250px', align: 'left'}
 				],
 				message: {
@@ -2364,7 +2367,7 @@
 				leaveDeleted:true,
 				height: 400,
 				columnMapping : [  
-					{ title:'state',key:'state',width:'0px',editable:false,hidden:false,render:function(value,data){
+					{ title:'state',key:'state',width:'50px',align:'center',editable:false,hidden:false,excludeFitWidth:true,render:function(value,data){
 						if (data._state.added){data.state = 'A'}
 						else if (data._state.deleted){data.state='D'}
 						else if (data._state.edited){data.state='E'}
@@ -2396,21 +2399,21 @@
 							return (value||'').replace(/./g,'*');
 						}
 					},
-					{ title:'HOST', key : 'host' , width: '100px', align: 'left' ,editable:true,allowEdit:function(value,data){
+					{ title:'HOST', key : 'host' , width: '120px', align: 'left' ,editable:true,allowEdit:function(value,data){
 						return data._state.added == true;
 					}},
-					{ title:'SELECT', key : 'select' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'INSERT', key : 'insert' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'UPDATE', key : 'update' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'DELETE', key : 'delete' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'EXECUTE', key : 'execute' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'CREATE', key : 'create' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'ALTER', key : 'alter' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'DROP', key : 'drop' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'CREATE VIEW', key : 'createView' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'TRIGGER', key : 'trigger' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'GRANT', key : 'grant' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
-					{ title:'CREATE USER', key : 'createUser' , width: '70px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck}
+					{ title:'SELECT', key : 'select' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'INSERT', key : 'insert' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'UPDATE', key : 'update' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'DELETE', key : 'delete' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'EXECUTE', key : 'execute' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'CREATE', key : 'create' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'ALTER', key : 'alter' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'DROP', key : 'drop' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'CREATE VIEW', key : 'createView' , width: '100px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'TRIGGER', key : 'trigger' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'GRANT', key : 'grant' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
+					{ title:'CREATE USER', key : 'createUser' , width: '130px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck}
 				], message: { nodata: gMessage.gridNodata }
 			}).on('cellEditInvalid ', function(e){
 					setTimeout(function(evt){
@@ -2838,20 +2841,50 @@
 			}
 			/*tabLog end */		
 			/*tabProcess start */
+			//기본 시스템 계정 여부
+			function fn_isSystemProcess(data){
+				let exIds = ['system user','replicator']; 
+				return exIds.indexOf(data.User) > -1; 
+			}
 			let gridProcess = $('#gridProcess').alopexGrid({
+				rowOption : { 
+					styleclass : function(data, rowOption){
+						let re = '';
+						let state = (data.State||'').toLowerCase();
+						let time = (data.Time || 0);
+						console.log(rowOption.style)
+						if(!fn_isSystemProcess(data)){
+							if( state.indexOf('waiting for') > -1 || 
+									   (state.indexOf('sending data') > -1 && time >= 10) ||
+									   (state.indexOf('updating') > -1 && time >= 10) ||
+									   (state == 'copying to tmp table on disk')){
+								re = 'warning-color';
+							}
+						}
+						
+						return re;
+					}
+				},
 				message: { nodata: gMessage.gridNodata },
 				autoColumnIndex : true,
 				columnMapping : [
-						{ key : 'Id', title : 'Id', width : '50px', align : 'center'},
-						{ key : 'User', title : 'User', width : '80px', align : 'left' },
-						{ key : 'Host', title : 'Host', width : '80px', align : 'center' },
-						{ key : 'db', title : 'db', width : '100px', align : 'center' },
-						{ key : 'Command', title : 'Command', width : '100px', align : 'center' },
+						{ key : 'Id', title : '프로세스ID', width : '70px', align : 'center'},
+						{ key : 'User', title : '사용자', width : '80px', align : 'left' },
+						{ key : 'Host', title : '호스트', width : '80px', align : 'center' },
+						{ key : 'db', title : 'DB', width : '100px', align : 'center' },
+						{ key : 'Command', title : '커맨드', width : '100px', align : 'center' },
 						{ key : 'Time', title : 'Time', width : '100px', align : 'center'},
-						{ key : 'State', title : 'State', width : '130px', align : 'center'},
-						{ key : 'Info', title : 'Info', width : '250px', align : 'left'},
-						{ key : 'Id', title : 'Kill', width : '80px', align : 'center',render:function(value,data){
-							return $('<button class="Button sm">Kill</button>').on('click',function(){
+						{ key : 'State', title : '상태', width : '130px', align : 'center'},
+						{ key : 'Info', title : '정보', width : '250px', align : 'left'},
+						{ key : '', title : '종료', width : '80px', align : 'center',render:function(value,data){
+							let disabled = '';
+							if(fn_isSystemProcess(data) == true){
+								disabled = 'Disabled';
+							}
+							return $('<button class="Button sm '+disabled+'">종료</button>').on('click',function(){
+								if($(this).hasClass('Disabled')){
+									return;
+								}
 								gCommon.credentialConfirm({
 							        data:{credential:$("#credential").val(),msg:'프로세스를 종료하시려면',okBtnMsg:'종료'},
 							        callback : function(res){

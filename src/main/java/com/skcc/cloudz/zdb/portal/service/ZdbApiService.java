@@ -566,8 +566,14 @@ public class ZdbApiService{
 	}
 
 	public ZdbRestDTO serviceChangeSlaveToMaster(Map<String, String> param) {
+		ZdbRestDTO zdbRestDTO = null;
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
-		ZdbRestDTO zdbRestDTO = connector.exchange(demonServer + URIConstants.URI_UPDATE_SERVICE_CHANGE_SLAVETOMASTER, HttpMethod.GET,entity,ZdbRestDTO.class,param).getBody();
+		String serviceType = param.get(CommonConstants.SERVICE_TYPE);
+		if(CommonConstants.SERVICE_TYPE_MARIA.equals(serviceType)) {
+			zdbRestDTO = connector.exchange(demonServer + URIConstants.URI_UPDATE_SERVICE_FAILBACK, HttpMethod.GET,entity,ZdbRestDTO.class,param).getBody();
+		}else if(CommonConstants.SERVICE_TYPE_REDIS.equals(serviceType)) {
+			zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_SERVICE_CHANGE_SLAVETOMASTER, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
+		}
 		return zdbRestDTO;
 	}
 	public ZdbRestDTO changePort(Map<String, String> param) {
@@ -673,6 +679,11 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 
+	public ZdbRestDTO updateDefaultAlertRule(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_ALERT_RULE, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
 	public ZdbRestDTO updateAlertRule(Map<String, String> param) {
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_ALERT_RULE, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();
@@ -708,5 +719,25 @@ public class ZdbApiService{
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_DELETE_PROCESS, HttpMethod.DELETE, entity,  ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
+	}
+
+	public List<?> getStorages(Map<String, String> param) {
+		List<?> list = Collections.emptyList();
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_STORAGES, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			list = zdbRestDTO.getResult().getStorages();
+		};
+		return list;
+	}
+
+	public Map<String,List<String>> getStoragesData(Map<String, String> param) {
+		Map<String,List<String>> data = null;
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_STORAGES_DATA, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			data = zdbRestDTO.getResult().getStoragesData();
+		};
+		return data;
 	}
 }

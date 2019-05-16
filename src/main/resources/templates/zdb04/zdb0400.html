@@ -80,6 +80,7 @@
 							id:gSelectedNamespace
 						}).addHandler(function(e) {
 							gCommon.setSelectedNamespace(e.currentTarget.id);
+							fn_getEventInfo();
 						});
 				$('.Accordion').expandAll();
 				

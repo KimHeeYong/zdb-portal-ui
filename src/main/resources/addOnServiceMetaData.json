@@ -101,5 +101,18 @@
       "admin"
     ],
     "enable": true
+  },
+  {
+    "id": "zdb0800",
+    "name": "스토리지 사용 현황 목록 조회",
+    "order": 7,
+    "url": "/zdb08/zdb0800",
+    "folder": "/zdb08",
+    "target": "self",
+    "accessRoles": [
+      "cluster-admin",
+      "admin"
+    ],
+    "enable": false
   }
 ]

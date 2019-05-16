@@ -737,6 +737,14 @@ public class ZdbApiController {
 		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;
 	}		
+	@RequestMapping(value="updateDefaultAlertRule", method=RequestMethod.PUT)
+	public ModelAndView updateDefaultAlertRule(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		ZdbRestDTO result = zdbApiService.updateDefaultAlertRule(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}		
 	@RequestMapping(value="updateAlertRule", method=RequestMethod.PUT)
 	public ModelAndView updateAlertRule(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
@@ -769,6 +777,20 @@ public class ZdbApiController {
 		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;
 	}
-	
-	
+	@RequestMapping(value="getStorages", method=RequestMethod.GET)
+	public ModelAndView getStorages(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<?> result = zdbApiService.getStorages(param);
+		mav.addObject(IResult.STORAGES ,result);
+		return mav;
+	}
+	@RequestMapping(value="getStoragesData", method=RequestMethod.GET)
+	public ModelAndView getStoragesData(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		Map<String, List<String>> result = zdbApiService.getStoragesData(param);
+		mav.addObject(IResult.STORAGES_DATA ,result);
+		return mav;
+	}
 }

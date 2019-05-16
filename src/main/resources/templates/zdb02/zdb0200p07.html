@@ -62,7 +62,7 @@
 			showLog();
 			
 			function showLog(){
-				var title = gParam.namespace+" > "+ gParam.serviceName +" > "+ gParam.backupId + " log";
+				var title = gParam.namespace+" > "+ gParam.serviceName +" > backup log : "+ decodeURI(gParam.time);
 				$('title,#title').html(title);
 				$('#title').append('<button class="btn-ico btn-refresh" id="popLogRefresh" alt="새로고침" style="margin-right:15px;float:right;"></button>');
 				$('#log').html('');

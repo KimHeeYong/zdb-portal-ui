@@ -1,5 +1,7 @@
 package com.skcc.cloudz.zdb.config;
 
+import org.springframework.web.bind.annotation.RequestParam;
+
 public class URIConstants {
 
 	// namespace list
@@ -107,7 +109,9 @@ public class URIConstants {
 	
 	public static final String URI_UPDATE_SERVICE_CHANGE_MASTERTOSLAVE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/svc/masterToslave";
 
-	public static final String URI_UPDATE_SERVICE_CHANGE_SLAVETOMASTER = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/failback";
+	public static final String URI_UPDATE_SERVICE_CHANGE_SLAVETOMASTER = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/svc/slaveTomaster";
+																						
+	public static final String URI_UPDATE_SERVICE_FAILBACK = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/failback";
 
 	public static final String URI_UPDATE_CHANGE_PORT = "/api/v1/{namespace}/{serviceType}/{serviceName}/changePort";
 
@@ -140,6 +144,8 @@ public class URIConstants {
 	public static final String URI_CREATE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
 	
 	public static final String URI_UPDATE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
+
+	public static final String URI_UPDATE_DEFAULT_ALERT_RULE = "/api/v1/{namespace}/alert/defaultRule/{serviceName}";
 	
 	public static final String URI_DELETE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
 
@@ -147,4 +153,8 @@ public class URIConstants {
 
 	public static final String URI_DELETE_PROCESS = "/api/v1/{namespace}/{serviceType}/process/{podName}/{pid}";
 
+	public static final String URI_GET_STORAGES = "/api/v1/storages?namespace={namespace}&keyword={keyword}&app={app}&storageClassName={storageClassName}"
+													+"&billingType={billingType}&phase={phase}&stDate={stDate}&edDate={edDate}";	
+
+	public static final String URI_GET_STORAGES_DATA = "/api/v1/storages/data";	
 }
