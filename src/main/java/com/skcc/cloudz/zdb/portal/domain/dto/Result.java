@@ -19,6 +19,7 @@ import com.zdb.core.domain.Tag;
 import com.zdb.core.domain.ZDBConfig;
 
 import io.fabric8.kubernetes.api.model.Namespace;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import lombok.Data;
 
@@ -41,7 +42,7 @@ public class Result {
 	
 	private List<Mycnf> mariaDBConfig;
 	
-	private Object redisConfig;
+	private Map<String,String> redisConfig;
 	
 	private List<Usage> metricsCpuUsage;
 
@@ -77,7 +78,7 @@ public class Result {
 	
 	private List<String> workerPools;
 	
-	private List<?> pods;
+	private List<Pod> pods;
 	
 	private List<Database> databases;
 	

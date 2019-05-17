@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.skcc.cloudz.zdb.api.iam.domain.vo.ApiResponseVo;
 import com.skcc.cloudz.zdb.common.component.ZdbRestConnector;
 import com.skcc.cloudz.zdb.common.security.service.SecurityService;
@@ -36,6 +38,7 @@ import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
+import com.zdb.core.domain.IResult;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
@@ -672,26 +675,27 @@ public class ZdbApiService{
 		};
 		return list;
 	}
-
-	public ZdbRestDTO createAlertRule(Map<String, String> param) {
-		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
-		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_CREATE_ALERT_RULE, HttpMethod.POST,entity,ZdbRestDTO.class,param).getBody();
-		return zdbRestDTO;
+	public List<AlertingRuleEntity> getAlertRulesInService(Map<String, String> param) {
+		List<AlertingRuleEntity> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_ALERT_RULES_IN_SERVICE, ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			list = zdbRestDTO.getResult().getAlertRules();
+		};
+		return list;
 	}
 
 	public ZdbRestDTO updateDefaultAlertRule(Map<String, String> param) {
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
-		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_ALERT_RULE, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_DEFAULT_ALERT_RULE, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
 	}
 	public ZdbRestDTO updateAlertRule(Map<String, String> param) {
-		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HttpEntity entity = new HttpEntity<>(param.get(IResult.ALERT_RULES),headers);
+
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_ALERT_RULE, HttpMethod.PUT, entity,  ZdbRestDTO.class,param).getBody();
-		return zdbRestDTO;
-	}
-	public ZdbRestDTO deleteAlertRule(Map<String, String> param) {
-		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
-		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_DELETE_ALERT_RULE, HttpMethod.DELETE, entity,  ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
 	}
 
@@ -740,4 +744,5 @@ public class ZdbApiService{
 		};
 		return data;
 	}
+
 }

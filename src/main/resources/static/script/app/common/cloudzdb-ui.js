@@ -169,6 +169,7 @@ var gCommon = $a.page(function(){
 	this.getNamespaceCombo = function(selector,options){
 		var defOpt = {incAll:true,incAdminAll:false};
 		var opt = $.extend({},defOpt,options);
+		//return selector.setDataSource([{id:'fsk-db',text:'fsk-db'}]); //dwtemp
 		$a.ajax({
 			url: '/zdbapi/getNamespaces',
 			async: false,

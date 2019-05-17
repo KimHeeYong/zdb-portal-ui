@@ -177,10 +177,13 @@ div.grid {
 .color-danger {
 	color: #b94a48;
 }
-.header-group[data-alopexgrid-columndepth="0"]{
+.header-group.cell-header-firstrow {
+	border-top: 1px solid #cccccc !important;
+}
+
+.header-group.headercell{
 	color: inherit !important;
 	background: inherit !important;
-	border-top: 1px solid #cccccc;
 }
 
 a.grid         { text-decoration:underline; color:blue; font-size: 1.0rem; cursor: pointer;}
