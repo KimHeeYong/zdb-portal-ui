@@ -1096,7 +1096,7 @@
 						    });								
 						},
 						use: function(data,$cell,grid){
-							return $cell.data('alopexgrid-columnindex')==10 && data.status == 'green';
+							return $cell.data('alopexgrid-columnindex')==11 && data.status == 'green';
 						}
 					},
 					{   title: "Start" ,
@@ -1117,7 +1117,7 @@
 						    });
 						},
 						use: function(data, $cell, grid) {
-							return $cell.data('alopexgrid-columnindex')==10 && data.status == 'red';
+							return $cell.data('alopexgrid-columnindex')==11 && data.status == 'red';
 						}
 					},
 					{   title: "Shutdown" ,
@@ -1138,7 +1138,7 @@
 						    });
 						},
 						use: function(data, $cell, grid) {
-							return $cell.data('alopexgrid-columnindex')==10 && data.status == 'green';
+							return $cell.data('alopexgrid-columnindex')==11 && data.status == 'green';
 						}
 					},
 					{   title: "Add Backup disk" ,
@@ -1172,7 +1172,7 @@
 							}
 						},
 						use: function(data,$cell,grid){
-							return $cell.data('alopexgrid-columnindex')==11 && data.isPod;	
+							return $cell.data('alopexgrid-columnindex')==12 && data.isPod;	
 						}
 					},
 					{
@@ -1185,14 +1185,14 @@
 							}
 						},
 						use: function(data,$cell,grid){
-							return $cell.data('alopexgrid-columnindex')==11 && data.isPod && !isSlowLogHidden;	
+							return $cell.data('alopexgrid-columnindex')==12 && data.isPod && !isSlowLogHidden;	
 						}
 					}
 				],
 				renderMapping : {
 					'replicationStatus' : {
 						renderer: function(value, data, render, mapping) {
-							var replicationStatus;
+							var replicationStatus = '-';
 							if (gService.slaveStatus != null) {
 								replicationStatus = gService.slaveStatus.replicationStatus;
 							} else {
@@ -1210,10 +1210,12 @@
 									return '<div id="replicationTooltip" class="state red"></div>';
 								} else if(replicationStatus == 'over') {
 									return '<div id="replicationTooltip">조회 실패</div>';
-								}else {
+								} else {
 									return replicationStatus;
 								}
 							} 
+							
+							return '-';
 						}
 					}
 				},
