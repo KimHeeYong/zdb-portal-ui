@@ -1258,7 +1258,11 @@
 					{ title:'ServiceLB', key : 'serviceLB' , width: '100px', align: 'center', render : function(value, data){
 						if(data.svc != '') {
 							if(data.serviceType == 'redis') {
-								return data.svc.spec.selector.role;
+								if(data.svc.spec.selector.role) {
+									return '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">';
+								}else {
+									return '<img src="/styles/images/slave.png" style="width: 16px;height: 16px;">';
+								}
 							} else if(data.serviceType == 'mariadb') {
 								if(data.svc.spec.selector.component == 'master'){
 									return '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">';
@@ -1496,15 +1500,14 @@
 								var memUsage = ml[ob.name];
 								ob.memory = cloudUtil.truncDecimal(((memUsage.length? memUsage[memUsage.length-1].value:'')),2) + 'Mi / ' + gService.resourceSpecOfPodMap[ob.name].memory;
 							};
+							var dataStorage = null;
+							var backupStorage = null;
 							if(gService.serviceType == 'redis' && gService.purpose != 'DATA' && gService.persistentVolumeClaims.length == 0){
 								ob.disk = '사용안함';
-							}else if(dl && dl[ob.name]){
-								var dataStorage;
-								var backupStorage;
+							} else if(dl && dl[ob.name]){
 								if(dl[ob.name].length == 1) {
 									dataStorage = dl[ob.name][0];
 								} else if(dl[ob.name].length > 1) {
-									
 									for(var ii = 0 ; ii < dl[ob.name].length;ii++){
 										var path = dl[ob.name][ii].path;
 										if(path.startsWith('/bitnami')) {
@@ -1513,11 +1516,16 @@
 											backupStorage = dl[ob.name][ii];
 										}
 									}
+								} else if(dl[ob.name].length == 0) {
+									ob.disk = '사용안함';
 								}
-								var hasUseRate = dataStorage.useRate?true:false;
-								ob.disk = cloudUtil.truncDecimal((dataStorage.used / (1024*1000)),2) + ' / ' + (hasUseRate? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A')) 
-								        + (hasUseRate? ' ('+dataStorage.useRate+')' : '' ) ;
-								ob.diskUpdateTime = dataStorage.updateTime; 
+								
+								if(dataStorage != null) {
+									var hasUseRate = dataStorage.useRate?true:false;
+									ob.disk = cloudUtil.truncDecimal((dataStorage.used / (1024*1000)),2) + ' / ' + (hasUseRate? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A')) 
+									        + (hasUseRate? ' ('+dataStorage.useRate+')' : '' ) ;
+									ob.diskUpdateTime = dataStorage.updateTime; 
+								}
 							};
 						}catch(e){ 
 							
@@ -1587,13 +1595,15 @@
 							if(tp=='statefulSets'){
 								pod = gCommon.findObjectByKeyOb(podData,{stName:dt.name});
 							}else if(tp=='deployments'){
-								for(var k = 0 ; k < podData.length; k++){
-									var p = podData[k];
-									if(p.name.startsWith(dt.name)) {
-										pod = p;
-										break;
-									}
-								}								
+								if(podData != null) {
+									for(var k = 0 ; k < podData.length; k++){
+										var p = podData[k];
+										if(p.name.startsWith(dt.name)) {
+											pod = p;
+											break;
+										}
+									}								
+								}
 							}
 							if(dt.role == 'slave'){
 								isSlaveGreen = true;
