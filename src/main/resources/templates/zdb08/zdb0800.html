@@ -93,6 +93,7 @@
 		<div id="gridStorage"></div>		
     </div> 
 	<script type="text/javascript">
+		let app = {};
 		let gNamespaces = null;     // 네임스페이스 콤보
 		$a.page(function() {
 			this.init = function() {
@@ -103,14 +104,15 @@
 								  getStorageList();
 							  }); 
 				let form = $('form[name=storageForm]');
+				form.find('#searchEvent').on('click',getStorageList);
+				form.find('input[name=keyword]').pressEnter(getStorageList);
+				
 				let gridStorage = $('#gridStorage').alopexGrid({
 					autoColumnIndex: true,
-					height: 635,
+					height: 605,
 					columnMapping : [  
 						{ title:'네임스페이스', key : 'namespace' , width: '180px', align: 'left'},
-						{ title:'서비스명', key : 'release' , width: '180px', align: 'left',render:function(value){
-							return value;
-						}},
+						{ title:'서비스명', key : 'release' , width: '180px', align: 'left'},
 						{ title:'스토리지명', key : 'name' , width: '300px', align: 'left'},
 						{ title:'용량', key : 'storagSize' , width: '60px', align: 'left'},
 						{ title:'앱', key : 'app' , width: '120px', align: 'left'},
@@ -163,9 +165,6 @@
 						}
 					});				
 				};		
-				
-				$('#searchEvent').on('click',getStorageList);
-				$('input[name=keyword]').pressEnter(getStorageList);			
 			}
 		});
 	</script>

@@ -139,16 +139,14 @@ public class URIConstants {
 
 	public static final String URI_GET_ALERT_RULES = "/api/v1/{namespace}/alert/rules";
 
+	public static final String URI_GET_ALERT_RULES_IN_SERVICE = "/api/v1/{namespace}/{serviceName}/alert/rules";
+
 	public static final String URI_GET_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
 
-	public static final String URI_CREATE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
-	
-	public static final String URI_UPDATE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
+	public static final String URI_UPDATE_ALERT_RULE = "/api/v1/{namespace}/{serviceType}/{serviceName}/alert/rule";
 
-	public static final String URI_UPDATE_DEFAULT_ALERT_RULE = "/api/v1/{namespace}/alert/defaultRule/{serviceName}";
+	public static final String URI_UPDATE_DEFAULT_ALERT_RULE = "/api/v1/{namespace}/{serviceType}/{serviceName}/alert/defaultRule";
 	
-	public static final String URI_DELETE_ALERT_RULE = "/api/v1/{namespace}/alert/rule/{alert}";
-
 	public static final String URI_GET_PROCESSES = "/api/v1/{namespace}/{serviceType}/process/{podName}";
 
 	public static final String URI_DELETE_PROCESS = "/api/v1/{namespace}/{serviceType}/process/{podName}/{pid}";
@@ -156,5 +154,6 @@ public class URIConstants {
 	public static final String URI_GET_STORAGES = "/api/v1/storages?namespace={namespace}&keyword={keyword}&app={app}&storageClassName={storageClassName}"
 													+"&billingType={billingType}&phase={phase}&stDate={stDate}&edDate={edDate}";	
 
-	public static final String URI_GET_STORAGES_DATA = "/api/v1/storages/data";	
+	public static final String URI_GET_STORAGES_DATA = "/api/v1/storages/data";
+
 }

@@ -34,100 +34,148 @@
 				<input class="Textinput srcinput" name="txtRuleKeyword" id="txtRuleKeyword" placeholder="검색어를 입력하세요." />
 			</div>
 			<div class="grid-line__wrap">
-				<div id="ruleGrid"></div>
+				<div id="gridRule"></div>
 			</div>
 		</div>
 	</div>
 	
 	<script type="text/javascript">
 	let gNamespaces = null;
-	let gRuleList = [];
+	let gRules = [];
+	let gServiceList = [];
 	$a.page(function() {
 		this.init = function(id, param) {
 			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
 			 .select({id:gSelectedNamespace})
 			 .addHandler(function(e) {
 				  gCommon.setSelectedNamespace(e.currentTarget.id);
-				  getAlertRules();
+				  filterServices();
 			  });
 			
 			$('#btnRuleAdd').on('click',function(){
 				location.href = '/zdb07/zdb0721';
 			});
 			$('#txtRuleKeyword').on('input propertychange',function(){
-				fn_filterRules();
+				filterServices();
 			});
-			let ruleGrid = $('#ruleGrid').alopexGrid({
+			let useCol = function(value){
+				if(value){
+					return $('<img src="/styles/images/icons8-checkmark-64.png" style="float:initial;width:20px"></img>');
+				}
+			}
+			let gridRule = $('#gridRule').alopexGrid({
 				filteringHeader : false,
 				message: { nodata: gMessage.gridNodata },
 				enableDefaultContextMenu : false,
 				autoColumnIndex : true,
 				columnMapping : [
-						{ key : 'id', title : 'id', width : '100px', align : 'center', sorting : 'number', hidden : true },
-						{ key : 'namespace', title : '네임스페이스', width : '100px', align : 'left' },
-						{ key : 'serviceName', title : '서비스', width : '150px', align : 'left',render:function(value,data){
-							return $('<a href="#" style="font-size:15px;">' + value + '</a>').on('click',function(){ goRuleDetailPage(data); });
-						}},
-						{ key : 'type', title : '규칙 종류', width : '150px', align : 'left', render : function(value, data) { 
-								return $('<a href="#" style="font-size:15px;">' + value + '</a>').on('click',function(){ goRuleDetailPage(data); });
-						}},
-						{ key : 'value', title : '임계치', width : '100px', align : 'center' },
-						{ key : 'channel', title : '채널', width : '100px', align : 'left' },
-						{ key : 'alert', title : '관리', width : '100px', align : 'center', render : function(value, data) { 
-							let re = $('<button class="btn-ico del">').on('click',function(e){
-								gCommon.confirm(value + '<br/> 규칙을 삭제 하시겠습니까?',function(){
-									$a.ajax({
-										url:'/zdbapi/deleteAlertRule',
-										data:{namespace:data.namespace,alert:value,type:data.type,serviceName:data.serviceName},
-										success:function(res){
-											if(res.result.code != '4'){
-												getAlertRules();
-											}
-										}
-									});
-								})
+						{ key : 'namespace', title : '네임스페이스', width : '100px', align : 'left'},
+						{ key : 'serviceName', title : '서비스이름', width : '150px', align : 'left'},
+						{ key : 'serviceType', title : '서비스타입', width : '100px', align : 'left'},
+						{ key : 'PodHealthCheck', title : 'Pod', width : '70px', align : 'center', render:useCol},
+						{ key : 'ContainerHealthCheck', title : 'Container', width : '70px', align : 'center', render:useCol},
+						{ key : 'DBHealthCheck', title : 'DB', width : '70px', align : 'center', render:useCol},
+						{ key : 'CPUUsage', title : 'CPU', width : '70px', align : 'center', render:useCol},
+						{ key : 'MemoryUsage', title : 'Memory', width : '70px', align : 'center', render:useCol},
+						{ key : 'Connections', title : 'Connections', width : '80px', align : 'center', render:useCol},
+						{ key : 'SlowQueries', title : 'SlowQuery', width : '70px', align : 'center', render:useCol},
+						{ key : 'ReplicationStatus', title : 'Status', width : '70px', align : 'center', render:useCol},
+						{ key : 'ReplicationDelay', title : 'Delay', width : '70px', align : 'center', render:useCol},
+						{ key : 'update', title : '', width : '50px', align : 'center',render:function(value,data){
+							return $('<button class="Button sm">설정</button>').on('click',function(){
+								gCommon.movePage('/zdb07/zdb0721',{namespace:data.namespace,serviceName:data.serviceName,serviceType:data.serviceType})
 							});
-							return re;
-							}
-						}],
+						}},
+						{ key : 'def', title : '', width : '80px', align : 'center',render:function(value,data){
+							return $('<button class="Button sm">기본값설정</button>').on('click',function(){
+								updateDefaultAlertRule(data);
+							});
+						}}
+					],headerGroup: [
+						{fromIndex:'PodHealthCheck', toIndex:'ReplicationDelay', title:'규칙'},
+						{fromIndex:'PodHealthCheck', toIndex:'DBHealthCheck', title:'Health'},
+						{fromIndex:'CPUUsage', toIndex:'SlowQueries', title:'사용량'},
+						{fromIndex:'ReplicationStatus', toIndex:'ReplicationDelay', title:'Replication'},
+						{fromIndex:'update', toIndex:'def', title:''}
+					]
 				});
+			getAllServices();
 			getAlertRules();				
 			function getAlertRules(){
-				let namespace = gSelectedNamespace;
-				if(namespace == G_NAMESPACE_ALL){
-					namespace = gNamespaceList.map(function(d){return d.id}).join();
-				} 
+				let namespace = gNamespaceList.map(function(d){return d.id}).join();
 				$a.ajax({
 					url:'/zdbapi/getAlertRules',
 					data:{namespace:namespace},
 					success:function(res){
-						let list = res.alertRules;
-						gRuleList = list;						
-						fn_filterRules();
+						let ruleList = res.alertRules;
+						for(let i = 0;i < ruleList.length;i++){
+							let o = ruleList[i];
+							let n = o.type.split('-')[2];
+							if(!gRules[o.serviceName]){
+								gRules[o.serviceName] = new Object();
+							}
+							gRules[o.serviceName][n] = o.value;
+						}
+						let l = [];
+						for(let i = 0;i < gServiceList.length;i++){
+							let o = gServiceList[i];
+							if(gRules[o.serviceName]){
+								o = $.extend({},o,gRules[o.serviceName]);
+							}
+							l.push(o);
+						}
+						gServiceList = l;
+						gridRule.alopexGrid('dataSet',gServiceList);
+						filterServices();
 					}
 				});
 			}
 			function goRuleDetailPage(data){
 				gCommon.movePage('/zdb07/zdb0721',{namespace:data.namespace,alert:data.alert});
 			}
-			function fn_filterRules(){
+			function filterServices(){
 				let searchText = $('#txtRuleKeyword').val();
-				let filterList = gRuleList;
+				let filterList = gServiceList;
+				
+				filterList = gServiceList.filter(function(ob){
+					return gSelectedNamespace == G_NAMESPACE_ALL || gSelectedNamespace == ob.namespace;
+				});
 				if(searchText!=''){
-					filterList = gRuleList.filter(function(ob){
+					filterList = filterList.filter(function(ob){
 						return ob.serviceName.toLowerCase().indexOf(searchText.toLowerCase()) > -1 
-						     || ob.type.toLowerCase().indexOf(searchText.toLowerCase()) > -1; 
+						     //|| ob.type.toLowerCase().indexOf(searchText.toLowerCase()) > -1; 
 					});
 				}
-				ruleGrid.alopexGrid('dataSet',filterList);
-				ruleGrid.alopexGrid('dataSort', [
+				gridRule.alopexGrid('dataSet',filterList);
+				gridRule.alopexGrid('dataSort', [
 					{"sortingColumn": 'namespace', "sortingDirection": "asc"},
 					{"sortingColumn": 'serviceName', "sortingDirection": "asc"}
 				]);
 			}
-			};
-		});	
-
+			function getAllServices(){
+				$a.ajax({
+					url:'/zdbapi/getAllServices',
+					async:false,
+					success:function(res){
+						gServiceList = res.serviceoverviews;
+						filterServices();
+					}
+				});
+			}
+			function updateDefaultAlertRule(data){
+				gCommon.confirm('기본 알람 규칙으로 설정 하시겠습니까?',function(){
+					$a.ajax({
+						url:'/zdbapi/updateDefaultAlertRule',
+						method:'put',
+						data:data,
+						success:function(res){
+							getAlertRules();
+						}
+					})
+				});
+			}
+		};
+	});
 	</script>
 </th:block>
 </html>

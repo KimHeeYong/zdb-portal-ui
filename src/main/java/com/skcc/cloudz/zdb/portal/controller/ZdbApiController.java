@@ -721,20 +721,21 @@ public class ZdbApiController {
 		mav.addObject(IResult.ALERT_RULES,services);
 		return mav;
 	}		
+	@RequestMapping(value="getAlertRulesInService", method=RequestMethod.GET)
+	public ModelAndView getAlertRulesInService(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<AlertingRuleEntity> services = zdbApiService.getAlertRulesInService(param);
+		mav.addObject(IResult.ALERT_RULES,services);
+		return mav;
+	}		
+		
 	@RequestMapping(value="getAlertRule", method=RequestMethod.GET)
 	public ModelAndView getAlertRule(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		AlertingRuleEntity ar = zdbApiService.getAlertRule(param);
 		mav.addObject(IResult.ALERT_RULE,ar);
-		return mav;
-	}		
-	@RequestMapping(value="createAlertRule", method=RequestMethod.POST)
-	public ModelAndView createAlertRule(HttpServletRequest request) {
-		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
-		Map<String,String> param = RequestUtil.getMapFromRequest(request);
-		ZdbRestDTO result = zdbApiService.createAlertRule(param);
-		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;
 	}		
 	@RequestMapping(value="updateDefaultAlertRule", method=RequestMethod.PUT)
@@ -750,14 +751,6 @@ public class ZdbApiController {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		ZdbRestDTO result = zdbApiService.updateAlertRule(param);
-		mav.addObject(CommonConstants.RESULT ,result);
-		return mav;
-	}		
-	@RequestMapping(value="deleteAlertRule")
-	public ModelAndView deleteAlertRule(HttpServletRequest request) {
-		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
-		Map<String,String> param = RequestUtil.getMapFromRequest(request);
-		ZdbRestDTO result = zdbApiService.deleteAlertRule(param);
 		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;
 	}		
