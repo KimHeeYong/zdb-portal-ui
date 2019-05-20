@@ -1199,26 +1199,28 @@
 								replicationStatus = '-';
 							}
 							
-							if(gParam.serviceType=='mariadb' && data.role == 'master') {
-								return '-';
-							} else if (gParam.serviceType=='mariadb' && data.role == 'slave') {
-								if(data.status == 'red') {
-									return '<div id="replicationTooltip" class="state red"></div>';
-								}
-								if(gService.slaveStatus != null) {
-									if(replicationStatus == 'ok') {
-										return '<div id="replicationTooltip" class="state green"></div>';
-									} else if(replicationStatus == 'warning') {
-										return '<div id="replicationTooltip" class="state yellow"></div>';
-									} else if (replicationStatus == 'error') {
+							if(data.serviceType == 'redis') {
+								return null;
+							} else {
+								if(gParam.serviceType=='mariadb' && data.role == 'master') {
+									return '-';
+								} else if (gParam.serviceType=='mariadb' && data.role == 'slave') {
+									if(data.status == 'red') {
 										return '<div id="replicationTooltip" class="state red"></div>';
-									} else if(replicationStatus == 'over') {
-										return '<div id="replicationTooltip">조회 실패</div>';
-									} 
-								}
-							} 
-							
-							return '-';
+									}
+									if(gService.slaveStatus != null) {
+										if(replicationStatus == 'ok') {
+											return '<div id="replicationTooltip" class="state green"></div>';
+										} else if(replicationStatus == 'warning') {
+											return '<div id="replicationTooltip" class="state yellow"></div>';
+										} else if (replicationStatus == 'error') {
+											return '<div id="replicationTooltip" class="state red"></div>';
+										} else if(replicationStatus == 'over') {
+											return '<div id="replicationTooltip">조회 실패</div>';
+										} 
+									}
+								} 
+							}
 						}
 					}
 				},
@@ -1258,7 +1260,7 @@
 					{ title:'ServiceLB', key : 'serviceLB' , width: '100px', align: 'center', render : function(value, data){
 						if(data.svc != '') {
 							if(data.serviceType == 'redis') {
-								if(data.svc.spec.selector.role) {
+								if(data.svc.spec.selector.role == 'master') {
 									return '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">';
 								}else {
 									return '<img src="/styles/images/slave.png" style="width: 16px;height: 16px;">';
