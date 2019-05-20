@@ -1499,10 +1499,25 @@
 							if(gService.serviceType == 'redis' && gService.purpose != 'DATA' && gService.persistentVolumeClaims.length == 0){
 								ob.disk = '사용안함';
 							}else if(dl && dl[ob.name]){
-								var hasUseRate = dl[ob.name].useRate?true:false;
-								ob.disk = cloudUtil.truncDecimal((dl[ob.name].used / (1024*1000)),2) + ' / ' + (hasUseRate? cloudUtil.convertSize(dl[ob.name].size) :(gServiceScale.disk||'N/A')) 
-								        + (hasUseRate? ' ('+dl[ob.name].useRate+')' : '' ) ;
-								ob.diskUpdateTime = dl[ob.name].updateTime; 
+								var dataStorage;
+								var backupStorage;
+								if(dl[ob.name].length == 1) {
+									dataStorage = dl[ob.name][0];
+								} else if(dl[ob.name].length > 1) {
+									
+									for(var ii = 0 ; ii < dl[ob.name].length;ii++){
+										var path = dl[ob.name][ii].path;
+										if(path.startsWith('/bitnami')) {
+											dataStorage = dl[ob.name][ii];
+										} else if(path.startsWith('/backup')) {
+											backupStorage = dl[ob.name][ii];
+										}
+									}
+								}
+								var hasUseRate = dataStorage.useRate?true:false;
+								ob.disk = cloudUtil.truncDecimal((dataStorage.used / (1024*1000)),2) + ' / ' + (hasUseRate? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A')) 
+								        + (hasUseRate? ' ('+dataStorage.useRate+')' : '' ) ;
+								ob.diskUpdateTime = dataStorage.updateTime; 
 							};
 						}catch(e){ 
 							
