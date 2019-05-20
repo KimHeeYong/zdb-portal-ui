@@ -1258,7 +1258,7 @@
 					{ title:'ServiceLB', key : 'serviceLB' , width: '100px', align: 'center', render : function(value, data){
 						if(data.svc != '') {
 							if(data.serviceType == 'redis') {
-								if(ata.svc.spec.selector.role) {
+								if(data.svc.spec.selector.role) {
 									return '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">';
 								}else {
 									return '<img src="/styles/images/slave.png" style="width: 16px;height: 16px;">';
