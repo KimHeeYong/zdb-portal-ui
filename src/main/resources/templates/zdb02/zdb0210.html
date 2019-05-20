@@ -1201,17 +1201,20 @@
 							
 							if(gParam.serviceType=='mariadb' && data.role == 'master') {
 								return '-';
-							} else if (gParam.serviceType=='mariadb' && data.role == 'slave' && gService.slaveStatus != null) {
-								if(replicationStatus == 'ok') {
-									return '<div id="replicationTooltip" class="state green"></div>';
-								} else if(replicationStatus == 'warning') {
-									return '<div id="replicationTooltip" class="state yellow"></div>';
-								} else if (replicationStatus == 'error') {
+							} else if (gParam.serviceType=='mariadb' && data.role == 'slave') {
+								if(data.status == 'red') {
 									return '<div id="replicationTooltip" class="state red"></div>';
-								} else if(replicationStatus == 'over') {
-									return '<div id="replicationTooltip">조회 실패</div>';
-								} else {
-									return replicationStatus;
+								}
+								if(gService.slaveStatus != null) {
+									if(replicationStatus == 'ok') {
+										return '<div id="replicationTooltip" class="state green"></div>';
+									} else if(replicationStatus == 'warning') {
+										return '<div id="replicationTooltip" class="state yellow"></div>';
+									} else if (replicationStatus == 'error') {
+										return '<div id="replicationTooltip" class="state red"></div>';
+									} else if(replicationStatus == 'over') {
+										return '<div id="replicationTooltip">조회 실패</div>';
+									} 
 								}
 							} 
 							
