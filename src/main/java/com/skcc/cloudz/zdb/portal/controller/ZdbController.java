@@ -29,7 +29,7 @@ public class ZdbController {
 	}
 	@GetMapping("/zdb/dashboard")
 	public ModelAndView dashBoard() {
-		return new ModelAndView("/zdb/dashBoard");
+		return new ModelAndView();
 	}
 	
 	@GetMapping("/test1")
