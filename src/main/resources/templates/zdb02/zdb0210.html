@@ -2428,9 +2428,7 @@
 			/*tabUser start 사용자 */
 			let tabUser = $('#tabUser');
 			let renderCheckbox = function(value){
-				let h = $('<label class="ImageCheckbox"><input class="Checkbox" type="checkbox" data-disabled="true" ' +(value=='Y'?'checked="checked"':'')+'></label>')
-				$a.convert(h);
-				return h;
+				if(value == 'Y')return $('<img src="/styles/images/ico-checkmark.png" style="float:initial;width:20px"></img>');
 			};
 			let allowEditCheck = function(value,data){
 				return data.state == 'A' || (data.user != 'admin');

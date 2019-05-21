@@ -156,4 +156,6 @@ public class URIConstants {
 
 	public static final String URI_GET_STORAGES_DATA = "/api/v1/storages/data";
 
+	public static String URI_GET_NODES_INFO = "/api/v1/nodesInfo";
+
 }

@@ -45,6 +45,7 @@ import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 import com.zdb.core.domain.ZDBConfig;
+import com.zdb.core.domain.ZDBNode;
 
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -79,6 +80,9 @@ public class ZdbApiService{
 		if(responseDTO != null && responseDTO.getData() != null) {
 			ObjectMapper mapper = new ObjectMapper();
 			list = mapper.convertValue(responseDTO.getData().get("items"), new TypeReference<List<NamespaceResource>>(){});
+			if(CommonConstants.NAMESPACE_ALL.equals(param.get(CommonConstants.NAMESPACE))) {
+				
+			}
 			result = list.stream()
 					.filter((namespaceResource)-> param.get(CommonConstants.NAMESPACE).equals(namespaceResource.getName()))
 					.findAny()
@@ -86,6 +90,18 @@ public class ZdbApiService{
 		};
 		
 		return result;
+	}
+	public List<NamespaceResource> getNamespaceResourceAll(Map<String, String> param) {
+		List<NamespaceResource> list = Collections.emptyList();
+		param.put(CommonConstants.USER_ID, securityService.getUserDetails().getUserId());
+		ApiResponseVo responseDTO = connector.getForObject(iamBaseUrl + URIConstants.URI_GET_NAMESPACE_RESOURCE, ApiResponseVo.class,param);
+		
+		if(responseDTO != null && responseDTO.getData() != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			list = mapper.convertValue(responseDTO.getData().get("items"), new TypeReference<List<NamespaceResource>>(){});
+		};
+		
+		return list;
 	}
 	
 	public List<ServiceOverview> getServices(Map<String,String> param) {
@@ -743,6 +759,16 @@ public class ZdbApiService{
 			data = zdbRestDTO.getResult().getStoragesData();
 		};
 		return data;
+	}
+
+	public List<ZDBNode> getNodesInfo(Map<String, String> param) {
+		List<ZDBNode> list = Collections.emptyList();
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_NODES_INFO, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			list = zdbRestDTO.getResult().getNodeList();
+		};
+		return list;
 	}
 
 }

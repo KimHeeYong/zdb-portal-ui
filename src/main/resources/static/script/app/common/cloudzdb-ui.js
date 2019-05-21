@@ -202,7 +202,9 @@ var gCommon = $a.page(function(){
 						});
 					}
 				};
-				selector.setDataSource(namespaceList);
+				if(selector){
+					selector.setDataSource(namespaceList);
+				}
 			}
 		});	
 		return selector;

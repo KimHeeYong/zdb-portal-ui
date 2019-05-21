@@ -83,7 +83,7 @@
 		<div class="lnb-wrap db-lnb">
 			<nav>
 				<ul>
-					<li><a href="#"><img class="icon-img" src="/styles/images/ico-lnbname.png"><span class="lnb-name">ZDB</span></a></li>
+					<li><a href="/zdb/dashboard"><img class="icon-img" src="/styles/images/ico-lnbname.png"><span class="lnb-name">ZDB</span></a></li>
 				    <th:block th:each="parent, iterStat : ${addOnServiceMataData}">
                         <li th:classappend="${parent.folder == activePathInfo.firstPath || parent.url == activePathInfo.fullPath? 'selected':''}">
                             <a th:if="${iterStat.index == 0}" th:href="${parent.url} != '' ? ${parent.url} : '#'" th:target="|_${parent.target}|" th:inline="text"><i class="fa fa-plus-circle mr5"></i>[[${parent.name}]]</a>

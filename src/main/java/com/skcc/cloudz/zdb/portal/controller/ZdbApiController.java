@@ -38,6 +38,7 @@ import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 import com.zdb.core.domain.ZDBConfig;
+import com.zdb.core.domain.ZDBNode;
 
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -71,6 +72,16 @@ public class ZdbApiController {
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
 		NamespaceResource namespaceResource = zdbApiService.getNamespaceResource(param); 
+		mav.addObject(IResult.NAMESPACE_RESOURCE ,namespaceResource);
+		return mav;
+	}
+	@RequestMapping(value="getNamespaceResourceAll", method = RequestMethod.GET)
+	@ResponseBody
+	public ModelAndView getNamespaceResourceAll(HttpServletRequest request)throws Exception {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<NamespaceResource> namespaceResource = zdbApiService.getNamespaceResourceAll(param); 
 		mav.addObject(IResult.NAMESPACE_RESOURCE ,namespaceResource);
 		return mav;
 	}
@@ -784,6 +795,14 @@ public class ZdbApiController {
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		Map<String, List<String>> result = zdbApiService.getStoragesData(param);
 		mav.addObject(IResult.STORAGES_DATA ,result);
+		return mav;
+	}
+	@RequestMapping(value="nodesInfo", method=RequestMethod.GET)
+	public ModelAndView getNodesInfo(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<ZDBNode> nodeList = zdbApiService.getNodesInfo(param);
+		mav.addObject(IResult.NODE_LIST ,nodeList);
 		return mav;
 	}
 }
