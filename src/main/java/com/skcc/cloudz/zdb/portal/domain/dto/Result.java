@@ -17,6 +17,7 @@ import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 import com.zdb.core.domain.ZDBConfig;
+import com.zdb.core.domain.ZDBNode;
 
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -37,6 +38,8 @@ public class Result {
 	private ConnectionInfo connectionInfo;
 
 	private int nodes;
+
+	private List<ZDBNode> nodeList;
 
 	private PodResource podResource;
 	

@@ -27,7 +27,11 @@ public class ZdbController {
 		ModelAndView mav = new ModelAndView();
 		return mav;
 	}
-
+	@GetMapping("/zdb/dashboard")
+	public ModelAndView dashBoard() {
+		return new ModelAndView("/zdb/dashBoard");
+	}
+	
 	@GetMapping("/test1")
 	public ModelAndView test1() {
 		ModelAndView mav = new ModelAndView();

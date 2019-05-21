@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<th:block layout:fragment="page_head">
+	<title></title>
+</th:block>
+<th:block layout:fragment="content">
+	<!-- location -->
+	<div class="locations-area">
+		<div class="prj-list"></div>
+	</div>
+	<div class="contents-box">
+		<div class="top-area">
+			<h2 class="title">Node 목록</h2>
+		</div>	
+		<div id="gridNode"></div>
+		<div class="top-area">
+			<h2 class="title">Namespace 목록</h2>
+		</div>	
+		<div id="gridNamespace"></div>
+	</div>
+
+	<script type="text/javascript">
+	let gNamespaces;
+    $.alopex.page(function() {
+        this.init = function(id, param) {
+        	gNamespaces = gCommon.getNamespaceCombo($('#namespaces'));
+        	
+        	function getProgressbarType(value){
+                let type = '';
+                if(Number(value) > 90) {
+                    type = 'name-typee';
+                } else if (Number(value) > 30) {
+                    type = 'name-typec';
+                } else {
+                    type = 'name-typea';
+                }
+
+                return type;        		
+        	}
+        	let renderBar = {
+       	        cpu_request_bar: {
+       	            renderer : function(value, data, render, mapping) {
+       	                var type = getProgressbarType(data.cpuRequestsPercentage);
+       	                
+       	                var html = '';
+       	                html += '<div class="Float-left Margin-top-10">';
+       	                html += '   <div class="name-pro__wrap">';
+       	                html += '       <div class="Progressbar ' + type + '" data-default="' + (data.cpuRequestsPercentage||0) + '"></div>';
+       	                html += '   </div>';
+       	                html += '</div>';
+       	                
+       	                return html;
+       	            },
+       	            postRender: function(cell, value, data, render, mapping, grid){
+       	                $a.convert($(cell));
+       	            }
+       	        },
+       	        cpu_limits_bar: {
+       	            renderer : function(value, data, render, mapping) {
+       	                var type = getProgressbarType(data.cpuLimitsPercentage);
+       	                
+       	                var html = '';
+       	                html += '<div class="Float-left Margin-top-10">';
+       	                html += '   <div class="name-pro__wrap">';
+       	                html += '       <div class="Progressbar ' + type + '" data-default="' + (data.cpuLimitsPercentage||0) + '"></div>';
+       	                html += '   </div>';
+       	                html += '</div>';
+       	                
+       	                return html;
+       	            },
+       	            postRender: function(cell, value, data, render, mapping, grid){
+       	                $a.convert($(cell));
+       	            }
+       	        },
+       	        memory_request_bar: {
+       	            renderer : function(value, data, render, mapping) {
+       	                var type = getProgressbarType(data.memoryRequestsPercentage);
+       	                
+       	                var html = '';
+       	                html += '<div class="Float-left Margin-top-10">';
+       	                html += '   <div class="name-pro__wrap">';
+       	                html += '       <div class="Progressbar ' + type + '" data-default="' + (data.memoryRequestsPercentage||0) + '"></div>';
+       	                html += '   </div>';
+       	                html += '</div>';
+       	                
+       	                return html;
+       	            },
+       	            postRender: function(cell, value, data, render, mapping, grid){
+       	                $a.convert($(cell));
+       	            }
+       	        },
+       	        memory_limit_bar: {
+       	            renderer : function(value, data, render, mapping) {
+       	                var type = getProgressbarType(data.memoryLimitsPercentage);
+       	                
+       	                var html = '';
+       	                html += '<div class="Float-left Margin-top-10">';
+       	                html += '   <div class="name-pro__wrap">';
+       	                html += '       <div class="Progressbar ' + type + '" data-default="' + (data.memoryLimitsPercentage||0) + '"></div>';
+       	                html += '   </div>';
+       	                html += '</div>';
+       	                
+       	                return html;
+       	            },
+       	            postRender: function(cell, value, data, render, mapping, grid){
+       	                $a.convert($(cell));
+       	            }
+       	        }
+       	    };
+        	let gridNode = $('#gridNode').alopexGrid({
+        	    renderMapping : renderBar,
+        	    height:350,
+        	    defaultSorting:{
+        	        sortingColumn: 'creationTime',
+        	        sortingDirection: 'desc'
+        	    },
+        	    defaultColumnMapping : { sorting: true, resizing : true },
+        	    message: { nodata: 'Nodes 데이터가 없습니다.' },
+        	    autoColumnIndex: true,
+        	    enableDefaultContextMenu: false,
+        	    columnMapping: [
+        	        { key: 'nodeName', title: 'Node', width: '130px', align: 'center' },
+        	        { key: 'nodeType', title: 'Type', width: '100px', align: 'center',render:function(value){
+        	        	if(value){
+        	        		return value.substr(0,value.lastIndexOf('.'));
+        	        	}	
+        	        }},
+        	        //{ key: 'nodeRoles', title: 'Roles', width: '100px', align: 'center', render: function(value){ return value || '-'; } },
+        	        { key: 'workerPool', title: 'WorkerPool', width: '100px', align: 'center' },
+        	        { key: 'cpu', title: 'Cpu', width: '100px', align: 'center' },
+        	        { key: 'memory', title: 'Memory', width: '100px', align: 'center' },
+        	        //{ key: 'status', title: 'Status', width: '100px', align: 'center' },
+        	        { key: 'cpuRequests', title: ' ', width: '80px', align: 'right' },
+        	        { key: 'cpuRequestsPercentage', title: 'CPU Requests', width: '100px', align: 'center', sorting: false, render: { type: 'cpu_request_bar' } },
+        	        { key: 'cpuLimits', title: ' ', width: '80px', align: 'right' },
+        	        { key: 'cpuLimitsPercentage', title: 'CPU Limits', width: '100px', align: 'center', sorting: false, render: { type: 'cpu_limits_bar' } },
+        	        { key: 'memoryRequests', title: ' ', width: '80px', align: 'right' },
+        	        { key: 'memoryRequestsPercentage', title: 'Memory Requests', width: '100px', align: 'center', sorting: false, render: { type: 'memory_request_bar' } },
+        	        { key: 'memoryLimits', title: ' ', width: '80px', align: 'right' },
+        	        { key: 'memoryLimitsPercentage', title: 'Memory Limits', width: '100px', align: 'center', sorting: false, render: { type: 'memory_limit_bar' } },
+        	        { key: 'creationTime', title: '생성일시', width: '160px', align: 'center',render:function(value,date){
+        	        	if(value){
+							return moment(cloudUtil.parseInt(value)).format('YYYY-MM-DD HH:mm:ss');
+        	        	}
+        	        }}
+        	    ],
+        	});
+        	let gridNamespace = $('#gridNamespace').alopexGrid({
+        		renderMapping : renderBar,
+        		height:350,
+                defaultColumnMapping : { sorting:true, resizing : true },
+                message: { nodata: 'Namespace 데이터가 없습니다.' },
+        	    autoColumnIndex: true,
+        		columnMapping : [
+        			{ align : 'center', key : 'name', title : 'Namespace', width : '100px'}, 
+        	        { key: 'usedCpuRequests', title: ' ', width: '80px', align: 'right' ,excludeFitWidth:true},
+        	        { key: 'cpuRequestsPercentage', title: 'CPU Requests', width: '130px', align: 'center', sorting: false, render: { type: 'cpu_request_bar' },excludeFitWidth:true },
+        	        { key: 'usedCpuLimits', title: ' ', width: '80px', align: 'right',excludeFitWidth:true },
+        	        { key: 'cpuLimitsPercentage', title: 'CPU Limits', width: '130px', align: 'center', sorting: false, render: { type: 'cpu_limits_bar' },excludeFitWidth:true },
+        	        { key: 'usedMemoryRequests', title: ' ', width: '80px', align: 'right',excludeFitWidth:true },
+        	        { key: 'memoryRequestsPercentage', title: 'Memory Requests', width: '130px', align: 'center', sorting: false, render: { type: 'memory_request_bar' },excludeFitWidth:true },
+        	        { key: 'usedMemoryLimits', title: ' ', width: '80px', align: 'right',excludeFitWidth:true },
+        	        { key: 'memoryLimitsPercentage', title: 'Memory Limits', width: '130px', align: 'center', sorting: false, render: { type: 'memory_limit_bar' },excludeFitWidth:true },
+        			{ align : 'center', key : 'userCount', title : '사용자', width : '50px' }, 
+        			{ align : 'center', key : 'status', title : '상태', width : '50px' }, 
+        			{ align : 'center', key : 'creationDate', title : '생성일시', width : '100px',
+        				render : function(value, data, render, mapping){
+        					if(value){
+    							return moment(cloudUtil.parseInt(value)).format('YYYY-MM-DD HH:mm:ss');
+            	        	}
+        				}
+        			}
+        		]
+        	});
+        	getNodeList();
+        	getNamespaceList();
+        	function getNodeList(){
+        		$a.ajax({
+        			url:'/zdbapi/nodesInfo',
+        			success:function(res){
+        				let list = res.nodeList;
+        				gridNode.alopexGrid('dataSet',list);
+        	        	gridNode.alopexGrid('setFilter', 'roleFilter', function(data){
+        					return data.nodeRoles == 'zdb';
+        				});
+        			}
+        		});
+        	}
+        	function getNamespaceList(){
+				$a.ajax({
+					url: '/zdbapi/getNamespaceResourceAll',
+					success:function(res){
+						let list = res.namespaceResource;
+						gridNamespace.alopexGrid('dataSet',list)
+						gridNamespace.alopexGrid('setFilter', 'namespaceFilter', function(data){
+        					return gCommon.findObjectByKeyOb(gNamespaceList,{id:data.name}) != null; 
+        				});
+					}
+				});
+        	}
+        }
+    });
+</script>
+</th:block>
+</html>
