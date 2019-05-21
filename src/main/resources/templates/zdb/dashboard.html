@@ -9,14 +9,14 @@
 		<div class="prj-list"></div>
 	</div>
 	<div class="contents-box">
-		<div class="top-area">
-			<h2 class="title">Node 목록</h2>
+		<h2 class="title">Node 목록</h2>
+		<div class="grid-line__wrap mt10">
+			<div id="gridNode"></div>
+		</div>
+		<h2 class="title mt10">Namespace 목록</h2>
+		<div class="grid-line__wrap mt10">
+			<div id="gridNamespace"></div>
 		</div>	
-		<div id="gridNode"></div>
-		<div class="top-area">
-			<h2 class="title">Namespace 목록</h2>
-		</div>	
-		<div id="gridNamespace"></div>
 	</div>
 
 	<script type="text/javascript">
@@ -109,7 +109,7 @@
        	    };
         	let gridNode = $('#gridNode').alopexGrid({
         	    renderMapping : renderBar,
-        	    height:350,
+        	    height:300,
         	    defaultSorting:{
         	        sortingColumn: 'creationTime',
         	        sortingDirection: 'desc'
@@ -147,7 +147,7 @@
         	});
         	let gridNamespace = $('#gridNamespace').alopexGrid({
         		renderMapping : renderBar,
-        		height:350,
+        		height:300,
                 defaultColumnMapping : { sorting:true, resizing : true },
                 message: { nodata: 'Namespace 데이터가 없습니다.' },
         	    autoColumnIndex: true,
