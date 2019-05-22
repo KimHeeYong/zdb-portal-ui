@@ -92,18 +92,25 @@
 	$a.page(function() {
 		let divServiceListGrid;
 		this.init = function() {
-			
-			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
-						 .select({id:gSelectedNamespace})
-						 .addHandler(function(e){
-							  gCommon.setSelectedNamespace(e.currentTarget.id);
-							  fn_getNamespaceResource();
-							  fn_displayServices();
-						  }); 
-			if(gNamespaces.text()==''){
-				gNamespaces.select(0);
-				if(gNamespaces.text() == '')return;
-			};	
+
+			gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
+				gNamespaces = selector.select({id:gSelectedNamespace})
+									 .addHandler(function(e){
+										  gCommon.setSelectedNamespace(e.currentTarget.id);
+										  fn_getNamespaceResource();
+										  fn_displayServices();
+									  }); 
+				if(gNamespaces.text()==''){
+					gNamespaces.select(0);
+					if(gNamespaces.text() == '')return;
+				};	
+				fn_getServicesFirst();
+				fn_getServices();
+				fn_getNamespaceResource();
+			});
+			$(window).on('beforeunload', function() {
+				gZdbsocket.disconnect();
+			});
 			
 			if($.cookie('selected2000listType')){
 				fn_setSelected2000ListType($.cookie('selected2000listType'));
@@ -258,12 +265,6 @@
 				}
 				gExpandServiceList = nTreeDt;
 			})
-			fn_getServicesFirst();
-			fn_getServices();
-			fn_getNamespaceResource();
-			$(window).on('beforeunload', function() {
-				gZdbsocket.disconnect();
-			});
 		};
 		function fn_moveServiceDetail(data,isMonitorTab){
 			var param = {namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName};

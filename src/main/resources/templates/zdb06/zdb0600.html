@@ -137,16 +137,14 @@
 		var gConfigData = null;
 		$a.page(function() {
 			this.init = function() {
-				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAdminAll:true})
-						.addHandler(function(e) {
-							gCommon.setSelectedNamespace(e.currentTarget.id);
-							fn_getZDBConfig();
-						}).select({
-							id : gSelectedNamespace
-						});
-				if(gNamespaces.text()==''){
-					gNamespaces.select(0);
-				};	
+				gCommon.getNamespaceCombo($('#namespaces'),{incAdminAll:true}).done(function(selector){
+					gNamespaces = selector.addHandler(function(e) {
+										      gCommon.setSelectedNamespace(e.currentTarget.id);
+										  	   fn_getZDBConfig();
+										  }).select({
+										  	   id : gSelectedNamespace
+										  });
+				});
 				
 				gForm.find('div.onoff-wrap > button').click(function(e){
 					let fsList = [];
@@ -178,12 +176,14 @@
 					fn_saveConfigData();
 				});
 				function fn_getZDBConfig() {
-					gConfigData = gCommon.getConfigData();
-					gForm.zdbui_setContents(gConfigData);
-					fn_setOnOff('free_resource_check',gConfigData['free_resource_check']);
-					fn_setOnOff('public_network_enabled',gConfigData['public_network_enabled']);
-					fn_setOnOff('auto_failover_enabled',gConfigData['auto_failover_enabled']);
-					gForm.find('div#backup_time').setData({date :gConfigData['backup_time']});
+					gCommon.getConfigData().done(function(re){
+						gConfigData = re;
+						gForm.zdbui_setContents(gConfigData);
+						fn_setOnOff('free_resource_check',gConfigData['free_resource_check']);
+						fn_setOnOff('public_network_enabled',gConfigData['public_network_enabled']);
+						fn_setOnOff('auto_failover_enabled',gConfigData['auto_failover_enabled']);
+						gForm.find('div#backup_time').setData({date :gConfigData['backup_time']});
+					});
 				}
 				function fn_setOnOff(name,bOn){
 					gForm.find('select[name='+name+']').zdbui_setComponent(bOn);	
@@ -214,7 +214,9 @@
 							success : function(res) {
 								if(res.result && res.result.code=='0'){
 									gCommon.alert(res.result.message);
-									gConfigData = gCommon.getConfigData();
+									gCommon.getConfigData().done(function(re){
+										gConfigData = re;
+									});									
 								}
 							}
 						});

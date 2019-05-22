@@ -77,13 +77,13 @@
 		var gNamespaces = null; // 네임스페이스 콤보
 		$a.page(function() {
 			this.init = function() {
-				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
-						.select({
-							id:gSelectedNamespace
-						}).addHandler(function(e) {
-							gCommon.setSelectedNamespace(e.currentTarget.id);
-							fn_getEventInfo();
-						});
+				gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
+					gNamespaces = selector.select({id:gSelectedNamespace})
+										  .addHandler(function(e) {
+										  	gCommon.setSelectedNamespace(e.currentTarget.id);
+										  	fn_getEventInfo();
+										  });
+				});				
 				$('.Accordion').expandAll();
 				
 				$('#gridEvent').alopexGrid({

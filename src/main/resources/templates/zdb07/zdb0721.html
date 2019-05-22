@@ -243,12 +243,13 @@
 				ruleForm.validator({
 				    elements :valElements
 				}).validate();
-				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
-				 .select({id:gSelectedNamespace})
-				 .addHandler(function(e) {
-					  gCommon.setSelectedNamespace(e.currentTarget.id);
-					  gCommon.movePage('/zdb07/zdb0720',{selectedNamespace:gSelectedNamespace});
-				  });
+				gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
+					gNamespaces = selector.select({id:gSelectedNamespace})
+										 .addHandler(function(e) {
+											  gCommon.setSelectedNamespace(e.currentTarget.id);
+											  gCommon.movePage('/zdb07/zdb0720',{selectedNamespace:gSelectedNamespace});
+										  });
+				});
 			
 				ruleForm.find('#btnRuleCancel').on('click',function(){
 					location.href='/zdb07/zdb0720'

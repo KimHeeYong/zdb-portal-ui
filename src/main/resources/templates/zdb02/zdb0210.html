@@ -878,14 +878,18 @@
 		this.init = function() {
 			$('[data-show-service-type*='+gParam.serviceType+']').show();
 			//namespace 변경시 이벤트
-			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
-								 .select({id:gSelectedNamespace})
-								 .addHandler(function(e) {
-									  gCommon.setSelectedNamespace(e.currentTarget.id);
-									  gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
-		   						  });
+			gCommon.getConfigData().done(function(re){
+				gConfigData = re;
+				gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
+					gNamespaces = selector.select({id:gSelectedNamespace})
+										 .addHandler(function(e) {
+											  gCommon.setSelectedNamespace(e.currentTarget.id);
+											  gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
+				   						  });
+					
+				});
+			});
 			$('.Accordion').expandAll();
-			gConfigData = gCommon.getConfigData(gParam.namespace);
 			var data = {
 					namespace:gParam.namespace,
 					serviceType:gParam.serviceType,
@@ -1783,7 +1787,9 @@
 								if(res.result.code!='4'){
 									gCommon.alert(res.result.message);
 									fn_getServiceFirst();
-									gConfigData = gCommon.getConfigData(gParam.namespace);
+									gCommon.getConfigData(gParam.namespace).done(function(re){
+										gConfigData = re;
+									});		
 								}
 							}
 						})

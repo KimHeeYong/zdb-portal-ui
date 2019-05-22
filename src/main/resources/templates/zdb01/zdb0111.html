@@ -282,18 +282,17 @@ var gConfigData = null;
 $a.page(function() {
 	this.init = function() {
 		//네임스페이스 콤보 설정
-		gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAll:false});
-		gNamespaces.addHandler(function(e){
-							  gCommon.setSelectedNamespace(e.currentTarget.id);
-							  //location.href = location.href;
-							  
-							  setDefaultServiceName();
-							  setDefaultValue();
-						  })
-						 .select({id:gSelectedNamespace}); 
-		if(!gNamespaces.getText()){
-			gCommon.alert(gMessage.validPage);
-		};
+		gCommon.getNamespaceCombo($('#namespaces'),{incAll:false}).done(function(selector){
+			gNamespaces = selector.select({id:gSelectedNamespace})
+								  .addHandler(function(e){
+										  gCommon.setSelectedNamespace(e.currentTarget.id);
+										  setDefaultServiceName();
+										  setDefaultValue();
+								  })
+			if(!gNamespaces.getText()){
+				gCommon.alert(gMessage.validPage);
+			};
+		});		
 		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
 			$a.ajax({
 				url: '/zdbapi/workerpools',

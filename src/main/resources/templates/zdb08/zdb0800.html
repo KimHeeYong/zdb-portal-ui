@@ -97,12 +97,14 @@
 		let gNamespaces = null;     // 네임스페이스 콤보
 		$a.page(function() {
 			this.init = function() {
-				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
-							 .select({id:gSelectedNamespace})
-							 .addHandler(function(e){
-								  gCommon.setSelectedNamespace(e.currentTarget.id);
-								  getStorageList();
-							  }); 
+				gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
+					gNamespaces = selector.select({id:gSelectedNamespace})
+											.addHandler(function(e){
+											  gCommon.setSelectedNamespace(e.currentTarget.id);
+											  getStorageList();
+											});
+				});
+							  
 				let form = $('form[name=storageForm]');
 				form.find('#searchEvent').on('click',getStorageList);
 				form.find('input[name=keyword]').pressEnter(getStorageList);
