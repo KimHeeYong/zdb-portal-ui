@@ -189,10 +189,10 @@ $a.page(function() {
 			storageClassStr:(gStorageClassConstants[gParam.storageClass])
 		});
 		
-		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+		if(gParam.serviceType == cServiceType.mariadb){
 			data.disk = sliderConstants.disk.value[gParam.diskSpecIdx];
 			data.specDisk = sliderConstants.disk.getValue(gParam.diskSpecIdx,isCluster)
-		}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS && gParam.purpose == 'DATA'){
+		}else if(gParam.serviceType == cServiceType.redis && gParam.purpose == 'DATA'){
 			data.disk = data.podSpecIdx < 5 ? 20 : 40;
 			data.specDisk = (data.disk * (isCluster?2:1)) + 'Gi';
 		};

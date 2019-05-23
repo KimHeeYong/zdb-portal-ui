@@ -283,17 +283,17 @@ $a.page(function() {
 	this.init = function() {
 		//네임스페이스 콤보 설정
 		gCommon.getNamespaceCombo($('#namespaces'),{incAll:false}).done(function(selector){
-			gNamespaces = selector.select({id:gSelectedNamespace})
-								  .addHandler(function(e){
+			gNamespaces = selector.addHandler(function(e){
 										  gCommon.setSelectedNamespace(e.currentTarget.id);
 										  setDefaultServiceName();
 										  setDefaultValue();
-								  })
+								  }).select({id:gSelectedNamespace})
+								  
 			if(!gNamespaces.getText()){
 				gCommon.alert(gMessage.validPage);
 			};
 		});		
-		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+		if(gParam.serviceType == cServiceType.mariadb){
 			$a.ajax({
 				url: '/zdbapi/workerpools',
 				async: false,
@@ -328,15 +328,16 @@ $a.page(function() {
 		});
 		//config값 적용
 		function setDefaultValue(){
-			gConfigData = gCommon.getConfigData();
-			if(gConfigData.public_network_enabled == 'true'){
-				setExposeType('public');
-				$('#trExpose').show();
-			}else{
-				setExposeType('private');
-				$('#trExpose').hide();
-			}
-			
+			gCommon.getConfigData().done(function(result){
+				gConfigData = result;
+				if(gConfigData.public_network_enabled == 'true'){
+					setExposeType('public');
+					$('#trExpose').show();
+				}else{
+					setExposeType('private');
+					$('#trExpose').hide();
+				}
+			});
 		}
 		function setDefaultServiceName(){
 			var ob = $('input[name=serviceName]'); 
@@ -363,7 +364,7 @@ $a.page(function() {
 				gCommon.alert('메모리 용량을 선택하세요.');
 				return;
 			};
-			if(gParam.serviceType == G_SERVICE_TYPE_MARIA && param.diskSpecIdx == 0){
+			if(gParam.serviceType == cServiceType.mariadb && param.diskSpecIdx == 0){
 				gCommon.alert('디스크 용량을 선택하세요.');
 				return;
 			};
@@ -456,7 +457,7 @@ $a.page(function() {
 		}
 		setBackupEnabled(gParam.backupEnabled);
 		setClusterEnabled(gParam.clusterEnabled);
-		if(gParam.serviceType==G_SERVICE_TYPE_REDIS){
+		if(gParam.serviceType == cServiceType.redis){
 			setPurpose(gParam.purpose||'SESSION');
 		};
 		setDefaultServiceName();
@@ -502,7 +503,7 @@ $a.page(function() {
 				$('#exposeOnOff.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
 			}
 		};		
-		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+		if(gParam.serviceType == cServiceType.mariadb){
 			var diskSlider = document.getElementById('diskSlider');
 			noUiSlider.create(diskSlider, {
 				start:[gParam.diskSpecIdx||0],

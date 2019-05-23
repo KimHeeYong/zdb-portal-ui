@@ -163,7 +163,8 @@ public class ZdbApiController {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
-		List<Pod> podList = zdbApiService.getPods(param);
+		List<Map<String,Object>> podList = zdbApiService.getPods(param);
+		
 		mav.addObject(IResult.PODS ,podList);
 		return mav;
 	}

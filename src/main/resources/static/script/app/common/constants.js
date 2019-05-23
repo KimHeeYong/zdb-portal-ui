@@ -1,15 +1,12 @@
-let G_SERVICE_TYPE_MARIA = 'mariadb';
-let G_SERVICE_TYPE_REDIS = 'redis';
-
-let _gSliderConstantsCommonRange = { 'min': 0, '14%': 1, '28%': 2, '42%': 3, '56%': 4, '70%': 5, '85%':6, 'max': 7 };
-let _gSliderConstantsCommonGetValue = function(index,isCluster){
+const _gSliderConstantsCommonRange = { 'min': 0, '14%': 1, '28%': 2, '42%': 3, '56%': 4, '70%': 5, '85%':6, 'max': 7 };
+const _gSliderConstantsCommonGetValue = function(index,isCluster){
 	let val = this.value[index]
 	if(isCluster){
 		val = val * 2;
 	}
 	return val+this.unit;
 };
-let _gSliderConstantsCommonGetIndex = function(val){
+const _gSliderConstantsCommonGetIndex = function(val){
 	val = cloudUtil.parseInt(val);
 	let idx = this.value.indexOf(val);
 	if(idx < 0 && val > 0){
@@ -23,7 +20,12 @@ let _gSliderConstantsCommonGetIndex = function(val){
 	return idx < 0 ? 0 : idx;
 };
 
-let gSliderConstants = {
+const cServiceType = {
+	mariadb: 'mariadb',
+	redis: 'redis'
+};
+
+const gSliderConstants = {
 	redis :{
 		memory : {
 			range : _gSliderConstantsCommonRange,
@@ -71,12 +73,13 @@ let gSliderConstants = {
 		}
 	}
 };
-let gStorageClassConstants = {
+
+const gStorageClassConstants = {
 	 'ibmc-block-bronze':'2 IOPS/GB'
 	,'ibmc-block-silver':'4 IOPS/GB'
 	,'ibmc-block-gold':'10 IOPS/GB'
 };
-let gMessage = {
+const gMessage = {
 	validPage : '잘못된 접근 입니다.',
 	saveSuccess: '정상적으로 저장되었습니다.',
 	notValidInput : '유효하지 않은 입력값이 있습니다.',

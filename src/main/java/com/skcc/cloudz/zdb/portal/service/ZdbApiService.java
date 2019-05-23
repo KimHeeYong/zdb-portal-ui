@@ -20,8 +20,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 import com.skcc.cloudz.zdb.api.iam.domain.vo.ApiResponseVo;
 import com.skcc.cloudz.zdb.common.component.ZdbRestConnector;
 import com.skcc.cloudz.zdb.common.security.service.SecurityService;
@@ -33,7 +31,6 @@ import com.skcc.cloudz.zdb.portal.domain.dto.NamespaceResource;
 import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.zdb.core.domain.AlertingRuleEntity;
-import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
@@ -48,7 +45,6 @@ import com.zdb.core.domain.ZDBConfig;
 import com.zdb.core.domain.ZDBNode;
 
 import io.fabric8.kubernetes.api.model.Namespace;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 
 @Component
@@ -182,12 +178,12 @@ public class ZdbApiService{
 		return ob;
 	}
 
-
-	public List<Pod> getPods(Map<String, String> param) {
-		List<Pod> list = Collections.emptyList();
+	public List<Map<String,Object>> getPods(Map<String, String> param) {
+		List<Map<String,Object>> list = Collections.emptyList();
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_PODS, ZdbRestDTO.class,param);
+		
 		if(zdbRestDTO != null) {
-			list = (List<Pod>)zdbRestDTO.getResult().getPods();
+			list = (List<Map<String,Object>>)zdbRestDTO.getResult().getPods();
 		};
 		return list;
 	}

@@ -81,7 +81,7 @@ public class Result {
 	
 	private List<String> workerPools;
 	
-	private List<Pod> pods;
+	private List<Map<String,Object>> pods;
 	
 	private List<Database> databases;
 	

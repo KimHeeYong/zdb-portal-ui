@@ -29,10 +29,10 @@ function gfn_convertServiceData(data){
 		
 		for(var i = 0; i < pods.length;i++){
 			var pod = pods[i];
-			if(data.serviceType == G_SERVICE_TYPE_MARIA && pod.metadata.labels.component === 'master'){
+			if(data.serviceType == cServiceType.mariadb && pod.metadata.labels.component === 'master'){
 				result = pod;
 				break;
-			}else if(data.serviceType == G_SERVICE_TYPE_REDIS && pod.metadata.labels.role === 'master'){
+			}else if(data.serviceType == cServiceType.redis && pod.metadata.labels.role === 'master'){
 				result = pod;
 				break;
 			};
