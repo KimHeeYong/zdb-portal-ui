@@ -57,7 +57,7 @@ public class Result {
 
 	private List<RequestEvent> operationEvents;
 
-	private List<BackupEntity> backupList;
+	private List<Map<String,String>> backupList;
 
 	private Map<String,String> backupResult;
 

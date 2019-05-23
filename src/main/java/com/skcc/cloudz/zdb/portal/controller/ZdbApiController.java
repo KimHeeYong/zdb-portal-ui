@@ -417,7 +417,7 @@ public class ZdbApiController {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
-		List<BackupEntity> backupList = zdbApiService.getBackupList(param);
+		List<Map<String,String>> backupList = zdbApiService.getBackupList(param);
 		mav.addObject("backupList",backupList);
 		
 		return mav;

@@ -1100,7 +1100,7 @@
 						    });								
 						},
 						use: function(data,$cell,grid){
-							return $cell.data('alopexgrid-columnindex')==11 && data.status == 'green';
+							return $cell.data('alopexgrid-key')=="restart" && data.status == 'green';
 						}
 					},
 					{   title: "Start" ,
@@ -1121,7 +1121,7 @@
 						    });
 						},
 						use: function(data, $cell, grid) {
-							return $cell.data('alopexgrid-columnindex')==11 && data.status == 'red';
+							return $cell.data('alopexgrid-key')=="restart" && data.status == 'red';
 						}
 					},
 					{   title: "Shutdown" ,
@@ -1142,7 +1142,7 @@
 						    });
 						},
 						use: function(data, $cell, grid) {
-							return $cell.data('alopexgrid-columnindex')==11 && data.status == 'green';
+							return $cell.data('alopexgrid-key')=="restart" && data.status == 'green';
 						}
 					},
 					{   title: "Add Backup disk" ,
@@ -1176,7 +1176,7 @@
 							}
 						},
 						use: function(data,$cell,grid){
-							return $cell.data('alopexgrid-columnindex')==12 && data.isPod;	
+							return $cell.data('alopexgrid-key')=="log" && data.isPod;	
 						}
 					},
 					{
@@ -1189,7 +1189,7 @@
 							}
 						},
 						use: function(data,$cell,grid){
-							return $cell.data('alopexgrid-columnindex')==12 && data.isPod && !isSlowLogHidden;	
+							return $cell.data('alopexgrid-key')=="log" && data.isPod && !isSlowLogHidden;	
 						}
 					}
 				],
@@ -2185,25 +2185,24 @@
 				],
 				footer: {
 					footerMapping: [
-						{ columnIndex: 3, title:'백업 파일 사이즈 합계: ', align:'center'},
-						{ columnIndex: 5, align:'center',render:function(value,data,render,mapping){
-							var rawData = AlopexGrid.trimData(value);
-							var validData = [];
-							var totalValue = 0;
+						{ columnIndex: "deleteDatetime", title:'백업 파일 사이즈 합계: ', align:'center'},
+						{ columnIndex: "fileSize", align:'center',render:function(value,data,render,mapping){
+							let rawData = AlopexGrid.trimData(value);
+							let totalValue = new BigNumber(0);
 							for (var i in rawData) {
 								if (rawData[i].status == 'OK') {
-									totalValue += parseInt(rawData[i].fileSize, 10);
+									totalValue = totalValue.plus(rawData[i].fileSize);
 								};
 							};
-							if(totalValue < 1024 ) {
-								return totalValue +'B';
-							} else if(totalValue < 1024*1024 ) {
-								return cloudUtil.truncDecimal((totalValue / 1024),2) +'Ki';
-							} else if(totalValue < 1024*1024*1024 ) {
-								return cloudUtil.truncDecimal((totalValue / (1024*1024)),2) +'Mi';
-							} else if(totalValue < 1024*1024*1024*1024 ) {
-								return cloudUtil.truncDecimal((totalValue / (1024*1024*1024)),2) +'Gi';
-							};
+							if(totalValue.lte(1024)) {
+								return totalValue.toFixed() +'B';
+							}else if(totalValue.lte(1024*1024) ) {
+								return totalValue.div(1024).decimalPlaces(2).toFixed() +'Ki';
+							}else if(totalValue.lte(1024*1024*1024)) {
+								return totalValue.div(1024*1024).decimalPlaces(2).toFixed() +'Mi';
+							}else{
+								return totalValue.div(1024*1024*1024).decimalPlaces(2).toFixed() +'Gi';
+							}
 						}}
 					]},
 				message: {

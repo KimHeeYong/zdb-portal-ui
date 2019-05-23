@@ -410,8 +410,8 @@ public class ZdbApiService{
 		return result;
 	}
 	
-	public List<BackupEntity> getBackupList(Map<String, String> param) {
-		List<BackupEntity> result = null;
+	public List<Map<String,String>> getBackupList(Map<String, String> param) {
+		List<Map<String,String>> result = null;
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_BACKUP_LIST,ZdbRestDTO.class,param);
 		
 		if(zdbRestDTO!=null) {
