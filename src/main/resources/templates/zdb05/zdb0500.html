@@ -4,7 +4,7 @@
 	<title>백업 스케줄링 목록</title>
 </th:block>
 <th:block layout:fragment="page_js">
-	<script src="/script/app/common/cloudzdb-ui-z0200.js"></script>
+	<script src="/script/app/common/cloudzdb-ui-z0200.js?v=20190523"></script>
 </th:block>
 <th:block layout:fragment="content">
 	<!-- location -->
@@ -37,13 +37,15 @@
 		var gNamespaces = null; // 네임스페이스 콤보
 		$a.page(function() {
 			this.init = function() {
-				gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
-						.addHandler(function(e) {
-							gCommon.setSelectedNamespace(e.currentTarget.id);
-							fn_getScheduleInfoList();
-						}).select({
-							id:gSelectedNamespace
-						});
+				gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
+					gNamespaces = selector.addHandler(function(e) {
+										 	gCommon.setSelectedNamespace(e.currentTarget.id);
+										 	fn_getScheduleInfoList();
+										 }).select({
+										 	id:gSelectedNamespace
+										 });
+					
+				});
 				$('.Accordion').expandAll();
 				
 				let gridSchedule = $('#gridSchedule').alopexGrid({

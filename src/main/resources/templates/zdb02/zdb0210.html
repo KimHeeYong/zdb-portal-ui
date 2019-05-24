@@ -25,7 +25,7 @@
 		var gGrafanaUrl = [[${@environment.getProperty('grafana.url')}]];
 		/*]]>*/
 	</script>
-	<script type="text/javascript" src="/script/app/common/cloudzdb-ui-z0200.js?v=20190430"></script>
+	<script type="text/javascript" src="/script/app/common/cloudzdb-ui-z0200.js?v=20190523"></script>
 	<script type="text/javascript" src="/script/libs/etc/nouislider.min.js"></script>
 	<script src="/script/libs/sockjs/sockjs.js"></script>
 	<script src="/script/libs/sockjs/stomp.js"></script>
@@ -878,14 +878,18 @@
 		this.init = function() {
 			$('[data-show-service-type*='+gParam.serviceType+']').show();
 			//namespace 변경시 이벤트
-			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
-								 .select({id:gSelectedNamespace})
-								 .addHandler(function(e) {
-									  gCommon.setSelectedNamespace(e.currentTarget.id);
-									  gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
-		   						  });
+			gCommon.getConfigData().done(function(re){
+				gConfigData = re;
+				gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
+					gNamespaces = selector.select({id:gSelectedNamespace})
+										 .addHandler(function(e) {
+											  gCommon.setSelectedNamespace(e.currentTarget.id);
+											  gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
+				   						  });
+					
+				});
+			});
 			$('.Accordion').expandAll();
-			gConfigData = gCommon.getConfigData(gParam.namespace);
 			var data = {
 					namespace:gParam.namespace,
 					serviceType:gParam.serviceType,
@@ -986,7 +990,7 @@
 			/* tabService start */
 			let tabService = $('#tabService');
 			let formService = $('form[name=formService]');
-			let isSlowLogHidden = gParam.serviceType != G_SERVICE_TYPE_MARIA;
+			let isSlowLogHidden = gParam.serviceType != cServiceType.mariadb;
 			
 			Validator.addMethod('checkPort', function(element, value) {
 				let n = cloudUtil.parseInt(value);
@@ -1063,7 +1067,7 @@
 					d.css({left:e.pageX,top:e.pageY});
 				});
 			}
-			$('#gridResource').alopexGrid({
+			let gridResource = $('#gridResource').alopexGrid({
 				enableDefaultContextMenu:false,
 				enableContextMenu:true,
 				autoColumnIndex: true,
@@ -1096,7 +1100,7 @@
 						    });								
 						},
 						use: function(data,$cell,grid){
-							return $cell.data('alopexgrid-columnindex')==11 && data.status == 'green';
+							return $cell.data('alopexgrid-key')=="restart" && data.status == 'green';
 						}
 					},
 					{   title: "Start" ,
@@ -1117,7 +1121,7 @@
 						    });
 						},
 						use: function(data, $cell, grid) {
-							return $cell.data('alopexgrid-columnindex')==11 && data.status == 'red';
+							return $cell.data('alopexgrid-key')=="restart" && data.status == 'red';
 						}
 					},
 					{   title: "Shutdown" ,
@@ -1138,7 +1142,7 @@
 						    });
 						},
 						use: function(data, $cell, grid) {
-							return $cell.data('alopexgrid-columnindex')==11 && data.status == 'green';
+							return $cell.data('alopexgrid-key')=="restart" && data.status == 'green';
 						}
 					},
 					{   title: "Add Backup disk" ,
@@ -1172,7 +1176,7 @@
 							}
 						},
 						use: function(data,$cell,grid){
-							return $cell.data('alopexgrid-columnindex')==12 && data.isPod;	
+							return $cell.data('alopexgrid-key')=="log" && data.isPod;	
 						}
 					},
 					{
@@ -1185,7 +1189,7 @@
 							}
 						},
 						use: function(data,$cell,grid){
-							return $cell.data('alopexgrid-columnindex')==12 && data.isPod && !isSlowLogHidden;	
+							return $cell.data('alopexgrid-key')=="log" && data.isPod && !isSlowLogHidden;	
 						}
 					}
 				],
@@ -1251,30 +1255,42 @@
 					{ title:'Replication', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
 					}},
 					{ title:'Role', key : 'role' , width: '90px', align: 'center', render : function(value, data){
-						if(data.role == 'master'){
-							return '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">';
-						} else {
-							return '<img src="/styles/images/slave.png" style="width: 16px;height: 16px;">';
+						let re = '';
+						let roleIcon = {
+							master : '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">',
+							slave : '<img src="/styles/images/slave.png" style="width: 16px;height: 16px;">'
 						}
-					}},
-					{ title:'ServiceLB', key : 'serviceLB' , width: '100px', align: 'center', render : function(value, data){
-						if(data.svc != '') {
-							if(data.serviceType == 'redis') {
-								if(data.svc.spec.selector.role == 'master') {
-									return '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">';
-								}else {
-									return '<img src="/styles/images/slave.png" style="width: 16px;height: 16px;">';
+						let masterPod = gridResource.alopexGrid('dataGet')[0]
+						switch(gParam.serviceType){
+							case cServiceType.mariadb:
+								if(data.role == 'master'){
+									if(data.svc.spec.selector.component == 'master'){
+										re = roleIcon.master
+									}
+								}else if(data.role == 'slave'){
+									if(masterPod.svc.spec.selector.component == 'slave'){
+										re = roleIcon.master
+									}else{
+										re = roleIcon.slave
+									} 
 								}
-							} else if(data.serviceType == 'mariadb') {
-								if(data.svc.spec.selector.component == 'master'){
-									return '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">';
-								} else {
-									return '<img src="/styles/images/slave.png" style="width: 16px;height: 16px;">';
+								break;
+							case cServiceType.redis:
+								if(data.role == 'master'){
+									if(data.svc.spec.selector.role == 'master'){
+										re = roleIcon.master
+									}
+								}else if(data.role == 'slave'){
+									if(masterPod.svc.spec.selector.role == 'slave'){
+										re = roleIcon.master
+									}else{
+										re = roleIcon.slave
+									}
 								}
-								
-							}
-						} 
-						return '';
+								break;
+						}
+						
+						return re;
 					}},
 					{ title:'Node', key : 'node' , width: '130px', align: 'center'},
 					{ title:'Disk(Gi)', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
@@ -1401,7 +1417,7 @@
 				
 				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정, 프로세스)설정
 				var tabDisList = ['tabBackup','tabUser','tabDatabase','tabSystem','tabProcess']; 
-				if(gService.serviceType == G_SERVICE_TYPE_MARIA){ //mariadb 면 tabSystem 이동되도록
+				if(gService.serviceType == cServiceType.mariadb){ //mariadb 면 tabSystem 이동되도록
 					tabDisList.splice(tabDisList.indexOf('tabSystem'),1);
 				};
 				var isStatusGreen = gService.status == 'green'; 
@@ -1417,10 +1433,9 @@
 					$('#zdbServiceTabs').setTabByContent('#tabService');
 				};
 				 //redis - user,database탭 삭제, purpose - data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
-				if(gService.serviceType == G_SERVICE_TYPE_REDIS){
-					
+				if(gService.serviceType == cServiceType.redis){
 					let delTab = ['tabUser','tabDatabase','tabLog','tabProcess'];
-					if(gService.purpose != 'DATA'){
+					if(gCommon.findObjectByKeyOb(gService.tags,{tagName:'data'})==null){
 						$('#tabSystem #divAdvancedConfig').hide();
 						delTab.push('tabBackup');
 					};
@@ -1429,7 +1444,6 @@
 							$('#zdbServiceTabs').removeTab(ti);
 						};
 					};
-					
 					if(gService.clusterEnabled != true){
 						$('li#divScaleOut').hide();
 					};
@@ -1641,13 +1655,13 @@
 				//failover 설정
 				//mariadb는 statefulSets이 2개일경우, redis는 deployments가 존재 할 경우 활성화
 				let bFailoverEnable = false;
-				if((gParam.serviceType == G_SERVICE_TYPE_MARIA && gService.statefulSets.length > 1) || 
-				   (gParam.serviceType == G_SERVICE_TYPE_REDIS && gService.deployments.length > 0)){
+				if((gParam.serviceType == cServiceType.mariadb && gService.statefulSets.length > 1) || 
+				   (gParam.serviceType == cServiceType.redis && gService.deployments.length > 0)){
 					bFailoverEnable = true;
 				}
 				if(bFailoverEnable == true){
 					//auto_failover 는 현재 mariadb만 제공
-					if(gParam.serviceType == G_SERVICE_TYPE_MARIA && gConfigData.auto_failover_enabled=='true'){
+					if(gParam.serviceType == cServiceType.mariadb && gConfigData.auto_failover_enabled=='true'){
 						if(gService.failoverEnabled == 'running'){
 							$('#divFailoverRunning').show();
 							$('#divFailoverOnOff').hide();
@@ -1783,7 +1797,9 @@
 								if(res.result.code!='4'){
 									gCommon.alert(res.result.message);
 									fn_getServiceFirst();
-									gConfigData = gCommon.getConfigData(gParam.namespace);
+									gCommon.getConfigData(gParam.namespace).done(function(re){
+										gConfigData = re;
+									});		
 								}
 							}
 						})
@@ -1800,7 +1816,8 @@
 							method:'PUT',
 							data:gParam,
 							success: function(res){
-								gCommon.alert(res.result.message);	
+								gCommon.alert(res.result.message);
+								fn_getServiceFirst()
 							}
 						})	
 					}
@@ -1817,6 +1834,7 @@
 							data:gParam,
 							success: function(res){
 								gCommon.alert(res.result.message);
+								fn_getServiceFirst()
 							}
 						})	
 					}
@@ -1907,7 +1925,7 @@
 			});
 			
 			//레디스 경우 최대 노드 카운트를 가져온다
-			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
+			if(gParam.serviceType == cServiceType.redis){
 				$a.ajax({
 					url: '/zdbapi/getNodeCount',
 					data:data,
@@ -2093,7 +2111,7 @@
 			};
 			let downloadTitle = '복원/다운로드';
 			let bakcupLogShow = true;
-			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
+			if(gParam.serviceType == cServiceType.redis){
 				downloadTitle = '다운로드';
 				bakcupLogShow = false;
 			}
@@ -2179,25 +2197,24 @@
 				],
 				footer: {
 					footerMapping: [
-						{ columnIndex: 3, title:'백업 파일 사이즈 합계: ', align:'center'},
-						{ columnIndex: 5, align:'center',render:function(value,data,render,mapping){
-							var rawData = AlopexGrid.trimData(value);
-							var validData = [];
-							var totalValue = 0;
+						{ columnIndex: "deleteDatetime", title:'백업 파일 사이즈 합계: ', align:'center'},
+						{ columnIndex: "fileSize", align:'center',render:function(value,data,render,mapping){
+							let rawData = AlopexGrid.trimData(value);
+							let totalValue = new BigNumber(0);
 							for (var i in rawData) {
 								if (rawData[i].status == 'OK') {
-									totalValue += parseInt(rawData[i].fileSize, 10);
+									totalValue = totalValue.plus(rawData[i].fileSize);
 								};
 							};
-							if(totalValue < 1024 ) {
-								return totalValue +'B';
-							} else if(totalValue < 1024*1024 ) {
-								return cloudUtil.truncDecimal((totalValue / 1024),2) +'Ki';
-							} else if(totalValue < 1024*1024*1024 ) {
-								return cloudUtil.truncDecimal((totalValue / (1024*1024)),2) +'Mi';
-							} else if(totalValue < 1024*1024*1024*1024 ) {
-								return cloudUtil.truncDecimal((totalValue / (1024*1024*1024)),2) +'Gi';
-							};
+							if(totalValue.lte(1024)) {
+								return totalValue.toFixed() +'B';
+							}else if(totalValue.lte(1024*1024) ) {
+								return totalValue.div(1024).decimalPlaces(2).toFixed() +'Ki';
+							}else if(totalValue.lte(1024*1024*1024)) {
+								return totalValue.div(1024*1024).decimalPlaces(2).toFixed() +'Mi';
+							}else{
+								return totalValue.div(1024*1024*1024).decimalPlaces(2).toFixed() +'Gi';
+							}
 						}}
 					]},
 				message: {
@@ -2727,7 +2744,7 @@
 			/*tabSystem start 환경설정 */
 			var dbConfigForm = $('form[name=dbConfig]');
 			
-			if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
+			if(gParam.serviceType == cServiceType.redis){
 				dbConfigForm.validator({
 				    elements :{ 
 				        'timeout': {rule:{required:true,min:0,max:3600}}
@@ -2749,7 +2766,7 @@
 					return;
 				};
 				let msg = '시스템 변수를 변경하시겠습니까?';
-				if(gParam.serviceType != G_SERVICE_TYPE_REDIS){
+				if(gParam.serviceType != cServiceType.redis){
 					msg +='</br> <span class="Color-warning">* 변경된 설정값은 서비스 재기동 후 적용 됩니다.<br>재기동을 원하시면 재시작 버튼을 실행하세요.</span>';
 				};
 				if(gCommon.confirm(msg,function(){
@@ -2772,7 +2789,7 @@
 					data:gParam,
 					success: function(res){
 						var dbConfigurations = res.dbConfigurations
-						if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+						if(gParam.serviceType == cServiceType.mariadb){
 							if(dbConfigurations){
 								let tbody = $('#serviceConfigTable tbody').html(''); 
 								var sels = {
@@ -2852,7 +2869,7 @@
 									$('select[name=collation-server]').parent().refresh();
 								};
 							}
-						}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS){
+						}else if(gParam.serviceType == cServiceType.redis){
 							dbConfigForm.zdbui_setContents(dbConfigurations);							
 						}
 					}

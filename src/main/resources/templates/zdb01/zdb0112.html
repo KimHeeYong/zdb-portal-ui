@@ -165,15 +165,15 @@
 var gNamespaces = null;     // 네임스페이스 콤보
 $a.page(function() {
 	this.init = function() {
-		//네임스페이스 콤보 설정
-		gNamespaces = gCommon.getNamespaceCombo($('#namespaces'),{incAll:false})
-						 .select({id:gSelectedNamespace}) 
-						 .addHandler(function(e){
-							  gCommon.setSelectedNamespace(e.currentTarget.id);
-						  }).prop('disabled',true);
-		if(!gNamespaces.getText()){
-			gCommon.alert(gMessage.validPage);
-		};
+		gCommon.getNamespaceCombo($('#namespaces'),{incAll:false}).done(function(selector){
+			gNamespaces = selector.select({id:gSelectedNamespace})
+								 .addHandler(function(e){
+									  gCommon.setSelectedNamespace(e.currentTarget.id);
+								  }).prop('disabled',true);
+			if(!gNamespaces.getText()){
+				gCommon.alert(gMessage.validPage);
+			};
+		});
 		var sliderConstants = gSliderConstants[gParam.serviceType];
 		var isCluster = gParam.clusterEnabled == 'true';
 		
@@ -189,10 +189,10 @@ $a.page(function() {
 			storageClassStr:(gStorageClassConstants[gParam.storageClass])
 		});
 		
-		if(gParam.serviceType == G_SERVICE_TYPE_MARIA){
+		if(gParam.serviceType == cServiceType.mariadb){
 			data.disk = sliderConstants.disk.value[gParam.diskSpecIdx];
 			data.specDisk = sliderConstants.disk.getValue(gParam.diskSpecIdx,isCluster)
-		}else if(gParam.serviceType == G_SERVICE_TYPE_REDIS && gParam.purpose == 'DATA'){
+		}else if(gParam.serviceType == cServiceType.redis && gParam.purpose == 'DATA'){
 			data.disk = data.podSpecIdx < 5 ? 20 : 40;
 			data.specDisk = (data.disk * (isCluster?2:1)) + 'Gi';
 		};

@@ -45,12 +45,15 @@
 	let gServiceList = [];
 	$a.page(function() {
 		this.init = function(id, param) {
-			gNamespaces = gCommon.getNamespaceCombo($('#namespaces'))
-			 .select({id:gSelectedNamespace})
-			 .addHandler(function(e) {
-				  gCommon.setSelectedNamespace(e.currentTarget.id);
-				  filterServices();
-			  });
+			gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
+				gNamespaces = selector.select({id:gSelectedNamespace})
+									  .addHandler(function(e) {
+										  gCommon.setSelectedNamespace(e.currentTarget.id);
+										  filterServices();
+										});
+				getAllServices();
+				getAlertRules();				
+			});
 			
 			$('#btnRuleAdd').on('click',function(){
 				location.href = '/zdb07/zdb0721';
@@ -99,8 +102,6 @@
 						{fromIndex:'update', toIndex:'def', title:''}
 					]
 				});
-			getAllServices();
-			getAlertRules();				
 			function getAlertRules(){
 				let namespace = gNamespaceList.map(function(d){return d.id}).join();
 				$a.ajax({

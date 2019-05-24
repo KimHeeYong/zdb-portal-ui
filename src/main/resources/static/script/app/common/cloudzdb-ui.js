@@ -167,12 +167,12 @@ var gCommon = $a.page(function(){
 	//네임스페이스 제외 
 	var hardFilterList = ['default','ibm-cert-store','ibm-system','kube-public','kube-system'];
 	this.getNamespaceCombo = function(selector,options){
+		let deferred = $.Deferred();
 		var defOpt = {incAll:true,incAdminAll:false};
 		var opt = $.extend({},defOpt,options);
 		//return selector.setDataSource([{id:'fsk-db',text:'fsk-db'}]); //dwtemp
 		$a.ajax({
 			url: '/zdbapi/getNamespaces',
-			async: false,
 			success:function(res){
 				var list = res.namespaces;
 				var namespaceList = [];
@@ -205,48 +205,59 @@ var gCommon = $a.page(function(){
 				if(selector){
 					selector.setDataSource(namespaceList);
 				}
+				deferred.resolve(selector);
 			}
 		});	
-		return selector;
+		return deferred.promise();
 	};
 	
 	this.getConfigData = function(pNamespace){
+		let deferred = $.Deferred();
 		let namespace = pNamespace||gSelectedNamespace;
 		if(namespace == G_NAMESPACE_ALL) namespace = G_GLOBAL;
-		let result = gCommon.getConfigDataAjax(namespace);
-		if(result == null){
-			result = gCommon.getConfigDataAjax(G_GLOBAL)||{};
-			result.isExists = false;
-		}else{
-			result.isExists = true;
-		}
-		return result;
+		let re = {};
+		
+		gCommon.getConfigDataAjax(namespace).done(function(result){
+			if(result == null){
+				gCommon.getConfigDataAjax(G_GLOBAL).done(function(result){
+					re = result || {};
+					re.isExists = false;
+					deferred.resolve(re);
+				});				
+			}else{
+				re = result;
+				re.isExists = true;
+				deferred.resolve(re);
+			}			
+		});
+		return deferred.promise();
 	}	
 	this.getConfigDataAjax = function(namespace){
-		var result = null;
+		let deferred = $.Deferred();
+		let result = null;
 		$a.ajax({
 			url : '/zdbapi/getZDBConfig',
-			async:false,
 			data : {
 				namespace : namespace
 			},
 			success : function(res) {
-				var list = res.zdbConfig || [];
+				let list = res.zdbConfig || [];
 				
 				if(list.length == 0){
 					result = null;
 				}else{
 					result = {};
-					for(var i = 0 ; i < list.length;i++){
-						var ob = list[i];
+					for(let i = 0 ; i < list.length;i++){
+						let ob = list[i];
 						if(gConfigColumn.indexOf(ob.config) > -1){
 							result[ob.config] = ob.value;	
 						}
 					}
 				}
+				deferred.resolve(result);
 			}
 		});	
-		return result;
+		return deferred.promise();
 	}
 	this.copyToClipboard = function(selector) {
 		if(!selector)return;

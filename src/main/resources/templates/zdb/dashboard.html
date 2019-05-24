@@ -23,7 +23,10 @@
 	let gNamespaces;
     $.alopex.page(function() {
         this.init = function(id, param) {
-        	gNamespaces = gCommon.getNamespaceCombo($('#namespaces'));
+        	gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
+            	getNodeList();
+            	getNamespaceList();
+        	});
         	
         	function getProgressbarType(value){
                 let type = '';
@@ -172,8 +175,6 @@
         			}
         		]
         	});
-        	getNodeList();
-        	getNamespaceList();
         	function getNodeList(){
         		$a.ajax({
         			url:'/zdbapi/nodesInfo',

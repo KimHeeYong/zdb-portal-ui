@@ -57,7 +57,7 @@ public class Result {
 
 	private List<RequestEvent> operationEvents;
 
-	private List<BackupEntity> backupList;
+	private List<Map<String,String>> backupList;
 
 	private Map<String,String> backupResult;
 
@@ -81,7 +81,7 @@ public class Result {
 	
 	private List<String> workerPools;
 	
-	private List<Pod> pods;
+	private List<Map<String,Object>> pods;
 	
 	private List<Database> databases;
 	
