@@ -156,13 +156,21 @@
         	    autoColumnIndex: true,
         		columnMapping : [
         			{ align : 'center', key : 'name', title : 'Namespace', width : '100px'}, 
-        	        { key: 'usedCpuRequests', title: ' ', width: '80px', align: 'right' ,excludeFitWidth:true},
+        	        { key: 'usedCpuRequests', title: ' ', width: '110px', align: 'right',excludeFitWidth:true ,render:function(value,data){
+        	        	return value + "/" + data.hardCpuRequests;
+        	        }},
         	        { key: 'cpuRequestsPercentage', title: 'CPU Requests', width: '130px', align: 'center', sorting: false, render: { type: 'cpu_request_bar' },excludeFitWidth:true },
-        	        { key: 'usedCpuLimits', title: ' ', width: '80px', align: 'right',excludeFitWidth:true },
+        	        { key: 'usedCpuLimits', title: ' ', width: '110px', align: 'right',excludeFitWidth:true ,render:function(value,data){
+        	        	return value + "/" + data.hardCpuLimits;
+        	        }},
         	        { key: 'cpuLimitsPercentage', title: 'CPU Limits', width: '130px', align: 'center', sorting: false, render: { type: 'cpu_limits_bar' },excludeFitWidth:true },
-        	        { key: 'usedMemoryRequests', title: ' ', width: '80px', align: 'right',excludeFitWidth:true },
+        	        { key: 'usedMemoryRequests', title: ' ', width: '110px', align: 'right',excludeFitWidth:true ,render:function(value,data){
+        	        	return value + "/" + data.hardMemoryRequests;
+        	        }},
         	        { key: 'memoryRequestsPercentage', title: 'Memory Requests', width: '130px', align: 'center', sorting: false, render: { type: 'memory_request_bar' },excludeFitWidth:true },
-        	        { key: 'usedMemoryLimits', title: ' ', width: '80px', align: 'right',excludeFitWidth:true },
+        	        { key: 'usedMemoryLimits', title: ' ', width: '110px', align: 'right',excludeFitWidth:true ,render:function(value,data){
+        	        	return value + "/" + data.hardMemoryLimits;
+        	        }},
         	        { key: 'memoryLimitsPercentage', title: 'Memory Limits', width: '130px', align: 'center', sorting: false, render: { type: 'memory_limit_bar' },excludeFitWidth:true },
         			{ align : 'center', key : 'userCount', title : '사용자', width : '50px' }, 
         			{ align : 'center', key : 'status', title : '상태', width : '50px' }, 
