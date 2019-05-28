@@ -14,7 +14,7 @@
 	</div>
 	<div class="contents-box">
 		<div class="top-area">
-           <h2 class="title">스토리지 사용현황 목록</h2>
+           <h2 class="title">스토리지 목록</h2>
 		</div>	
 		<form name="storageForm" method="post">
 			<div class="ctn-info__wrap">
@@ -43,6 +43,7 @@
 							<select>
 								<option value="">전체</option>
 								<option value="Bound">Bound</option>
+								<option value="Pending">Pending</option>
 								<option value="DELETED">DELETED</option>
 							</select>
 							<span></span>
@@ -113,18 +114,18 @@
 					autoColumnIndex: true,
 					height: 605,
 					columnMapping : [  
-						{ title:'네임스페이스', key : 'namespace' , width: '180px', align: 'left'},
-						{ title:'서비스명', key : 'release' , width: '180px', align: 'left'},
-						{ title:'스토리지명', key : 'name' , width: '300px', align: 'left'},
-						{ title:'용량', key : 'storagSize' , width: '60px', align: 'left'},
-						{ title:'앱', key : 'app' , width: '120px', align: 'left'},
-						{ title:'스토리지 타입', key : 'storageClassName' , width: '180px', align: 'left'},
-						{ title:'빌링타입', key : 'billingType' , width: '100px', align: 'left'},
-						{ title:'상태', key : 'phase' , width: '100px', align: 'left'},
+						{ title:'네임스페이스', key : 'namespace' , width: '100px', align: 'left'},
+						{ title:'서비스명', key : 'release' , width: '110px', align: 'left'},
+						{ title:'스토리지명', key : 'name' , width: '250px', align: 'left'},
+						{ title:'용량', key : 'storagSize' , width: '60px', align: 'center'},
+						{ title:'앱', key : 'app' , width: '70px', align: 'center'},
+						{ title:'스토리지 타입', key : 'storageClassName' , width: '120px', align: 'left'},
+						{ title:'빌링타입', key : 'billingType' , width: '60px', align: 'center'},
+						{ title:'상태', key : 'phase' , width: '80px', align: 'center'},
+						{ title:'액세스모드', key : 'accessModes' , width: '130px', align: 'center'},
+						{ title:'역할', key : 'component' , width: '60px', align: 'center'},
 						{ title:'생성일시', key : 'creationTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
 						{ title:'업데이트일시', key : 'updateTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
-						{ title:'엑세스모드', key : 'accessModes' , width: '130px', align: 'left'},
-						{ title:'역할', key : 'component' , width: '90px', align: 'left'},
 						{ title:'볼륨명', key : 'volumeName' , width: '400px', align: 'left'}
 					],
 					message: {
