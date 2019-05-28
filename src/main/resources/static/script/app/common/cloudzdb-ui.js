@@ -89,12 +89,22 @@ var gCommon = $a.page(function(){
 			    }
 			};
 			var option = $.extend({},defOpt,opt);
+			let errMessage = '서비스가 일시적으로 사용이 불가능 합니다.<br/> 장기간 현상이 발생할 경우에 '+
+		      '<a href="https://support.cloudz.co.kr/support/tickets/new" target="_blank">티켓</a>을 통해서 <br/>접수를 해주시기 바랍니다.';
 			if(opt.success){
 				option.success = function(res){
 					if(res && res.result && (res.result.resultCode == 'exception')){
-						gCommon.alert(res.result.resultMessage);							
+						let re = res.result.resultMessage|| '';
+						if(re.indexOf('java.lang')> -1){
+							re = errMessage; 
+						}
+						gCommon.alert(re);							
 					}else if(res && res.result && (res.result.code == 4)){
-                        gCommon.alert(res.result.message);
+						let re = res.result.resultMessage|| '';
+						if(re.indexOf('java.lang')> -1){
+							re = errMessage;
+						}
+						gCommon.alert(re);													
                         opt.success(res);
 					}else{
 						opt.success(res);

@@ -156,6 +156,10 @@ public class URIConstants {
 
 	public static final String URI_GET_STORAGES_DATA = "/api/v1/storages/data";
 
+	public static final String URI_ADD_BACKUP_DISK = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/addBackupDisk/{backupDiskSize}";
+
+	public static final String URI_REMOVE_BACKUP_DISK = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/removeBackupDisk";
+
 	public static String URI_GET_NODES_INFO = "/api/v1/nodesInfo";
 
 }
