@@ -34,8 +34,11 @@
 	background: #666666;
 	color: #ffffff;
 }
+.ml1{
+	margin-left:1px !important;	
+}
 .ml5{
-	margin-left: 5px;
+	margin-left: 5px !important;
 }
 .ml20{
 	margin-left: 20px !important;

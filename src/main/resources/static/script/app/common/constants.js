@@ -74,7 +74,7 @@ const gSliderConstants = {
 	}
 };
 
-const gStorageClassConstants = {
+const cStorageClassConstants = {
 	 'ibmc-block-bronze':'2 IOPS/GB'
 	,'ibmc-block-silver':'4 IOPS/GB'
 	,'ibmc-block-gold':'10 IOPS/GB'

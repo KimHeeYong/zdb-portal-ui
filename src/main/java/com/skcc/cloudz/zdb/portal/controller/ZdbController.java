@@ -32,7 +32,7 @@ public class ZdbController {
 		return new ModelAndView();
 	}
 	
-	@GetMapping("/test1")
+	@GetMapping("/zdb/test1")
 	public ModelAndView test1() {
 		ModelAndView mav = new ModelAndView();
 		return mav;

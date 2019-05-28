@@ -499,11 +499,16 @@
 							<span></span>
 						</div>
 					</div>
-					<button class="Button btn bg-red Disabled" id="saveSchedule">수정</button>
+					<button class="Button btn bg-red Disabled ml5" id="saveSchedule">수정</button>
 				</div>
-				<div class="info-list__select">	
-					<button class="Button btn" id="updateBackup">지금 백업하기</button>
-					<button class="Button btn" id="searchBackup">조회</button>
+				<div class="info-list__select">
+					<div class="fl" id="divAddBackup" style="margin-right:4px;">	
+						<button class="Button btn hide" id="addBackupDisk">백업디스크 추가</button>
+						<button class="Button btn hide" id="removeBackupDisk">백업디스크 제거</button>
+					</div>
+					<button class="Button btn ml1" id="deleteBackup">삭제</button>
+					<button class="Button btn ml1" id="updateBackup">지금 백업하기</button>
+					<button class="Button btn ml1" id="searchBackup">조회</button>
 				</div>	
           	</div>					
            	<div class="info-list__select mt10 hide" data-show-service-type="mariadb">
@@ -1061,10 +1066,10 @@
 			
 			let getGridContextButton = function(){
 				return $('<button class="Button btn-ico__typeb btn-listview buttonMenu"></button>').on('click',function(e){
-					e.preventDefault();
-					$(this).parent().trigger('contextmenu');
-					let d = $('.alopexgrid-contextmenu-wrapper');
-					d.css({left:e.pageX,top:e.pageY});
+						//console.log('click')
+						$(this).parent().trigger('contextmenu');
+						let d = $('.alopexgrid-contextmenu-wrapper');
+						d.css({left:e.pageX,top:e.pageY});						
 				});
 			}
 			let gridResource = $('#gridResource').alopexGrid({
@@ -1143,27 +1148,6 @@
 						},
 						use: function(data, $cell, grid) {
 							return $cell.data('alopexgrid-key')=="restart" && data.status == 'green';
-						}
-					},
-					{   title: "Add Backup disk" ,
-						processor: function(data, $cell, grid) {
-							$a.popup({
-						        data:{credential:$("#credential").val(), msg:'서비스를 종료 하시려면', okBtnMsg:'서비스 종료'},
-						        url: '/zdb02/zdb0200p08',
-						        data:gParam,
-						        iframe: false,
-						        width: 500,
-						        height: 320,
-						        title : '',
-						        callback : function(res){
-						        	if(res.result == 'Y'){
-						        			        		
-						        	}
-						        }
-						    });
-						},
-						use: function(data, $cell, grid) {
-							return false && gService.statefulSets.length > 1;
 						}
 					},
 					{
@@ -1317,10 +1301,6 @@
 					}}
 				],
 			});
-			
-			function fn_viewLog(data){
-				window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podName="+data.name);
-			}
 			//서비스 정보 조회
 			function fn_getServiceFirst(){
 				var deferred = $.Deferred();
@@ -1414,7 +1394,6 @@
 					msg = m[0]+'</br>'+m[1];
 				}
 				infoMsg.html(msg);
-				
 				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정, 프로세스)설정
 				var tabDisList = ['tabBackup','tabUser','tabDatabase','tabSystem','tabProcess']; 
 				if(gService.serviceType == cServiceType.mariadb){ //mariadb 면 tabSystem 이동되도록
@@ -1459,7 +1438,7 @@
 				gServiceScale.disk = psSpec.size;
 				gServiceScale.storageClass = '';
 				if(pvSpec.spec){
-					gServiceScale.storageClass = gStorageClassConstants[pvSpec.spec.storageClassName];
+					gServiceScale.storageClass = cStorageClassConstants[pvSpec.spec.storageClassName];
 				}
 				
 				let resorceSpec = gService.resourceSpec||{};
@@ -1708,6 +1687,17 @@
 					};
 					
 					//setScaleButton();
+				}
+				//tabBackup 
+				$('#divAddBackup').find('button').hide();
+				if(gService.serviceType != cServiceType.redis){
+					if(gService.ondiskFlag == true){
+						$('#divAddBackup').find('#removeBackupDisk').show();
+						$("#gridBackup").alopexGrid('showCol', 'ondisk');
+					}else{
+						$('#divAddBackup').find('#addBackupDisk').show();
+						$("#gridBackup").alopexGrid('hideCol', 'ondisk');
+					}
 				}
 			}
 			//서비스 display
@@ -2064,6 +2054,206 @@
 					setBackupUseYnEvt('Y');
 				}
 			});
+			$('button#saveSchedule').on('click',function(){
+				if(backupStatus=='I'){
+					gCommon.confirm('백업 설정을 수정 하시겠습니까?',function(){
+						fn_saveSchedule();				
+					});
+				}else if(backupStatus=='Y'){
+					backupStatus = 'I';
+					setBackupBtnEnable();
+				}
+			});
+			$('button#deleteBackup').on('click',function(){
+				let dt = AlopexGrid.trimData(gridBackup.alopexGrid('dataGet',{_state:{selected:true}}));
+				if(dt.length == 0){
+					gCommon.alert('선택된 백업 데이터가 없습니다.');
+					return;
+				}
+				gCommon.confirm('선택한 백업을 삭제 하시겠습니까?',function(){
+					$a.ajax({
+						url: '/zdbapi/deleteBackup',
+						method:'put',
+						data:{data:JSON.stringify(dt)},
+						success: function(res){
+							if(res.result.code!='4'){
+								gCommon.alert('백업 삭제를 요청하였습니다.');
+								fn_getBackupInfo();
+							};
+						}
+					});	
+				})
+			});
+			$('button#updateBackup').on('click',function(){
+				$a.popup({
+			        url: "/zdb02/zdb0200p06",
+			        data:gParam,
+			        iframe: false,
+			        width: 500,
+			        height: 300,
+			        title : '',
+			        callback : function(res){
+			        	if(res.result == 'Y'){
+			        		$a.ajax({
+								url: '/zdbapi/updateBackup',
+								data:$.extend({},gParam,{type:res.backupType}),
+								success: function(res){
+									if(res.result.code!='4'){
+										gCommon.alert('즉시 백업을 요청하였습니다.');
+										fn_getBackupInfo();
+									};
+								}
+							});				        		
+			        	}
+			        }
+			    });
+			});
+			$('button#addBackupDisk').on('click',function(){
+				$a.popup({
+				        data:$.extend({},gParam,{credential:$("#credential").val(),disk:gService.persistenceSpec.size}),
+				        url: '/zdb02/zdb0200p08',
+				        iframe: false,
+				        width: 500,
+				        height: 320,
+				        title : '',
+				        callback : function(res){
+				        	if(res.result.code=='0'){
+				        		fn_getServiceFirst(); 	        		
+				        	}
+				        }
+				    });
+			})			
+			$('button#removeBackupDisk').on('click',function(){
+				gCommon.confirm('백업 디스크를 제거하시겠습니까?',function(){
+					$a.ajax({
+						url:'/zdbapi/removeBackupDisk',
+						method:'put',
+						data:gParam,
+						success:function(res){
+							if(res.result.code=='0'){
+								fn_getServiceFirst();
+							}
+						}
+					});
+				})
+			})			
+			let downloadTitle = '복원/다운로드';
+			let bakcupLogShow = true;
+			if(gParam.serviceType == cServiceType.redis){
+				downloadTitle = '다운로드';
+				bakcupLogShow = false;
+			}
+			let gridBackup = $('#gridBackup').alopexGrid({
+				enableDefaultContextMenu:false,
+				enableContextMenu:true,
+				autoColumnIndex: true,
+				autoResize:true,
+				contextMenu : [
+					{   title: '결과',
+						processor:function(data,$cell,grid){
+							$a.ajax({
+								url:'/zdbapi/getBackupResult',
+								data:{backupId:data.backupId},
+								success:function(res){
+									let ob = res.backupResult;
+									let r = '<table><colgroup><col class="wd150"></col><col width="*"></col></colgroup>'
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '<tr><th class="tl">백업범위(LSN)</th><td class="tl">' + ob.backupScope + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.fromBackup)) r+='<tr><th class="tl">기준이 되는 백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.archiveFileSize)) r+='<tr><th class="tl">압축파일크기</th><td class="tl">' + ob.archiveFileSize  +'</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.backupTime)) r+='<tr><th class="tl">백업 소요시간</th><td class="tl">' + ob.backupTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.archiveTime)) r+='<tr><th class="tl">압축 소요시간</th><td class="tl">' + ob.archiveTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.uploadTime)) r+='<tr><th class="tl">업로드 소요시간</th><td class="tl">' + ob.uploadTime  + '</td></tr>' 
+										r+= '</table>';  							
+									gCommon.alert(r,null,{width:500,height:350});
+								}
+							});
+						},
+						use: function(data,$cell,grid){
+							return bakcupLogShow && $cell.data('alopexgrid-key')=="log"
+						}
+					},
+					{   title: '로그',
+						processor:function(data,$cell,grid){
+							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
+						},
+						use: function(data,$cell,grid){
+							return bakcupLogShow && $cell.data('alopexgrid-key')=="log"
+						}
+					}					
+				],				
+				height: 400,
+				columnMapping : [
+					{ key:'check',width:'30px',selectorColumn : true},
+					{ title:'백업유형', key : 'type' , width: '100px', align: 'center',render:function(value,data,render,mapping){						
+						let t = '';
+						switch(value){
+						    case 'INCR': t = '증분백업'; break;
+						    case 'DUMP': t= '덤프백업'; break;
+						    case 'FULL': t = '전체백업'; break;
+						    default : t = '즉시백업'; break;
+						}
+						return '<button class="Button gridbtn btn">'+t+'</button>';
+					}},
+					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
+						var val = '';
+						if(value < 1024 ) {
+							val = value +'B';
+						} else if(value < 1024*1024 ) {
+							val = cloudUtil.truncDecimal((value / 1024),2) +'Ki';
+						} else if(value < 1024*1024*1024 ) {
+							val = cloudUtil.truncDecimal((value / (1024*1024)),2) +'Mi';
+						} else if(value < 1024*1024*1024*1024 ) {
+							val = cloudUtil.truncDecimal((value / (1024*1024*1024)),2) +'Gi';
+						}
+						var st = data.status == 'DELETED'? 'text-decoration: line-through;': '';
+						var re = '<span style="font:inherit;'+st+'">'+val+'</span>' 
+						return re;
+					}},
+					{ title:'On-Disk', key : 'ondisk' , width: '160px', align: 'center',hidden:true},
+					{ title:downloadTitle, key : 'archiveFileSize' , width: '100px', align: 'center',excludeFitWidth:true,render:function(value,data,render,mapping){
+						let t = '다운로드';
+						if(['FULL','INCR'].indexOf(data.type) > -1){
+							t = '복원';
+						}
+						
+						var re = $('<button class="Button btn-download '+(data.status != 'OK'?'Disabled':'')+'">'+t+'</button>').on('click',function(){
+							fn_downloadBackupFile(data);
+						});
+						return re;
+					},tooltip:null},
+					{ title:'Log', key : 'log' , width: '60px',width:'70px',excludeFitWidth:true, align: 'center',render:function(value,data,render,mapping){
+						return getGridContextButton();
+					}}
+				],
+				footer: {
+					footerMapping: [
+						{ columnIndex: "deleteDatetime", title:'백업 파일 사이즈 합계: ', align:'center'},
+						{ columnIndex: "fileSize", align:'center',render:function(value,data,render,mapping){
+							let rawData = AlopexGrid.trimData(value);
+							let totalValue = new BigNumber(0);
+							for (var i in rawData) {
+								if (rawData[i].status == 'OK') {
+									totalValue = totalValue.plus(rawData[i].fileSize);
+								};
+							};
+							if(totalValue.lte(1024)) {
+								return totalValue.toFixed() +'B';
+							}else if(totalValue.lte(1024*1024) ) {
+								return totalValue.div(1024).decimalPlaces(2).toFixed() +'Ki';
+							}else if(totalValue.lte(1024*1024*1024)) {
+								return totalValue.div(1024*1024).decimalPlaces(2).toFixed() +'Mi';
+							}else{
+								return totalValue.div(1024*1024*1024).decimalPlaces(2).toFixed() +'Gi';
+							}
+						}}
+					]},
+				message: {
+					nodata: gMessage.gridNodata
+				}
+			});
 			function setBackupUseYnEvt(val){
 				var msg = val == 'Y'? '백업 설정을 활성화 하시겠습니까?': '백업 설정을 비활성화 하시겠습니까?';
 				gCommon.confirm(msg,function(yn){
@@ -2108,119 +2298,7 @@
 					backupForm.find('#startTime').setEnabled(false);
 					backupForm.find('#incrementPeriod').setEnabled(false);
 				}
-			};
-			let downloadTitle = '복원/다운로드';
-			let bakcupLogShow = true;
-			if(gParam.serviceType == cServiceType.redis){
-				downloadTitle = '다운로드';
-				bakcupLogShow = false;
-			}
-			$('#gridBackup').alopexGrid({
-				autoColumnIndex : true,
-				autoResize : true,
-				height: 400,
-				columnMapping : [
-					{ title:'백업유형', key : 'type' , width: '100px', align: 'center',render:function(value,data,render,mapping){						
-						let t = '';
-						switch(value){
-						    case 'INCR': t = '증분백업'; break;
-						    case 'DUMP': t= '덤프백업'; break;
-						    case 'FULL': t = '전체백업'; break;
-						    default : t = '즉시백업'; break;
-						}
-						return '<button class="Button gridbtn btn">'+t+'</button>';
-					}},
-					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
-					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
-					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
-					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
-						var val = '';
-						if(value < 1024 ) {
-							val = value +'B';
-						} else if(value < 1024*1024 ) {
-							val = cloudUtil.truncDecimal((value / 1024),2) +'Ki';
-						} else if(value < 1024*1024*1024 ) {
-							val = cloudUtil.truncDecimal((value / (1024*1024)),2) +'Mi';
-						} else if(value < 1024*1024*1024*1024 ) {
-							val = cloudUtil.truncDecimal((value / (1024*1024*1024)),2) +'Gi';
-						}
-						var st = data.status == 'DELETED'? 'text-decoration: line-through;': '';
-						var re = '<span style="font:inherit;'+st+'">'+val+'</span>' 
-						return re;
-					}},
-					{ title:downloadTitle, key : 'archiveFileSize' , width: '90px', align: 'center',render:function(value,data,render,mapping){
-						let t = '다운로드';
-						if(['FULL','INCR'].indexOf(data.type) > -1){
-							t = '복원';
-						}
-						
-						var re = $('<button class="Button btn-download '+(data.status != 'OK'?'Disabled':'')+'">'+t+'</button>').on('click',function(){
-							fn_downloadBackupFile(data);
-						});
-						return re;
-					},tooltip:null},
-					{ title:'삭제', key : 'delete' , width: '60px',maxWidth:'60px', align: 'center',render:function(value,data,render,mapping){
-						var re = $('<button class="Button btn-del '+(data.status != 'OK'?'Disabled':'')+'">삭제</button>').on('click',function(){
-							fn_deleteBackupFile(data);
-						});
-						return re;
-					}},
-					{ title:'결과', key : 'result' , width: '60px',maxWidth:'60px', align: 'center',hidden:!bakcupLogShow,render:function(value,data,render,mapping){
-						var re = $('<button class="Button">보기</button>').on('click',function(){
-							$a.ajax({
-								url:'/zdbapi/getBackupResult',
-								data:{backupId:data.backupId},
-								success:function(res){
-									let ob = res.backupResult;
-									let r = '<table><colgroup><col class="wd150"></col><col width="*"></col></colgroup>'
-										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '<tr><th class="tl">백업범위(LSN)</th><td class="tl">' + ob.backupScope + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.fromBackup)) r+='<tr><th class="tl">기준이 되는 백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.archiveFileSize)) r+='<tr><th class="tl">압축파일크기</th><td class="tl">' + ob.archiveFileSize  +'</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.backupTime)) r+='<tr><th class="tl">백업 소요시간</th><td class="tl">' + ob.backupTime  + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.archiveTime)) r+='<tr><th class="tl">압축 소요시간</th><td class="tl">' + ob.archiveTime  + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.uploadTime)) r+='<tr><th class="tl">업로드 소요시간</th><td class="tl">' + ob.uploadTime  + '</td></tr>' 
-										r+= '</table>';  							
-									gCommon.alert(r,null,{width:500,height:350});
-								}
-							});
-							
-						});
-						return re;
-					}},
-					{ title:'로그', key : 'log' , width: '60px',maxWidth:'60px', align: 'center',hidden:!bakcupLogShow,render:function(value,data,render,mapping){
-						var re = $('<button class="Button">로그</button>').on('click',function(){
-							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
-						});
-						
-						return re;
-					}}
-				],
-				footer: {
-					footerMapping: [
-						{ columnIndex: "deleteDatetime", title:'백업 파일 사이즈 합계: ', align:'center'},
-						{ columnIndex: "fileSize", align:'center',render:function(value,data,render,mapping){
-							let rawData = AlopexGrid.trimData(value);
-							let totalValue = new BigNumber(0);
-							for (var i in rawData) {
-								if (rawData[i].status == 'OK') {
-									totalValue = totalValue.plus(rawData[i].fileSize);
-								};
-							};
-							if(totalValue.lte(1024)) {
-								return totalValue.toFixed() +'B';
-							}else if(totalValue.lte(1024*1024) ) {
-								return totalValue.div(1024).decimalPlaces(2).toFixed() +'Ki';
-							}else if(totalValue.lte(1024*1024*1024)) {
-								return totalValue.div(1024*1024).decimalPlaces(2).toFixed() +'Mi';
-							}else{
-								return totalValue.div(1024*1024*1024).decimalPlaces(2).toFixed() +'Gi';
-							}
-						}}
-					]},
-				message: {
-					nodata: gMessage.gridNodata
-				}
-			});		
+			};			
 			function fn_getBackupScheduleInfo(){
 				var param = {
 						namespace : gService.namespace,
@@ -2250,40 +2328,6 @@
 					}
 				});					
 			};
-			$('button#saveSchedule').on('click',function(){
-				if(backupStatus=='I'){
-					gCommon.confirm('백업 설정을 수정 하시겠습니까?',function(){
-						fn_saveSchedule();				
-					});
-				}else if(backupStatus=='Y'){
-					backupStatus = 'I';
-					setBackupBtnEnable();
-				}
-			});
-			$('body').on('click','button#updateBackup',function(){
-				$a.popup({
-			        url: "/zdb02/zdb0200p06",
-			        data:gParam,
-			        iframe: false,
-			        width: 500,
-			        height: 300,
-			        title : '',
-			        callback : function(res){
-			        	if(res.result == 'Y'){
-			        		$a.ajax({
-								url: '/zdbapi/updateBackup',
-								data:$.extend({},gParam,{type:res.backupType}),
-								success: function(res){
-									if(res.result.code!='4'){
-										gCommon.alert('즉시 백업을 요청하였습니다.');
-										fn_getBackupInfo();
-									};
-								}
-							});				        		
-			        	}
-			        }
-			    });
-			});
 			function fn_saveSchedule(){
 				var param = $.extend({},gParam,backupForm.serializeObject());
 				param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
@@ -2318,22 +2362,7 @@
 					}
 				});
 			}
-			function fn_deleteBackupFile(data){
-				if(data.status!='OK')return;
-				gCommon.confirm('선택한 백업을 삭제 하시겠습니까?',function(){
-					var param = $.extend({},gParam,{backupId:data.backupId})
-					$a.ajax({
-						url: '/zdbapi/deleteBackup',
-						data:param,
-						success: function(res){
-							if(res.result.code!='4'){
-								gCommon.alert('백업 삭제를 요청하였습니다.');
-								fn_getBackupInfo();
-							};
-						}
-					});	
-				})
-			};
+			
 			function fn_downloadBackupFile(data){
 				if(data.status!='OK')return;
 				let isDownload = true;

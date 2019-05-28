@@ -26,7 +26,6 @@ import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.skcc.cloudz.zdb.portal.service.ZdbApiService;
 import com.zdb.core.domain.AlertingRuleEntity;
-import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
@@ -41,7 +40,6 @@ import com.zdb.core.domain.ZDBConfig;
 import com.zdb.core.domain.ZDBNode;
 
 import io.fabric8.kubernetes.api.model.Namespace;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import lombok.extern.slf4j.Slf4j;
 
@@ -467,10 +465,17 @@ public class ZdbApiController {
 	@RequestMapping(value = "deleteBackup")
 	public ModelAndView deleteBackup(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
-		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
-		ZdbRestDTO result = zdbApiService.deleteBackup(param);
-		mav.addObject(CommonConstants.RESULT ,result);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<Map<String,String>> backupList = new Gson().fromJson(param.get("data"), new TypeToken<List<HashMap<String,String>>>(){}.getType());
+		List<ZdbRestDTO> dto = new ArrayList<>();
+		if(backupList.size() > 0) {
+			for(Map<String,String> p : backupList) {
+				dto.add(zdbApiService.deleteBackup(p)); break;
+			}
+		}
+		
+		mav.addObject(CommonConstants.RESULT ,dto);
 		return mav;
 	}
 	
@@ -806,4 +811,21 @@ public class ZdbApiController {
 		mav.addObject(IResult.NODE_LIST ,nodeList);
 		return mav;
 	}
+	@RequestMapping(value="addBackupDisk", method=RequestMethod.PUT)
+	public ModelAndView addBackupDisk(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		ZdbRestDTO result = zdbApiService.addBackupDisk(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}
+	@RequestMapping(value="removeBackupDisk", method=RequestMethod.PUT)
+	public ModelAndView removeBackupDisk(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		ZdbRestDTO result = zdbApiService.removeBackupDisk(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}
+	
 }

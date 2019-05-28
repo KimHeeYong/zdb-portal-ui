@@ -12,13 +12,8 @@
 					<tr>
 						<th>Backup disk</th>
 						<td>
-							<div class="Divselect" id="backupDiskSize" name="backupDiskSize" style="height: 35px;width:125px; padding-top: 1px !important;">
-								<select>
-									<option value="1">1</option>
-									<option value="2">2</option>
-								</select>
-								<span></span>
-							</div>
+							<input class="Textinput" type="text" id="backupDiskSize" name="backupDiskSize"></input> 
+							<p data-for="backupDiskSize" class="warn-text"></p>
 						</td>
 					</tr>
 					<tr>
@@ -28,9 +23,6 @@
 							<p data-for="credential" class="warn-text"></p>
 						</td>
 					</tr>
-					<tr>
-						<td colspan="2">※Backup disk 추가 시 노드가 재시작됩니다.</td>
-					</tr>
 				</table>
 			</div>
 			</form>
@@ -38,7 +30,7 @@
 	</div>
 	<!--button-->
 	<div class="popup-btn__wrap">
-		<button class="Button btn bg-gray ok">확인</button>
+		<button class="Button btn bg-gray ok">저장</button>
 		<button class="Button btn bg-gray no">취소</button>
 	</div>
 	<!--//button-->
@@ -46,10 +38,12 @@
 <script type="text/javascript">
 $a.page(function() {
 	this.init = function(id,param) {
-    	var form = $('form[name=backupDiskForm]');
+    	let form = $('form[name=backupDiskForm]');
+    	let minDiskSize = (cloudUtil.parseInt(param.disk)*1.5);
     	form.validator({
 		    elements :{ 
-		        'credential': {rule:{required:true,equalTo:param.credential}}
+		        'credential': {rule:{required:true,equalTo:param.credential}},
+		        'backupDiskSize' : {rule:{required:true,min:minDiskSize}}
 		    },
 		    message:{
 		    	'equalTo': "credential이 일치하지 않습니다."
@@ -57,7 +51,22 @@ $a.page(function() {
 		});    	
 		$('[data-show-service-type*='+gParam.serviceType+']').show();
 		$('button.ok').click(function(){
-			$a.close({result:'Y',backupType:$('#backupType select').val()});
+			if(!form.validate()){
+				return;
+			}
+			gCommon.confirm('백업디스크를 추가 하시겠습니까?',function(){
+				let p = $.extend({},gParam,{backupDiskSize:form.find('#backupDiskSize').val()})
+				$a.ajax({
+					url:'/zdbapi/addBackupDisk',
+					method:'put',
+					data:p,
+					success:function(res){
+						if(res.result.code == '0'){
+							$a.close({result:'Y',backupType:$('#backupType select').val()});					
+						}
+					}
+				});				
+			})
 		});
 		$('button.no').click(function(){
 			$a.close('N');

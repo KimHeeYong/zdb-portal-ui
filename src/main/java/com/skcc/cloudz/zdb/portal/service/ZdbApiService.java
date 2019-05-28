@@ -760,11 +760,22 @@ public class ZdbApiService{
 	public List<ZDBNode> getNodesInfo(Map<String, String> param) {
 		List<ZDBNode> list = Collections.emptyList();
 		
-		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_NODES_INFO, ZdbRestDTO.class,param);
+		ZdbRestDTO zdbRestDTO = connector.getForObject(demonServer + URIConstants.URI_GET_NODES_INFO, ZdbRestDTO.class,param);
 		if(zdbRestDTO != null) {
 			list = zdbRestDTO.getResult().getNodeList();
 		};
 		return list;
+	}
+
+	public ZdbRestDTO addBackupDisk(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(demonServer + URIConstants.URI_ADD_BACKUP_DISK, HttpMethod.GET, entity,  ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+	public ZdbRestDTO removeBackupDisk(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		ZdbRestDTO zdbRestDTO = connector.exchange(demonServer + URIConstants.URI_REMOVE_BACKUP_DISK, HttpMethod.GET, entity,  ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
 	}
 
 }
