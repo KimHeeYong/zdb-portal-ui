@@ -760,7 +760,7 @@ public class ZdbApiService{
 	public List<ZDBNode> getNodesInfo(Map<String, String> param) {
 		List<ZDBNode> list = Collections.emptyList();
 		
-		ZdbRestDTO zdbRestDTO = connector.getForObject(demonServer + URIConstants.URI_GET_NODES_INFO, ZdbRestDTO.class,param);
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_NODES_INFO, ZdbRestDTO.class,param);
 		if(zdbRestDTO != null) {
 			list = zdbRestDTO.getResult().getNodeList();
 		};

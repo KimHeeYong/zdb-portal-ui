@@ -122,8 +122,8 @@
         	    autoColumnIndex: true,
         	    enableDefaultContextMenu: false,
         	    columnMapping: [
-        	        { key: 'status', title: 'Status', width: '100px', align: 'center' },
-        	        { key: 'nodeName', title: 'Node', width: '130px', align: 'center' },
+        	        { key: 'status', title: 'Status', width: '90px', align: 'center' },
+        	        { key: 'nodeName', title: 'Node', width: '100px', align: 'center' },
         	        { key: 'nodeType', title: 'Type', width: '100px', align: 'center',render:function(value){
         	        	if(value){
         	        		return value.substr(0,value.lastIndexOf('.'));
@@ -131,15 +131,15 @@
         	        }},
         	        //{ key: 'nodeRoles', title: 'Roles', width: '100px', align: 'center', render: function(value){ return value || '-'; } },
         	        { key: 'workerPool', title: 'WorkerPool', width: '100px', align: 'center' },
-        	        { key: 'cpu', title: 'Cpu', width: '100px', align: 'center' },
-        	        { key: 'memory', title: 'Memory', width: '100px', align: 'center' },
-        	        { key: 'cpuRequests', title: ' ', width: '80px', align: 'right' },
+        	        { key: 'cpu', title: 'Cpu', width: '70px', align: 'center' },
+        	        { key: 'memory', title: 'Memory', width: '80px', align: 'center' },
+        	        { key: 'cpuRequests', title: ' ', width: '40px', align: 'right' },
         	        { key: 'cpuRequestsPercentage', title: 'CPU Requests', width: '100px', align: 'center', sorting: false, render: { type: 'cpu_request_bar' } },
-        	        { key: 'cpuLimits', title: ' ', width: '80px', align: 'right' },
+        	        { key: 'cpuLimits', title: ' ', width: '40px', align: 'right' },
         	        { key: 'cpuLimitsPercentage', title: 'CPU Limits', width: '100px', align: 'center', sorting: false, render: { type: 'cpu_limits_bar' } },
-        	        { key: 'memoryRequests', title: ' ', width: '80px', align: 'right' },
+        	        { key: 'memoryRequests', title: ' ', width: '50px', align: 'right' },
         	        { key: 'memoryRequestsPercentage', title: 'Memory Requests', width: '100px', align: 'center', sorting: false, render: { type: 'memory_request_bar' } },
-        	        { key: 'memoryLimits', title: ' ', width: '80px', align: 'right' },
+        	        { key: 'memoryLimits', title: ' ', width: '50px', align: 'right' },
         	        { key: 'memoryLimitsPercentage', title: 'Memory Limits', width: '100px', align: 'center', sorting: false, render: { type: 'memory_limit_bar' } }
         	        /* { key: 'creationTime', title: '생성일시', width: '160px', align: 'center',render:function(value,date){
         	        	if(value){
