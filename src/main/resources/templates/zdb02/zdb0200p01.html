@@ -2,10 +2,35 @@
 	<div class="popup-mcontents">
 		<div class="popup-cont">
 			<form id="credentialPopForm" name="credentialPopForm">
-			<div> New Credential</div>
 			<div> 
-				<input class="Textinput" type="text" id="credential" name="credential"></input> 
-				<p data-for="credential" class="warn-text"></p>
+				<table class="Table Form-type">
+					<colgroup>
+						<col style="width:120px;"></col>
+						<col style="width:200px;"></col>
+					</colgroup>
+					<tr>
+						<td>현재 Credential :</td>
+						<td>
+							<input class="Textinput" type="password" id="credential" name="credential"></input> 
+							<p data-for="credential" class="warn-text"></p>
+						</td>
+					</tr>
+					<tr>
+						<td>새 Credential :</td>
+						<td>
+							<input class="Textinput" type="password" id="newCredential" name="newCredential"></input> 
+							<p data-for="newCredential" class="warn-text"></p>
+						</td>
+					</tr>
+					<tr>
+						<td>새 Credential 확인:</td>
+						<td>
+							<input class="Textinput" type="password" id="newCredentialConfirm" name="newCredentialConfirm"></input> 
+							<p data-for="newCredentialConfirm" class="warn-text"></p>
+						</td>
+					</tr>
+				</table>
+				
 			</div>
 			</form>
 		</div>
@@ -23,22 +48,26 @@ $a.page(function() {
     	var form = $('form[name=credentialPopForm]');
     	form.validator({
 		    elements :{ 
-		        'credential': {rule:{required:true}}
+		        'credential': {rule:{required:true,equalTo:param.credential},message:{equalTo:'credential이 일치하지 않습니다.'}},
+		        'newCredential': {rule:{required:true}},
+		        'newCredentialConfirm': {rule:{required:true,equalTo:'#newCredential'},message:{equalTo:'새 Credential 과 일치하지 않습니다.'}}		        	
 		    }
 		});	
     	$('.credentialSave').on('click',function(){
     		if(!form.validate()){
 				return;
 			};
-    		var data = $.extend({},param,{newPassword:form.find('#credential').val(),clusterEnabled:($("input[name=clusterEnabled]:checked").val()=="true")});
-			$a.ajax({
-				url: '/zdbapi/setNewPassword',
-				data:data,
-				success: function(res){
-					gCommon.alert('정상적으로 변경되었습니다.',function(){
-						$a.close('Y');
-					});
-				}
+			gCommon.confirm('credential을 변경 하시겠습니까?',function(){
+				var data = $.extend({},param,{newPassword:form.find('#newCredential').val()});
+				$a.ajax({
+					url: '/zdbapi/setNewPassword',
+					data:data,
+					success: function(res){
+						gCommon.alert('정상적으로 변경되었습니다.',function(){
+							$a.close('Y');
+						});
+					}
+				})				
 			})
     	});
     	
