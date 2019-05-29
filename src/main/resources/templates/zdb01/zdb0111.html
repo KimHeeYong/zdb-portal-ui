@@ -233,16 +233,17 @@
 								</td>
 							</tr>			
 							<tr>
-								<th class="Valign-top ht140">할당디스크</th>
+								<th>할당디스크</th>
 								<td>
-									<div class="info-wrap">
-										<div class="info-wrap ht60">
-											<div class="memory-info" id="diskInfo"></div>
-											<div class="progress-wrap">
-												<div class="memory-bar" id="diskSlider"></div>
-											</div>
-										</div>
+									<div class="Divselect wd150" id="diskSizeCombo" name="diskSizeCombo">
+										<select id="diskSizeSel" name="diskSizeSel">
+											<option value="">==선택하세요==</option>
+										</select>
+										<span></span>
 									</div>
+									<span data-for="diskSizeSel" class="info-text"></span>
+									<input class="Textinput hide" type="text" id="diskSize" name="diskSize" value="">
+									<span data-for="diskSize" class="info-text hide"></span>									
 								</td>
 							</tr>
 							<tr>
@@ -322,6 +323,8 @@ $a.page(function() {
 		            rule:{required:true,checkRule:gValid.dbName.rule},
 		            message:{checkRule:gValid.dbName.message}
 		        }
+		       , 'diskSize':{rule:{required:true}}
+		       , 'diskSizeSel':{rule:{required:true},message:{required:'용량을 선택하세요'}}
 		    }
 		}).find('input[name=serviceName]').on('keyup',function(){
 			setDefaultServiceName();
@@ -362,10 +365,6 @@ $a.page(function() {
 			};
 			if(param.podSpecIdx == 0){
 				gCommon.alert('메모리 용량을 선택하세요.');
-				return;
-			};
-			if(gParam.serviceType == cServiceType.mariadb && param.diskSpecIdx == 0){
-				gCommon.alert('디스크 용량을 선택하세요.');
 				return;
 			};
 			
@@ -451,16 +450,47 @@ $a.page(function() {
 		
 		memorySlider.noUiSlider.set(gParam.podSpecIdx||1)
 		setSliderValue(gParam.podSpecIdx||1);
+		
+		if(gParam.serviceType == cServiceType.mariadb){
+			let l = sliderConstants.disk.value;
+			let diskSizeCombo = $('#diskSizeCombo').find('select');
+			let diskSize = $('#diskSize'); 
+			for(let i = 0; i < l.length;i++){
+				let o = l[i];
+				if(o != '0'){
+					diskSizeCombo.append($('<option/>',{value:o,text:o+'Gi'}));				
+				}
+			}
+			diskSizeCombo.append($('<option/>',{value:'custom',text:'사용자정의'}));
+			diskSizeCombo.on('change',function(){
+				setDiskValue();
+			})
+			function setDiskValue(){
+				if(diskSizeCombo.val() == 'custom'){
+					diskSize.show();	
+					$('span[data-for=diskSize]').show();
+					$('span[data-for=diskSizeSel]').hide();
+				}else{
+					diskSize.val(diskSizeCombo.val());
+					diskSize.hide();
+					$('span[data-for=diskSize]').hide();
+					$('span[data-for=diskSizeSel]').show();
+				}				
+			}	
+		}		
+		
 		form.zdbui_setContents(gParam);
 		if(gParam.exposeType){
 			setExposeType(gParam.exposeType);
 		}
 		setBackupEnabled(gParam.backupEnabled);
 		setClusterEnabled(gParam.clusterEnabled);
+		
 		if(gParam.serviceType == cServiceType.redis){
 			setPurpose(gParam.purpose||'SESSION');
-		};
+		}
 		setDefaultServiceName();
+	
 		function setSliderValue(idx){
 			$('#memoryInfo').html(sliderConstants.memory.getValue(idx));
 			$('input[name=podSpecIdx]').val(idx);
@@ -503,35 +533,7 @@ $a.page(function() {
 				$('#exposeOnOff.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
 			}
 		};		
-		if(gParam.serviceType == cServiceType.mariadb){
-			var diskSlider = document.getElementById('diskSlider');
-			noUiSlider.create(diskSlider, {
-				start:[gParam.diskSpecIdx||0],
-				snap: true,
-				connect: [true,false],
-				range: sliderConstants.disk.range,
-				pips: {
-					mode: 'steps',
-					density: 100,					
-					format: {
-					  to: function ( value ) {
-						return sliderConstants.disk.getValue(value);
-					  },
-					  from: function ( value ) {
-						return value;
-					  }
-					}
-				}
-			}).on('slide', function ( values, handle ) {
-				setDiskSliderValue(parseInt(values[handle]));
-			});
-			diskSlider.noUiSlider.set(gParam.diskSpecIdx||1)
-			setDiskSliderValue(gParam.diskSpecIdx||1);
-			function setDiskSliderValue(idx){
-				$('#diskInfo').html(sliderConstants.disk.getValue(idx));
-				$('input[name=diskSpecIdx]').val(idx);
-			};
-		}
+
 	}
 });
 </script>	

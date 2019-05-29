@@ -95,6 +95,7 @@
 			<li data-content="#tabSystem">환경설정</li>
 			<li data-content="#tabLog">로그</li>
 			<li data-content="#tabProcess">프로세스</li>
+			<!-- <li data-content="#tabMariadb">Mariadb관리</li>-->
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
 		<div id="tabService">
@@ -868,11 +869,15 @@
 			<div class="tabs-contents">
 				<div id="gridProcess"></div>
 			</div>		
-		</div>	
+		</div>
+		<!-- 
+		<th:block th:id="tabMariadb" th:if="${#request.getParameter('serviceType')=='mariadb'}" th:include="zdb02/zdb0210_tabMariadb"></th:block>
+		 -->		
 	</div>
 </div>
 <script type="text/javascript">
 	'use strict'
+	let app = {};
 	var gCurrentNamespace = '';
 	var gNamespaces = null;
 	var gService = null;
@@ -1029,14 +1034,14 @@
 			}
 			$('#credentialUpdate').on('click',function(){
 				var param = $.extend({},gParam);
-				param.newPassword  = $('#credential').val();
+				param.credential  = $('#credential').val();
 				
 			    $a.popup({
 			        url: "/zdb02/zdb0200p01",
-			        data:gParam,
+			        data:param,
 			        iframe: false,
 			        width: 500,
-			        height: 300,
+			        height: 400,
 			        title : '',
 			        callback : function(res){
 			        	if(res == "Y"){
@@ -2109,8 +2114,12 @@
 			    });
 			});
 			$('button#addBackupDisk').on('click',function(){
+				let diskSize = gService.persistenceSpec.size;
+				if(gService.statefulSets.length > 1){
+					diskSize = cloudUtil.parseInt(diskSize) / 2 + 'Gi';
+				}
 				$a.popup({
-				        data:$.extend({},gParam,{credential:$("#credential").val(),disk:gService.persistenceSpec.size}),
+				        data:$.extend({},gParam,{credential:$("#credential").val(),diskSize:diskSize}),
 				        url: '/zdb02/zdb0200p08',
 				        iframe: false,
 				        width: 500,
@@ -2927,7 +2936,7 @@
 				]
 			});
 			let dateList = [];
-			for(let i = 0; i < 15;i++){
+			for(let i = 1; i < 15;i++){
 				let day = moment().subtract(i, 'days').format('YYYYMMDD');
 				dateList.push({date:day});
 			}
