@@ -103,6 +103,8 @@ var gCommon = $a.page(function(){
 						let re = res.result.resultMessage|| '';
 						if(re.indexOf('java.lang')> -1){
 							re = errMessage;
+						} else {
+							re = res.result.message;
 						}
 						gCommon.alert(re);													
                         opt.success(res);
@@ -110,6 +112,8 @@ var gCommon = $a.page(function(){
 						opt.success(res);
 					}
 				};
+			} else {
+				console.log('>>' + opt.success);
 			};
 			$.ajax(option);
 		}
