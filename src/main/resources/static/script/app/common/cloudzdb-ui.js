@@ -94,13 +94,13 @@ var gCommon = $a.page(function(){
 			if(opt.success){
 				option.success = function(res){
 					if(res && res.result && (res.result.resultCode == 'exception')){
-						let re = res.result.resultMessage|| '';
+						let re = res.result.resultMessage|| errMessage;
 						if(re.indexOf('java.lang')> -1){
 							re = errMessage; 
 						}
 						gCommon.alert(re);							
 					}else if(res && res.result && (res.result.code == 4)){
-						let re = res.result.resultMessage|| '';
+						let re = res.result.message|| errMessage;
 						if(re.indexOf('java.lang')> -1){
 							re = errMessage;
 						}
