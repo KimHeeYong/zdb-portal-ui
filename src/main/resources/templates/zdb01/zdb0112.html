@@ -190,8 +190,8 @@ $a.page(function() {
 		});
 		
 		if(gParam.serviceType == cServiceType.mariadb){
-			data.disk = sliderConstants.disk.value[gParam.diskSpecIdx];
-			data.specDisk = sliderConstants.disk.getValue(gParam.diskSpecIdx,isCluster)
+			data.disk = gParam.diskSize
+			data.specDisk = gParam.diskSize + 'Gi'
 		}else if(gParam.serviceType == cServiceType.redis && gParam.purpose == 'DATA'){
 			data.disk = data.podSpecIdx < 5 ? 20 : 40;
 			data.specDisk = (data.disk * (isCluster?2:1)) + 'Gi';

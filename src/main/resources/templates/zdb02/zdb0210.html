@@ -2114,8 +2114,12 @@
 			    });
 			});
 			$('button#addBackupDisk').on('click',function(){
+				let diskSize = gService.persistenceSpec.size;
+				if(gService.statefulSets.length > 1){
+					diskSize = cloudUtil.parseInt(diskSize) / 2 + 'Gi';
+				}
 				$a.popup({
-				        data:$.extend({},gParam,{credential:$("#credential").val(),disk:gService.persistenceSpec.size}),
+				        data:$.extend({},gParam,{credential:$("#credential").val(),diskSize:diskSize}),
 				        url: '/zdb02/zdb0200p08',
 				        iframe: false,
 				        width: 500,

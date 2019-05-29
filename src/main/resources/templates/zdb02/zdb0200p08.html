@@ -2,7 +2,6 @@
 	<div>
 		<div class="popup-text">
 			<form id="backupDiskForm" name="backupDiskForm">
-			<div>Add Backup disk</div>
 			<div>
 				<table class="Table Form-type">
 					<colgroup>
@@ -10,10 +9,10 @@
 						<col></col>
 					</colgroup>				
 					<tr>
-						<th>Backup disk</th>
-						<td>
-							<input class="Textinput" type="text" id="backupDiskSize" name="backupDiskSize"></input> 
-							<p data-for="backupDiskSize" class="warn-text"></p>
+						<td colspan="2">
+							추가 되는 백업스토리지는 <span data="backupDiskSize"></span>Gi(데이터 저장 공간 <span data="diskSize"></span>Gi의 1.5배)이며,<br/>
+							백업스토리지 추가시 즉시 DB가 재기동 됩니다.<br/>
+							백업스토리지 추가를 위해 Credential 을 입력해주세요.						
 						</td>
 					</tr>
 					<tr>
@@ -39,15 +38,14 @@
 $a.page(function() {
 	this.init = function(id,param) {
     	let form = $('form[name=backupDiskForm]');
-    	let minDiskSize = (cloudUtil.parseInt(param.disk)*1.5);
+    	console.log(param)
+    	let backupDiskSize = (cloudUtil.parseInt(param.diskSize)*1.5);
+    	form.find('span[data=diskSize]').html(param.diskSize);
+    	form.find('span[data=backupDiskSize]').html(backupDiskSize);
+    	
     	form.validator({
-		    elements :{ 
-		        'credential': {rule:{required:true,equalTo:param.credential}},
-		        'backupDiskSize' : {rule:{required:true,min:minDiskSize}}
-		    },
-		    message:{
-		    	'equalTo': "credential이 일치하지 않습니다."
-		    }
+		    elements :{ 'credential': {rule:{required:true,equalTo:param.credential}} },
+		    message:{ 'equalTo': "credential이 일치하지 않습니다." }
 		});    	
 		$('[data-show-service-type*='+gParam.serviceType+']').show();
 		$('button.ok').click(function(){
@@ -55,14 +53,14 @@ $a.page(function() {
 				return;
 			}
 			gCommon.confirm('백업디스크를 추가 하시겠습니까?',function(){
-				let p = $.extend({},gParam,{backupDiskSize:form.find('#backupDiskSize').val()})
+				let p = $.extend({},gParam,{backupDiskSize:backupDiskSize})
 				$a.ajax({
 					url:'/zdbapi/addBackupDisk',
 					method:'put',
 					data:p,
 					success:function(res){
 						if(res.result.code == '0'){
-							$a.close({result:'Y',backupType:$('#backupType select').val()});					
+							$a.close({result:'Y'});					
 						}
 					}
 				});				
