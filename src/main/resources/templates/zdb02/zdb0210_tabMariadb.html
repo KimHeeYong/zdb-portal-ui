@@ -1,0 +1,277 @@
+<div id="tabMariadb">
+	<div class="Tabs">
+		<div class="tabs-contents bn">
+			<div class="lay-item__box">
+				<div style="width:180px;" class="dtc" id="divMariaMenu">
+					<ul class="dropmenu-list bbn" style="height:600px;">
+						<li class="selected" data-menu="databaseStatus">서버상태</li>
+						<li data-menu="connection">클라이언트 커넥션</li>
+						<li data-menu="userRole">사용자 및 권한관리</li>
+						<li data-menu="statusVariables">Status Variables</li>
+						<li data-menu="systemVariables">System Variables</li>
+					</ul>
+				</div>
+				<div id="divMariaContent">
+					<div style="padding-left:10px;padding-right:10px;">
+						<div data-menu="databaseStatus">
+							<table class="Table Form-type">
+								<colgroup>
+									<col width="150px"></col>
+									<col width="200px"></col>
+									<col width="*"></col>
+								</colgroup>
+								<tr>
+									<th rowspan="6" align="center"><img src="/styles/images/service-img-big-mariadb.png"></th>
+									<th>Host:</th>
+									<td data="hostname"></td>
+								</tr>	
+								<tr>
+									<th>Socket:</th>
+									<td data="socket"></td>
+								</tr>	
+								<tr>
+									<th>Port:</th>
+									<td data="port"></td>
+								</tr>	
+								<tr>
+									<th>Version:</th>	
+									<td data="version"></td>
+								</tr>	
+								<tr>
+									<th>Compiled For:</th>
+									<td data="compiled"></td>
+								</tr>	
+								<tr>
+									<th>Running Since:</th>
+									<td data="running"></td>
+								</tr>	
+							</table>
+							<h3 class="form-title">Server Directories</h3>
+							<table class="Table Form-type">
+								<colgroup>
+									<col width="200px">
+									<col width="*">
+								</colgroup>
+								<tr>
+									<th>Base Directory:</th>
+									<td data="basedir"></td>
+								</tr>
+								<tr>
+									<th>Data Directory:</th>
+									<td data="datadir"></td>
+								</tr>
+								<tr>
+									<th>Plugin Directory:</th>
+									<td data="plugin_dir"></td>
+								</tr>
+								<tr>
+									<th>Tmp Directory:</th>
+									<td data="tmpdir"></td>
+								</tr>
+								<tr>
+									<th>Error Log:</th>
+									<td data="log_error"></td>
+								</tr>
+								<tr>
+									<th>General Log:</th>
+									<td data="generalLog"></td>
+								</tr>
+								<tr>
+									<th>Slow Query Log:</th>
+									<td data="slowQueryLog"></td>
+								</tr>
+							</table>
+						</div>
+						<div data-menu="connection" class="hide">
+							<h3 class="form-title">Client Connections</h3>
+							<div class="row">
+								<div class="cols wd300"> Threads Connected <span class="ml20" data="threadConnected">5</span> </div>
+								<div class="cols wd300"> Threads Running  <span class="ml20" data="threadRunning">2</span> </div>
+								<div class="cols wd300"> Threads Created  <span class="ml20" data="threadCreated">2358</span> </div>
+								<div class="cols wd300"> Threads Cached  <span class="ml20" data="threadCached">5</span> </div>
+								<div class="cols wd300"> Rejected(over limit) </div>
+								<div class="cols wd300"> Total Connections  <span class="ml20" data="threadCached">2515</span></div>
+								<div class="cols wd300"> Connection Limit  <span class="ml20" data="threadCached">300</span></div>
+								<div class="cols wd300"> Aborted Clients  <span class="ml20" data="threadCached">51</span></div>
+								<div class="cols wd300"> errors</div>
+							</div>
+							<div id="gridConnection" class="black"></div>
+						</div>
+						<div data-menu="userRole" class="hide">
+							<h3 class="form-title">Users and Privileges</h3>
+							 <div class="fl" style="width:170px;">
+							 	<div id="gridUserRole" class="black"></div>
+							 </div>
+							 <div style="width:calc(100% - 300px);min-height:600px;overflow: scroll">
+							 	<div style="padding:10px; border: 1px solid #cccccc;">
+							 						 	
+							 	</div>
+							 </div>
+						</div>
+						<div data-menu="statusVariables" class="hide">Status Variables</div>
+						<div data-menu="systemVariables" class="hide">System Variables</div>
+					</div>
+				</div>
+			</div>		
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+gService = {
+	podName :"zdb-test-mariatest-mariadb-0"
+}
+let appMariadb = {
+	init : function(){
+		this.tabMariadb = $('#tabMariadb');
+		this.mariaMenu = this.tabMariadb.find('#divMariaMenu');
+		this.mariaContent = this.tabMariadb.find('#divMariaContent');
+		
+		this.mariaMenu.find('li').on('click',function(e){
+			let ob = $(e.currentTarget)
+			ob.parent().find('li').removeClass('selected');
+			ob.addClass('selected');
+			let menuName = $(ob).data('menu');
+			appMariadb.mariaContent.find('[data-menu]').hide().filter('[data-menu='+menuName+']').show();
+			appMariadb.initMenu(menuName);
+		})
+		//appMariadb.initMenu(appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'));
+		setTimeout(function(){
+			appMariadb.mariaMenu.find('[data-menu]:eq(1)').trigger('click')
+		},100)
+		function fn_isSystemProcess(data){
+			let exIds = ['system user','replicator']; 
+			return exIds.indexOf(data.User) > -1; 
+		}			
+		this.gridConnection = $('#gridConnection').alopexGrid({
+			rowOption : { 
+				styleclass : function(data, rowOption){
+					let re = '';
+					let state = (data.State||'').toLowerCase();
+					let time = (data.Time || 0);
+					if(!fn_isSystemProcess(data)){
+						if( state.indexOf('waiting for') > -1 || 
+								   (state.indexOf('sending data') > -1 && time >= 10) ||
+								   (state.indexOf('updating') > -1 && time >= 10) ||
+								   (state == 'copying to tmp table on disk')){
+							re = 'warning-color';
+						}
+					}
+					
+					return re;
+				}
+			},				
+			message: { nodata: gMessage.gridNodata },
+			autoColumnIndex : true,
+			columnMapping : [
+					{ key : 'Id', title : 'Id', width : '70px', align : 'center'},
+					{ key : 'User', title : 'User', width : '80px', align : 'left' },
+					{ key : 'Host', title : 'Host', width : '80px', align : 'center' },
+					{ key : 'db', title : 'DB', width : '100px', align : 'center' },
+					{ key : 'Command', title : 'Command', width : '100px', align : 'center' },
+					{ key : 'Time', title : 'Time', width : '100px', align : 'center'},
+					{ key : 'State', title : 'State', width : '130px', align : 'center'},
+					{ key : 'Info', title : 'Info', width : '250px', align : 'left'},
+					{ key : '', title : '', width : '80px', align : 'center',render:function(value,data){
+						let disabled = '';
+						if(fn_isSystemProcess(data) == true){
+							disabled = 'Disabled';
+						}
+						return $('<button class="Button sm '+disabled+'">종료</button>').on('click',function(){
+							if($(this).hasClass('Disabled')){
+								return;
+							}
+							gCommon.credentialConfirm({
+						        data:{credential:$("#credential").val(),msg:'프로세스를 종료하시려면',okBtnMsg:'종료'},
+						        callback : function(res){
+									$a.ajax({
+										url: '/zdbapi/killProcess',
+										data:$.extend({},gParam,{pid:data.Id,podName:gService.podName}),
+										success: function(res){
+											if(res.result.code == '0'){
+												appMariadb.getConnection();
+											}
+										}
+									})
+						        }
+						    });
+						});
+					}}
+					],
+			});
+		this.gridUserRole = $('#gridUserRole').alopexGrid({
+			width:160,
+			height:580,
+			message: { nodata: gMessage.gridNodata },
+			autoColumnIndex : true,
+			columnMapping : [
+				{ key : 'User', title : 'User', width : '80px', align : 'left' },
+				{ key : 'Host', title : 'Host', width : '80px', align : 'left' }					
+			]
+		});				
+			
+		},initMenu : function(menuName){
+			switch(menuName){
+				case 'databaseStatus':
+					appMariadb.getDatabaseStatus();
+					break;
+				case 'connection':
+					appMariadb.gridConnection.alopexGrid('viewUpdate');
+					appMariadb.getProcesses();
+					break;
+			}
+		},getDatabaseStatus : function(){
+			let d = $.extend({},gParam,{podName:gService.podName});
+			$a.ajax({
+				url:'/zdbapi/getDatabaseStatus',
+				data:d,
+				success:function(res){
+					ds = res.databaseStatus;
+					let onOffBtn = {
+						ON : '<span class="state green vm"></span> ',
+						OFF : '<span class="state inactive vm"></span> '
+					}
+					if(ds){
+						ds.compiled = ds.version_compile_os + '('+ds.version_compile_machine+')';
+						ds.running = moment(ds.timestamp * 1000).format('ddd MMM D HH:mm:ss YYYY');
+						BigNumber.config({ ROUNDING_MODE: BigNumber.ROUND_DOWN });
+						let ut = new BigNumber(ds.Uptime);
+						let utStr = '';
+						let day = ut.div(86400).integerValue();
+						if(day.isGreaterThan(0)){
+							ut = ut.minus(day.times(86400)); 
+						}
+						let hour = ut.div(3600).integerValue();
+						if(hour.isGreaterThan(0)){
+							ut = ut.minus(hour.times(3600));
+						}
+						let minute = ut.div(60).integerValue();
+						utStr += day.toNumber() + ' days ' + hour.toNumber()+ ' : ' +minute.toNumber();
+						
+						ds.running += ' ( ' + utStr + ' )' 
+						ds.generalLog = onOffBtn[ds.general_log] + ds.general_log;
+						ds.slowQueryLog = onOffBtn[ds.slow_query_log] + ds.slow_query_log + ' ' + ds.slow_query_log_file;
+						
+						appMariadb.tabMariadb.find('[data-menu=databaseStatus]').zdbui_setContents(ds);
+					}
+				}
+			});
+		} ,getProcesses : function(){
+			$a.ajax({
+				url:'/zdbapi/getProcesses',
+				data:$.extend({},gParam,{podName:gService.podName}),
+				success:function(res){
+					let list = res.processes;
+					appMariadb.gridConnection.alopexGrid('dataSet',list);
+				}
+			});
+		}
+	}
+$a.page(function() {
+	this.init = function() {
+		appMariadb.init();		
+		//$('#divMariaMenu').find('li:eq(0)').trigger('click')
+	}
+});
+
+
+</script>

@@ -156,14 +156,19 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getPods", method = RequestMethod.GET)
+	@RequestMapping(value = "getPods")
 	public ModelAndView getPods(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<Map<String,String>> list = new Gson().fromJson(param.get("data"), new TypeToken<List<HashMap<String,String>>>(){}.getType());
+		Map<String,List<Map<String,Object>>> pods = new HashMap<>();
+		if(list.size() > 0) {
+			for(Map<String,String> o : list) {
+				pods.put(o.get(CommonConstants.SERVICE_NAME),zdbApiService.getPods(o));
+			}
+		}
 		
-		List<Map<String,Object>> podList = zdbApiService.getPods(param);
-		
-		mav.addObject(IResult.PODS ,podList);
+		mav.addObject(IResult.PODS ,pods);
 		return mav;
 	}
 	
@@ -827,5 +832,13 @@ public class ZdbApiController {
 		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;
 	}
-	
+
+	@RequestMapping(value="getDatabaseStatus", method=RequestMethod.GET)
+	public ModelAndView getDatabaseStatus(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		Map<String,String> result = zdbApiService.getDatabaseStatus(param);
+		mav.addObject(IResult.DATABASE_STATUS ,result);
+		return mav;
+	}
 }

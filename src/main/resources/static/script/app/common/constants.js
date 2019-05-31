@@ -87,3 +87,6 @@ const gMessage = {
 	gridNodata: '데이터가 없습니다.'
 };
 
+const cImg = {
+	checkboxY : '<img src="/styles/images/ico-checkmark.png" style="float:initial;width:20px"></img>'	
+}

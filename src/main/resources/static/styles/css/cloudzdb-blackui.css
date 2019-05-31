@@ -1,0 +1,38 @@
+@CHARSET "UTF-8";
+
+.form-title-black{
+	padding: 14px 0 10px;
+	font-size: 1.07rem;
+	font-weight: 500;
+	color: white;
+	border-bottom: 1px solid #444444;
+}
+.blackarea{
+	background: black;
+	color: #eeeeee;	
+}
+table.black-table th{
+	color: gray;
+}
+table.black-table td{
+	/* color: #eeeeee; */
+}
+
+.alopexgrid.black .headercell, 
+.alopexgrid.black .headercell.cell-header-lastrow.cell-header-firstrow {
+	height: 40px;
+	padding-top: 8px;
+	color: #eeeeee;
+	font-weight: bold;
+	border-top: 1px solid #cccccc;
+	background: #303030;
+}
+.alopexgrid.black .cell {
+	height: 40px;
+	padding-top: 8px;
+	color: #eeeeee;
+	font-size: 1.0rem;
+	border-right: 0;
+	border-color: #eeeeee;
+	background: #303030;
+}

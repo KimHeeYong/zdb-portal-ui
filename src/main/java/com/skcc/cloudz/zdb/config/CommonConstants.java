@@ -8,6 +8,8 @@ public class CommonConstants {
 	public static final String NAMESPACE_ALL = "_DEFAULT_ALL";
 
 	public static final String SERVICE_TYPE = "serviceType";
+	
+	public static final Object SERVICE_NAME = "serviceName";
 
 	public static final String SERVICE_TYPE_MARIA = "mariadb";
 	
@@ -40,4 +42,5 @@ public class CommonConstants {
 	public static final String EXCEPTION_URL_STATUS_404 = "/exception/404";
 	
 	public static final String EXCEPTION_URL_STATUS_500 = "/exception/500";
+
 }

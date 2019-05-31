@@ -778,4 +778,14 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 
+	public Map<String, String> getDatabaseStatus(Map<String, String> param) {
+		Map<String,String> data = null;
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_DATABASE_STATUS, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			data = zdbRestDTO.getResult().getDatabaseStatus();
+		};
+		return data;
+	}
+
 }

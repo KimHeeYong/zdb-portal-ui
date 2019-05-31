@@ -280,6 +280,23 @@ body.login {background: #ffffff}
 	font-size: 16px;
 	font-weight: bold;
 }
+.Button.btn.md {
+	height: 35px;
+	line-height: 33px;
+}
+.Button.btn.sm {
+	min-width: 50px;
+	padding: 0 10px;
+	height: 28px; 
+	font-size: 14px;
+	line-height: 25px
+}
+.Button.btn.lg {
+	min-width: 110px;
+	height: 45px; 
+	font-size: 16px;
+	font-weight: bold;
+}
 /*login button*/
 .Button.btn-login {	
 	width: 180px;

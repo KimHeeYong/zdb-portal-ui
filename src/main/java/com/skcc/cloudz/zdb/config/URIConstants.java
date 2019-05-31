@@ -160,6 +160,8 @@ public class URIConstants {
 
 	public static final String URI_REMOVE_BACKUP_DISK = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/removeBackupDisk";
 
+	public static final String URI_GET_DATABASE_STATUS = "/api/v1/{namespace}/{serviceType}/database/status/{podName}";
+
 	public static String URI_GET_NODES_INFO = "/api/v1/nodesInfo";
 
 }
