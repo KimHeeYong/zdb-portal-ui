@@ -221,7 +221,7 @@
 					{ title:'Limits', key:'cpuLimit',width:'70px',align:'center',hidden:true},
 					{ title:'Requests', key:'memoryRequest',width:'70px',align:'center',hidden:true},
 					{ title:'Limits', key:'memoryLimit',width:'70px',align:'center',hidden:true},
-					{ title:'데이타', key:'storageData',width:'70px',align:'center',hidden:true},
+					{ title:'데이터', key:'storageData',width:'70px',align:'center',hidden:true},
 					{ title:'백업', key:'storageBackup',width:'70px',align:'center',hidden:true},
 					{ title:'서비스종류', key : 'serviceType', width: '100px', align: 'center', render:function(value){
 						let img = {
@@ -233,7 +233,12 @@
 					}},
 					{ title:'버전', key : 'version', width: '110px', align: 'center'},
 					{ title:'구동시간', key : 'elapsedTime', width: '80px', align: 'center'},
-					{ title:'생성일시', key : 'crtTime', width: '150px', align: 'center'},
+					{ title:'생성일자', key : 'crtTime', width: '150px', align: 'center',render:function(data){
+						try{
+							return data.substring(0,10);
+						} catch (ex) {}
+						return data;
+					}},
 					{ title:'HA', key : 'clusterEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
 						if(data.tp == 'pod') return;
 						if(value == true){
