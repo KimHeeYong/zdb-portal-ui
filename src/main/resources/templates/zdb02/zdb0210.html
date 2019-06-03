@@ -1522,7 +1522,7 @@
 								
 								if(dataStorage != null) {
 									var hasUseRate = dataStorage.useRate?true:false;
-									ob.disk = cloudUtil.truncDecimal((dataStorage.used / (1024*1000)),2) + ' / ' + (hasUseRate? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A')) 
+									ob.disk = cloudUtil.truncDecimal((dataStorage.used / (1024*1024)),2) + ' / ' + (hasUseRate? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A')) 
 									        + (hasUseRate? ' ('+dataStorage.useRate+')' : '' ) ;
 									ob.diskUpdateTime = dataStorage.updateTime; 
 								}
