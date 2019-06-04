@@ -180,7 +180,7 @@ $a.page(function() {
 		var data;
 		if (gParam.serviceType == cServiceType.mariadb) {
 			data = $.extend({},gParam,{
-				specMemory:sliderConstants.memory.getValue(gParam.podSpecIdx,isCluster),
+				specMemory:sliderConstants.memory.getValue(gParam.podSpecIdx,isCluster)+'<span class="warn-text ft15">&nbsp;&nbsp;&nbsp;"DB 모니터링을 위한 자원(CPU 100m, Memory 64Mi)이 추가로 할당됩니다."</span>',
 				memory:sliderConstants.memory.value[gParam.podSpecIdx],
 				specCpu:sliderConstants.cpu.getValue(gParam.podSpecIdx,isCluster),
 				cpu:sliderConstants.cpu.value[gParam.podSpecIdx],
@@ -192,7 +192,7 @@ $a.page(function() {
 			});
 		} else if (gParam.serviceType == cServiceType.redis) {
 			data = $.extend({},gParam,{
-				specMemory:sliderConstants.memory.value[gParam.podSpecIdx],
+				specMemory:sliderConstants.memory.value[gParam.podSpecIdx]+'<span class="warn-text ft15">&nbsp;&nbsp;&nbsp;"DB 모니터링을 위한 자원(CPU 100m, Memory 64Mi)이 추가로 할당됩니다."</span>',
 				memory:sliderConstants.memory.value[gParam.podSpecIdx],
 				specCpu:sliderConstants.cpu.getValue(gParam.podSpecIdx,isCluster),
 				cpu:sliderConstants.cpu.value[gParam.podSpecIdx],

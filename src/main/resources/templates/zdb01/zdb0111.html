@@ -104,7 +104,7 @@
 							<tr id="trExpose">
 								<th>Public 접근 허용</th>
 								<td>
-									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
 										<input type="radio" name="exposeType" value="public" checked="checked">public
 										<input type="radio" name="exposeType" value="private"/>private
@@ -114,7 +114,7 @@
 							<tr>
 								<th>클러스터</th>
 								<td>
-									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
 										<input type="radio" name="clusterEnabled" value="true" checked="checked">true
 										<input type="radio" name="clusterEnabled" value="false">false
@@ -122,7 +122,7 @@
 								</td>
 							</tr>							
 							<tr>
-								<th class="ht140">할당메모리</th>
+								<th class="ht140">할당메모리<span class="asterisk">*</span></th>
 								<td>
 									<div class="info-wrap">
 										<div class="info-wrap ht60">
@@ -183,7 +183,7 @@
 							<tr>
 								<th>백업 여부</th>
 								<td>
-									<div class="onoff-wrap" id="backupOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="onoff-wrap" id="backupOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
 										<input type="radio" name="backupEnabled" value="true" checked="checked">사용
 										<input type="radio" name="backupEnabled" value="false"/>미사용
@@ -193,7 +193,7 @@
 							<tr id="trExpose">
 								<th>Public 접근 허용</th>
 								<td>
-									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
 										<input type="radio" name="exposeType" value="public" checked="checked">public
 										<input type="radio" name="exposeType" value="private">private
@@ -203,7 +203,7 @@
 							<tr>
 								<th>클러스터</th>
 								<td>
-									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
 										<input type="radio" name="clusterEnabled" value="true" checked="checked">true
 										<input type="radio" name="clusterEnabled" value="false">false
@@ -220,7 +220,7 @@
 								</td>
 							</tr>							
 							<tr>
-								<th class="ht140">할당메모리</th>
+								<th class="ht140">할당메모리<span class="asterisk">*</span></th>
 								<td>
 									<div class="info-wrap">
 										<div class="info-wrap ht60">
@@ -233,7 +233,7 @@
 								</td>
 							</tr>			
 							<tr>
-								<th>할당디스크</th>
+								<th>할당디스크<span class="asterisk">*</span></th>
 								<td>
 									<div class="Divselect wd150" id="diskSizeCombo" name="diskSizeCombo">
 										<select id="diskSizeSel" name="diskSizeSel">
@@ -247,7 +247,7 @@
 								</td>
 							</tr>
 							<tr>
-								<th>스토리지 QoS</th>
+								<th>스토리지 QoS<span class="asterisk">*</span></th>
 								<td>
 									<div class="Divselect" id="storageClass" name="storageClass">
 										<select>
@@ -334,7 +334,7 @@ $a.page(function() {
 			gCommon.getConfigData().done(function(result){
 				gConfigData = result;
 				if(gConfigData.public_network_enabled == 'true'){
-					setExposeType('public');
+					setExposeType('private');
 					$('#trExpose').show();
 				}else{
 					setExposeType('private');
@@ -483,11 +483,14 @@ $a.page(function() {
 		if(gParam.diskSize){
 			$('#diskSize').val(gParam.diskSize);
 		}
-		if(gParam.exposeType){
+		/* if(gParam.exposeType){
 			setExposeType(gParam.exposeType);
-		}
-		setBackupEnabled(gParam.backupEnabled);
-		setClusterEnabled(gParam.clusterEnabled);
+		} */
+		//setBackupEnabled(gParam.backupEnabled);
+		//setClusterEnabled(gParam.clusterEnabled);
+		setBackupEnabled('false');
+		setExposeType('private');
+		setClusterEnabled('false');
 		
 		if(gParam.serviceType == cServiceType.redis){
 			setPurpose(gParam.purpose||'SESSION');
