@@ -63,20 +63,23 @@
 			<div class="Panel-content">
 				<ul class="config-info" id="configInfo">
 					<li>
-						<strong>할당 CPU : </strong>
+						<strong>할당 CPU<span class="ico_title" id="AllocatedCPUTooltip"></span> : </strong>
 						<span data="cpu"></span>
+						<div class="Tooltip" data-base="#AllocatedCPUTooltip" id="AllocatedCPUTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 					<li>
-						<strong>할당 메모리 : </strong>
+						<strong>할당 메모리<span class="ico_title" id="AllocatedMemoryTooltip"></span> : </strong>
 						<span data="memory"></span>
+						<div class="Tooltip" data-base="#AllocatedMemoryTooltip" id="AllocatedMemoryTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 					<li>
 						<strong>스토리지 : </strong>
 						<span data="disk"></span>
 					</li>
 					<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
-						<strong>스토리지 QoS : 	</strong>
+						<strong>스토리지 QoS<span class="ico_title" id="StorageQoSTooltip"></span> : 	</strong>
 						<span data="storageClass"></span>
+						<div class="Tooltip" data-base="#StorageQoSTooltip" id="StorageQoSTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 				</ul>
 			</div>
@@ -1438,6 +1441,10 @@
 					};
 				};
 				
+				var StorageQoSTooltipMsg = "";
+				var tempIops = "";
+				var tempDisk = "";
+				
 				var rsSpec = gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{};
 				var psSpec = gCommon.getObjectByIdx(gService.persistenceSpecOfPodMap,0)||{};
 				var pvSpec = gCommon.getObjectByIdx(gService.persistentVolumeClaims,0)||{};
@@ -1448,11 +1455,24 @@
 				gServiceScale.disk = psSpec.size;
 				gServiceScale.storageClass = '';
 				if(pvSpec.spec){
-					gServiceScale.storageClass = cStorageClassConstants[pvSpec.spec.storageClassName];
+					var strIops = cStorageClassConstants[pvSpec.spec.storageClassName];
+					StorageQoSTooltipMsg = "Storage QoS: "+strIops;
+					if(strIops != null) {
+					var iopsArr = strIops.split(" ");
+					tempIops = iopsArr[0];
+					}
 				}
 				
 				let resorceSpec = gService.resourceSpec||{};
 				let persistenceSpec = gService.persistenceSpec||{};
+				
+				var strDisk = gService.persistentVolumeClaims.length==0?'사용안함':persistenceSpec.size||'';
+				if(strDisk != '사용안함') {
+					var diskArr = strDisk.split("G");
+					tempDisk = diskArr[0];
+					var tempStorageClass = tempIops * tempDisk;
+					gServiceScale.storageClass = tempStorageClass + " IOPS";
+				}
 				$('#configInfo').zdbui_setContents(
 						{ cpu:resorceSpec.cpu||''
 						 ,memory:resorceSpec.memory||''
@@ -1547,6 +1567,9 @@
 				var isSlaveGreen = false;
 				var statefulSets = gService.statefulSets;
 				var deployments = gService.deployments;
+				
+				var AllocatedCPUTooltipMsg = "";
+				var AllocatedMemoryTooltipMsg = "";
 
 				addResourceList('statefulSets',statefulSets);
 				addResourceList('deployments',deployments);
@@ -1633,13 +1656,24 @@
 							};
 						} else {
 							tList.push(dt);
-						}						
+						}
+						var tempMsg = "";
+						
+						tempMsg = dt.role+"(DB): "+dt.cpu+"<br>"+dt.role+"(Monitoring): 100m<br>";
+						AllocatedCPUTooltipMsg += tempMsg;
+						
+						tempMsg = dt.role+"(DB): "+dt.memory+"<br>"+dt.role+"(Monitoring): 64Mi<br>";
+						AllocatedMemoryTooltipMsg += tempMsg;
+						
 					}
 				};
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset
 				if (gService.slaveStatus != null) {
 					$('#replicationTooltipMsg').html(gService.slaveStatus.message).tooltip();
 				}
+				$('#AllocatedCPUTooltipMsg').html(AllocatedCPUTooltipMsg).tooltip();
+				$('#AllocatedMemoryTooltipMsg').html(AllocatedMemoryTooltipMsg).tooltip();
+				$('#StorageQoSTooltipMsg').html(StorageQoSTooltipMsg).tooltip();
 				
 				//failover 설정
 				//mariadb는 statefulSets이 2개일경우, redis는 deployments가 존재 할 경우 활성화

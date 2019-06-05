@@ -210,7 +210,7 @@
 									</div>
 								</td>
 							</tr>
-							<tr>
+							<tr id="workerPoolTr">
 								<th>Worker Pools</th>
 								<td>
 									<div class="Divselect" id="workerPool" name="workerPool">
@@ -302,13 +302,18 @@ $a.page(function() {
 					let workerPool = $('#workerPool');
 					let list = res.result.result.workerPools;
 					let l = [];
+					var workerPoolCount = 0;
 					if(list && list.length > 0){
 						for(o in list){
 							let t = list[o]
-							workerPool.find('select').append($('<option>',{value:t,text:t}));							
+							workerPool.find('select').append($('<option>',{value:t,text:t}));
+							workerPoolCount++;
 						}
 					};
-					workerPool.setSelected(workerPool.find('option:eq(0)').val())
+					workerPool.setSelected(workerPool.find('option:eq(0)').val());
+					if(workerPoolCount <= 1) {
+						$('#workerPoolTr').css('display', 'none');
+					}
 				}
 			});	
 		}
