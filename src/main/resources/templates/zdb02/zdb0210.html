@@ -73,8 +73,9 @@
 						<div class="Tooltip" data-base="#AllocatedMemoryTooltip" id="AllocatedMemoryTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 					<li>
-						<strong>스토리지 : </strong>
+						<strong>스토리지<span class="ico_title" id="StorageTooltip"></span> : </strong>
 						<span data="disk"></span>
+						<div class="Tooltip" data-base="#StorageTooltip" id="StorageTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 					<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
 						<strong>스토리지 QoS<span class="ico_title" id="StorageQoSTooltip"></span> : 	</strong>
@@ -1230,7 +1231,8 @@
 						}
 						return re;
 					}},
-					{ title:'Name', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
+					//{ title:'Name', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
+					{ title:'이름', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
 						if(data.colspanCol){
 							return isSlowLogHidden ? 'log' : 'slowLog';
 						};
@@ -1243,10 +1245,13 @@
 						};
 						return re;
 					}},
-					{ title:'Replicas', key : 'replicas' , width: '70px', align: 'center'},
-					{ title:'Replication', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
+					//{ title:'Replicas', key : 'replicas' , width: '70px', align: 'center'},
+					{ title:'인스턴스 수', key : 'replicas' , width: '70px', align: 'center'},
+					//{ title:'Replication', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
+					{ title:'복제', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
 					}},
-					{ title:'Role', key : 'role' , width: '90px', align: 'center', render : function(value, data){
+					//{ title:'Role', key : 'role' , width: '90px', align: 'center', render : function(value, data){
+					{ title:'역할', key : 'role' , width: '90px', align: 'center', render : function(value, data){
 						let re = '';
 						let roleIcon = {
 							master : '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">',
@@ -1284,8 +1289,10 @@
 						
 						return re;
 					}},
-					{ title:'Node', key : 'node' , width: '130px', align: 'center'},
-					{ title:'Disk(Gi)', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
+					//{ title:'Node', key : 'node' , width: '130px', align: 'center'},
+					{ title:'노드', key : 'node' , width: '130px', align: 'center'},
+					//{ title:'Disk(Gi)', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
+					{ title:'스토리지', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
 						if(data.diskUpdateTime){
 							var isValid = moment(data.diskUpdateTime,'YYYYMMDDHHmmss').isValid();
 							return 'Update Time : '+moment(data.diskUpdateTime,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
@@ -1293,17 +1300,50 @@
 					}},
 					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
 					{ title:'Memory(Mi)', key : 'memory' , width: '120px', align: 'center'},
-					{ title:'Last Uptime', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
+					//{ title:'Last Uptime', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
+					{ title:'기간', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
 						var lt = data.condition? data.condition.lastTransitionTime : '';
 						if(lt){
-							var isValid = moment(lt).isValid(); 
-							return moment(lt).format('YYYY-MM-DD HH:mm:ss');
+							var d = new Date();
+							var isValid = moment(lt).isValid();
+							var ltDate = new Date(lt);
+							
+							var different = d.getTime() - ltDate.getTime();
+							
+							var secondsInMilli = 1000;
+							var minutesInMilli = secondsInMilli * 60;
+							var hoursInMilli = minutesInMilli * 60;
+							var daysInMilli = hoursInMilli * 24;
+							
+							var elapsedDays = different / daysInMilli;
+							different = different % daysInMilli;
+							
+							var elapsedHours = different / hoursInMilli;
+							different = different % hoursInMilli;
+							
+							var elapsedMinutes = different / minutesInMilli;
+							different = different % minutesInMilli;
+							
+							var elapsedSeconds = different / secondsInMilli;
+							
+							if (elapsedDays > 0) {
+								return Math.floor(elapsedDays) + "일";
+							} else if (elapsedHours > 0) {
+								return Math.floor(elapsedHours) + "시간";
+							} else if (elapsedMinutes > 0) {
+								return Math.floor(elapsedMinutes) + "분";
+							} else if (elapsedSeconds > 0) {
+								return Math.floor(elapsedSeconds) + "초";
+							} else {
+								return "-";
+							}
 						}
-					}}, 
+					}},
 					{ title:'Action',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping,cell){
 						return getGridContextButton();
 					}},
-					{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
+					//{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
+					{ title:'로그',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
 						if(!data.isPod)return'';
 						return getGridContextButton();
 					}}
