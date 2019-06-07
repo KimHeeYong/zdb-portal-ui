@@ -39,7 +39,7 @@
       "admin",
       "member"
     ],
-    "enable": true
+    "enable": false
   },
   {
     "id": "zdb0700",
