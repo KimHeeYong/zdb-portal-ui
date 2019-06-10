@@ -8,6 +8,7 @@ import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
+import com.zdb.core.domain.MariaDBVariable;
 import com.zdb.core.domain.Mycnf;
 import com.zdb.core.domain.PersistentVolumeClaimEntity;
 import com.zdb.core.domain.RequestEvent;
@@ -98,4 +99,12 @@ public class Result {
 	private Map<String,List<String>> storagesData;
 	
 	private Map<String,String> databaseStatus;
+	
+	private Map<String,String> databaseConnection;
+	
+	private Map<String,String> databaseStatusVariables;
+	
+	private Map<String,String> databaseSystemVariables;
+	
+	private List<MariaDBVariable> databaseVariables;
 }

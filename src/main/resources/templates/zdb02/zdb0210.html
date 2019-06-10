@@ -398,6 +398,7 @@
 							</tbody>
 						</table>
 		            </div>
+		            <div id="areaMonitorReplication" class="hide">
 					<h3 class="form-title">Query & Replication</h3>
 					<div class="tabs-contents">
                          <table class="Table Monitoring">
@@ -410,6 +411,7 @@
 								</tr>
 							</tbody>
 						</table>
+		            </div>
 		            </div>
 				</li>
 			</ul>
@@ -851,17 +853,25 @@
 			<h3 class="form-title">로그</h3>
 			<div class="tabs-contents">
 				<div class="mt10">
+					<div class="info-list select-date Daterange" data-selectyear="true" data-selectmonth="true">
+						<div class="Startdate Dateinput">
+							<input id="logStartDate" name="logStartDate" type="text" readonly="readonly">
+							<div class="Calendar" id="logStartDate"></div>
+						</div>
+						<span class="date-line">~</span>
+						<div class="Enddate Dateinput">
+							<input id="logEndDate" name="logEndDate" type="text" readonly="readonly">
+							<div class="Calendar" id="logEndDate"></div>
+						</div>
+					</div>
 					<label class="ImageRadio af-radio-text"><input class="Radio" name="logType" checked="checked" value="error">에러로그</label>
 					<label class="ImageRadio af-radio-text"><input class="Radio" name="logType" value="query">Slow Query</label>
 					<span class="ml20"></span>
 					<button class="Button btn" id="btnSearchLog">조회</button>
 					<button class="Button btn" id="btnDownloadLog">다운로드</button>
 				</div>
-				<div class="fl" style="width:210px;">
-					<div id="gridLog"></div>
-				</div>
 				<div>
-					<div style="width:calc(100 - 260px);overflow: scroll">
+					<div style="width:100%;overflow: scroll" class="mt10">
 						<textarea class="Textarea" id="divLog" style="background: black;color: white;height:680px;width:100%;overflow: scroll;"></textarea>
 					</div>
 				</div>				
@@ -1772,6 +1782,11 @@
 					
 					//setScaleButton();
 				}
+				//tabMonitor  mariadb replication은 single모드가 아닐경우만 show				
+				if(gParam.serviceType == cServiceType.mariadb && gService.statefulSets.length > 1){
+					$('#tabMonitor #areaMonitorReplication').show();
+				}
+				
 				//tabBackup 
 				$('#divAddBackup').find('button').hide();
 				if(gService.serviceType != cServiceType.redis){
@@ -3000,30 +3015,15 @@
 			let tabLog = $('#tabLog');
 			let lastLogData = {
 					logType:null, //마지막 조회 타입	
-					dates:null//마지막 조회 날짜 데이터					
+					startDate:null,//조회 시작날짜
+					endDate:null//조회 종료날짜
 				} 			
-			let gridLog = $('#gridLog').alopexGrid({
-				autoColumnIndex: true,
-				width: 212,
-				height: 680,
-				enableHeaderSelect:true,
-				columnMapping : [  
-					{ key:'check',width:'30px',selectorColumn : true},
-					{ title:'date',key:'date',width:'160px',align:'center',render:function(value){
-						return moment(value).format('YYYY-MM-DD');
-					}}
-				]
-			});
-			let dateList = [];
-			for(let i = 1; i < 15;i++){
-				let day = moment().subtract(i, 'days').format('YYYYMMDD');
-				dateList.push({date:day});
-			}
-			gridLog.alopexGrid('dataSet',dateList);
-			$('#btnSearchLog').on('click',function(){
+			tabLog.find('#logStartDate').val(moment().subtract(1, 'days').format('YYYY-MM-DD'));
+			tabLog.find('#logEndDate').val(moment().subtract(1, 'days').format('YYYY-MM-DD'));
+			tabLog.find('#btnSearchLog').on('click',function(){
 				fn_getLogData();
 			});
-			$('#btnDownloadLog').on('click',function(){
+			tabLog.find('#btnDownloadLog').on('click',function(){
 				if(lastLogData.logType==null){
 					gCommon.alert('조회된 데이터가 없습니다.');
 				}
@@ -3032,12 +3032,10 @@
 			});
 			tabLog.find('input[name=logType]:first').prop('checked',true);
 			function fn_getLogData(){
-				let selDates = fn_getSelectedLogDates();
-				if(selDates.length == 0){
-					gCommon.alert('조회 할 날짜를 선택하세요.');
-					return;
-				}
-				let param = $.extend({},gParam,{logType:tabLog.find('input[name=logType]:checked').val(),dates:selDates});
+				let startDate = tabLog.find('#logStartDate').val().replaceAll('-','');
+				let endDate = tabLog.find('#logEndDate').val().replaceAll('-','');
+				
+				let param = $.extend({},gParam,{logType:tabLog.find('input[name=logType]:checked').val(),startDate:startDate,endDate:endDate});
 				$a.ajax({
 					url: '/zdbapi/getFileLog',
 					data:param,
@@ -3045,13 +3043,10 @@
 						let re = res.fileLog||'데이터가 없습니다.'
 						$('#divLog').html(re);
 						lastLogData.logType = param.logType; 
-						lastLogData.dates = param.dates;						
+						lastLogData.startDate = param.startDate;						
+						lastLogData.endDate = param.endDate;						
 					}
 				})
-			}
-			function fn_getSelectedLogDates(){
-				let l = gridLog.alopexGrid('dataGet',{_state:{selected:true}});
-				return l.map(function(d){return d.date}).join();
 			}
 			/*tabLog end */		
 			/*tabProcess start */
