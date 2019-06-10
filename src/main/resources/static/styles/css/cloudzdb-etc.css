@@ -13,6 +13,9 @@
 .fr{
 	float: right;
 }
+.fi{
+	float: inherit;	
+}
 .tl{
 	text-align: left;
 }
@@ -120,6 +123,12 @@
 	display: none;
 }
 
+.zi1{
+	z-index: 1;
+}
+.zi10{
+	z-index: 10;
+}
 .info-text {
 	font-size: 12px;
 	color: gray;

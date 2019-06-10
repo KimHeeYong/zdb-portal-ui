@@ -9,6 +9,7 @@
 						<li data-menu="userRole">사용자 및 권한관리</li>
 						<li data-menu="statusVariables">Status Variables</li>
 						<li data-menu="systemVariables">System Variables</li>
+						<li data-menu="myCnf">my.cnf</li>
 					</ul>
 				</div>
 				<div id="divMariaContent">
@@ -85,14 +86,15 @@
 						<div data-menu="connection" class="hide">
 							<h3 class="form-title">Client Connections</h3>
 							<div class="row">
-								<div class="cols wd300"> Threads Connected <span class="ml20" data="threadConnected">5</span> </div>
-								<div class="cols wd300"> Threads Running  <span class="ml20" data="threadRunning">2</span> </div>
-								<div class="cols wd300"> Threads Created  <span class="ml20" data="threadCreated">2358</span> </div>
-								<div class="cols wd300"> Threads Cached  <span class="ml20" data="threadCached">5</span> </div>
-								<div class="cols wd300"> Rejected(over limit) </div>
-								<div class="cols wd300"> Total Connections  <span class="ml20" data="threadCached">2515</span></div>
-								<div class="cols wd300"> Connection Limit  <span class="ml20" data="threadCached">300</span></div>
-								<div class="cols wd300"> Aborted Clients  <span class="ml20" data="threadCached">51</span></div>
+								<div class="cols wd300"> Threads Connected <span class="ml20" data="Threads_connected"></span> </div>
+								<div class="cols wd300"> Threads Running  <span class="ml20" data="Threads_running"></span> </div>
+								<div class="cols wd300"> Threads Created  <span class="ml20" data="Threads_created"></span> </div>
+								<div class="cols wd300"> Threads Cached  <span class="ml20" data="Threads_cached"></span> </div>
+								<div class="cols wd300"> Rejected(over limit) <span class="m20" data="Connection_errors_max_connections"></span></div>
+								<div class="cols wd300"> Total Connections  <span class="ml20" data="Connections"></span></div>
+								<div class="cols wd300"> Connection Limit  <span class="ml20" data="max_connections"></span></div>
+								<div class="cols wd300"> Aborted Clients  <span class="ml20" data="Aborted_clients"></span></div>
+								<div class="cols wd300"> Aborted Connections  <span class="ml20" data="Aborted_connects"></span></div>
 								<div class="cols wd300"> errors</div>
 							</div>
 							<div id="gridConnection" class="black"></div>
@@ -108,8 +110,21 @@
 							 	</div>
 							 </div>
 						</div>
-						<div data-menu="statusVariables" class="hide">Status Variables</div>
-						<div data-menu="systemVariables" class="hide">System Variables</div>
+						<div data-menu="statusVariables">
+							<div class="search-wrap tr fi">
+								<input id="txtStatusVariablesFilter" name="txtStatusVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
+							</div>
+							<div id="gridStatusVariables"></div>
+						</div>
+						<div data-menu="systemVariables" class="hide">
+							<div class="search-wrap tr fi">
+								<input id="txtSystemVariablesFilter" name="txtSystemVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
+							</div>
+							<div id="gridSystemVariables"></div>
+						</div>
+						<div data-menu="myCnf" class="hide">
+							<div id="gridMyCnf"></div>
+						</div>
 					</div>
 				</div>
 			</div>		
@@ -135,8 +150,10 @@ let appMariadb = {
 			appMariadb.initMenu(menuName);
 		})
 		//appMariadb.initMenu(appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'));
+		
+		appMariadb.getDatabaseVariables();
 		setTimeout(function(){
-			appMariadb.mariaMenu.find('[data-menu]:eq(1)').trigger('click')
+			appMariadb.mariaMenu.find('[data-menu]:eq(5)').trigger('click')
 		},100)
 		function fn_isSystemProcess(data){
 			let exIds = ['system user','replicator']; 
@@ -208,17 +225,175 @@ let appMariadb = {
 				{ key : 'Host', title : 'Host', width : '80px', align : 'left' }					
 			]
 		});				
+		this.gridStatusVariables = $('#gridStatusVariables').alopexGrid({
+			fitTableWidth :false,
+			height:580,
+			message: { nodata: gMessage.gridNodata },
+			autoColumnIndex : true,
+			columnMapping : [
+				{ key : 'name', title : 'name', width : '500px', align : 'left' },
+				{ key : 'value', title : 'Value', width : '500px', align : 'left' }					
+			]
+		});			
+		appMariadb.tabMariadb.find('[data-menu=statusVariables] input[name=txtStatusVariablesFilter]').on('input propertychange',function(){
+			appMariadb.setStatusVariablesFilter();
+		});
+		
+		this.gridSystemVariables = $('#gridSystemVariables').alopexGrid({
+			fitTableWidth :false,
+			height:580,
+			message: { nodata: gMessage.gridNodata },
+			autoColumnIndex : true,
+			columnMapping : [
+				{ key : 'name', title : 'name', width : '500px', align : 'left' },
+				{ key : 'value', title : 'Value', width : '500px', align : 'left' }					
+			]
+		});				
+		appMariadb.tabMariadb.find('[data-menu=systemVariables] input[name=txtSystemVariablesFilter]').on('input propertychange',function(){
+			appMariadb.setSystemVariablesFilter();
+		});	
+
+		this.gridMyCnf = $('#gridMyCnf').alopexGrid({
+			rowInlineEdit:true,
+			rowSelectOption:{
+				clickSelect : true,
+				singleSelect : true
+			},
+			leaveDeleted:true,			
+			fitTableWidth :false,
+			readonlyRender:false,
+			tree : {
+				 useTree : true
+				,idKey : 'name' //노드를 지시하는 유일한 값이 저장된 키값
+				,parentIdKey : 'category' //자신의 상위(parent) 노드를 지시하는 ID가 저장된 키값
+				,expandedKey : 'expandedCategory'
+			},			
+			height:580,
+			message: { nodata: gMessage.gridNodata },
+			autoColumnIndex : true,
+			columnMapping : [
+				{ key : 'status' , title : '', width:'50px'},
+				{ key : 'category', title : 'category', width : '400px', align : 'left',hidden:true },
+				{ key : 'name', title : 'Config Name', width : '400px', align : 'left', treeColumn : false ,render:mycnfRender ,editable:mycnfEditable},
+				{ key : 'value', title : 'Value', width : '300px', align : 'left',render:mycnfRender,editable:mycnfEditable,editedValue: function(cell, data, render, mapping, grid) {
+					return $(cell).find('select,input').val();
+				}},					
+				{ key : 'description', title : 'Description', width : '300px', align : 'left' },
+				{ key : 'proc', title : '', width : '100px', align : 'left',render: mycnfRender }
+			]
+		}).on('click','.bodycell.cell',function(e){
+			let evt = AlopexGrid.parseEvent(e);
 			
+		});	
+		function mycnfRender(){
+			let re = '';
+			let value = arguments[0];
+			let data = arguments[1];
+			let column = arguments[3];
+			let arg = arguments;
+			let isAddVariableColumn = data.addVariableColumn == true;
+			switch(column.key){
+				case 'name':
+					if(!data.category)re = '['+value+']';
+					else if(isAddVariableColumn){
+						re = getAddVariableColumn(data);
+					} else re = value;
+					break;
+				case 'value':
+					re = value;
+					break;
+				case 'proc':
+					if(isAddVariableColumn){
+						re = '<button class="Button btn sm">추가</button>';
+					} else if(!cloudUtil.isEmpty(data.category)){
+						re = $('<button class="Button btn sm">삭제</button>').on('click',function(e){
+							let evt = AlopexGrid.parseEvent(e);
+							let dg = appMariadb.gridMyCnf.alopexGrid( 'dataGet' , evt.data);
+							let dt = dg[0];
+							let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
+							appMariadb.gridMyCnf.alopexGrid(d,evt.data);							
+						});
+					}
+					break;
+				default :	
+					re = value;
+					break;
+			}
+			return re;			
+		}
+		function mycnfEditable(){
+			let re = '';
+			let value = arguments[0];
+			let data = arguments[1];
+			let column = arguments[3];
+			let isAddVariableColumn = data.addVariableColumn == true;
+			switch(column.key){
+				case 'name':
+					if(!data.category)re = '['+value+']';
+					else if(isAddVariableColumn){
+						re = getAddVariableColumn(data);
+					} else re = value;
+					break;
+				case 'value':
+					let d = gCommon.findObjectByKeyOb(data.comboList,{name:data.name});
+					if(d && d.dynamic == true){
+						let valueRange = d.valueRange|| ''; 
+						if(valueRange.indexOf(',')>-1){
+							let l = valueRange.split(',');
+							re = $('<div class="Divselect wd200" style="top:-5px;"><select></select><span></div>');
+							for(let i = 0; i < l.length;i++){
+								re.find('select').append($('<option/>',{text:l[i],value:l[i]}));
+							}
+							$a.convert(re);
+							if(cloudUtil.isEmpty(data.value)){
+								let firstValue = re.find('select option:eq(0)').val();
+								appMariadb.gridMyCnf.alopexGrid('dataEdit', $.extend({},data,{value:firstValue}),data);
+							}
+							re.setSelected(data.value);
+						}else{
+							re = '<input type="text" class="Textinput wd200" value="'+(data.value||'')+'" style="top:-5px;height:32px;">';
+						}
+					}
+					break;
+			}
+			return re;
+		}
+		function getAddVariableColumn(data){
+			let re = $('<div class="Divselect wd200" style="top:-5px;height:32px;"><select><option>추가 할 항목을 선택하세요</option></select><span></div>');
+			for(let i = 0 ; i < data.comboList.length;i++){
+				let o = data.comboList[i];
+				re.find('select').append($('<option/>',{text:o.name,value:o.name}));
+			}
+			$a.convert(re);
+			re.setSelected(data.name).find('select').on('change',function(evt){
+				let d = $.extend({},data,{name:$(evt.currentTarget).val(),value:''});
+				appMariadb.gridMyCnf.alopexGrid('dataEdit', d,data);
+				appMariadb.gridMyCnf.alopexGrid('rowSelect', data, true);
+				appMariadb.gridMyCnf.alopexGrid('startRowInlineEdit',data);
+			});
+			return re
+		}
+
 		},initMenu : function(menuName){
 			switch(menuName){
 				case 'databaseStatus':
 					appMariadb.getDatabaseStatus();
 					break;
 				case 'connection':
-					appMariadb.gridConnection.alopexGrid('viewUpdate');
 					appMariadb.getProcesses();
+					appMariadb.getDatabaseConnection();
+					break;
+				case 'statusVariables':
+					appMariadb.getStatusVariables();
+					break;
+				case 'systemVariables':
+					appMariadb.getSystemVariables();
+					break;
+				case 'myCnf':
+					appMariadb.getMyCnfList();
 					break;
 			}
+			appMariadb.mariaContent.find('[data-menu]:visible .alopexgrid').alopexGrid('viewUpdate')
 		},getDatabaseStatus : function(){
 			let d = $.extend({},gParam,{podName:gService.podName});
 			$a.ajax({
@@ -255,6 +430,15 @@ let appMariadb = {
 					}
 				}
 			});
+		} ,getDatabaseConnection :function(){
+			$a.ajax({
+				url:'/zdbapi/getDatabaseConnection',
+				data:$.extend({},gParam,{podName:gService.podName}),
+				success:function(res){
+					let d = res.databaseConnection;
+					appMariadb.tabMariadb.find('[data-menu=connection]').zdbui_setContents(d);
+				}
+			});			
 		} ,getProcesses : function(){
 			$a.ajax({
 				url:'/zdbapi/getProcesses',
@@ -264,7 +448,88 @@ let appMariadb = {
 					appMariadb.gridConnection.alopexGrid('dataSet',list);
 				}
 			});
-		}
+		}, getStatusVariables : function(){
+			$a.ajax({
+				url:'/zdbapi/getDatabaseStatusVariables',
+				data:$.extend({},gParam,{podName:gService.podName}),
+				success:function(res){
+					let d = res.databaseStatusVariables;
+					let list = [];
+					for(let k in d){
+						list.push({name:k,value:d[k]});
+					}
+					appMariadb.gridStatusVariables.alopexGrid('dataSet',list);
+				}
+			});
+		}, setStatusVariablesFilter:function(){
+			let v = appMariadb.tabMariadb.find('[data-menu=statusVariables] input[name=txtStatusVariablesFilter]').val();
+			if(cloudUtil.isEmpty(v)){
+				appMariadb.gridStatusVariables.alopexGrid('clearFilter');
+			}else{
+				v = v.toLowerCase();
+				appMariadb.gridStatusVariables.alopexGrid('setFilter','statusVariablesFilter',function(dt){
+					return dt.name.toLowerCase().indexOf(v) > -1 || dt.value.toLowerCase().indexOf(v) > -1   
+				});
+			}			
+		}, getSystemVariables : function(){
+			$a.ajax({
+				url:'/zdbapi/getDatabaseSystemVariables',
+				data:$.extend({},gParam,{podName:gService.podName}),
+				success:function(res){
+					let d = res.databaseSystemVariables;
+					let list = [];
+					for(let k in d){
+						list.push({name:k,value:d[k]});
+					}
+					appMariadb.gridSystemVariables.alopexGrid('dataSet',list);
+				}
+			});
+		}, setSystemVariablesFilter:function(){
+			let v = appMariadb.tabMariadb.find('[data-menu=systemVariables] input[name=txtSystemVariablesFilter]').val();
+			if(cloudUtil.isEmpty(v)){
+				appMariadb.gridSystemVariables.alopexGrid('clearFilter');
+			}else{
+				v = v.toLowerCase();
+				appMariadb.gridSystemVariables.alopexGrid('setFilter','systemVariablesFilter',function(dt){
+					return dt.name.toLowerCase().indexOf(v) > -1 || dt.value.toLowerCase().indexOf(v) > -1   
+				});
+			}			
+		}, getDatabaseVariables:function(){ 
+			appMariadb.databaseVariables = [];
+			$a.ajax({
+				url:'/zdbapi/getDatabaseVariables',
+				data:gParam,
+				success:function(res){
+					appMariadb.databaseVariables = res.databaseVariables||[];
+				}
+			});			
+		}, getMyCnfList : function(){
+			let categoryList = [{name:'mysqld'},{name:'mysql'},{name:'mysqld_safe'},{name:'mysqldump'},{name:'client'}];
+			let comboList = {};
+			let gridList = [];
+			let myCnfList = [{category:'mysqld',name:'port',value:'3336'},{category:'mysqld',name:'basedir',value:'/opt/bitnami/mariadb'}]; 
+			
+			let list = appMariadb.databaseVariables;
+			for(let i = 0 ; i < list.length;i++){
+				let o = list[i];
+				
+				let mc = gCommon.findObjectByKeyOb(myCnfList,{category:o.category,name:o.name});
+				if(mc==null){
+					if(comboList[o.category]==null){
+						comboList[o.category] = [];
+					}
+					comboList[o.category].push(o);							
+				}else{
+					gridList.push($.extend({},o,mc));
+				}
+			}
+			let l = categoryList.concat(gridList);
+			for(let k in comboList){
+				let o = comboList[k];
+				l.push({category:k, name:'' ,addVariableColumn:true ,comboList:o});
+			}
+			appMariadb.gridMyCnf.alopexGrid('dataSet',l).alopexGrid('expandTreeNode');			
+		} 
 	}
 $a.page(function() {
 	this.init = function() {

@@ -36,6 +36,7 @@ import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.IResult;
+import com.zdb.core.domain.MariaDBVariable;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
@@ -780,12 +781,49 @@ public class ZdbApiService{
 
 	public Map<String, String> getDatabaseStatus(Map<String, String> param) {
 		Map<String,String> data = null;
-		
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_DATABASE_STATUS, ZdbRestDTO.class,param);
 		if(zdbRestDTO != null) {
 			data = zdbRestDTO.getResult().getDatabaseStatus();
 		};
 		return data;
+	}
+
+	public Map<String, String> getDatabaseConnection(Map<String, String> param) {
+		Map<String,String> data = null;
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_DATABASE_CONNECTION, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			data = zdbRestDTO.getResult().getDatabaseConnection();
+		};
+		return data;
+	}
+
+	public Map<String, String> getDatabaseStatusVariables(Map<String, String> param) {
+		Map<String,String> data = null;
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_DATABASE_STATUS_VARIABLES, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			data = zdbRestDTO.getResult().getDatabaseStatusVariables();
+		};
+		return data;
+	}
+
+	public Map<String, String> getDatabaseSystemVariables(Map<String, String> param) {
+		Map<String,String> data = null;
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_DATABASE_SYSTEM_VARIABLES, ZdbRestDTO.class,param);
+		if(zdbRestDTO != null) {
+			data = zdbRestDTO.getResult().getDatabaseSystemVariables();
+		};
+		return data;
+	}
+
+	public List<MariaDBVariable> getDatabaseVariables(Map<String, String> param) {
+		List<MariaDBVariable> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_DATABASE_VARIABLES, ZdbRestDTO.class, param);
+		
+		if(zdbRestDTO != null && zdbRestDTO.getResult() != null) {
+			list = zdbRestDTO.getResult().getDatabaseVariables();
+		};
+		
+		return list;
 	}
 
 }
