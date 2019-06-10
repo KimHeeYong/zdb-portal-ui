@@ -61,14 +61,24 @@
 					restoreFocusOnInvalidInlineEdit :true,
 					leaveDeleted:true,
 					columnMapping : [  
-						{ title:'state',key:'state',width:'50px',editable:false,hidden:false,render:function(value,data){
+						{ title:'state',key:'state',width:'50px',editable:false,hidden:true,align:'center',excludeFitWidth:true,render:function(value,data){
 							if (data._state.added){data.state = 'A'}
 							else if (data._state.deleted){data.state='D'}
 							else if (data._state.edited){data.state='E'}
 							else {data.state=''}
 							return data.state;
 						}},						
-						{ title:'서비스이름', key : 'serviceName' , width: '180px', align: 'left',render:function(value,data){
+						{ title:'상태', key : 'backupStatus' , width: '50x',excludeFitWidth:true, align: 'center',render:function(value,data){
+							let status = '';
+							if(value=='YELLOW')status = 'yellow';
+							else if(value=='GREEN')status = 'green';
+							else if(value=='RED')status = 'red';
+							let re = '<div class="state '+status+'"></div>';
+							
+							return re;
+							
+						}},
+						{ title:'서비스이름', key : 'serviceName' , width: '250px',excludeFitWidth:true, align: 'left',render:function(value,data){
 							var re = $('<a href="#" title="'+value+'">'+value+'</a>').html(value).on('click',function(){
 								fn_setSelected2010Tab('tabBackup');
 								gCommon.movePage('/zdb02/zdb0210',{namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName});
@@ -78,6 +88,13 @@
 							
 						}},
 						{ title:'서비스타입', key : 'serviceType' , width: '100px', align: 'center'},
+						{ title:'백업디스크', key : 'backupDiskYn' , width: '100px', align: 'center',render:function(value){
+							let re = '';
+							if(value == 'Y')re='사용';
+							if(value == 'N')re='미사용';
+							return re;
+						}},
+						{ title:'백업유형', key : 'backupExecType' , width: '100px', align: 'center'},
 						{ title:'백업설정', key : 'useYn' , width: '70px', align: 'center',render:function(value,data){
 							let re = fn_getUseYnTemp(value);
 							return re;
@@ -107,7 +124,7 @@
 							}
 							return true;
 						}},
-						{ title:'전체백업시간', key : 'startTime' , width: '70px', align: 'center',editable:function(value,data){
+						{ title:'전체백업시간', key : 'startTime' , width: '120px', align: 'center',editable:function(value,data){
 							let re = $('<input type="text" name="startTime" value="'+value+'" class="alopexgrid-default-renderer" style="text-align:center;">');
 							$a.maskedinput(re[0],'00:00');
 							return re;
@@ -116,17 +133,40 @@
 						},valid : function(value, data) {
 							return moment(value,'HH:mm').isValid();
 						}},
-						{ title:'증분백업주기', key : 'incrementPeriod' , width: '70px', align: 'center',editable:{
+						{ title:'증분백업주기', key : 'incrementPeriod' , width: '120px', align: 'center',
+							render:function(value,data){
+								let re = value;
+								if(data.incrementYn == 'N'){
+									re = '-';
+								};
+								return re;
+							},
+							allowEdit:function(value,data){
+								return data.incrementYn == 'Y';
+							},
+							editable:{
 							type:'select',
 							rule:[{value:'0',text:'미사용'},{value:'1',text:'1시간'},{value:'2',text:'2시간'},{value:'6',text:'6시간'},{value:'12',text:'12시간'}]
 						}},
-						{ title:'백업용량(MB)', key : 'fullFileSize' , width: '70px', align: 'center'},
+						{ title:'백업용량(MB)', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
+							return value == '0'?'-': value;
+						}},
 						{ title:'소요시간', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
 							return cloudUtil.parseInt(value)== 0 ?'-':value;
 						}},
-						{ title:'백업용량(MB)', key : 'incrFileSize' , width: '70px', align: 'center'},
+						{ title:'백업용량(MB)', key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
+							return value == '0'?'-': value;
+						}},
 						{ title:'소요시간', key : 'incrExecutionTime' , width: '70px', align: 'center', render:function(value){
 							return cloudUtil.parseInt(value)== 0 ?'-':value;
+						}},
+						{ title:'ICOS 사용량(MB)', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
+							let re = '';
+							if(!cloudUtil.isEmpty(value) && !isNaN(value)){
+								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
+								re = new BigNumber(value).toFormat(); 
+							}
+							return re;
 						}},
 					],
 					message: {
@@ -170,16 +210,19 @@
 					return $('<div class="onoff-wrap"><button class="Button btn-'+v+'" data-value="'+value+'">'+v.toUpperCase()+'</button></div>');
 				}
 				function fn_getScheduleInfoList(){
-					var param = $('form[name=eventForm]').serializeObject();
+					let param = $('form[name=eventForm]').serializeObject();
 
 					$a.ajax({
 						url: '/zdbapi/getScheduleInfoList',
 						data:{namespace:gSelectedNamespace},
 						success: function(res){
-							var list = res.scheduleInfoList;
+							let list = res.scheduleInfoList;
+							list = list.map(function(ob){
+								return $.extend({},ob,{incrementPeriod:(''+ob.incrementPeriod)});
+							});
 							gridSchedule.alopexGrid('dataSet',list);
 
-							var showCol = gSelectedNamespace == G_NAMESPACE_ALL ?'showCol':'hideCol';
+							let showCol = gSelectedNamespace == G_NAMESPACE_ALL ?'showCol':'hideCol';
 							gridSchedule.alopexGrid(showCol, 'namespace');
 						}
 					});				
