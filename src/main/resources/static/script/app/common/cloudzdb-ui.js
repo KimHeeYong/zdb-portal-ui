@@ -113,7 +113,7 @@ var gCommon = $a.page(function(){
 					}
 				};
 			};
-			$.ajax(option);
+			return $.ajax(option);
 		}
 		$(document).ajaxStart(function(as){
 			if(gIgnoreOverlay != true){

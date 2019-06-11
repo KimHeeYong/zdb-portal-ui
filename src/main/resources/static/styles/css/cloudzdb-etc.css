@@ -13,6 +13,9 @@
 .fr{
 	float: right;
 }
+.fi{
+	float: inherit;	
+}
 .tl{
 	text-align: left;
 }
@@ -24,6 +27,15 @@
 }
 .tag-wrap {
 	min-height: 20px;
+}
+.vt{
+	vertical-align: top;	
+}
+.vm{
+	vertical-align: middle;	
+}
+.vb{
+	vertical-align: bottom;	
 }
 
 #tagArea span:hover {
@@ -57,6 +69,9 @@
 	font-size: 20px !important;
 }
 
+.wi100{
+	width:100%;
+}
 .wd100{
 	min-width: 100px;
 	width: 100px;
@@ -108,6 +123,12 @@
 	display: none;
 }
 
+.zi1{
+	z-index: 1;
+}
+.zi10{
+	z-index: 10;
+}
 .info-text {
 	font-size: 12px;
 	color: gray;
@@ -244,3 +265,29 @@ a.grid:active  { text-decoration:underline; }
 .warning-color{
 	background-color: #ff0e0e75 !important;
 }
+.white{
+	color: white;
+}
+.bgwhite{
+	background-color: white;
+}
+.bgblack{
+	background-color: black;
+}
+.bn{
+	border: none !important;
+}
+.bbn{
+	border-bottom: none !important; 
+}
+
+.dtc{
+	display: table-cell;
+	vertical-align: top;
+}
+
+.row .cols{
+	position: relative;
+	float: left;
+	margin-right: 30px;
+} 

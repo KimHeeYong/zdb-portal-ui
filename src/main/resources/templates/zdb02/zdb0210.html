@@ -63,20 +63,24 @@
 			<div class="Panel-content">
 				<ul class="config-info" id="configInfo">
 					<li>
-						<strong>할당 CPU : </strong>
+						<strong>할당 CPU<span class="ico_title" id="AllocatedCPUTooltip"></span> : </strong>
 						<span data="cpu"></span>
+						<div class="Tooltip" data-base="#AllocatedCPUTooltip" id="AllocatedCPUTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 					<li>
-						<strong>할당 메모리 : </strong>
+						<strong>할당 메모리<span class="ico_title" id="AllocatedMemoryTooltip"></span> : </strong>
 						<span data="memory"></span>
+						<div class="Tooltip" data-base="#AllocatedMemoryTooltip" id="AllocatedMemoryTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 					<li>
-						<strong>스토리지 : </strong>
+						<strong>스토리지<span class="ico_title" id="StorageTooltip"></span> : </strong>
 						<span data="disk"></span>
+						<div class="Tooltip" data-base="#StorageTooltip" id="StorageTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 					<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
-						<strong>스토리지 QoS : 	</strong>
+						<strong>스토리지 QoS<span class="ico_title" id="StorageQoSTooltip"></span> : 	</strong>
 						<span data="storageClass"></span>
+						<div class="Tooltip" data-base="#StorageQoSTooltip" id="StorageQoSTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 				</ul>
 			</div>
@@ -394,6 +398,7 @@
 							</tbody>
 						</table>
 		            </div>
+		            <div id="areaMonitorReplication" class="hide">
 					<h3 class="form-title">Query & Replication</h3>
 					<div class="tabs-contents">
                          <table class="Table Monitoring">
@@ -406,6 +411,7 @@
 								</tr>
 							</tbody>
 						</table>
+		            </div>
 		            </div>
 				</li>
 			</ul>
@@ -569,10 +575,10 @@
 			<div class="tabs-contents">
 				<div class="btn-wrap">
 					<div class="btn-right">
-						<button class="Button btn sm" id="btnSearchUser">조회</button>
-						<button class="Button btn sm" id="btnAddUser">추가</button>
-						<button class="Button btn sm" id="btnDeleteUser">삭제</button>
-						<button class="Button btn sm bg-red" id="btnSaveUser">저장</button>
+						<button class="Button btn" id="btnSearchUser" style="margin-bottom: 3px;">조회</button>
+						<button class="Button btn" id="btnAddUser" style="margin-bottom: 3px;">추가</button>
+						<button class="Button btn" id="btnDeleteUser" style="margin-bottom: 3px;">삭제</button>
+						<button class="Button btn bg-red" id="btnSaveUser" style="margin-bottom: 3px;">저장</button>
 					</div>
 				</div>			
    				<div id="gridUser" class="grid grid-line__wrap"></div>
@@ -584,10 +590,10 @@
 				<div style="width: 500px;">
 					<div class="btn-wrap">
 						<div class="btn-right">
-							<button class="Button btn sm" id="btnSearchDatabase">조회</button>
-							<button class="Button btn sm" id="btnAddDatabase">추가</button>
-							<button class="Button btn sm" id="btnDeleteDatabase">삭제</button>
-							<button class="Button btn sm bg-red" id="btnSaveDatabase">저장</button>
+							<button class="Button btn" id="btnSearchDatabase" style="margin-bottom: 3px;">조회</button>
+							<button class="Button btn" id="btnAddDatabase" style="margin-bottom: 3px;">추가</button>
+							<button class="Button btn" id="btnDeleteDatabase" style="margin-bottom: 3px;">삭제</button>
+							<button class="Button btn bg-red" id="btnSaveDatabase" style="margin-bottom: 3px;">저장</button>
 						</div>
 					</div>
 					<div id="gridDatabase" class="grid grid-line__wrap"></div>
@@ -847,17 +853,25 @@
 			<h3 class="form-title">로그</h3>
 			<div class="tabs-contents">
 				<div class="mt10">
+					<div class="info-list select-date Daterange" data-selectyear="true" data-selectmonth="true">
+						<div class="Startdate Dateinput">
+							<input id="logStartDate" name="logStartDate" type="text" readonly="readonly">
+							<div class="Calendar" id="logStartDate"></div>
+						</div>
+						<span class="date-line">~</span>
+						<div class="Enddate Dateinput">
+							<input id="logEndDate" name="logEndDate" type="text" readonly="readonly">
+							<div class="Calendar" id="logEndDate"></div>
+						</div>
+					</div>
 					<label class="ImageRadio af-radio-text"><input class="Radio" name="logType" checked="checked" value="error">에러로그</label>
 					<label class="ImageRadio af-radio-text"><input class="Radio" name="logType" value="query">Slow Query</label>
 					<span class="ml20"></span>
-					<button class="Button btn sm" id="btnSearchLog">조회</button>
-					<button class="Button btn sm" id="btnDownloadLog">다운로드</button>
-				</div>
-				<div class="fl" style="width:210px;">
-					<div id="gridLog"></div>
+					<button class="Button btn" id="btnSearchLog">조회</button>
+					<button class="Button btn" id="btnDownloadLog">다운로드</button>
 				</div>
 				<div>
-					<div style="width:calc(100 - 260px);overflow: scroll">
+					<div style="width:100%;overflow: scroll" class="mt10">
 						<textarea class="Textarea" id="divLog" style="background: black;color: white;height:680px;width:100%;overflow: scroll;"></textarea>
 					</div>
 				</div>				
@@ -1215,6 +1229,66 @@
 								} 
 							}
 						}
+					},
+					'setBackupStorage' : {
+						renderer: function(value, data, render, mapping) {
+							if(data.role == 'master') {
+								return "-";
+							} else if(data.role == 'slave') {
+								var dl = gService.diskUsageOfPodMap;
+								if(dl[data.name].length > 1) {
+									for(var i = 0; i < dl[data.name].length; i++){
+										var path = dl[data.name][i].path;
+										if(path.startsWith('/backup')) {
+											return cloudUtil.convertSize(dl[data.name][i].size);
+										} 
+									}
+								} else {
+									return "-";
+								}
+							}
+							
+						}
+					},
+					'setTerm' : {
+						renderer: function(value, data, render, mapping) {
+							var lt = data.condition? data.condition.lastTransitionTime : '';
+							if(lt){
+								var d = new Date();
+								var isValid = moment(lt).isValid();
+								var ltDate = new Date(lt);
+								
+								var different = d.getTime() - ltDate.getTime();
+								
+								var secondsInMilli = 1000;
+								var minutesInMilli = secondsInMilli * 60;
+								var hoursInMilli = minutesInMilli * 60;
+								var daysInMilli = hoursInMilli * 24;
+								
+								var elapsedDays = different / daysInMilli;
+								different = different % daysInMilli;
+								
+								var elapsedHours = different / hoursInMilli;
+								different = different % hoursInMilli;
+								
+								var elapsedMinutes = different / minutesInMilli;
+								different = different % minutesInMilli;
+								
+								var elapsedSeconds = different / secondsInMilli;
+								
+								if (elapsedDays > 0) {
+									return Math.floor(elapsedDays) + "일";
+								} else if (elapsedHours > 0) {
+									return Math.floor(elapsedHours) + "시간";
+								} else if (elapsedMinutes > 0) {
+									return Math.floor(elapsedMinutes) + "분";
+								} else if (elapsedSeconds > 0) {
+									return Math.floor(elapsedSeconds) + "초";
+								} else {
+									return "-";
+								}
+							}
+						}
 					}
 				},
 				columnMapping : [
@@ -1227,7 +1301,8 @@
 						}
 						return re;
 					}},
-					{ title:'Name', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
+					//{ title:'Name', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
+					{ title:'이름', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
 						if(data.colspanCol){
 							return isSlowLogHidden ? 'log' : 'slowLog';
 						};
@@ -1240,10 +1315,13 @@
 						};
 						return re;
 					}},
-					{ title:'Replicas', key : 'replicas' , width: '70px', align: 'center'},
-					{ title:'Replication', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
+					//{ title:'Replicas', key : 'replicas' , width: '70px', align: 'center'},
+					{ title:'인스턴스 수', key : 'replicas' , width: '70px', align: 'center'},
+					//{ title:'Replication', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
+					{ title:'복제', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
 					}},
-					{ title:'Role', key : 'role' , width: '90px', align: 'center', render : function(value, data){
+					//{ title:'Role', key : 'role' , width: '90px', align: 'center', render : function(value, data){
+					{ title:'역할', key : 'role' , width: '90px', align: 'center', render : function(value, data){
 						let re = '';
 						let roleIcon = {
 							master : '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">',
@@ -1281,26 +1359,43 @@
 						
 						return re;
 					}},
-					{ title:'Node', key : 'node' , width: '130px', align: 'center'},
-					{ title:'Disk(Gi)', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
+					//{ title:'Node', key : 'node' , width: '130px', align: 'center'},
+					{ title:'노드', key : 'node' , width: '130px', align: 'center'},
+					//{ title:'Disk(Gi)', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
+					{ title:'데이터 Disk', key : 'disk' , width: '140px', align: 'center', tooltip : function(value, data, mapping){
 						if(data.diskUpdateTime){
 							var isValid = moment(data.diskUpdateTime,'YYYYMMDDHHmmss').isValid();
-							return 'Update Time : '+moment(data.diskUpdateTime,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
+							if(isValid) {
+								var d = moment(data.diskUpdateTime,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
+								var ut = new Date(d);
+								ut.setHours(ut.getHours()+9);
+								var dUT = getTimeStamp(ut);
+								console.log(ut);
+								return 'Update Time : '+dUT;
+							} else {
+								var ut = new Date(data.diskUpdateTime);
+								var dUT = getTimeStamp(ut);
+								return 'Update Time : '+dUT;
+							}
 						};
+					}},
+					{ title:'백업 Disk', key : 'backupStorage' , width: '120px', align: 'center', hidden: false, render : {type: "setBackupStorage"
 					}},
 					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
 					{ title:'Memory(Mi)', key : 'memory' , width: '120px', align: 'center'},
-					{ title:'Last Uptime', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
+					//{ title:'Last Uptime', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
+					{ title:'기간', key : 'lastTransitionTime' , width: '150px', align: 'center', render : {type: "setTerm"}, tooltip : function(value, data, mapping){
 						var lt = data.condition? data.condition.lastTransitionTime : '';
 						if(lt){
-							var isValid = moment(lt).isValid(); 
-							return moment(lt).format('YYYY-MM-DD HH:mm:ss');
+							var ltFormat = moment(lt,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
+							return ltFormat;
 						}
-					}}, 
+					}},
 					{ title:'Action',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping,cell){
 						return getGridContextButton();
 					}},
-					{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
+					//{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
+					{ title:'로그',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
 						if(!data.isPod)return'';
 						return getGridContextButton();
 					}}
@@ -1332,21 +1427,26 @@
 			var gClient = null;
 			function fn_getService(){
 				if(gClient!= null)return;
-				var gClient = gZdbsocket.getConnect();
-				gClient.connect({}, function(frame){
-					gClient.subscribe('/service/'+gService.serviceName, function(res) {
-						var re = JSON.parse(res.body);
-						var service = gfn_convertServiceData(re.result.serviceoverview);
-						gCurrentNamespace = service.namespace;
-						gService = service;
-						gTagList = service.tags;
-						fn_displayService();
-						fn_getServiceCallback();
+				try{
+					var gClient = gZdbsocket.getConnect();
+					gClient.connect({}, function(frame){
+						gClient.subscribe('/service/'+gService.serviceName, function(res) {
+							var re = JSON.parse(res.body);
+							var service = gfn_convertServiceData(re.result.serviceoverview);
+							gCurrentNamespace = service.namespace;
+							gService = service;
+							gTagList = service.tags;
+							fn_displayService();
+							fn_getServiceCallback();
+						});
+						//gClient.subscribe('/service/'+gService.serviceName+'/refresh', function(res) {
+						//	fn_getServiceFirst();
+						//});
 					});
-					//gClient.subscribe('/service/'+gService.serviceName+'/refresh', function(res) {
-					//	fn_getServiceFirst();
-					//});
-				});
+				}catch(e){
+					console.log('socket connect error')
+					console.log(e);
+				}
 			}
 			function fn_getConnectionInfo(){
 				$a.ajax({
@@ -1433,6 +1533,10 @@
 					};
 				};
 				
+				var StorageQoSTooltipMsg = "";
+				var tempIops = "";
+				var tempDisk = "";
+				
 				var rsSpec = gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{};
 				var psSpec = gCommon.getObjectByIdx(gService.persistenceSpecOfPodMap,0)||{};
 				var pvSpec = gCommon.getObjectByIdx(gService.persistentVolumeClaims,0)||{};
@@ -1443,18 +1547,29 @@
 				gServiceScale.disk = psSpec.size;
 				gServiceScale.storageClass = '';
 				if(pvSpec.spec){
-					gServiceScale.storageClass = cStorageClassConstants[pvSpec.spec.storageClassName];
+					var strIops = cStorageClassConstants[pvSpec.spec.storageClassName];
+					StorageQoSTooltipMsg = "스토리지 QoS: "+strIops;
+					if(strIops != null) {
+					var iopsArr = strIops.split(" ");
+					tempIops = iopsArr[0];
+					}
 				}
 				
 				let resorceSpec = gService.resourceSpec||{};
 				let persistenceSpec = gService.persistenceSpec||{};
-				$('#configInfo').zdbui_setContents(
-						{ cpu:resorceSpec.cpu||''
-						 ,memory:resorceSpec.memory||''
-						 ,disk:gService.persistentVolumeClaims.length==0?'사용안함':persistenceSpec.size||''
-						 ,storageClass:gServiceScale.storageClass
-						}
-					);
+				
+				var strDisk = gService.persistentVolumeClaims.length==0?'사용안함':persistenceSpec.size||'';
+				if(strDisk != '사용안함') {
+					var diskArr = strDisk.split("G");
+					tempDisk = diskArr[0];
+					var tempStorageClass = tempIops * tempDisk;
+					gServiceScale.storageClass = tempStorageClass + " IOPS";
+				}
+				
+				var totalStorage = 0;
+				
+				
+				
 				var podData = (function(){
 					var list = [];					
 					var pods = gService.pods;
@@ -1483,9 +1598,14 @@
 					}
 					return list; 
 				}());
+				
+				var StorageTooltipMsg = "";
+				
 				//cpu,memory,disk resource 셋팅  
 				podData = (function(data){
 					var list = [];
+					var hasUseRateBackup = false;
+					var backupStorage = null;
 					for(var i = 0 ; i < data.length;i++){
 						var ob = data[i];
 						try{
@@ -1501,7 +1621,7 @@
 								ob.memory = cloudUtil.truncDecimal(((memUsage.length? memUsage[memUsage.length-1].value:'')),2) + 'Mi / ' + gService.resourceSpecOfPodMap[ob.name].memory;
 							};
 							var dataStorage = null;
-							var backupStorage = null;
+							
 							if(gService.serviceType == 'redis' && gService.purpose != 'DATA' && gService.persistentVolumeClaims.length == 0){
 								ob.disk = '사용안함';
 							} else if(dl && dl[ob.name]){
@@ -1521,10 +1641,20 @@
 								}
 								
 								if(dataStorage != null) {
-									var hasUseRate = dataStorage.useRate?true:false;
-									ob.disk = cloudUtil.truncDecimal((dataStorage.used / (1024*1000)),2) + ' / ' + (hasUseRate? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A')) 
-									        + (hasUseRate? ' ('+dataStorage.useRate+')' : '' ) ;
-									ob.diskUpdateTime = dataStorage.updateTime; 
+									var hasUseRateData = dataStorage.useRate?true:false;
+									if(backupStorage != null) {
+										hasUseRateBackup = backupStorage.useRate?true:false;
+									}
+									totalStorage += dataStorage.size;
+									
+									ob.disk = cloudUtil.truncDecimal((dataStorage.used / (1024*1024)),2) + ' / ' + (hasUseRateData? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A')) 
+									        + (hasUseRateData? ' ('+dataStorage.useRate+')' : '' ) ;
+									ob.diskUpdateTime = dataStorage.updateTime;
+
+									var nameArr = ob.stName.split("-");
+									var nameArrLength = nameArr.length;
+									
+									StorageTooltipMsg += nameArr[nameArrLength-1] + "(DATA): " + (hasUseRateData? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A')) + "<br>";
 								}
 							};
 						}catch(e){ 
@@ -1532,6 +1662,20 @@
 						}
 						list.push(ob);
 					};
+					
+					
+					if(backupStorage != null) {
+						StorageTooltipMsg += "Backup: " + (hasUseRateBackup? cloudUtil.convertSize(backupStorage.size) :(gServiceScale.disk||'N/A'))  + "<br>";
+						totalStorage += backupStorage.size;
+					}
+					
+					$('#configInfo').zdbui_setContents(
+							{ cpu:resorceSpec.cpu||''
+							 ,memory:resorceSpec.memory||''
+							 ,disk:gService.persistentVolumeClaims.length==0?'사용안함':cloudUtil.convertSize(totalStorage)||''
+							 ,storageClass:gServiceScale.storageClass
+							}
+						);
 					return list;
 				}(podData));
 				//error row 임의 생성
@@ -1542,6 +1686,9 @@
 				var isSlaveGreen = false;
 				var statefulSets = gService.statefulSets;
 				var deployments = gService.deployments;
+				
+				var AllocatedCPUTooltipMsg = "";
+				var AllocatedMemoryTooltipMsg = "";
 
 				addResourceList('statefulSets',statefulSets);
 				addResourceList('deployments',deployments);
@@ -1628,13 +1775,25 @@
 							};
 						} else {
 							tList.push(dt);
-						}						
+						}
+						var tempMsg = "";
+						
+						tempMsg = dt.role+"(DB): "+dt.cpu+"<br>"+dt.role+"(Monitoring): 100m<br>";
+						AllocatedCPUTooltipMsg += tempMsg;
+						
+						tempMsg = dt.role+"(DB): "+dt.memory+"<br>"+dt.role+"(Monitoring): 64Mi<br>";
+						AllocatedMemoryTooltipMsg += tempMsg;
+						
 					}
 				};
 				$('#gridResource').alopexGrid('dataSet',tList);//dataset
 				if (gService.slaveStatus != null) {
 					$('#replicationTooltipMsg').html(gService.slaveStatus.message).tooltip();
 				}
+				$('#AllocatedCPUTooltipMsg').html(AllocatedCPUTooltipMsg).tooltip();
+				$('#AllocatedMemoryTooltipMsg').html(AllocatedMemoryTooltipMsg).tooltip();
+				$('#StorageTooltipMsg').html(StorageTooltipMsg).tooltip();
+				$('#StorageQoSTooltipMsg').html(StorageQoSTooltipMsg).tooltip();
 				
 				//failover 설정
 				//mariadb는 statefulSets이 2개일경우, redis는 deployments가 존재 할 경우 활성화
@@ -1693,6 +1852,11 @@
 					
 					//setScaleButton();
 				}
+				//tabMonitor  mariadb replication은 single모드가 아닐경우만 show				
+				if(gParam.serviceType == cServiceType.mariadb && gService.statefulSets.length > 1){
+					$('#tabMonitor #areaMonitorReplication').show();
+				}
+				
 				//tabBackup 
 				$('#divAddBackup').find('button').hide();
 				if(gService.serviceType != cServiceType.redis){
@@ -2921,30 +3085,15 @@
 			let tabLog = $('#tabLog');
 			let lastLogData = {
 					logType:null, //마지막 조회 타입	
-					dates:null//마지막 조회 날짜 데이터					
+					startDate:null,//조회 시작날짜
+					endDate:null//조회 종료날짜
 				} 			
-			let gridLog = $('#gridLog').alopexGrid({
-				autoColumnIndex: true,
-				width: 212,
-				height: 680,
-				enableHeaderSelect:true,
-				columnMapping : [  
-					{ key:'check',width:'30px',selectorColumn : true},
-					{ title:'date',key:'date',width:'160px',align:'center',render:function(value){
-						return moment(value).format('YYYY-MM-DD');
-					}}
-				]
-			});
-			let dateList = [];
-			for(let i = 1; i < 15;i++){
-				let day = moment().subtract(i, 'days').format('YYYYMMDD');
-				dateList.push({date:day});
-			}
-			gridLog.alopexGrid('dataSet',dateList);
-			$('#btnSearchLog').on('click',function(){
+			tabLog.find('#logStartDate').val(moment().subtract(1, 'days').format('YYYY-MM-DD'));
+			tabLog.find('#logEndDate').val(moment().subtract(1, 'days').format('YYYY-MM-DD'));
+			tabLog.find('#btnSearchLog').on('click',function(){
 				fn_getLogData();
 			});
-			$('#btnDownloadLog').on('click',function(){
+			tabLog.find('#btnDownloadLog').on('click',function(){
 				if(lastLogData.logType==null){
 					gCommon.alert('조회된 데이터가 없습니다.');
 				}
@@ -2953,12 +3102,10 @@
 			});
 			tabLog.find('input[name=logType]:first').prop('checked',true);
 			function fn_getLogData(){
-				let selDates = fn_getSelectedLogDates();
-				if(selDates.length == 0){
-					gCommon.alert('조회 할 날짜를 선택하세요.');
-					return;
-				}
-				let param = $.extend({},gParam,{logType:tabLog.find('input[name=logType]:checked').val(),dates:selDates});
+				let startDate = tabLog.find('#logStartDate').val().replaceAll('-','');
+				let endDate = tabLog.find('#logEndDate').val().replaceAll('-','');
+				
+				let param = $.extend({},gParam,{logType:tabLog.find('input[name=logType]:checked').val(),startDate:startDate,endDate:endDate});
 				$a.ajax({
 					url: '/zdbapi/getFileLog',
 					data:param,
@@ -2966,13 +3113,10 @@
 						let re = res.fileLog||'데이터가 없습니다.'
 						$('#divLog').html(re);
 						lastLogData.logType = param.logType; 
-						lastLogData.dates = param.dates;						
+						lastLogData.startDate = param.startDate;						
+						lastLogData.endDate = param.endDate;						
 					}
 				})
-			}
-			function fn_getSelectedLogDates(){
-				let l = gridLog.alopexGrid('dataGet',{_state:{selected:true}});
-				return l.map(function(d){return d.date}).join();
 			}
 			/*tabLog end */		
 			/*tabProcess start */
@@ -3058,4 +3202,29 @@
 		};
 		
 	});
+	function getTimeStamp(d) {
+		var s =
+			leadingZeros(d.getFullYear(), 4) + '-' +
+		    leadingZeros(d.getMonth() + 1, 2) + '-' +
+		    leadingZeros(d.getDate(), 2) + ' ' +
+
+		    leadingZeros(d.getHours(), 2) + ':' +
+		    leadingZeros(d.getMinutes(), 2) + ':' +
+		    leadingZeros(d.getSeconds(), 2);
+
+		return s;
+	}
+
+	function leadingZeros(n, digits) {
+		var zero = '';
+		n = n.toString();
+
+		if (n.length < digits) {
+			for(var i = 0; i < digits - n.length; i++)
+				zero += '0';
+		}
+		
+		return zero + n;
+	}
+
 </script>

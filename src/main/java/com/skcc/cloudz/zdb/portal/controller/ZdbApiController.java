@@ -31,6 +31,7 @@ import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.IResult;
+import com.zdb.core.domain.MariaDBVariable;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
@@ -156,14 +157,19 @@ public class ZdbApiController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "getPods", method = RequestMethod.GET)
+	@RequestMapping(value = "getPods")
 	public ModelAndView getPods(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<Map<String,String>> list = new Gson().fromJson(param.get("data"), new TypeToken<List<HashMap<String,String>>>(){}.getType());
+		Map<String,List<Map<String,Object>>> pods = new HashMap<>();
+		if(list.size() > 0) {
+			for(Map<String,String> o : list) {
+				pods.put(o.get(CommonConstants.SERVICE_NAME),zdbApiService.getPods(o));
+			}
+		}
 		
-		List<Map<String,Object>> podList = zdbApiService.getPods(param);
-		
-		mav.addObject(IResult.PODS ,podList);
+		mav.addObject(IResult.PODS ,pods);
 		return mav;
 	}
 	
@@ -827,5 +833,45 @@ public class ZdbApiController {
 		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;
 	}
-	
+
+	@RequestMapping(value="getDatabaseStatus", method=RequestMethod.GET)
+	public ModelAndView getDatabaseStatus(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		Map<String,String> result = zdbApiService.getDatabaseStatus(param);
+		mav.addObject(IResult.DATABASE_STATUS ,result);
+		return mav;
+	}
+	@RequestMapping(value="getDatabaseConnection", method=RequestMethod.GET)
+	public ModelAndView getDatabaseConnection(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		Map<String,String> result = zdbApiService.getDatabaseConnection(param);
+		mav.addObject(IResult.DATABASE_CONNECTION,result);
+		return mav;
+	}
+	@RequestMapping(value="getDatabaseStatusVariables", method=RequestMethod.GET)
+	public ModelAndView getDatabaseStatusVariables(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		Map<String,String> result = zdbApiService.getDatabaseStatusVariables(param);
+		mav.addObject(IResult.DATABASE_STATUS_VARIABLES ,result);
+		return mav;
+	}
+	@RequestMapping(value="getDatabaseSystemVariables", method=RequestMethod.GET)
+	public ModelAndView getDatabaseSystemVariables(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		Map<String,String> result = zdbApiService.getDatabaseSystemVariables(param);
+		mav.addObject(IResult.DATABASE_SYSTEM_VARIABLES ,result);
+		return mav;
+	}
+	@RequestMapping(value="getDatabaseVariables", method=RequestMethod.GET)
+	public ModelAndView getDatabaseVariables(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<MariaDBVariable> result = zdbApiService.getDatabaseVariables(param);
+		mav.addObject(IResult.DATABASE_VARIABLES ,result);
+		return mav;
+	}
 }

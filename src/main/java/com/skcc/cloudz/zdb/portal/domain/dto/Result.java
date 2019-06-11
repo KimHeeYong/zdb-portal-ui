@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.zdb.core.domain.AlertingRuleEntity;
-import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
+import com.zdb.core.domain.MariaDBVariable;
 import com.zdb.core.domain.Mycnf;
 import com.zdb.core.domain.PersistentVolumeClaimEntity;
 import com.zdb.core.domain.RequestEvent;
@@ -20,7 +20,6 @@ import com.zdb.core.domain.ZDBConfig;
 import com.zdb.core.domain.ZDBNode;
 
 import io.fabric8.kubernetes.api.model.Namespace;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import lombok.Data;
 
@@ -98,4 +97,14 @@ public class Result {
 	private List<PersistentVolumeClaimEntity> storages;
 	
 	private Map<String,List<String>> storagesData;
+	
+	private Map<String,String> databaseStatus;
+	
+	private Map<String,String> databaseConnection;
+	
+	private Map<String,String> databaseStatusVariables;
+	
+	private Map<String,String> databaseSystemVariables;
+	
+	private List<MariaDBVariable> databaseVariables;
 }

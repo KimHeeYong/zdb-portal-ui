@@ -133,7 +133,7 @@ public class URIConstants {
 
 	public static final String URI_DELETE_DATABASE = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/database/{databaseName}";
 
-	public static final String URI_GET_FILE_LOG = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/fileLogs/{logType}/{dates}";
+	public static final String URI_GET_FILE_LOG = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/fileLogs/{logType}/{startDate}/{endDate}";
 
 	public static final String URI_GET_ALL_SERVICES = "/api/v1/allServices";
 
@@ -159,6 +159,16 @@ public class URIConstants {
 	public static final String URI_ADD_BACKUP_DISK = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/addBackupDisk/{backupDiskSize}";
 
 	public static final String URI_REMOVE_BACKUP_DISK = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/removeBackupDisk";
+
+	public static final String URI_GET_DATABASE_STATUS = "/api/v1/{namespace}/{serviceType}/database/status/{podName}";
+
+	public static final String URI_GET_DATABASE_CONNECTION = "/api/v1/{namespace}/{serviceType}/database/connection/{podName}";
+
+	public static final String URI_GET_DATABASE_STATUS_VARIABLES = "/api/v1/{namespace}/{serviceType}/database/statusVariables/{podName}";
+	
+	public static final String URI_GET_DATABASE_SYSTEM_VARIABLES = "/api/v1/{namespace}/{serviceType}/database/systemVariables/{podName}";
+
+	public static final String URI_GET_DATABASE_VARIABLES = "/api/v1/{serviceType}/database/variables";
 
 	public static String URI_GET_NODES_INFO = "/api/v1/nodesInfo";
 

@@ -52,7 +52,31 @@ var cloudUtil = {
 			size = size+"Ki";
 		}
 		return size;
-    },//올바른 정규식 형태인지 체크
+    },
+    convertDiskSize:function(size){
+		if(!size){
+			size = '0';
+		}else if(size instanceof String){
+			size.replace(/[^0-9.]+/g,'');
+		}		
+		
+		let sizeBn = new BigNumber(size);
+		let re = '';
+		
+		if(sizeBn.gte(1024 * 1000 * 1000 * 1000)) {
+			re = sizeBn.div(1024*1000*1000*1000).integerValue().toFixed() +'Pi';
+		}else if(sizeBn.gte(1024 * 1000 * 1000)) {
+			re = sizeBn.div(1024*1000*1000).integerValue().toFixed() +'Ti';
+		}else if(sizeBn.gte(1024 * 1000)) {
+			re = sizeBn.div(1024*1000).integerValue().toFixed() +'Gi';
+		}else if(sizeBn.gte(1024)) {
+			re = sizeBn.div(1024).integerValue().toFixed() +'Mi';
+		}else{
+			re = size+'Ki';
+		}
+		return re;
+    },
+    //올바른 정규식 형태인지 체크
 	checkRegExp:function(val){ 
 		var isRegExp = true;
 		try{

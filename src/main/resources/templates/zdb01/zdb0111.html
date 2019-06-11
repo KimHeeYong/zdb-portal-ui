@@ -104,7 +104,7 @@
 							<tr id="trExpose">
 								<th>Public 접근 허용</th>
 								<td>
-									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
 										<input type="radio" name="exposeType" value="public" checked="checked">public
 										<input type="radio" name="exposeType" value="private"/>private
@@ -114,7 +114,7 @@
 							<tr>
 								<th>클러스터</th>
 								<td>
-									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
 										<input type="radio" name="clusterEnabled" value="true" checked="checked">true
 										<input type="radio" name="clusterEnabled" value="false">false
@@ -122,7 +122,7 @@
 								</td>
 							</tr>							
 							<tr>
-								<th class="ht140">할당메모리</th>
+								<th class="ht140">할당메모리<span class="asterisk">*</span></th>
 								<td>
 									<div class="info-wrap">
 										<div class="info-wrap ht60">
@@ -183,7 +183,7 @@
 							<tr>
 								<th>백업 여부</th>
 								<td>
-									<div class="onoff-wrap" id="backupOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="onoff-wrap" id="backupOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
 										<input type="radio" name="backupEnabled" value="true" checked="checked">사용
 										<input type="radio" name="backupEnabled" value="false"/>미사용
@@ -193,7 +193,7 @@
 							<tr id="trExpose">
 								<th>Public 접근 허용</th>
 								<td>
-									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="onoff-wrap" id="exposeOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
 										<input type="radio" name="exposeType" value="public" checked="checked">public
 										<input type="radio" name="exposeType" value="private">private
@@ -203,14 +203,14 @@
 							<tr>
 								<th>클러스터</th>
 								<td>
-									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-on">ON</button></div>
+									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
 										<input type="radio" name="clusterEnabled" value="true" checked="checked">true
 										<input type="radio" name="clusterEnabled" value="false">false
 									</div>
 								</td>
 							</tr>
-							<tr>
+							<tr id="workerPoolTr">
 								<th>Worker Pools</th>
 								<td>
 									<div class="Divselect" id="workerPool" name="workerPool">
@@ -220,7 +220,7 @@
 								</td>
 							</tr>							
 							<tr>
-								<th class="ht140">할당메모리</th>
+								<th class="ht140">할당메모리<span class="asterisk">*</span></th>
 								<td>
 									<div class="info-wrap">
 										<div class="info-wrap ht60">
@@ -233,7 +233,7 @@
 								</td>
 							</tr>			
 							<tr>
-								<th>할당디스크</th>
+								<th>할당디스크<span class="asterisk">*</span></th>
 								<td>
 									<div class="Divselect wd150" id="diskSizeCombo" name="diskSizeCombo">
 										<select id="diskSizeSel" name="diskSizeSel">
@@ -247,7 +247,7 @@
 								</td>
 							</tr>
 							<tr>
-								<th>스토리지 QoS</th>
+								<th>스토리지 QoS<span class="asterisk">*</span></th>
 								<td>
 									<div class="Divselect" id="storageClass" name="storageClass">
 										<select>
@@ -302,13 +302,18 @@ $a.page(function() {
 					let workerPool = $('#workerPool');
 					let list = res.result.result.workerPools;
 					let l = [];
+					var workerPoolCount = 0;
 					if(list && list.length > 0){
 						for(o in list){
 							let t = list[o]
-							workerPool.find('select').append($('<option>',{value:t,text:t}));							
+							workerPool.find('select').append($('<option>',{value:t,text:t}));
+							workerPoolCount++;
 						}
 					};
-					workerPool.setSelected(workerPool.find('option:eq(0)').val())
+					workerPool.setSelected(workerPool.find('option:eq(0)').val());
+					if(workerPoolCount <= 1) {
+						$('#workerPoolTr').css('display', 'none');
+					}
 				}
 			});	
 		}
@@ -323,7 +328,7 @@ $a.page(function() {
 		            rule:{required:true,checkRule:gValid.dbName.rule},
 		            message:{checkRule:gValid.dbName.message}
 		        }
-		       , 'diskSize':{rule:{required:true}}
+		       , 'diskSize':{rule:{required:true,min:20},message:{min:'최소 용량은 20Gi입니다'}}
 		       , 'diskSizeSel':{rule:{required:true},message:{required:'용량을 선택하세요'}}
 		    }
 		}).find('input[name=serviceName]').on('keyup',function(){
@@ -334,7 +339,7 @@ $a.page(function() {
 			gCommon.getConfigData().done(function(result){
 				gConfigData = result;
 				if(gConfigData.public_network_enabled == 'true'){
-					setExposeType('public');
+					setExposeType('private');
 					$('#trExpose').show();
 				}else{
 					setExposeType('private');
@@ -467,7 +472,7 @@ $a.page(function() {
 			})
 			function setDiskValue(){
 				if(diskSizeCombo.val() == 'custom'){
-					diskSize.show();	
+					diskSize.show().val('');	
 					$('span[data-for=diskSize]').show();
 					$('span[data-for=diskSizeSel]').hide();
 				}else{
@@ -480,11 +485,17 @@ $a.page(function() {
 		}		
 		
 		form.zdbui_setContents(gParam);
-		if(gParam.exposeType){
-			setExposeType(gParam.exposeType);
+		if(gParam.diskSize){
+			$('#diskSize').val(gParam.diskSize);
 		}
-		setBackupEnabled(gParam.backupEnabled);
-		setClusterEnabled(gParam.clusterEnabled);
+		/* if(gParam.exposeType){
+			setExposeType(gParam.exposeType);
+		} */
+		//setBackupEnabled(gParam.backupEnabled);
+		//setClusterEnabled(gParam.clusterEnabled);
+		setBackupEnabled('false');
+		setExposeType('private');
+		setClusterEnabled('false');
 		
 		if(gParam.serviceType == cServiceType.redis){
 			setPurpose(gParam.purpose||'SESSION');
@@ -501,7 +512,7 @@ $a.page(function() {
 				setBackupEnabled('false');
 				$('#backupOnOff.onoff-wrap > button').addClass('Disabled');
 			}else{
-				setBackupEnabled('true');
+				setBackupEnabled('false');
 				$('#backupOnOff.onoff-wrap > button').removeClass('Disabled');
 			};
 			

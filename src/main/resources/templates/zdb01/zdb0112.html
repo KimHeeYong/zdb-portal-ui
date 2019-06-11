@@ -137,6 +137,9 @@
 				<div class="accor-contents__wrap">
 					<ul class="dot">
 						<li>
+							DB 모니터링을 위한 자원(<span class="warn-text ft15">CPU 100m, Memory 64Mi</span>)이 추가로 할당됩니다.
+						</li>
+						<li>
 							데이터 저장을 위해 <span class="diskSize warn-text ft15" data="specDisk"></span>의 블록스토리지를 사용하여 
 							<span class="warn-text ft15">월 $</span>
 							<span class="warn-text ft15" data="priceDisk"></span>
@@ -177,24 +180,39 @@ $a.page(function() {
 		var sliderConstants = gSliderConstants[gParam.serviceType];
 		var isCluster = gParam.clusterEnabled == 'true';
 		
-		var data = $.extend({},gParam,{
-			specMemory:sliderConstants.memory.getValue(gParam.podSpecIdx,isCluster),
-			memory:sliderConstants.memory.value[gParam.podSpecIdx],
-			specCpu:sliderConstants.cpu.getValue(gParam.podSpecIdx,isCluster),
-			cpu:sliderConstants.cpu.value[gParam.podSpecIdx],
-			serviceName:gParam.serviceName,
-			exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
-			backupEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
-			clusterEnabledStr:(gParam.clusterEnabled=='true'?'사용':'미사용'),
-			storageClassStr:(cStorageClassConstants[gParam.storageClass])
-		});
+		var data;
+		if (gParam.serviceType == cServiceType.mariadb) {
+			data = $.extend({},gParam,{
+				specMemory:sliderConstants.memory.getValue(gParam.podSpecIdx,isCluster),
+				memory:sliderConstants.memory.value[gParam.podSpecIdx],
+				specCpu:sliderConstants.cpu.getValue(gParam.podSpecIdx,isCluster),
+				cpu:sliderConstants.cpu.value[gParam.podSpecIdx],
+				serviceName:gParam.serviceName,
+				exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
+				backupEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
+				clusterEnabledStr:(gParam.clusterEnabled=='true'?'사용':'미사용'),
+				storageClassStr:(cStorageClassConstants[gParam.storageClass])
+			});
+		} else if (gParam.serviceType == cServiceType.redis) {
+			data = $.extend({},gParam,{
+				specMemory:sliderConstants.memory.value[gParam.podSpecIdx],
+				memory:sliderConstants.memory.value[gParam.podSpecIdx],
+				specCpu:sliderConstants.cpu.getValue(gParam.podSpecIdx,isCluster),
+				cpu:sliderConstants.cpu.value[gParam.podSpecIdx],
+				serviceName:gParam.serviceName,
+				exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
+				backupEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
+				clusterEnabledStr:(gParam.clusterEnabled=='true'?'사용':'미사용'),
+				storageClassStr:(cStorageClassConstants[gParam.storageClass])
+			});
+		}
 		
 		if(gParam.serviceType == cServiceType.mariadb){
 			data.disk = gParam.diskSize
 			data.specDisk = gParam.diskSize + 'Gi'
 		}else if(gParam.serviceType == cServiceType.redis && gParam.purpose == 'DATA'){
-			data.disk = data.podSpecIdx < 5 ? 20 : 40;
-			data.specDisk = (data.disk * (isCluster?2:1)) + 'Gi';
+			data.disk = data.memory <= 6000 ? 20 : 40;
+			data.specDisk = (data.disk) + 'Gi';
 		};
 		if(data.disk){
 			$('.dataInfo').show();
@@ -204,7 +222,7 @@ $a.page(function() {
 		var table = $('#serviceTable');
 		table.zdbui_setContents(data);
 		if(table.find('td[data=storageClassStr]').length > 0){
-			var descT = ' <span class="ft15">('+(cloudUtil.parseInt(data.specDisk) * cloudUtil.parseInt(data.storageClassStr)/(gParam.clusterEnabled=='true'?2:1)) 
+			var descT = ' <span class="ft15">('+(cloudUtil.parseInt(data.specDisk) * cloudUtil.parseInt(data.storageClassStr)) 
 				      + 'Gb IOPS 스토리지 성능을 보장 합니다.)</span>'
 			table.find('td[data=storageClassStr]').append(descT);
 		};

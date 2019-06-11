@@ -57,8 +57,16 @@
 		<div id="divServiceListCard" data-list-type="card"> 
 			
 		</div>
-		<div id="divServiceListGrid" data-list-type="grid" class="hide">
-			
+		<div data-list-type="grid" class="hide">
+			<div class="btn-wrap">
+				<div class="btn-right">
+					<button class="Button btn sm" id="btnExpandAll" style="margin-bottom: 3px;">전체펼침</button>
+					<button class="Button btn sm" id="btnCollapseAll" style="margin-bottom: 3px;">전체접힘</button>
+				</div>
+			</div>	
+			<div id="divServiceListGrid">
+				
+			</div>
 		</div>
 	</div>
 </div>
@@ -175,6 +183,17 @@
 					})
 				})
 			});
+			
+			let divServiceList = $('#divServiceList');
+			divServiceList.find('#btnExpandAll').on('click',function(){
+				$('#divServiceListGrid').alopexGrid("expandTreeNode");
+				fn_getPodResources();
+			});
+			divServiceList.find('#btnCollapseAll').on('click',function(){
+				$('#divServiceListGrid').alopexGrid("collapseTreeNode");
+				fn_getPodResources();
+			});
+			
 			divServiceListGrid = $('#divServiceListGrid').alopexGrid({
 				autoColumnIndex: true,
 				height: 635,
@@ -190,7 +209,7 @@
 					}},
 					//{ title:'네임스페이스', key : 'namespace', width: '100px', align: 'left'},
 					{ title:'이름', key : 'serviceName', width: '230px', align: 'left', render:function(value,data,render,mapping){
-						var re = $('<a href="#" title="'+value+'">'+value+'</a>').on('click',function(){
+						let re = $('<a href="#" title="'+value+'">'+value+'</a>').on('click',function(){
 							fn_moveServiceDetail(data,false);
 						});
 						if(data.tp == 'pod'){
@@ -202,19 +221,48 @@
 					{ title:'Limits', key:'cpuLimit',width:'70px',align:'center',hidden:true},
 					{ title:'Requests', key:'memoryRequest',width:'70px',align:'center',hidden:true},
 					{ title:'Limits', key:'memoryLimit',width:'70px',align:'center',hidden:true},
-					{ title:'서비스종류', key : 'serviceType', width: '100px', align: 'center'},
+					{ title:'데이터', key:'storageData',width:'70px',align:'center',hidden:true},
+					{ title:'백업', key:'storageBackup',width:'70px',align:'center',hidden:true},
+					{ title:'서비스종류', key : 'serviceType', width: '100px', align: 'center', render:function(value){
+						let img = {
+							mariadb:'<img src="/styles/images/mariadb16.png" width="16px">',
+							redis:'<img src="/styles/images/redis16.jpg" width="16px">'
+						};
+						let re = img[value]; 
+						if(re) return re;						
+					}},
 					{ title:'버전', key : 'version', width: '110px', align: 'center'},
 					{ title:'구동시간', key : 'elapsedTime', width: '80px', align: 'center'},
-					{ title:'생성일시', key : 'crtTime', width: '150px', align: 'center'},
+					{ title:'생성일자', key : 'crtTime', width: '150px', align: 'center',render:function(data){
+						try{
+							return data.substring(0,10);
+						} catch (ex) {}
+						return data;
+					}},
+					{ title:'HA', key : 'clusterEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
+						if(data.tp == 'pod') return;
+						if(value == true){
+							return cImg.checkboxY;
+						}
+					}},
+					{ title:'Autofailover', key : 'failoverEnabled', width: '120px', align: 'center',render:function(value,data,render,mapping){
+						if(data.tp == 'pod') return;
+						if(value == 'on'){
+							return cImg.checkboxY;
+						}
+					}},
 					{ title:'백업', key : 'backupEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
 						if(data.tp == 'pod') return;
-						return value == true ? 'Y' : 'N';
+						if(value == true){
+							return cImg.checkboxY;
+						}
 					}},
 					{ title:'Public', key : 'publicEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
 						if(data.tp == 'pod') return;
-						return value == true ? 'Y' : 'N';
+						if(value == true){
+							return cImg.checkboxY;
+						}
 					}},
-					{ title:'태그', key : 'tagNames', width: '100px', align: 'left'},
 					{ title:'모니터링', key : '', width: '80px', align: 'center',render:function(value,data,render,mapping){
 						if(data.tp == 'pod') return;
 						var re = $('<button class="btn-ico btn-viewdetail" title="'+data.serviceName+'">모니터링</button>').on('click',function(){
@@ -228,44 +276,73 @@
 				}
 			})
 			divServiceListGrid.on('toggleTreeNode',function(e){
-				let nTreeDt = divServiceListGrid.alopexGrid('dataGet',{_state:{expandedTreeNode:true}}); 
-				let isHidden = nTreeDt.length == 0 
-				divServiceListGrid.alopexGrid('updateColumn', {hidden:isHidden}, ['cpuRequest', 'cpuLimit', 'memoryRequest','memoryLimit']);
-				if(isHidden){
-					divServiceListGrid.alopexGrid('updateOption', {headerGroup: null} );
-				}else{
-					divServiceListGrid.alopexGrid('updateOption', {headerGroup: [ {fromIndex:2, toIndex:3, title:"CPU"}, {fromIndex:4, toIndex:5, title:"MEMORY"} ]});
-				}
-					
 				let evt = AlopexGrid.parseEvent(e);
-				if(gCommon.findObjectByKeyOb(gExpandServiceList,{serviceName:evt.toggleTreeNodeList[0].serviceName})==null){
-					for(var i=0;i < nTreeDt.length;i++){
-						let o = nTreeDt[i];
-						o.podResource = [];
-						$a.ajax({
-							url:'/zdbapi/getPods',
-							data:{namespace:o.namespace,serviceType:o.serviceType,serviceName:o.serviceName},
-							success:function(res){
-								if(res.pods && res.pods.length > 0){
-									for(var j=0;j< res.pods.length;j++){
-										try{
-											let r = res.pods[j];
-											let c = r.spec.containers[0].resources;
-											let t = {cpuRequest : c.requests.cpu.amount,cpuLimit:c.limits.cpu.amount,memoryRequest:c.requests.memory.amount,memoryLimit:c.limits.memory.amount}
-											divServiceListGrid.alopexGrid('dataEdit',t, {serviceName : r.metadata.name})
-											o.podResource[r.metadata.name] = t;		
-										}catch(ex){
-											console.log(ex)
-										}
-									}
-								}
-							}
-						});
-					}
-				}
-				gExpandServiceList = nTreeDt;
+				fn_getPodResources();
 			})
 		};
+		function fn_getPodResources(){
+			let nTreeDt = AlopexGrid.trimData(divServiceListGrid.alopexGrid('dataGet',{_state:{expandedTreeNode:true}})); 
+			let isHidden = nTreeDt.length == 0 
+			divServiceListGrid.alopexGrid('updateColumn', {hidden:isHidden}, ['cpuRequest', 'cpuLimit', 'memoryRequest','memoryLimit','storageData','storageBackup']);
+			if(isHidden){
+				divServiceListGrid.alopexGrid('updateOption', {headerGroup: null} );
+			}else{
+				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [ {fromIndex:'cpuRequest', toIndex:'cpuLimit', title:'CPU'}
+				, {fromIndex:'memoryRequest', toIndex:'memoryLimit', title:"MEMORY"} , {fromIndex:'storageData', toIndex:'storageBackup', title:"스토리지"}]});
+			}
+			let p = nTreeDt.map(function(dt){
+				return {namespace:dt.namespace,serviceType:dt.serviceType,serviceName:dt.serviceName};
+			});
+			$a.ajax({
+				url:'/zdbapi/getPods',
+				method:'PUT',
+				//data:{data:JSON.stringify([{namespace:o.namespace,serviceType:o.serviceType,serviceName:o.serviceName}])},
+				data:{data:JSON.stringify(p)},
+				success:function(res){
+					if(res.pods){
+						for(let k in res.pods){
+							let pods = res.pods[k];
+							let podResources = {};
+							for(var j=0;j< pods.length;j++){
+								try{
+									let r = pods[j];
+									let c = r.spec.containers[0].resources;
+									let t = {
+											cpuRequest : c.requests.cpu.amount,
+											cpuLimit:c.limits.cpu.amount,
+											memoryRequest:c.requests.memory.amount,
+											memoryLimit:c.limits.memory.amount,
+										}
+									let s = gCommon.findObjectByKeyOb(gServiceList,{serviceName:k});
+									if(s){
+										let d = s.diskUsageOfPodMap[r.metadata.name];
+										if(d){
+											for(let i = 0;i < d.length;i++){
+												if(j != 0 && d[i].path=='/backup'){
+													t.storageBackup = cloudUtil.convertDiskSize(d[i].size);
+												}else if(d[i].path.indexOf('/bitnami')>-1){
+													t.storageData = cloudUtil.convertDiskSize(d[i].size);
+												}
+											}	
+										}
+									}
+									divServiceListGrid.alopexGrid('dataEdit',t, {serviceName : r.metadata.name})
+									podResources[r.metadata.name] = t;
+								}catch(ex){
+									console.log(ex)
+								}
+							}
+							let o = gCommon.findObjectByKeyOb(nTreeDt,{serviceName:k});
+							if(o){
+								o.podResource = podResources;		
+							}
+						}
+					}
+				}
+			}).done(function(){
+				gExpandServiceList = nTreeDt;	
+			});
+		}
 		function fn_moveServiceDetail(data,isMonitorTab){
 			var param = {namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName};
 			if(isMonitorTab){
