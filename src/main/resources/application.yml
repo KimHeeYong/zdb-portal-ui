@@ -61,9 +61,9 @@ props:
     baseUrl: https://pog-dev-internal-iam.cloudzcp.io:443
 
 cloudzcp:
-  url: https://pog-dev-console.cloudzcp.io
+  url: https:// -console.cloudzcp.io
 grafana:
-  url: http://grafana-zdb.cloudzcp.io
+  url: https://pog-dev-zdb-monitoring.cloudzcp.io
 ---  
 spring:    
   devtools:
