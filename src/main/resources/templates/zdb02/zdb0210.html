@@ -1249,6 +1249,46 @@
 							}
 							
 						}
+					},
+					'setTerm' : {
+						renderer: function(value, data, render, mapping) {
+							var lt = data.condition? data.condition.lastTransitionTime : '';
+							if(lt){
+								var d = new Date();
+								var isValid = moment(lt).isValid();
+								var ltDate = new Date(lt);
+								
+								var different = d.getTime() - ltDate.getTime();
+								
+								var secondsInMilli = 1000;
+								var minutesInMilli = secondsInMilli * 60;
+								var hoursInMilli = minutesInMilli * 60;
+								var daysInMilli = hoursInMilli * 24;
+								
+								var elapsedDays = different / daysInMilli;
+								different = different % daysInMilli;
+								
+								var elapsedHours = different / hoursInMilli;
+								different = different % hoursInMilli;
+								
+								var elapsedMinutes = different / minutesInMilli;
+								different = different % minutesInMilli;
+								
+								var elapsedSeconds = different / secondsInMilli;
+								
+								if (elapsedDays > 0) {
+									return Math.floor(elapsedDays) + "일";
+								} else if (elapsedHours > 0) {
+									return Math.floor(elapsedHours) + "시간";
+								} else if (elapsedMinutes > 0) {
+									return Math.floor(elapsedMinutes) + "분";
+								} else if (elapsedSeconds > 0) {
+									return Math.floor(elapsedSeconds) + "초";
+								} else {
+									return "-";
+								}
+							}
+						}
 					}
 				},
 				columnMapping : [
@@ -1322,10 +1362,21 @@
 					//{ title:'Node', key : 'node' , width: '130px', align: 'center'},
 					{ title:'노드', key : 'node' , width: '130px', align: 'center'},
 					//{ title:'Disk(Gi)', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
-					{ title:'데이터 Disk', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
+					{ title:'데이터 Disk', key : 'disk' , width: '140px', align: 'center', tooltip : function(value, data, mapping){
 						if(data.diskUpdateTime){
 							var isValid = moment(data.diskUpdateTime,'YYYYMMDDHHmmss').isValid();
-							return 'Update Time : '+moment(data.diskUpdateTime,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
+							if(isValid) {
+								var d = moment(data.diskUpdateTime,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
+								var ut = new Date(d);
+								ut.setHours(ut.getHours()+9);
+								var dUT = getTimeStamp(ut);
+								console.log(ut);
+								return 'Update Time : '+dUT;
+							} else {
+								var ut = new Date(data.diskUpdateTime);
+								var dUT = getTimeStamp(ut);
+								return 'Update Time : '+dUT;
+							}
 						};
 					}},
 					{ title:'백업 Disk', key : 'backupStorage' , width: '120px', align: 'center', hidden: false, render : {type: "setBackupStorage"
@@ -1333,42 +1384,11 @@
 					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
 					{ title:'Memory(Mi)', key : 'memory' , width: '120px', align: 'center'},
 					//{ title:'Last Uptime', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
-					{ title:'기간', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
+					{ title:'기간', key : 'lastTransitionTime' , width: '150px', align: 'center', render : {type: "setTerm"}, tooltip : function(value, data, mapping){
 						var lt = data.condition? data.condition.lastTransitionTime : '';
 						if(lt){
-							var d = new Date();
-							var isValid = moment(lt).isValid();
-							var ltDate = new Date(lt);
-							
-							var different = d.getTime() - ltDate.getTime();
-							
-							var secondsInMilli = 1000;
-							var minutesInMilli = secondsInMilli * 60;
-							var hoursInMilli = minutesInMilli * 60;
-							var daysInMilli = hoursInMilli * 24;
-							
-							var elapsedDays = different / daysInMilli;
-							different = different % daysInMilli;
-							
-							var elapsedHours = different / hoursInMilli;
-							different = different % hoursInMilli;
-							
-							var elapsedMinutes = different / minutesInMilli;
-							different = different % minutesInMilli;
-							
-							var elapsedSeconds = different / secondsInMilli;
-							
-							if (elapsedDays > 0) {
-								return Math.floor(elapsedDays) + "일";
-							} else if (elapsedHours > 0) {
-								return Math.floor(elapsedHours) + "시간";
-							} else if (elapsedMinutes > 0) {
-								return Math.floor(elapsedMinutes) + "분";
-							} else if (elapsedSeconds > 0) {
-								return Math.floor(elapsedSeconds) + "초";
-							} else {
-								return "-";
-							}
+							var ltFormat = moment(lt,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
+							return ltFormat;
 						}
 					}},
 					{ title:'Action',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping,cell){
@@ -1528,7 +1548,7 @@
 				gServiceScale.storageClass = '';
 				if(pvSpec.spec){
 					var strIops = cStorageClassConstants[pvSpec.spec.storageClassName];
-					StorageQoSTooltipMsg = "Storage QoS: "+strIops;
+					StorageQoSTooltipMsg = "스토리지 QoS: "+strIops;
 					if(strIops != null) {
 					var iopsArr = strIops.split(" ");
 					tempIops = iopsArr[0];
@@ -3182,4 +3202,29 @@
 		};
 		
 	});
+	function getTimeStamp(d) {
+		var s =
+			leadingZeros(d.getFullYear(), 4) + '-' +
+		    leadingZeros(d.getMonth() + 1, 2) + '-' +
+		    leadingZeros(d.getDate(), 2) + ' ' +
+
+		    leadingZeros(d.getHours(), 2) + ':' +
+		    leadingZeros(d.getMinutes(), 2) + ':' +
+		    leadingZeros(d.getSeconds(), 2);
+
+		return s;
+	}
+
+	function leadingZeros(n, digits) {
+		var zero = '';
+		n = n.toString();
+
+		if (n.length < digits) {
+			for(var i = 0; i < digits - n.length; i++)
+				zero += '0';
+		}
+		
+		return zero + n;
+	}
+
 </script>
