@@ -94,7 +94,6 @@
 							if(value == 'N')re='미사용';
 							return re;
 						}},
-						{ title:'백업유형', key : 'backupExecType' , width: '100px', align: 'center'},
 						{ title:'백업설정', key : 'useYn' , width: '70px', align: 'center',render:function(value,data){
 							let re = fn_getUseYnTemp(value);
 							return re;
@@ -124,7 +123,16 @@
 							}
 							return true;
 						}},
-						{ title:'전체백업시간', key : 'startTime' , width: '120px', align: 'center',editable:function(value,data){
+						{ title:'ICOS 사용량(MB)', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
+							let re = '';
+							if(!cloudUtil.isEmpty(value) && !isNaN(value)){
+								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
+								re = new BigNumber(value).toFormat(); 
+							}
+							return re;
+						}},
+						{ title:'백업주기', key : 'backupExecType' , width: '100px', align: 'center'},
+						{ title:'백업시간', key : 'startTime' , width: '100px', align: 'center',editable:function(value,data){
 							let re = $('<input type="text" name="startTime" value="'+value+'" class="alopexgrid-default-renderer" style="text-align:center;">');
 							$a.maskedinput(re[0],'00:00');
 							return re;
@@ -133,7 +141,13 @@
 						},valid : function(value, data) {
 							return moment(value,'HH:mm').isValid();
 						}},
-						{ title:'증분백업주기', key : 'incrementPeriod' , width: '120px', align: 'center',
+						{ title:'백업용량', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
+							return value == '0'?'-': value;
+						}},
+						{ title:'소요시간', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
+							return cloudUtil.parseInt(value)== 0 ?'-':value;
+						}},
+						{ title:'백업주기', key : 'incrementPeriod' , width: '100px', align: 'center',
 							render:function(value,data){
 								let re = value;
 								if(data.incrementYn == 'N'){
@@ -148,26 +162,13 @@
 							type:'select',
 							rule:[{value:'0',text:'미사용'},{value:'1',text:'1시간'},{value:'2',text:'2시간'},{value:'6',text:'6시간'},{value:'12',text:'12시간'}]
 						}},
-						{ title:'백업용량(MB)', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
-							return value == '0'?'-': value;
-						}},
-						{ title:'소요시간', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
-							return cloudUtil.parseInt(value)== 0 ?'-':value;
-						}},
-						{ title:'백업용량(MB)', key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
+
+						{ title:'백업용량', key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
 							return value == '0'?'-': value;
 						}},
 						{ title:'소요시간', key : 'incrExecutionTime' , width: '70px', align: 'center', render:function(value){
 							return cloudUtil.parseInt(value)== 0 ?'-':value;
-						}},
-						{ title:'ICOS 사용량(MB)', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
-							let re = '';
-							if(!cloudUtil.isEmpty(value) && !isNaN(value)){
-								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
-								re = new BigNumber(value).toFormat(); 
-							}
-							return re;
-						}},
+						}}
 					],
 					message: {
 						nodata: gMessage.gridNodata
@@ -176,8 +177,8 @@
 						sortingColumn: "serviceName",
 						sortingDirection: 'asc'
 					},headerGroup: [
-						{fromIndex:7, toIndex:8, title:"전체백업"},
-						{fromIndex:9, toIndex:10, title:"증분백업"}
+						{fromIndex:"backupExecType", toIndex:"fullExecutionTime", title:"전체백업"},
+						{fromIndex:"incrementPeriod", toIndex:"incrExecutionTime", title:"증분백업"}
 					],
 				}).on('cellEditInvalid ', function(e){
 					setTimeout(function(evt){
