@@ -87,7 +87,14 @@
 							return re;
 							
 						}},
-						{ title:'서비스타입', key : 'serviceType' , width: '100px', align: 'center'},
+						{ title:'서비스종류', key : 'serviceType' , width: '100px', align: 'center',render:function(value){
+							let img = {
+									mariadb:'<img src="/styles/images/mariadb16.png" width="16px">',
+									redis:'<img src="/styles/images/redis16.jpg" width="16px">'
+								};
+							let re = img[value]; 
+							if(re) return re;	
+						}},
 						{ title:'백업디스크', key : 'backupDiskYn' , width: '100px', align: 'center',render:function(value){
 							let re = '';
 							if(value == 'Y')re='사용';
