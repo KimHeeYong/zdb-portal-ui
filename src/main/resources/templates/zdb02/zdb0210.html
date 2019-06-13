@@ -2369,7 +2369,10 @@
 					}},
 					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
 					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
-					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',render:cloudUtil.dtFormat,render:function(value,data){
+						let re = data.fromLsn +' ~ '+data.toLsn ;
+						return re;
+					}},
 					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
 						var val = '';
 						if(value < 1024 ) {

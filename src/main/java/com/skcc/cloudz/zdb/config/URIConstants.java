@@ -170,6 +170,10 @@ public class URIConstants {
 
 	public static final String URI_GET_DATABASE_VARIABLES = "/api/v1/{serviceType}/database/variables";
 
+	public static final String URI_GET_USE_DATABASE_VARIABLES = "/api/v1/{namespace}/{serviceType}/{serviceName}/database/useVariables";
+
+	public static final String URI_UPDATE_USE_DATABASE_VARIABLES = "/api/v1/{namespace}/{serviceType}/{serviceName}/database/useVariables";
+
 	public static String URI_GET_NODES_INFO = "/api/v1/nodesInfo";
 
 }
