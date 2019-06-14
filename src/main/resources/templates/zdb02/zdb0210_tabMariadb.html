@@ -231,13 +231,13 @@ let appMariadb = {
 			]
 		});				
 		this.gridStatusVariables = $('#gridStatusVariables').alopexGrid({
-			fitTableWidth :false,
 			height:580,
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
-				{ key : 'name', title : 'name', width : '500px', align : 'left' },
-				{ key : 'value', title : 'Value', width : '500px', align : 'left' }					
+				{ key : 'name', title : 'name', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key : 'value', title : 'Value', width : '500px', align : 'left',excludeFitWidth:true}	,
+				{ key:''}
 			]
 		});			
 		appMariadb.tabMariadb.find('[data-menu=statusVariables] input[name=txtStatusVariablesFilter]').on('input propertychange',function(){
@@ -245,13 +245,13 @@ let appMariadb = {
 		});
 		
 		this.gridSystemVariables = $('#gridSystemVariables').alopexGrid({
-			fitTableWidth :false,
 			height:580,
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
-				{ key : 'name', title : 'name', width : '500px', align : 'left' },
-				{ key : 'value', title : 'Value', width : '500px', align : 'left' }					
+				{ key : 'name', title : 'name', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key : 'value', title : 'Value', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key:'',title:''}
 			]
 		});				
 		appMariadb.tabMariadb.find('[data-menu=systemVariables] input[name=txtSystemVariablesFilter]').on('input propertychange',function(){
@@ -264,6 +264,8 @@ let appMariadb = {
 				clickSelect : true,
 				singleSelect : true
 			},
+			restoreFocusOnInvalidInlineEdit :true,
+			cellSelectable:true,
 			leaveDeleted:true,			
 			readonlyRender:false,
 			tree : {
@@ -280,17 +282,39 @@ let appMariadb = {
 				{ key : 'category', title : 'category', width : '400px', align : 'left',hidden:true,excludeFitWidth:true },
 				{ key : 'name', title : 'Config Name', width : '400px', align : 'left', treeColumn : false ,render:mycnfRender ,editable:mycnfEditable,excludeFitWidth:true},
 				{ key : 'value', title : 'Value', width : '350px', align : 'left',render:mycnfRender,editable:mycnfEditable,editedValue: function(cell, data, render, mapping, grid) {
-					let re = '';
-					if(true || data.dynamic == true){
-						re = $(cell).find('select,input').val();
-					}
+					let re = $(cell).find('select,input').val();
+					return re;
+				},valid : function(value, data) {
+					let re = true;
+					if(!appMariadb.validMyCnf(value,data)){
+						re = false;
+						value = data.value;
+					}					
+					data.valid = re;
 					return re;
 				},excludeFitWidth:true},					
 				{ key : 'description', title : 'Description', width : '300px', align : 'left' },
 				{ key : 'proc', title : '', width : '100px', align : 'left',render: mycnfRender,excludeFitWidth:true }
 			]
-		}).on('click','.bodycell.cell',function(e){
-			let evt = AlopexGrid.parseEvent(e);
+		}).on('cellEditInvalid ', function(e){
+			setTimeout(function(evt){
+				var evObj = AlopexGrid.parseEvent(e);
+				var opt = evObj.data;
+				var mapping = evObj.mapping;
+				var col = mapping.columnIndex;
+				
+				if(opt._state.deleted == true){
+					return;
+				}
+				alert('입력값을 확인하세요.');
+				appMariadb.gridMyCnf.alopexGrid('focusCell', opt);
+				
+				setTimeout(function(){
+					appMariadb.gridMyCnf.alopexGrid('rowSelect', opt, true)
+					let input = appMariadb.gridMyCnf.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input');
+					input.focus().trigger('click');
+				},100)
+			},100)
 		});	
 		
 		$('#btnSaveMyCnf').on('click',function(){
@@ -314,15 +338,24 @@ let appMariadb = {
 					} else re = value;
 					break;
 				case 'value':
-					re = value;
+					re = value;	
+					if(data.category && data.name){
+						let dbv = appMariadb.databaseVariables;
+						let o = dbv[data.category][data.name];
+						if(o.dataType == 'enumerationkv'){
+							let c = eval('/'+data.value+':([^,]*)/').exec(o.valueRange);
+							if(c)re=c[1];						
+						}
+					}
 					break;
 				case 'proc':
 					if(isAddVariableColumn){
 						re = $('<button class="Button btn sm">추가</button>').on('click',function(e){
 							appMariadb.gridMyCnf.alopexGrid('endRowInlineEdit');
+							appMariadb.gridMyCnf.alopexGrid('dataGet');
 							let evt = AlopexGrid.parseEvent(e);
 							let dt = AlopexGrid.trimData(evt.data);
-							
+							if(dt.valid == false)return;
 							let newList = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',{dataColumn:true}));
 							if(cloudUtil.isEmpty(dt.name) || dt.name == gMessage.selectAddColumn){
 								gCommon.alert(gMessage.selectAddColumn);return;
@@ -331,7 +364,7 @@ let appMariadb = {
 								category:dt.category, name:dt.name, value:dt.value, dataColumn:true
 							});
 							appMariadb.setGridMyCnf(newList);
-
+							appMariadb.gridMyCnf.alopexGrid('focusCell',{category:dt.category,name:dt.name})
 						});
 					} else if(!cloudUtil.isEmpty(data.category)){
 						re = $('<button class="Button btn sm">삭제</button>').on('click',function(e){
@@ -366,7 +399,7 @@ let appMariadb = {
 			let isAddVariableColumn = data.addVariableColumn == true;
 			switch(column.key){
 				case 'name':
-					if(!data.category)re = '['+value+']';
+					if(!data.category)re = '<span style="font-size:1.5em;color:midnightblue">['+value+']</span>';
 					else if(isAddVariableColumn){
 						re = getAddVariableColumn(data);
 					} else re = value;
@@ -377,25 +410,34 @@ let appMariadb = {
 					let d = dbv[data.category][data.name]||{};
 					if(d && d.dynamic == true){
 						let valueRange = d.valueRange|| ''; 
-						if(valueRange.indexOf(',')>-1){
+						if(d.dataType.indexOf('enumeration')>-1){
 							let l = valueRange.split(',');
 							re = $('<div class="Divselect wd250" style="top:-5px;height:32px;"><select></select><span></div>');
-							for(let i = 0; i < l.length;i++){
-								re.find('select').append($('<option/>',{text:l[i],value:l[i]}));
-							}
+							if(d.dataType == 'enumerationkv'){
+								for(let i = 0; i < l.length;i++){
+									let v = l[i].split(':');
+									re.find('select').append($('<option/>',{text:v[1],value:v[0]}));
+								}
+							}else if(d.dataType == 'enumeration'){
+								for(let i = 0; i < l.length;i++){
+									re.find('select').append($('<option/>',{text:l[i],value:l[i]}));
+								}
+							}							
+							
 							$a.convert(re);
 							if(cloudUtil.isEmpty(data.value)){
 								let firstValue = re.find('select option:eq(0)').val();
 								appMariadb.gridMyCnf.alopexGrid('dataEdit', $.extend({},data,{value:firstValue}),data);
+								data.value = firstValue;
 							}
 							re.setSelected(data.value);
 						}else{
 							re = '<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%">';
 						}
 					}else{
-						re = value
+						re = '';
 					}
-					break;
+				break;
 			}
 			return re;
 		}
@@ -408,7 +450,10 @@ let appMariadb = {
 			}
 			$a.convert(re);
 			re.setSelected(data.name).find('select').on('change',function(evt){
-				let d = $.extend({},data,{name:$(evt.currentTarget).val(),value:''});
+				let dbv = appMariadb.databaseVariables;
+				let name = $(evt.currentTarget).val();
+				let o = dbv[data.category][name];
+				let d = $.extend({},o,{value:''});
 				appMariadb.gridMyCnf.alopexGrid('dataEdit', d,data);
 				appMariadb.gridMyCnf.alopexGrid('rowSelect', data, true);
 				appMariadb.gridMyCnf.alopexGrid('startRowInlineEdit',data);
@@ -594,7 +639,7 @@ let appMariadb = {
 						comboList[o.category].push(o);							
 					}else{
 						mc.dataColumn = true;
-						gridList.push($.extend({},o,mc));
+						gridList.push($.extend({},mc,o,{value:mc.value}));
 					}
 				}
 			}
@@ -605,10 +650,14 @@ let appMariadb = {
 			}
 			appMariadb.gridMyCnf.alopexGrid('dataSet',gridList).alopexGrid('expandTreeNode');			
 		},saveGridMyCnf : function(){
+			appMariadb.gridMyCnf.alopexGrid('endRowInlineEdit');
+			let dt = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',function(data) {
+			    return data.dataColumn == true && data._state.deleted != true;
+			}));
+			if(gCommon.findObjectByKeyOb(dt,{valid:false}) !=null){
+				return;
+			};
 			gCommon.confirm("설정을 변경하시겠습니까?",function(){
-				let dt = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',function(data) {
-				    return data.dataColumn == true && data._state.deleted != true;
-				}));
 				let param = $.extend({},gParam,{databaseVariables:JSON.stringify(dt)});
 				$a.ajax({
 					url:'/zdbapi/updateUseDatabaseVariables',
@@ -622,6 +671,31 @@ let appMariadb = {
 					}
 				});
 			})
+		},validMyCnf:function(value,data){
+			let re = true;
+			if(data.dataType == 'numeric') {
+				let valueRange = (data.valueRange||'').split(':');
+				if(valueRange.length > 1){
+					let val = (value||'').toUpperCase();
+					let reg = /^([\d]+)([K|M]{0,1})$/gi.exec(val);
+					if(reg==null){
+						return false;
+					}
+					let n = new BigNumber(reg[1]);
+					let unit = 1;
+					if(reg[2] == 'K'){
+						unit = 1024;
+					}else if(reg[2] == 'M'){
+						unit = 1024 * 1024
+					}
+					let r = n.times(unit);
+					let min = new BigNumber(valueRange[0]);
+					let max = new BigNumber(valueRange[1]);
+					console.log(max.isNaN())
+				    re = (min.isNaN()|| r.gte(min)) && (max.isNaN() || r.lte(max));
+				}
+			}
+			return re;
 		} 
 	}
 $a.page(function() {

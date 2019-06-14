@@ -70,10 +70,21 @@
 						}},						
 						{ title:'상태', key : 'backupStatus' , width: '50x',excludeFitWidth:true, align: 'center',render:function(value,data){
 							let status = '';
-							if(value=='YELLOW')status = 'yellow';
-							else if(value=='GREEN')status = 'green';
-							else if(value=='RED')status = 'red';
-							let re = '<div class="state '+status+'"></div>';
+							let alt = '';
+							if(value=='YELLOW'){
+								status = 'yellow';
+								alt = '최근 백업이 존재하지 않습니다';
+							} else if(value=='GREEN'){
+								status = 'green';
+								alt = '백업이 정상적으로 수행되고 있습니다';
+							} else if(value=='RED'){
+								status = 'red';
+								alt = '최근 백업이 실패 했습니다';
+							} else if(value=='DOING'){
+								status = 'green blinking';
+								alt = '백업이 수행되는 중입니다';
+							}
+							let re = '<div class="state '+status+'" title="'+alt+'"></div>';
 							
 							return re;
 							
