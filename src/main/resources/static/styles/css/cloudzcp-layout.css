@@ -1876,6 +1876,14 @@ a.view-detail:active {
 	border: 1px solid #cccccc;
 	background: #ffffff;
 }
+
+.item-wrap2 {
+	width: 250px;
+	height: 260px;
+	padding: 10px;
+	border: 1px solid #cccccc;
+	background: #ffffff;
+}
 .item-wrap_line {
 	cursor: pointer;
 	display: inline-block;

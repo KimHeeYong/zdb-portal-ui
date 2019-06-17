@@ -310,3 +310,6 @@ a.grid:active  { text-decoration:underline; }
     100% {opacity:1;}
 }
 
+.header-row{
+	background-color: #e0e0e3 !important;
+}

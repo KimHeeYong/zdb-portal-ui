@@ -421,7 +421,7 @@ $.fn.extend({
 			}else if(item.attr('type') == 'radio'){
 				item.filter('[value='+val+']').prop('checked',true);
 			}else if(item.attr('type') == 'checkbox'){
-				
+				item.filter('[value='+val+']').prop('checked',true);
 			}
 		}else if('select' == tagName){
 			item.val(val+'');
