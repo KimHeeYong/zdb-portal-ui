@@ -78,15 +78,19 @@ const cStorageClassConstants = {
 	 'ibmc-block-bronze':'2 IOPS/GB'
 	,'ibmc-block-silver':'4 IOPS/GB'
 	,'ibmc-block-gold':'10 IOPS/GB'
+	,'ibmc-file-bronze':'2 IOPS/GB'
+	,'ibmc-file-silver':'4 IOPS/GB'
+	,'ibmc-file-gold':'10 IOPS/GB'
 };
 const gMessage = {
 	validPage : '잘못된 접근 입니다.',
 	saveSuccess: '정상적으로 저장되었습니다.',
 	notValidInput : '유효하지 않은 입력값이 있습니다.',
 	procSuccss: '정상적으로 처리되었습니다.',
-	gridNodata: '데이터가 없습니다.'
+	gridNodata: '데이터가 없습니다.',
+	selectAddColumn : '추가 할 항목을 선택하세요'
 };
 
 const cImg = {
-	checkboxY : '<img src="/styles/images/ico-checkmark.png" style="float:initial;width:20px"></img>'	
+	checkboxY : '<img src="/styles/images/ico-checkmark.png" style="float:initial;width:20px"></img>'
 }

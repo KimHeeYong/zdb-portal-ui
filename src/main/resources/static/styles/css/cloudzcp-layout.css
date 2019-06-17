@@ -161,6 +161,7 @@ body.login {background: #ffffff}
 .state.locked {background: #ea0530}
 .state.active {background: #43a047}
 .state.stay {background: #ffad00}
+.state.grey {background: gray}
 .state.gray {background-image: url(/styles/images/rotation_ani.gif);}
 .state.red {background: #ea0530}
 .state.green {background: #43a047}

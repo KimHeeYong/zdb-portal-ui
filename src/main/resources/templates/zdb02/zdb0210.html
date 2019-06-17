@@ -1370,7 +1370,6 @@
 								var ut = new Date(d);
 								ut.setHours(ut.getHours()+9);
 								var dUT = getTimeStamp(ut);
-								console.log(ut);
 								return 'Update Time : '+dUT;
 							} else {
 								var ut = new Date(data.diskUpdateTime);
@@ -1534,41 +1533,41 @@
 				};
 				
 				var StorageQoSTooltipMsg = "";
-				var tempIops = "";
-				var tempDisk = "";
+				var dataIops = "";
+				var backupIops = "";
 				
 				var rsSpec = gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{};
 				var psSpec = gCommon.getObjectByIdx(gService.persistenceSpecOfPodMap,0)||{};
-				var pvSpec = gCommon.getObjectByIdx(gService.persistentVolumeClaims,0)||{};
+				var pvSpec = gService.persistentVolumeClaims;
 				gServiceScale.cpu = rsSpec.cpu;
 				gServiceScale.memory = rsSpec.memory;
 				gServiceScale.cpuVal = cloudUtil.parseInt(gServiceScale.cpu);
 				gServiceScale.memoryVal = cloudUtil.parseInt(gServiceScale.memory);
 				gServiceScale.disk = psSpec.size;
 				gServiceScale.storageClass = '';
-				if(pvSpec.spec){
-					var strIops = cStorageClassConstants[pvSpec.spec.storageClassName];
-					StorageQoSTooltipMsg = "스토리지 QoS: "+strIops;
-					if(strIops != null) {
-					var iopsArr = strIops.split(" ");
-					tempIops = iopsArr[0];
+				if(pvSpec){
+					for(var p = 0; p < pvSpec.length; p++) {
+						var scn = pvSpec[p].spec.storageClassName;
+						var strIops = cStorageClassConstants[scn];
+						
+						if(scn != null) {
+							var scnArr = scn.split("-");
+							var iopsArr = strIops.split(" ");
+							
+							if(scnArr[1] == "block") {
+								dataIops = iopsArr[0];
+							} else {
+								backupIops = iopsArr[0];
+							}
+							
+						}
 					}
 				}
 				
 				let resorceSpec = gService.resourceSpec||{};
 				let persistenceSpec = gService.persistenceSpec||{};
 				
-				var strDisk = gService.persistentVolumeClaims.length==0?'사용안함':persistenceSpec.size||'';
-				if(strDisk != '사용안함') {
-					var diskArr = strDisk.split("G");
-					tempDisk = diskArr[0];
-					var tempStorageClass = tempIops * tempDisk;
-					gServiceScale.storageClass = tempStorageClass + " IOPS";
-				}
-				
 				var totalStorage = 0;
-				
-				
 				
 				var podData = (function(){
 					var list = [];					
@@ -1593,7 +1592,8 @@
 							condition: condition,
 							node: pod.spec.nodeName,
 							colspanCol: false,
-							stName: pod.metadata.name.replace(/(\-[\d]+)$/g,'')
+							stName: pod.metadata.name.replace(/(\-[\d]+)$/g,''),
+							role: role
 						});	
 					}
 					return list; 
@@ -1650,11 +1650,17 @@
 									ob.disk = cloudUtil.truncDecimal((dataStorage.used / (1024*1024)),2) + ' / ' + (hasUseRateData? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A')) 
 									        + (hasUseRateData? ' ('+dataStorage.useRate+')' : '' ) ;
 									ob.diskUpdateTime = dataStorage.updateTime;
-
-									var nameArr = ob.stName.split("-");
-									var nameArrLength = nameArr.length;
 									
-									StorageTooltipMsg += nameArr[nameArrLength-1] + "(DATA): " + (hasUseRateData? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A')) + "<br>";
+									var storageSize = hasUseRateData? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A');
+									
+									StorageTooltipMsg += ob.role + "(DATA): " + storageSize + "<br>";
+									
+									if(dataIops != "") {
+										StorageQoSTooltipMsg += ob.role + "("+dataIops+" IOPS/GB): " + (storageSize.split('G')[0] * dataIops) + " IOPS<br>";
+										if(ob.role == "master"){
+											gServiceScale.storageClass = (storageSize.split('G')[0] * dataIops) + " IOPS";
+										}
+									}
 								}
 							};
 						}catch(e){ 
@@ -1665,7 +1671,13 @@
 					
 					
 					if(backupStorage != null) {
-						StorageTooltipMsg += "Backup: " + (hasUseRateBackup? cloudUtil.convertSize(backupStorage.size) :(gServiceScale.disk||'N/A'))  + "<br>";
+						
+						var backupStorageSize = hasUseRateBackup? cloudUtil.convertSize(backupStorage.size) :(gServiceScale.disk||'N/A');
+						
+						StorageTooltipMsg += "Backup: " + backupStorageSize  + "<br>";
+						if(backupIops != "") {
+							StorageQoSTooltipMsg += "Backup("+backupIops+" IOPS/GB): " + (backupStorageSize.split('G')[0] * backupIops) + " IOPS<br>";
+						}
 						totalStorage += backupStorage.size;
 					}
 					
@@ -2369,7 +2381,10 @@
 					}},
 					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
 					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
-					{ title:'삭제시간', key : 'deleteDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',render:cloudUtil.dtFormat,render:function(value,data){
+						let re = data.fromLsn +' ~ '+data.toLsn ;
+						return re;
+					}},
 					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
 						var val = '';
 						if(value < 1024 ) {

@@ -826,4 +826,23 @@ public class ZdbApiService{
 		return list;
 	}
 
+	public List<MariaDBVariable> getUseDatabaseVariables(Map<String, String> param) {
+		List<MariaDBVariable> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_USE_DATABASE_VARIABLES, ZdbRestDTO.class, param);
+		
+		if(zdbRestDTO != null && zdbRestDTO.getResult() != null) {
+			list = zdbRestDTO.getResult().getDatabaseVariables();
+		};
+		
+		return list;
+	}
+
+	public ZdbRestDTO updateUseDatabaseVariables(Map<String, String> param) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HttpEntity entity = new HttpEntity<>(param.get(IResult.DATABASE_VARIABLES),headers);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USE_DATABASE_VARIABLES,HttpMethod.PUT,entity, ZdbRestDTO.class, param).getBody();
+		return zdbRestDTO;
+	}
+
 }

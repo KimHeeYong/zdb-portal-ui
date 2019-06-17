@@ -874,4 +874,20 @@ public class ZdbApiController {
 		mav.addObject(IResult.DATABASE_VARIABLES ,result);
 		return mav;
 	}
+	@RequestMapping(value="getUseDatabaseVariables", method=RequestMethod.GET)
+	public ModelAndView getUseDatabaseVariables(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<MariaDBVariable> result = zdbApiService.getUseDatabaseVariables(param);
+		mav.addObject(IResult.DATABASE_VARIABLES ,result);
+		return mav;
+	}
+	@RequestMapping(value="updateUseDatabaseVariables", method=RequestMethod.PUT)
+	public ModelAndView updateUseDatabaseVariables(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		ZdbRestDTO result = zdbApiService.updateUseDatabaseVariables(param);
+		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}
 }
