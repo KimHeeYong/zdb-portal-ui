@@ -1235,7 +1235,7 @@
 							let re = "-";
 							switch(gParam.serviceType){
 								case cServiceType.mariadb:
-									if(data.role == 'master'){
+									if(data.isPod && data.role == 'master'){
 										if(gService.clusterEnabled){
 											re = "-";
 										} else {
@@ -1251,7 +1251,7 @@
 												re = "-";
 											}
 										}
-									}else if(data.role == 'slave'){
+									}else if(data.isPod && data.role == 'slave'){
 										var dl = gService.diskUsageOfPodMap;
 										if(dl[data.name].length > 1) {
 											for(var i = 0; i < dl[data.name].length; i++){
@@ -1263,6 +1263,8 @@
 										} else {
 											re = "-";
 										}
+									}else {
+										re = "-";
 									}
 									break;
 								case cServiceType.redis:
