@@ -1232,22 +1232,50 @@
 					},
 					'setBackupStorage' : {
 						renderer: function(value, data, render, mapping) {
-							if(data.role == 'master') {
-								return "-";
-							} else if(data.role == 'slave') {
-								var dl = gService.diskUsageOfPodMap;
-								if(dl[data.name].length > 1) {
-									for(var i = 0; i < dl[data.name].length; i++){
-										var path = dl[data.name][i].path;
-										if(path.startsWith('/backup')) {
-											return cloudUtil.convertSize(dl[data.name][i].size);
-										} 
+							let re = "-";
+							switch(gParam.serviceType){
+								case cServiceType.mariadb:
+									if(data.isPod && data.role == 'master'){
+										if(gService.clusterEnabled){
+											re = "-";
+										} else {
+											var dl = gService.diskUsageOfPodMap;
+											if(dl[data.name].length > 1) {
+												for(var i = 0; i < dl[data.name].length; i++){
+													var path = dl[data.name][i].path;
+													if(path.startsWith('/backup')) {
+														re = cloudUtil.convertSize(dl[data.name][i].size);
+													} 
+												}
+											} else {
+												re = "-";
+											}
+										}
+									}else if(data.isPod && data.role == 'slave'){
+										var dl = gService.diskUsageOfPodMap;
+										if(dl[data.name].length > 1) {
+											for(var i = 0; i < dl[data.name].length; i++){
+												var path = dl[data.name][i].path;
+												if(path.startsWith('/backup')) {
+													re = cloudUtil.convertSize(dl[data.name][i].size);
+												} 
+											}
+										} else {
+											re = "-";
+										}
+									}else {
+										re = "-";
 									}
-								} else {
-									return "-";
-								}
-							}
-							
+									break;
+								case cServiceType.redis:
+									if(data.role == 'master'){
+										re = "-";
+									}else if(data.role == 'slave'){
+										re = "-";
+									}
+									break;
+							}	
+							return re;
 						}
 					},
 					'setTerm' : {
@@ -1384,10 +1412,13 @@
 					{ title:'Memory(Mi)', key : 'memory' , width: '120px', align: 'center'},
 					//{ title:'Last Uptime', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
 					{ title:'기간', key : 'lastTransitionTime' , width: '150px', align: 'center', render : {type: "setTerm"}, tooltip : function(value, data, mapping){
-						var lt = data.condition? data.condition.lastTransitionTime : '';
-						if(lt){
-							var ltFormat = moment(lt,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
-							return ltFormat;
+						var lTT = data.condition? data.condition.lastTransitionTime : '';
+						if(lTT){
+							var d = moment(lTT,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
+							var lt = new Date(d);
+							lt.setHours(lt.getHours()+9);
+							var dLT = getTimeStamp(lt);
+							return 'Last Transition Time : '+dLT;
 						}
 					}},
 					{ title:'Action',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping,cell){
@@ -1615,11 +1646,15 @@
 							if(cl && cl[ob.name]){
 								var cpuUsage = cl[ob.name];
 								ob.cpu = (cpuUsage.length ? cpuUsage[cpuUsage.length-1].value:'') / 1000 + ' / ' + gService.resourceSpecOfPodMap[ob.name].cpu;
-							};
+							} else {
+								ob.cpu = gService.resourceSpecOfPodMap[ob.name].cpu;
+							}
 							if(ml && ml[ob.name]){
 								var memUsage = ml[ob.name];
 								ob.memory = cloudUtil.truncDecimal(((memUsage.length? memUsage[memUsage.length-1].value:'')),2) + 'Mi / ' + gService.resourceSpecOfPodMap[ob.name].memory;
-							};
+							} else {
+								ob.memory = gService.resourceSpecOfPodMap[ob.name].memory;
+							}
 							var dataStorage = null;
 							
 							if(gService.serviceType == 'redis' && gService.purpose != 'DATA' && gService.persistentVolumeClaims.length == 0){
@@ -1653,7 +1688,7 @@
 									
 									var storageSize = hasUseRateData? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A');
 									
-									StorageTooltipMsg += ob.role + "(DATA): " + storageSize + "<br>";
+									StorageTooltipMsg += ob.role + "(Data): " + storageSize + "<br>";
 									
 									if(dataIops != "") {
 										StorageQoSTooltipMsg += ob.role + "("+dataIops+" IOPS/GB): " + (storageSize.split('G')[0] * dataIops) + " IOPS<br>";

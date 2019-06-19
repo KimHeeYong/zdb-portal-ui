@@ -97,17 +97,120 @@
 								<div class="cols wd300"> Aborted Connections  <span class="ml20" data="Aborted_connects"></span></div>
 								<div class="cols wd300"> errors</div>
 							</div>
-							<div id="gridConnection" class="black"></div>
+							<div id="gridConnection"></div>
 						</div>
 						<div data-menu="userRole" class="hide">
 							<h3 class="form-title">Users and Privileges</h3>
-							 <div class="fl" style="width:170px;">
-							 	<div id="gridUserRole" class="black"></div>
-							 </div>
-							 <div style="width:calc(100% - 300px);min-height:600px;overflow: scroll">
-							 	<div style="padding:10px; border: 1px solid #cccccc;">
-							 						 	
-							 	</div>
+							<div class="fl" style="width:230px;">
+								<div id="gridUserRole"></div>
+							</div>
+							<div style="width:calc(100% - 300px);min-height:600px;overflow: scroll">
+								<form name="formUserRole">
+						 		<table class="Table Form-type" style="min-width:900px;width:900px;border-bottom:0px;">
+									<colgroup>
+										<col style="width:190px"></col>
+										<col style="width:230px"></col>
+										<col style="width:480px"></col>
+									</colgroup>
+									<tbody>
+										<tr> 
+											<td>Login Name:</td>
+											<td>
+												<input class="Textinput" type="text" id="user" name="user">
+												<p data-for="user" class="warn-text"></p>
+											</td>
+											<td>You may create multiple accounts with the same name<br/>to the connect from different hosts. </td>
+										</tr>
+										<tr> 
+											<td>Authentication Type:</td>
+											<td>
+												<div class="Divselect">
+													<select>
+														<option value="Standard">Standard</option>
+													</select>
+													<span></span>
+												</div>
+											</td>
+											<td>For the standard password and/or host based authentication<br/>select 'Standard'.</td>
+										</tr>
+										<tr> 
+											<td>Limit to Hosts Matching:</td>
+											<td>
+												<input class="Textinput" type="text" id="host" name="host">
+												<p data-for="host" class="warn-text"></p>
+											</td>
+											<td>% and_wildcards may be used</td>
+										</tr>										
+										<tr> 
+											<td>Password:</td>
+											<td>
+												<input class="Textinput" type="password" id="password" name="password">
+												<p data-for="password" class="warn-text"></p>
+											</td>
+											<td>Type a password to reset it.</td>
+										</tr>										
+										<tr> 
+											<td>Confirm Password:</td>
+											<td>
+												<input class="Textinput" type="password" id="passwordConfirm" name="passwordConfirm">
+												<p data-for="passwordConfirm" class="warn-text"></p>
+											</td>
+											<td>Enter password again to confirm</td>
+										</tr>										
+									</tbody>
+								</table>
+						 		<table class="Table Form-type" style="min-width:900px;width:900px;border-top:0px;">
+									<colgroup>
+										<col style="width:300px"></col>
+										<col style="width:300px"></col>
+										<col style="width:300px"></col>
+									</colgroup>
+									<tbody>
+										<tr>
+											<td>
+												Object Rights
+												<div class="item-wrap2">
+													<ul>
+														<li><input class="Checkbox" type="checkbox" name="select" value="Y">SELECT</li>
+														<li><input class="Checkbox" type="checkbox" name="insert" value="Y">INSERT</li>
+														<li><input class="Checkbox" type="checkbox" name="update" value="Y">UPDATE</li>
+														<li><input class="Checkbox" type="checkbox" name="delete" value="Y">DELETE</li>
+														<li><input class="Checkbox" type="checkbox" name="execute" value="Y">EXECUTE</li>
+														<li><input class="Checkbox" type="checkbox" name="showView" value="Y">SHOW VIEW</li>
+													</ul>
+												</div>
+											</td>
+											<td>
+												DDL Rights
+												<div class="item-wrap2">
+													<ul>
+														<li><input class="Checkbox" type="checkbox" name="create" value="Y">CREATE</li>
+														<li><input class="Checkbox" type="checkbox" name="alter" value="Y">ALTER</li>
+														<li><input class="Checkbox" type="checkbox" name="references" value="Y">REFERENCES</li>
+														<li><input class="Checkbox" type="checkbox" name="index" value="Y">INDEX</li>
+														<li><input class="Checkbox" type="checkbox" name="createView" value="Y">CREATE VIEW</li>
+														<li><input class="Checkbox" type="checkbox" name="createRoutine" value="Y">CREATE ROUTINE</li>
+														<li><input class="Checkbox" type="checkbox" name="alterRoutine" value="Y">ALTER ROUTINE</li>
+														<li><input class="Checkbox" type="checkbox" name="event" value="Y">EVENT</li>
+														<li><input class="Checkbox" type="checkbox" name="drop" value="Y">DROP</li>
+														<li><input class="Checkbox" type="checkbox" name="trigger" value="Y">TRIGGER</li>
+													</ul>
+												</div>
+											</td>
+											<td>
+												Other Rights
+												<div class="item-wrap2">
+													<ul>
+														<li><input class="Checkbox" type="checkbox" name="grant" value="Y">GRANT OPTION</li>
+														<li><input class="Checkbox" type="checkbox" name="createTmpTable" value="Y">CREATE TEMPORARY TABLES</li>
+														<li><input class="Checkbox" type="checkbox" name="lockTables" value="Y">LOCK TABLES</li>
+													</ul>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								</form>															 	
 							 </div>
 						</div>
 						<div data-menu="statusVariables">
@@ -138,7 +241,7 @@
 </div>
 <script type="text/javascript">
 gService = {
-	podName :"zdb-test-mariatest-mariadb-0"
+	podName :"zdb-test-mat-mariadb-0"
 }
 let appMariadb = {
 	init : function(){
@@ -158,7 +261,7 @@ let appMariadb = {
 		
 		appMariadb.getDatabaseVariables();
 		setTimeout(function(){
-			appMariadb.mariaMenu.find('[data-menu]:eq(5)').trigger('click')
+			appMariadb.mariaMenu.find('[data-menu]:eq(2)').trigger('click')
 		},100)
 		function fn_isSystemProcess(data){
 			let exIds = ['system user','replicator']; 
@@ -220,16 +323,26 @@ let appMariadb = {
 					}}
 					],
 			});
+		this.formUserRole = appMariadb.mariaContent.find('form[name=formUserRole]');
 		this.gridUserRole = $('#gridUserRole').alopexGrid({
-			width:160,
+			autoColumnIndex : true,
+			width:220,
 			height:580,
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
+			rowSelectOption: {
+				clickSelect: true,
+				singleSelect: true
+			},			
 			columnMapping : [
-				{ key : 'User', title : 'User', width : '80px', align : 'left' },
-				{ key : 'Host', title : 'Host', width : '80px', align : 'left' }					
+				{ key : 'user', title : 'User', width : '100px', align : 'left' },
+				{ key : 'host', title : 'From Host', width : '120px', align : 'left' }					
 			]
-		});				
+		}).on('click', '.bodycell', function(e){
+			let dt = AlopexGrid.parseEvent(e).data;
+			appMariadb.formUserRole[0].reset();
+			appMariadb.formUserRole.zdbui_setContents(dt);
+		});			
 		this.gridStatusVariables = $('#gridStatusVariables').alopexGrid({
 			height:580,
 			message: { nodata: gMessage.gridNodata },
@@ -264,6 +377,12 @@ let appMariadb = {
 				clickSelect : true,
 				singleSelect : true
 			},
+			rowOption : { 
+				styleclass : function(data, rowOption){
+					console.log(data.categoryColumn);
+					if(data.categoryColumn==true) return 'header-row';
+				}
+			},			
 			restoreFocusOnInvalidInlineEdit :true,
 			cellSelectable:true,
 			leaveDeleted:true,			
@@ -331,11 +450,11 @@ let appMariadb = {
 			let isAddVariableColumn = data.addVariableColumn == true;
 			switch(column.key){
 				case 'name':
-					if(!data.category){
+					if(data.categoryColumn==true){
 						re = '<span style="font-size:1.5em;color:midnightblue">['+value+']</span>';
 					} else if(isAddVariableColumn){
 						re = getAddVariableColumn(data);
-					} else re = value;
+					} else re = data.alias;
 					break;
 				case 'value':
 					re = value;	
@@ -399,10 +518,10 @@ let appMariadb = {
 			let isAddVariableColumn = data.addVariableColumn == true;
 			switch(column.key){
 				case 'name':
-					if(!data.category)re = '<span style="font-size:1.5em;color:midnightblue">['+value+']</span>';
+					if(data.categoryColumn==true)re = '<span style="font-size:1.5em;color:midnightblue">['+value+']</span>';
 					else if(isAddVariableColumn){
 						re = getAddVariableColumn(data);
-					} else re = value;
+					} else re = data.alias;
 					break;
 				case 'value':
 					if(!data.dataColumn && !isAddVariableColumn)return;
@@ -446,7 +565,7 @@ let appMariadb = {
 			let re = $('<div class="Divselect wd250" style="top:-5px;height:32px;"><select><option>'+gMessage.selectAddColumn+'</option></select><span></div>');
 			for(let i = 0 ; i < data.comboList.length;i++){
 				let o = data.comboList[i];
-				re.find('select').append($('<option/>',{text:o.name,value:o.name}));
+				re.find('select').append($('<option/>',{text:o.alias,value:o.name}));
 			}
 			$a.convert(re);
 			re.setSelected(data.name).find('select').on('change',function(evt){
@@ -470,6 +589,9 @@ let appMariadb = {
 					appMariadb.getProcesses();
 					appMariadb.getDatabaseConnection();
 					break;
+				case 'userRole':
+					appMariadb.getUserRoleList();
+					break;
 				case 'statusVariables':
 					appMariadb.getStatusVariables();
 					break;
@@ -492,7 +614,7 @@ let appMariadb = {
 						ON : '<span class="state green vm"></span> ',
 						OFF : '<span class="state inactive vm"></span> '
 					}
-					if(ds){
+					if(ds && ds.compiled){
 						ds.compiled = ds.version_compile_os + '('+ds.version_compile_machine+')';
 						ds.running = moment(ds.timestamp * 1000).format('ddd MMM D HH:mm:ss YYYY');
 						BigNumber.config({ ROUNDING_MODE: BigNumber.ROUND_DOWN });
@@ -517,7 +639,7 @@ let appMariadb = {
 					}
 				}
 			});
-		} ,getDatabaseConnection :function(){
+		}, getDatabaseConnection :function(){
 			$a.ajax({
 				url:'/zdbapi/getDatabaseConnection',
 				data:$.extend({},gParam,{podName:gService.podName}),
@@ -526,7 +648,7 @@ let appMariadb = {
 					appMariadb.tabMariadb.find('[data-menu=connection]').zdbui_setContents(d);
 				}
 			});			
-		} ,getProcesses : function(){
+		}, getProcesses : function(){
 			$a.ajax({
 				url:'/zdbapi/getProcesses',
 				data:$.extend({},gParam,{podName:gService.podName}),
@@ -599,8 +721,20 @@ let appMariadb = {
 					appMariadb.databaseVariables = dt;
 				}
 			});			
-		}, getMyCnfList : function(){
-			//todo mycnflist를 서버에서 조회
+		}
+		, getUserRoleList:function(){
+			$a.ajax({
+				url: '/zdbapi/getUserGrants',
+				method:'get',
+				data: gParam,
+				success: function(res){
+					let list = res.userGrants;
+					appMariadb.gridUserRole.alopexGrid('dataSet',list);
+				}
+			});
+		}
+		, getMyCnfList : function(){
+			//서버에 설정된 mycnf 내용 조회
 			$a.ajax({
 				url:'/zdbapi/getUseDatabaseVariables',
 				data:gParam,
@@ -620,7 +754,7 @@ let appMariadb = {
 		setGridMyCnf : function(paramList){
 			let categoryList = [{name:'mysqld'},{name:'mysql'},{name:'mysqld_safe'},{name:'mysqldump'},{name:'client'}];
 			categoryList = categoryList.map(function(ob){
-				return $.extend({},ob,{serverData:false,dataColumn:false});
+				return $.extend({},ob,{serverData:false,dataColumn:false,categoryColumn:true});
 			});
 			let gridList = categoryList.slice(); //마지막에 보여줄 전체 grid 리스트
 			let comboList = {}; //카테고리별 추가 데이터
@@ -691,7 +825,6 @@ let appMariadb = {
 					let r = n.times(unit);
 					let min = new BigNumber(valueRange[0]);
 					let max = new BigNumber(valueRange[1]);
-					console.log(max.isNaN())
 				    re = (min.isNaN()|| r.gte(min)) && (max.isNaN() || r.lte(max));
 				}
 			}
@@ -703,6 +836,5 @@ $a.page(function() {
 		appMariadb.init();		
 	}
 });
-
 
 </script>
