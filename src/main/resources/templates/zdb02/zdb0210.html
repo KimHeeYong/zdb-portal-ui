@@ -1646,11 +1646,15 @@
 							if(cl && cl[ob.name]){
 								var cpuUsage = cl[ob.name];
 								ob.cpu = (cpuUsage.length ? cpuUsage[cpuUsage.length-1].value:'') / 1000 + ' / ' + gService.resourceSpecOfPodMap[ob.name].cpu;
-							};
+							} else {
+								ob.cpu = gService.resourceSpecOfPodMap[ob.name].cpu;
+							}
 							if(ml && ml[ob.name]){
 								var memUsage = ml[ob.name];
 								ob.memory = cloudUtil.truncDecimal(((memUsage.length? memUsage[memUsage.length-1].value:'')),2) + 'Mi / ' + gService.resourceSpecOfPodMap[ob.name].memory;
-							};
+							} else {
+								ob.memory = gService.resourceSpecOfPodMap[ob.name].memory;
+							}
 							var dataStorage = null;
 							
 							if(gService.serviceType == 'redis' && gService.purpose != 'DATA' && gService.persistentVolumeClaims.length == 0){
