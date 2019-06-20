@@ -101,115 +101,57 @@
 						</div>
 						<div data-menu="userRole" class="hide">
 							<h3 class="form-title">Users and Privileges</h3>
-							<div class="fl" style="width:230px;">
-								<div id="gridUserRole"></div>
+							<div class="fl" style="width:330px;">
+								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
+									<button class="Button btn sm" id="btnAddUser">추가</button>
+									<button class="Button btn sm" id="btnDeleteUser">삭제</button>
+									<button class="Button btn sm" id="btnRevokeUser">Revoke All Privileges</button>
+								</div>
+								<div id="gridUser"></div>
 							</div>
-							<div style="width:calc(100% - 300px);min-height:600px;overflow: scroll">
+							<div class="fl" style="width:150px;">
+								<div class="fr" style="margin-bottom: 3px;margin-right:20px;">
+									<button class="Button btn sm" id="btnAddUserSchema">추가</button>
+									<button class="Button btn sm" id="btnDeleteUserSchema">삭제</button>
+								</div>
+								<div id="gridUserSchema"></div>
+							</div>
+							<div style="width:calc(100% - 600px);margin-top:25px;overflow: scroll">
 								<form name="formUserRole">
-						 		<table class="Table Form-type" style="min-width:900px;width:900px;border-bottom:0px;">
-									<colgroup>
-										<col style="width:190px"></col>
-										<col style="width:230px"></col>
-										<col style="width:480px"></col>
-									</colgroup>
-									<tbody>
-										<tr> 
-											<td>Login Name:</td>
-											<td>
-												<input class="Textinput" type="text" id="user" name="user">
-												<p data-for="user" class="warn-text"></p>
-											</td>
-											<td>You may create multiple accounts with the same name<br/>to the connect from different hosts. </td>
-										</tr>
-										<tr> 
-											<td>Authentication Type:</td>
-											<td>
-												<div class="Divselect">
-													<select>
-														<option value="Standard">Standard</option>
-													</select>
-													<span></span>
-												</div>
-											</td>
-											<td>For the standard password and/or host based authentication<br/>select 'Standard'.</td>
-										</tr>
-										<tr> 
-											<td>Limit to Hosts Matching:</td>
-											<td>
-												<input class="Textinput" type="text" id="host" name="host">
-												<p data-for="host" class="warn-text"></p>
-											</td>
-											<td>% and_wildcards may be used</td>
-										</tr>										
-										<tr> 
-											<td>Password:</td>
-											<td>
-												<input class="Textinput" type="password" id="password" name="password">
-												<p data-for="password" class="warn-text"></p>
-											</td>
-											<td>Type a password to reset it.</td>
-										</tr>										
-										<tr> 
-											<td>Confirm Password:</td>
-											<td>
-												<input class="Textinput" type="password" id="passwordConfirm" name="passwordConfirm">
-												<p data-for="passwordConfirm" class="warn-text"></p>
-											</td>
-											<td>Enter password again to confirm</td>
-										</tr>										
-									</tbody>
-								</table>
-						 		<table class="Table Form-type" style="min-width:900px;width:900px;border-top:0px;">
-									<colgroup>
-										<col style="width:300px"></col>
-										<col style="width:300px"></col>
-										<col style="width:300px"></col>
-									</colgroup>
-									<tbody>
-										<tr>
-											<td>
-												Object Rights
-												<div class="item-wrap2">
-													<ul>
-														<li><input class="Checkbox" type="checkbox" name="select" value="Y">SELECT</li>
-														<li><input class="Checkbox" type="checkbox" name="insert" value="Y">INSERT</li>
-														<li><input class="Checkbox" type="checkbox" name="update" value="Y">UPDATE</li>
-														<li><input class="Checkbox" type="checkbox" name="delete" value="Y">DELETE</li>
-														<li><input class="Checkbox" type="checkbox" name="execute" value="Y">EXECUTE</li>
-														<li><input class="Checkbox" type="checkbox" name="showView" value="Y">SHOW VIEW</li>
-													</ul>
-												</div>
-											</td>
-											<td>
-												DDL Rights
-												<div class="item-wrap2">
-													<ul>
-														<li><input class="Checkbox" type="checkbox" name="create" value="Y">CREATE</li>
-														<li><input class="Checkbox" type="checkbox" name="alter" value="Y">ALTER</li>
-														<li><input class="Checkbox" type="checkbox" name="references" value="Y">REFERENCES</li>
-														<li><input class="Checkbox" type="checkbox" name="index" value="Y">INDEX</li>
-														<li><input class="Checkbox" type="checkbox" name="createView" value="Y">CREATE VIEW</li>
-														<li><input class="Checkbox" type="checkbox" name="createRoutine" value="Y">CREATE ROUTINE</li>
-														<li><input class="Checkbox" type="checkbox" name="alterRoutine" value="Y">ALTER ROUTINE</li>
-														<li><input class="Checkbox" type="checkbox" name="event" value="Y">EVENT</li>
-														<li><input class="Checkbox" type="checkbox" name="drop" value="Y">DROP</li>
-														<li><input class="Checkbox" type="checkbox" name="trigger" value="Y">TRIGGER</li>
-													</ul>
-												</div>
-											</td>
-											<td>
-												Other Rights
-												<div class="item-wrap2">
-													<ul>
-														<li><input class="Checkbox" type="checkbox" name="grant" value="Y">GRANT OPTION</li>
-														<li><input class="Checkbox" type="checkbox" name="createTmpTable" value="Y">CREATE TEMPORARY TABLES</li>
-														<li><input class="Checkbox" type="checkbox" name="lockTables" value="Y">LOCK TABLES</li>
-													</ul>
-												</div>
-											</td>
-										</tr>
-									</tbody>
-								</table>
+								Object Rights
+								<div class="item-wrap2" style="height:155px;">
+									<ul>
+										<li><input class="Checkbox" type="checkbox" name="select" value="Y">SELECT</li>
+										<li><input class="Checkbox" type="checkbox" name="insert" value="Y">INSERT</li>
+										<li><input class="Checkbox" type="checkbox" name="update" value="Y">UPDATE</li>
+										<li><input class="Checkbox" type="checkbox" name="delete" value="Y">DELETE</li>
+										<li><input class="Checkbox" type="checkbox" name="execute" value="Y">EXECUTE</li>
+										<li><input class="Checkbox" type="checkbox" name="showView" value="Y">SHOW VIEW</li>
+									</ul>
+								</div>
+								DDL Rights
+								<div class="item-wrap2" style="height:250px;">
+									<ul>
+										<li><input class="Checkbox" type="checkbox" name="create" value="Y">CREATE</li>
+										<li><input class="Checkbox" type="checkbox" name="alter" value="Y">ALTER</li>
+										<li><input class="Checkbox" type="checkbox" name="references" value="Y">REFERENCES</li>
+										<li><input class="Checkbox" type="checkbox" name="index" value="Y">INDEX</li>
+										<li><input class="Checkbox" type="checkbox" name="createView" value="Y">CREATE VIEW</li>
+										<li><input class="Checkbox" type="checkbox" name="createRoutine" value="Y">CREATE ROUTINE</li>
+										<li><input class="Checkbox" type="checkbox" name="alterRoutine" value="Y">ALTER ROUTINE</li>
+										<li><input class="Checkbox" type="checkbox" name="event" value="Y">EVENT</li>
+										<li><input class="Checkbox" type="checkbox" name="drop" value="Y">DROP</li>
+										<li><input class="Checkbox" type="checkbox" name="trigger" value="Y">TRIGGER</li>
+									</ul>
+								</div>
+								Other Rights
+								<div class="item-wrap2" style="height:90px">
+									<ul>
+										<li><input class="Checkbox" type="checkbox" name="grant" value="Y">GRANT OPTION</li>
+										<li><input class="Checkbox" type="checkbox" name="createTmpTable" value="Y">CREATE TEMPORARY TABLES</li>
+										<li><input class="Checkbox" type="checkbox" name="lockTables" value="Y">LOCK TABLES</li>
+									</ul>
+								</div>
 								</form>															 	
 							 </div>
 						</div>
@@ -324,25 +266,155 @@ let appMariadb = {
 					],
 			});
 		this.formUserRole = appMariadb.mariaContent.find('form[name=formUserRole]');
-		this.gridUserRole = $('#gridUserRole').alopexGrid({
-			autoColumnIndex : true,
-			width:220,
-			height:580,
-			message: { nodata: gMessage.gridNodata },
-			autoColumnIndex : true,
-			rowSelectOption: {
-				clickSelect: true,
-				singleSelect: true
-			},			
-			columnMapping : [
-				{ key : 'user', title : 'User', width : '100px', align : 'left' },
-				{ key : 'host', title : 'From Host', width : '120px', align : 'left' }					
-			]
-		}).on('click', '.bodycell', function(e){
-			let dt = AlopexGrid.parseEvent(e).data;
-			appMariadb.formUserRole[0].reset();
-			appMariadb.formUserRole.zdbui_setContents(dt);
-		});			
+		
+		let tabUser = this.formUserRole;
+		let renderCheckbox = function(value){
+			if(value == 'Y')return $('<img src="/styles/images/ico-checkmark.png" style="float:initial;width:20px"></img>');
+		};
+		let allowEditCheck = function(value,data){
+			return data.state == 'A' || (data.user != 'admin');
+		}
+		let editTypeYn = {type:"checkbox",rule:[{value:"Y", checked:true},{value:"N", checked:false}]};
+		let gridUser = this.gridUser = $('#gridUser').alopexGrid({
+			autoColumnIndex: true,
+			autoResize:true,
+			rowInlineEdit:true,
+			rowSelectOption:{
+				clickSelect : true,
+				singleSelect : true
+			},
+			cellSelectable:true,
+			restoreFocusOnInvalidInlineEdit :true,
+			leaveDeleted:true,
+			width:320,
+			height: 500,
+			columnMapping : [  
+				{ title:'state',key:'state',width:'50px',align:'center',editable:false,hidden:true,excludeFitWidth:true,render:function(value,data){
+					if (data._state.added){data.state = 'A'}
+					else if (data._state.deleted){data.state='D'}
+					else if (data._state.edited){data.state='E'}
+					else {data.state=''}
+					return data.state;
+				}},
+				{ title:'USER', key : 'user' , width: '100px', align: 'left' ,editable:true	,allowEdit:function(value,data){
+					return data._state.added == true;
+				},editable: function(value, data) {
+					return '<div><input type="text" class="alopexgrid-default-renderer" maxlength="15" value="'+value+'"/></div>'; 
+				},editedValue: function(cell, data, render, mapping, grid) {
+					return $(cell).find('input').val();
+				},valid : function(value, data) {
+					if(value=='') {
+						return false;
+					}
+					return true;
+				}},
+				{ title:'Password', key : 'password' , width: '100px', align: 'left' ,editable:{type:'text'},valid : function(value, data) {
+					if(value=='' && data.state == 'A') {
+						return false;
+					}
+					return true;
+					},editable: function(value, data) {
+						return '<div><input type="password" class="alopexgrid-default-renderer" value="'+ (value||'') +'" maxlength="15"/></div>'; 
+					},editedValue: function(cell, data, render, mapping, grid) {
+						return $(cell).find('input').val();
+					},render:function(value,data){
+						return (value||'').replace(/./g,'*');
+					}
+				},
+				{ title:'From HOST', key : 'host' , width: '120px', align: 'left' ,editable:true,allowEdit:function(value,data){
+					return data._state.added == true;
+				}}
+			], message: { nodata: gMessage.gridNodata }
+		}).on('cellEditInvalid ', function(e){
+				setTimeout(function(evt){
+					var evObj = AlopexGrid.parseEvent(e);
+					var opt = evObj.data;
+					var mapping = evObj.mapping;
+					var col = mapping.columnIndex;
+					var invalidValue = evObj.value;
+					
+					if(opt._state.deleted == true){
+						return;
+					}
+					if(col == 1){
+						alert('User를 입력하세요');
+					}else if(col == 2){
+						alert('Password를 입력하세요');
+					}
+					gridUser.alopexGrid('focusCell', opt);
+					setTimeout(function(){
+						gridUser.alopexGrid('rowSelect', opt, true)
+						gridUser.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+					},100)
+				},100)
+		}).on('dataChanged',function(e){
+			
+		});
+		this.gridUserSchema = $('#gridUserSchema').alopexGrid({
+			autoColumnIndex: true,
+			autoResize:true,
+			rowInlineEdit:true,
+			rowSelectOption:{
+				clickSelect : true,
+				singleSelect : true
+			},
+			cellSelectable:true,
+			leaveDeleted:true,
+			width:130,
+			height: 500,
+			columnMapping : [  
+				{ title:'state',key:'state',width:'50px',align:'center',editable:false,hidden:true,excludeFitWidth:true,render:function(value,data){
+					if (data._state.added){data.state = 'A'}
+					else if (data._state.deleted){data.state='D'}
+					else if (data._state.edited){data.state='E'}
+					else {data.state=''}
+					return data.state;
+				}},
+				{ title:'Schema', key : 'user' , width: '100px', align: 'left' ,editable:true	,allowEdit:function(value,data){
+					return data._state.added == true;
+				},editable: function(value, data) {
+					return '<div><input type="text" class="alopexgrid-default-renderer" maxlength="15" value="'+value+'"/></div>'; 
+				},editedValue: function(cell, data, render, mapping, grid) {
+					return $(cell).find('input').val();
+				}}
+			], message: { nodata: gMessage.gridNodata }				
+		});
+		
+		tabUser.find('#btnAddUser').on('click', function(e){
+			gridUser.alopexGrid('endRowInlineEdit');
+			let dt = gridUser.alopexGrid('dataGet');
+			
+			if(dt[0] && dt[0]._state.added == true && dt[0]._state.editing != false){
+				return;
+			}
+			
+			let opt = {_index :{row:0,column:1,data:0,target:0}};
+			let defUserDt = {
+				select:'N', insert:'N',update:'N',delete:'N',execute:'N',create:'N',alter:'N',drop:'N',index:'N',createView:'N',trigger:'N',
+				grant:'N',createUser:'N'
+			};
+			gridUser.alopexGrid('dataAdd', defUserDt, opt);
+			gridUser.alopexGrid('startRowInlineEdit',opt);
+			setTimeout(function(){
+				gridUser.alopexGrid('rowSelect', opt, true)
+				gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
+			},100)
+		});
+		tabUser.find('#btnDeleteUser').on('click',function(e){
+			gridUser.alopexGrid('endRowInlineEdit');
+			let dg = gridUser.alopexGrid( 'dataGet' , {_state:{selected:true}});
+			if(dg.length == 0){
+				gCommon.alert('선택된 행이 없습니다.');return;
+			};
+			let dt = dg[0];
+			if(dt.user == 'admin' && dt.host == '%'){
+				gCommon.alert('admin 계정은 삭제 할 수 없습니다.');return;
+			}
+			let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
+			gridUser.alopexGrid(d,{_state: {selected:true}}); 
+		})
+		
+		
 		this.gridStatusVariables = $('#gridStatusVariables').alopexGrid({
 			height:580,
 			message: { nodata: gMessage.gridNodata },
@@ -371,6 +443,15 @@ let appMariadb = {
 			appMariadb.setSystemVariablesFilter();
 		});	
 
+		let renderValue = function(value,data){
+			let re = '';
+			if(!cloudUtil.isEmpty(data.enumValueList)){
+				re = data.enumValueList;
+			}else if(!cloudUtil.isEmpty(data.numericMinValue)){
+				re = data.numericMinValue + ' ~ ' + data.numericMaxValue;
+			}	
+			return re;
+		}
 		this.gridMyCnf = $('#gridMyCnf').alopexGrid({
 			rowInlineEdit:true,
 			rowSelectOption:{
@@ -379,7 +460,6 @@ let appMariadb = {
 			},
 			rowOption : { 
 				styleclass : function(data, rowOption){
-					console.log(data.categoryColumn);
 					if(data.categoryColumn==true) return 'header-row';
 				}
 			},			
@@ -397,10 +477,11 @@ let appMariadb = {
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
-				{ key : 'status' , title : '', width:'50px',excludeFitWidth:true},
-				{ key : 'category', title : 'category', width : '400px', align : 'left',hidden:true,excludeFitWidth:true },
-				{ key : 'name', title : 'Config Name', width : '400px', align : 'left', treeColumn : false ,render:mycnfRender ,editable:mycnfEditable,excludeFitWidth:true},
-				{ key : 'value', title : 'Value', width : '350px', align : 'left',render:mycnfRender,editable:mycnfEditable,editedValue: function(cell, data, render, mapping, grid) {
+				{ key : 'status' , title : '', width:'50px',excludeFitWidth:true,hidden:true},
+				{ key : 'proc', title : '', width : '70px', align : 'left',render: mycnfRender,excludeFitWidth:true },
+				{ key : 'category', title : 'category', width : '200px', align : 'left',hidden:true,excludeFitWidth:true },
+				{ key : 'name', title : 'Config Name', width : '300px', align : 'left', treeColumn : false ,render:mycnfRender ,editable:mycnfEditable,excludeFitWidth:true},
+				{ key : 'value', title : 'Value', width : '300px', align : 'left',render:mycnfRender,editable:mycnfEditable,editedValue: function(cell, data, render, mapping, grid) {
 					let re = $(cell).find('select,input').val();
 					return re;
 				},valid : function(value, data) {
@@ -412,8 +493,9 @@ let appMariadb = {
 					data.valid = re;
 					return re;
 				},excludeFitWidth:true},					
-				{ key : 'description', title : 'Description', width : '300px', align : 'left' },
-				{ key : 'proc', title : '', width : '100px', align : 'left',render: mycnfRender,excludeFitWidth:true }
+				{ key : 'defaultValue', title : 'Default Value', width : '200px', align : 'left' },
+				{ key : '', title : 'Value Range', width : '250px', align : 'left',render:renderValue,tooltip:renderValue},
+				{ key : 'variableComment', title : 'Description', width : '300px', align : 'left' }
 			]
 		}).on('cellEditInvalid ', function(e){
 			setTimeout(function(evt){
@@ -461,9 +543,10 @@ let appMariadb = {
 					if(data.category && data.name){
 						let dbv = appMariadb.databaseVariables;
 						let o = dbv[data.category][data.name];
-						if(o.dataType == 'enumerationkv'){
-							let c = eval('/'+data.value+':([^,]*)/').exec(o.valueRange);
-							if(c)re=c[1];						
+						if(data.variableType == 'BOOLEAN'){
+							re =  data.value == '1' ? 'ON' : 'OFF';
+						}else{
+							re = data.value;
 						}
 					}
 					break;
@@ -528,28 +611,31 @@ let appMariadb = {
 					let dbv = appMariadb.databaseVariables;
 					let d = dbv[data.category][data.name]||{};
 					if(d && d.dynamic == true){
-						let valueRange = d.valueRange|| ''; 
-						if(d.dataType.indexOf('enumeration')>-1){
-							let l = valueRange.split(',');
+						let enumValueList = d.enumValueList|| ''; 
+						if(d.variableType == 'ENUM' || d.variableType == 'BOOLEAN'){
+							let l = enumValueList.split(',');
 							re = $('<div class="Divselect wd250" style="top:-5px;height:32px;"><select></select><span></div>');
-							if(d.dataType == 'enumerationkv'){
-								for(let i = 0; i < l.length;i++){
-									let v = l[i].split(':');
-									re.find('select').append($('<option/>',{text:v[1],value:v[0]}));
-								}
-							}else if(d.dataType == 'enumeration'){
+							if(d.variableType == 'ENUM'){
 								for(let i = 0; i < l.length;i++){
 									re.find('select').append($('<option/>',{text:l[i],value:l[i]}));
 								}
+							}else if(d.variableType == 'BOOLEAN'){
+								re.find('select').append($('<option/>',{text:'OFF',value:'0'}));
+								re.find('select').append($('<option/>',{text:'ON',value:'1'}));
 							}							
 							
 							$a.convert(re);
-							if(cloudUtil.isEmpty(data.value)){
+							if(isAddVariableColumn){
 								let firstValue = re.find('select option:eq(0)').val();
-								appMariadb.gridMyCnf.alopexGrid('dataEdit', $.extend({},data,{value:firstValue}),data);
-								data.value = firstValue;
+								//appMariadb.gridMyCnf.alopexGrid('dataEdit', $.extend({},data,{value:firstValue}),data);
+								//data.value = firstValue;
+								//;
+								setTimeout(function(){
+									re.setSelected(firstValue);
+								},100);
+							}else{
+								re.setSelected(data.value);
 							}
-							re.setSelected(data.value);
 						}else{
 							re = '<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%">';
 						}
@@ -562,20 +648,19 @@ let appMariadb = {
 		}
 		//mycnf grid 추가 컬럼 설정
 		function getAddVariableColumn(data){
-			let re = $('<div class="Divselect wd250" style="top:-5px;height:32px;"><select><option>'+gMessage.selectAddColumn+'</option></select><span></div>');
-			for(let i = 0 ; i < data.comboList.length;i++){
-				let o = data.comboList[i];
+			let dbv = appMariadb.databaseVariables;
+			let comboList = dbv[data.category].comboList;
+			let re = $('<div class="Divselect wd250" style="top:-5px;height:32px;"><select><option value="">'+gMessage.selectAddColumn+'</option></select><span></div>');
+			for(let i = 0 ; i < comboList.length;i++){
+				let o = comboList[i];
 				re.find('select').append($('<option/>',{text:o.alias,value:o.name}));
 			}
 			$a.convert(re);
 			re.setSelected(data.name).find('select').on('change',function(evt){
-				let dbv = appMariadb.databaseVariables;
 				let name = $(evt.currentTarget).val();
 				let o = dbv[data.category][name];
 				let d = $.extend({},o,{value:''});
-				appMariadb.gridMyCnf.alopexGrid('dataEdit', d,data);
-				appMariadb.gridMyCnf.alopexGrid('rowSelect', data, true);
-				appMariadb.gridMyCnf.alopexGrid('startRowInlineEdit',data);
+				appMariadb.gridMyCnf.alopexGrid('dataEdit', d,data).alopexGrid('rowSelect', data, true).alopexGrid('startRowInlineEdit',data);
 			});
 			return re
 		}
@@ -729,7 +814,7 @@ let appMariadb = {
 				data: gParam,
 				success: function(res){
 					let list = res.userGrants;
-					appMariadb.gridUserRole.alopexGrid('dataSet',list);
+					appMariadb.gridUser.alopexGrid('dataSet',list);
 				}
 			});
 		}
@@ -763,11 +848,12 @@ let appMariadb = {
 			for(let cg in dbv){
 				let ds = dbv[cg];
 				for(let name in ds){
-					let o = ds[name];				
+					let o = ds[name];
+					if(!o.category)continue;
 					let mc = gCommon.findObjectByKeyOb(paramList,{category:o.category,name:o.name});
 					//전달 받은 데이터에 있으면 grid리스트에,없으면 추가콤보로 생성
 					if(mc==null){
-						if(comboList[o.category]==null){
+						if(!comboList[o.category]){
 							comboList[o.category] = [];
 						}
 						comboList[o.category].push(o);							
@@ -780,7 +866,8 @@ let appMariadb = {
 			
 			for(let k in comboList){
 				let o = comboList[k];
-				gridList.push({category:k, name:'' ,addVariableColumn:true ,comboList:o,dataColumn:false,serverData:false});
+				gridList.push({category:k, name:'' ,addVariableColumn:true ,dataColumn:false,serverData:false});
+				dbv[k].comboList = o;
 			}
 			appMariadb.gridMyCnf.alopexGrid('dataSet',gridList).alopexGrid('expandTreeNode');			
 		},saveGridMyCnf : function(){
@@ -807,9 +894,11 @@ let appMariadb = {
 			})
 		},validMyCnf:function(value,data){
 			let re = true;
-			if(data.dataType == 'numeric') {
-				let valueRange = (data.valueRange||'').split(':');
-				if(valueRange.length > 1){
+			if(!data.dynamic)return re;
+			if(data.variableType == 'BIGINT UNSIGNED' || data.variableType == 'INT UNSIGNED') {
+				let numericMinValue = data.numericMinValue || '';
+				let numericMaxValue = data.numericMaxValue || '';
+				if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
 					let val = (value||'').toUpperCase();
 					let reg = /^([\d]+)([K|M]{0,1})$/gi.exec(val);
 					if(reg==null){
@@ -823,8 +912,8 @@ let appMariadb = {
 						unit = 1024 * 1024
 					}
 					let r = n.times(unit);
-					let min = new BigNumber(valueRange[0]);
-					let max = new BigNumber(valueRange[1]);
+					let min = new BigNumber(numericMinValue);
+					let max = new BigNumber(numericMaxValue);
 				    re = (min.isNaN()|| r.gte(min)) && (max.isNaN() || r.lte(max));
 				}
 			}
