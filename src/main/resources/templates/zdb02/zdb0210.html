@@ -482,6 +482,24 @@
 					<span class="fr">일</span>
 				</div>
 				<div class="mr30 info-list">
+					<div class="hide fl" data-show-service-type="mariadb">
+						<span class="config-title">전체백업 수행주기:</span>
+						<div class="Divselect" id="scheduleDay" name="scheduleDay">
+							<select>
+								<option value="0">매일 수행</option>
+								<option value="2">매주 월요일</option>
+								<option value="3">매주 화요일</option>
+								<option value="4">매주 수요일</option>
+								<option value="5">매주 목요일</option>
+								<option value="6">매주 금요일</option>
+								<option value="7">매주 토요일</option>
+								<option value="1">매주 일요일</option>
+							</select>
+							<span></span>
+						</div>
+					</div>
+				</div>
+				<div class="mr30 info-list">
 					<span class="config-title">전체 백업 시간:</span>
 					<div class="Spinner Time" data-locale="en" id="startTime" data-hours="24H" data-bind="time:date">
 					    <input data-hour>
@@ -2516,10 +2534,12 @@
 					backupForm.find('#storePeriodSpinner').setEnabled(true);
 					backupForm.find('#startTime').setEnabled(true);
 					backupForm.find('#incrementPeriod').setEnabled(true);
+					backupForm.find('#scheduleDay').setEnabled(true);
 				}else{
 					backupForm.find('#storePeriodSpinner').setEnabled(false);
 					backupForm.find('#startTime').setEnabled(false);
 					backupForm.find('#incrementPeriod').setEnabled(false);
+					backupForm.find('#scheduleDay').setEnabled(false);
 				}
 			};			
 			function fn_getBackupScheduleInfo(){
