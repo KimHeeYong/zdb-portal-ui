@@ -847,9 +847,9 @@ let appMariadb = {
 						let list = res.userGrants;
 						let dl = [{name:'%'}].concat(databases)//.push({name:'mmmmmm'});
 						
-						//let databasesFilterList = databases.filter(function(ob){
-						//	return bl.indexOf(ob.name)==-1
-						//});
+						dl = dl.filter(function(ob){
+							return bl.indexOf(ob.name)==-1
+						});
 						appMariadb.gridUserSchema.alopexGrid('dataSet',dl);
 						appMariadb.gridUser.alopexGrid('dataSet',list);
 					}
