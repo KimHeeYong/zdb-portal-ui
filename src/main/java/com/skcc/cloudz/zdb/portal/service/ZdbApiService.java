@@ -42,6 +42,7 @@ import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
+import com.zdb.core.domain.UserPrivileges;
 import com.zdb.core.domain.ZDBConfig;
 import com.zdb.core.domain.ZDBNode;
 
@@ -843,6 +844,17 @@ public class ZdbApiService{
 		HttpEntity entity = new HttpEntity<>(param.get(IResult.DATABASE_VARIABLES),headers);
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USE_DATABASE_VARIABLES,HttpMethod.PUT,entity, ZdbRestDTO.class, param).getBody();
 		return zdbRestDTO;
+	}
+
+	public List<UserPrivileges> getUserPrivileges(Map<String, String> param) {
+		List<UserPrivileges> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_USER_PRIVILEGES, ZdbRestDTO.class, param);
+		
+		if(zdbRestDTO != null && zdbRestDTO.getResult() != null) {
+			list = zdbRestDTO.getResult().getUserPrivileges();
+		};
+		
+		return list;
 	}
 
 }

@@ -37,6 +37,7 @@ import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
+import com.zdb.core.domain.UserPrivileges;
 import com.zdb.core.domain.ZDBConfig;
 import com.zdb.core.domain.ZDBNode;
 
@@ -888,6 +889,32 @@ public class ZdbApiController {
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		ZdbRestDTO result = zdbApiService.updateUseDatabaseVariables(param);
 		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}
+	@RequestMapping(value="getUserPrivileges", method=RequestMethod.GET)
+	public ModelAndView getUserPrivileges(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<UserPrivileges> result = zdbApiService.getUserPrivileges(param);
+		mav.addObject(IResult.USER_PRIVILEGES ,result);
+		return mav;
+	}
+	@RequestMapping(value = "saveUserPrivileges", method = RequestMethod.PUT)	
+	public ModelAndView saveUserPrivileges(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		String state = param.get("state");
+		ZdbRestDTO result = null;
+		switch(state) {
+			case "A":
+				result = zdbApiService.createDBUser(param); break;
+			case "E":
+				result = zdbApiService.updateDBUser(param); break;
+			case "D":
+				result = zdbApiService.deleteDBUser(param); break;
+		}
+		mav.addObject(CommonConstants.RESULT,result);
+		
 		return mav;
 	}
 }

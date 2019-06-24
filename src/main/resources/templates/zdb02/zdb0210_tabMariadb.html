@@ -99,7 +99,7 @@
 							</div>
 							<div id="gridConnection"></div>
 						</div>
-						<div data-menu="userRole" class="hide">
+						<div data-menu="userRole" class="hide"  style=" min-width: 1100px; ">
 							<h3 class="form-title">Users and Privileges</h3>
 							<div class="fl" style="width:330px;">
 								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
@@ -107,16 +107,12 @@
 									<button class="Button btn sm" id="btnDeleteUser">삭제</button>
 									<button class="Button btn sm" id="btnRevokeUser">Revoke All Privileges</button>
 								</div>
-								<div id="gridUser"></div>
+								<div id="gridUser" class="mt30"></div>
 							</div>
-							<div class="fl" style="width:150px;">
-								<div class="fr" style="margin-bottom: 3px;margin-right:20px;">
-									<button class="Button btn sm" id="btnAddUserSchema">추가</button>
-									<button class="Button btn sm" id="btnDeleteUserSchema">삭제</button>
-								</div>
-								<div id="gridUserSchema"></div>
+							<div class="fl" style="width:300px;">
+								<div id="gridUserSchema" class="mt30"></div>
 							</div>
-							<div style="width:calc(100% - 600px);margin-top:25px;overflow: scroll">
+							<div style="width:280px;margin-top:25px;overflow: scroll">
 								<form name="formUserRole">
 								Object Rights
 								<div class="item-wrap2" style="height:155px;">
@@ -152,7 +148,10 @@
 										<li><input class="Checkbox" type="checkbox" name="lockTables" value="Y">LOCK TABLES</li>
 									</ul>
 								</div>
-								</form>															 	
+								</form>
+								<div class="fr" style="margin-bottom: 3px;margin-right:30px;">
+									<button class="Button btn sm" id="btnSavePrivileges">적용</button>
+								</div>																 	
 							 </div>
 						</div>
 						<div data-menu="statusVariables">
@@ -186,6 +185,7 @@ gService = {
 	podName :"zdb-test-mat-mariadb-0"
 }
 let appMariadb = {
+	data : {},	
 	init : function(){
 		this.tabMariadb = $('#tabMariadb');
 		this.mariaMenu = this.tabMariadb.find('#divMariaMenu');
@@ -200,7 +200,6 @@ let appMariadb = {
 			appMariadb.initMenu(menuName);
 		})
 		//appMariadb.initMenu(appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'));
-		
 		appMariadb.getDatabaseVariables();
 		setTimeout(function(){
 			appMariadb.mariaMenu.find('[data-menu]:eq(2)').trigger('click')
@@ -347,8 +346,9 @@ let appMariadb = {
 						gridUser.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
 					},100)
 				},100)
-		}).on('dataChanged',function(e){
-			
+		}).on('dataSelectEnd',function(e){
+			console.log('dataSelect')
+			appMariadb.setUserPrivileges();
 		});
 		this.gridUserSchema = $('#gridUserSchema').alopexGrid({
 			autoColumnIndex: true,
@@ -360,7 +360,7 @@ let appMariadb = {
 			},
 			cellSelectable:true,
 			leaveDeleted:true,
-			width:130,
+			width:280,
 			height: 500,
 			columnMapping : [  
 				{ title:'state',key:'state',width:'50px',align:'center',editable:false,hidden:true,excludeFitWidth:true,render:function(value,data){
@@ -370,7 +370,7 @@ let appMariadb = {
 					else {data.state=''}
 					return data.state;
 				}},
-				{ title:'Schema', key : 'user' , width: '100px', align: 'left' ,editable:true	,allowEdit:function(value,data){
+				{ title:'Schema', key : 'name' , width: '200px', align: 'left' ,editable:true	,allowEdit:function(value,data){
 					return data._state.added == true;
 				},editable: function(value, data) {
 					return '<div><input type="text" class="alopexgrid-default-renderer" maxlength="15" value="'+value+'"/></div>'; 
@@ -378,6 +378,8 @@ let appMariadb = {
 					return $(cell).find('input').val();
 				}}
 			], message: { nodata: gMessage.gridNodata }				
+		}).on('dataSelectEnd',function(e){
+			appMariadb.setUserPrivileges();
 		});
 		
 		tabUser.find('#btnAddUser').on('click', function(e){
@@ -413,7 +415,21 @@ let appMariadb = {
 			let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
 			gridUser.alopexGrid(d,{_state: {selected:true}}); 
 		})
-		
+		$('#btnSavePrivileges').on('click',function(){
+			let dt = appMariadb.mariaContent.find('form[name=formUserRole]').serializeObject();
+			let selUser = (appMariadb.gridUser.alopexGrid('dataGet',{_state :{selected:true}})[0] || {}).user;
+			let selSchema = (appMariadb.gridUserSchema.alopexGrid('dataGet',{_state :{selected:true}})[0]||{}).name;
+			
+			dt = $.extend({},dt,{user:selUser,});
+			$a.ajax({
+				url:'/zdbapi/saveUserPrivileges',
+				method:'PUT',
+				data:dt,
+				success:function(res){
+					
+				}
+			});
+		});
 		
 		this.gridStatusVariables = $('#gridStatusVariables').alopexGrid({
 			height:580,
@@ -541,7 +557,7 @@ let appMariadb = {
 				case 'value':
 					re = value;	
 					if(data.category && data.name){
-						let dbv = appMariadb.databaseVariables;
+						let dbv = appMariadb['data']['databaseVariables'];
 						let o = dbv[data.category][data.name];
 						if(data.variableType == 'BOOLEAN'){
 							re =  data.value == '1' ? 'ON' : 'OFF';
@@ -608,7 +624,7 @@ let appMariadb = {
 					break;
 				case 'value':
 					if(!data.dataColumn && !isAddVariableColumn)return;
-					let dbv = appMariadb.databaseVariables;
+					let dbv = appMariadb['data']['databaseVariables'];
 					let d = dbv[data.category][data.name]||{};
 					if(d && d.dynamic == true){
 						let enumValueList = d.enumValueList|| ''; 
@@ -648,7 +664,7 @@ let appMariadb = {
 		}
 		//mycnf grid 추가 컬럼 설정
 		function getAddVariableColumn(data){
-			let dbv = appMariadb.databaseVariables;
+			let dbv = appMariadb['data']['databaseVariables'];
 			let comboList = dbv[data.category].comboList;
 			let re = $('<div class="Divselect wd250" style="top:-5px;height:32px;"><select><option value="">'+gMessage.selectAddColumn+'</option></select><span></div>');
 			for(let i = 0 ; i < comboList.length;i++){
@@ -676,6 +692,7 @@ let appMariadb = {
 					break;
 				case 'userRole':
 					appMariadb.getUserRoleList();
+					appMariadb.getUserPrivileges();
 					break;
 				case 'statusVariables':
 					appMariadb.getStatusVariables();
@@ -789,7 +806,7 @@ let appMariadb = {
 				});
 			}			
 		}, getDatabaseVariables:function(){ 
-			appMariadb.databaseVariables = {};//mycnf 환경 변수
+			appMariadb.data.databaseVariables = {};//mycnf 환경 변수
 			$a.ajax({
 				url:'/zdbapi/getDatabaseVariables',
 				data:gParam,
@@ -803,22 +820,42 @@ let appMariadb = {
 						}
 						dt[o.category][o.name] = o;
 					}
-					appMariadb.databaseVariables = dt;
+					appMariadb['data']['databaseVariables'] = dt;
 				}
 			});			
-		}
-		, getUserRoleList:function(){
+		},getDatabases:function(){
+			var deferred = $.Deferred();
 			$a.ajax({
-				url: '/zdbapi/getUserGrants',
+				url: '/zdbapi/getDatabases',
 				method:'get',
 				data: gParam,
-				success: function(res){
-					let list = res.userGrants;
-					appMariadb.gridUser.alopexGrid('dataSet',list);
+				complete:function(res){
+					deferred.resolve(res.responseJSON);
 				}
 			});
+			return deferred.promise();
 		}
-		, getMyCnfList : function(){
+		, getUserRoleList:function(){
+			appMariadb.getDatabases().done(function(resDatabases){
+				$a.ajax({
+					url: '/zdbapi/getUserGrants',
+					method:'get',
+					data: gParam,
+					success: function(res){
+						let bl = ['information_schema','mysql','performance_schema'];
+						let databases = resDatabases.databases||[];
+						let list = res.userGrants;
+						let dl = [{name:'%'}].concat(databases)//.push({name:'mmmmmm'});
+						
+						//let databasesFilterList = databases.filter(function(ob){
+						//	return bl.indexOf(ob.name)==-1
+						//});
+						appMariadb.gridUserSchema.alopexGrid('dataSet',dl);
+						appMariadb.gridUser.alopexGrid('dataSet',list);
+					}
+				});				
+			})
+		} ,getMyCnfList : function(){
 			//서버에 설정된 mycnf 내용 조회
 			$a.ajax({
 				url:'/zdbapi/getUseDatabaseVariables',
@@ -832,6 +869,36 @@ let appMariadb = {
 				}
 			})
 		}, 
+		getUserPrivileges: function(){
+			$a.ajax({
+				url:'/zdbapi/getUserPrivileges',
+				data:gParam,
+				success:function(res){
+					let list = res.userPrivileges||[];
+					appMariadb['data']['userPrivileges'] = list;	
+					appMariadb.gridUser.alopexGrid('dataGet');
+				}
+			})			
+		},
+		setUserPrivileges:function(){
+			let selUser = (appMariadb.gridUser.alopexGrid('dataGet',{_state :{selected:true}})[0] || {}).user;
+			let selSchema = (appMariadb.gridUserSchema.alopexGrid('dataGet',{_state :{selected:true}})[0]||{}).name;
+			
+			if(selUser && selSchema){
+				let o = '\''+selUser+'\'@\'%\'';
+				let list = appMariadb['data']['userPrivileges'];
+				let l = list.filter(function(ob){
+					return 	ob.grantee == o && (ob.tableSchema||'%') == selSchema;
+				});
+				let v = {};
+				for(let i = 0 ; i < l.length;i++){
+					let ob = l[i];
+					v[ob.privilegeType.toLowerCase().replace(/(\s[a-z])/g,function($1){return $1.trim().toUpperCase();})]='Y';
+				}
+				appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
+				appMariadb.mariaContent.find('form[name=formUserRole]').zdbui_setContents(v);
+			}
+		},
 		/*
 			mycnfgrid 에 데이터 설정  : serverData(true,false)컬럼으로 실제 데이터 판별 ,dataColumn(true,false)으로 데이터 여부 판별
 			category 데이터,실데이터,추가콤보 리스트 순으로 생성( 파라미터는 실데이터)		
@@ -844,7 +911,7 @@ let appMariadb = {
 			let gridList = categoryList.slice(); //마지막에 보여줄 전체 grid 리스트
 			let comboList = {}; //카테고리별 추가 데이터
 			
-			let dbv = appMariadb.databaseVariables;
+			let dbv = appMariadb['data']['databaseVariables'];
 			for(let cg in dbv){
 				let ds = dbv[cg];
 				for(let name in ds){
