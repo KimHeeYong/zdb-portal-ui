@@ -266,7 +266,7 @@ let appMariadb = {
 			});
 		this.formUserRole = appMariadb.mariaContent.find('form[name=formUserRole]');
 		
-		let tabUser = this.formUserRole;
+		let tabUser = appMariadb.mariaContent.find('[data-menu=userRole]');
 		let renderCheckbox = function(value){
 			if(value == 'Y')return $('<img src="/styles/images/ico-checkmark.png" style="float:initial;width:20px"></img>');
 		};
@@ -280,9 +280,9 @@ let appMariadb = {
 			rowInlineEdit:true,
 			rowSelectOption:{
 				clickSelect : true,
-				singleSelect : true
+				singleSelect : true,
 			},
-			cellSelectable:true,
+			cellSelectable:false,
 			restoreFocusOnInvalidInlineEdit :true,
 			leaveDeleted:true,
 			width:320,
@@ -308,7 +308,7 @@ let appMariadb = {
 					return true;
 				}},
 				{ title:'Password', key : 'password' , width: '100px', align: 'left' ,editable:{type:'text'},valid : function(value, data) {
-					if(value=='' && data.state == 'A') {
+					if(value=='' && data._state.added == true) {
 						return false;
 					}
 					return true;
@@ -347,8 +347,10 @@ let appMariadb = {
 					},100)
 				},100)
 		}).on('dataSelectEnd',function(e){
-			console.log('dataSelect')
-			appMariadb.setUserPrivileges();
+			appMariadb.setUserPrivilegesUi();
+		}).on('click','.bodycell',function(e){
+			var evObj = AlopexGrid.parseEvent(e);
+			appMariadb.gridUser.alopexGrid('rowSelect',evObj.data,true);
 		});
 		this.gridUserSchema = $('#gridUserSchema').alopexGrid({
 			autoColumnIndex: true,
@@ -358,7 +360,6 @@ let appMariadb = {
 				clickSelect : true,
 				singleSelect : true
 			},
-			cellSelectable:true,
 			leaveDeleted:true,
 			width:280,
 			height: 500,
@@ -379,7 +380,10 @@ let appMariadb = {
 				}}
 			], message: { nodata: gMessage.gridNodata }				
 		}).on('dataSelectEnd',function(e){
-			appMariadb.setUserPrivileges();
+			appMariadb.setUserPrivilegesUi();
+		}).on('click','.bodycell',function(e){
+			var evObj = AlopexGrid.parseEvent(e);
+			appMariadb.gridUserSchema.alopexGrid('rowSelect',evObj.data,true);
 		});
 		
 		tabUser.find('#btnAddUser').on('click', function(e){
@@ -391,10 +395,7 @@ let appMariadb = {
 			}
 			
 			let opt = {_index :{row:0,column:1,data:0,target:0}};
-			let defUserDt = {
-				select:'N', insert:'N',update:'N',delete:'N',execute:'N',create:'N',alter:'N',drop:'N',index:'N',createView:'N',trigger:'N',
-				grant:'N',createUser:'N'
-			};
+			let defUserDt = {};
 			gridUser.alopexGrid('dataAdd', defUserDt, opt);
 			gridUser.alopexGrid('startRowInlineEdit',opt);
 			setTimeout(function(){
@@ -691,7 +692,6 @@ let appMariadb = {
 					appMariadb.getDatabaseConnection();
 					break;
 				case 'userRole':
-					appMariadb.getUserRoleList();
 					appMariadb.getUserPrivileges();
 					break;
 				case 'statusVariables':
@@ -716,7 +716,7 @@ let appMariadb = {
 						ON : '<span class="state green vm"></span> ',
 						OFF : '<span class="state inactive vm"></span> '
 					}
-					if(ds && ds.compiled){
+					if(ds){
 						ds.compiled = ds.version_compile_os + '('+ds.version_compile_machine+')';
 						ds.running = moment(ds.timestamp * 1000).format('ddd MMM D HH:mm:ss YYYY');
 						BigNumber.config({ ROUNDING_MODE: BigNumber.ROUND_DOWN });
@@ -836,6 +836,7 @@ let appMariadb = {
 			return deferred.promise();
 		}
 		, getUserRoleList:function(){
+			var deferred = $.Deferred();
 			appMariadb.getDatabases().done(function(resDatabases){
 				$a.ajax({
 					url: '/zdbapi/getUserGrants',
@@ -845,16 +846,18 @@ let appMariadb = {
 						let bl = ['information_schema','mysql','performance_schema'];
 						let databases = resDatabases.databases||[];
 						let list = res.userGrants;
-						let dl = [{name:'%'}].concat(databases)//.push({name:'mmmmmm'});
+						let dl = [{name:'*'}].concat(databases)//.push({name:'mmmmmm'});
 						
 						dl = dl.filter(function(ob){
 							return bl.indexOf(ob.name)==-1
 						});
 						appMariadb.gridUserSchema.alopexGrid('dataSet',dl);
 						appMariadb.gridUser.alopexGrid('dataSet',list);
+						deferred.resolve(list,dl);
 					}
 				});				
 			})
+			return deferred.promise();
 		} ,getMyCnfList : function(){
 			//서버에 설정된 mycnf 내용 조회
 			$a.ajax({
@@ -870,33 +873,43 @@ let appMariadb = {
 			})
 		}, 
 		getUserPrivileges: function(){
-			$a.ajax({
-				url:'/zdbapi/getUserPrivileges',
-				data:gParam,
-				success:function(res){
-					let list = res.userPrivileges||[];
-					appMariadb['data']['userPrivileges'] = list;	
-					appMariadb.gridUser.alopexGrid('dataGet');
-				}
-			})			
+			appMariadb.getUserRoleList().done(function(userList,schemaList){
+				$a.ajax({
+					url:'/zdbapi/getUserPrivileges',
+					data:gParam,
+					success:function(res){
+						let list = res.userPrivileges||[];
+						appMariadb['data']['userPrivileges'] = {};
+						for(let i in list){
+							let o = list[i];
+							if(!appMariadb['data']['userPrivileges'][o.grantee]){
+								appMariadb['data']['userPrivileges'][o.grantee] = {};
+							}
+							if(!appMariadb['data']['userPrivileges'][o.grantee][o.tableSchema]){
+								appMariadb['data']['userPrivileges'][o.grantee][o.tableSchema] = {};
+							}
+							let n = o.privilegeType.toLowerCase().replace(/(\s[a-z])/g,function($1){return $1.trim().toUpperCase();})
+							appMariadb['data']['userPrivileges'][o.grantee][o.tableSchema][n] = 'Y'; 
+							appMariadb.gridUser.alopexGrid('rowSelect',{_index:{row:0}},true);
+							appMariadb.gridUserSchema.alopexGrid('rowSelect',{_index:{row:0}},true);
+						}						
+					}
+				})			
+			});
 		},
 		setUserPrivileges:function(){
+			
+		},
+		setUserPrivilegesUi:function(){
 			let selUser = (appMariadb.gridUser.alopexGrid('dataGet',{_state :{selected:true}})[0] || {}).user;
 			let selSchema = (appMariadb.gridUserSchema.alopexGrid('dataGet',{_state :{selected:true}})[0]||{}).name;
 			
 			if(selUser && selSchema){
-				let o = '\''+selUser+'\'@\'%\'';
-				let list = appMariadb['data']['userPrivileges'];
-				let l = list.filter(function(ob){
-					return 	ob.grantee == o && (ob.tableSchema||'%') == selSchema;
-				});
-				let v = {};
-				for(let i = 0 ; i < l.length;i++){
-					let ob = l[i];
-					v[ob.privilegeType.toLowerCase().replace(/(\s[a-z])/g,function($1){return $1.trim().toUpperCase();})]='Y';
-				}
+				let user = '\''+selUser+'\'@\'%\'';
+				let up = ((appMariadb['data']['userPrivileges'][user]||{})[selSchema]||{});
+				
 				appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
-				appMariadb.mariaContent.find('form[name=formUserRole]').zdbui_setContents(v);
+				appMariadb.mariaContent.find('form[name=formUserRole]').zdbui_setContents(up);
 			}
 		},
 		/*
