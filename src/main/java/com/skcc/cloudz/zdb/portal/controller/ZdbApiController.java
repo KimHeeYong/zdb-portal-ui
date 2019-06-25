@@ -32,6 +32,7 @@ import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.IResult;
 import com.zdb.core.domain.MariaDBVariable;
+import com.zdb.core.domain.MariadbUserPrivileges;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
@@ -903,15 +904,16 @@ public class ZdbApiController {
 	public ModelAndView saveUserPrivileges(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
-		String state = param.get("state");
+		
 		ZdbRestDTO result = null;
+		String state = param.get("state");
 		switch(state) {
-			case "A":
-				result = zdbApiService.createDBUser(param); break;
-			case "E":
-				result = zdbApiService.updateDBUser(param); break;
+			case "I":
+				result = zdbApiService.createUserPrivileges(param);break;
+			case "U":	
+				result = zdbApiService.updateUserPrivileges(param);break;
 			case "D":
-				result = zdbApiService.deleteDBUser(param); break;
+				result = zdbApiService.deleteDBUser(param);break;
 		}
 		mav.addObject(CommonConstants.RESULT,result);
 		

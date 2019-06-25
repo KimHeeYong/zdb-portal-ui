@@ -856,5 +856,21 @@ public class ZdbApiService{
 		
 		return list;
 	}
+	public ZdbRestDTO createUserPrivileges(Map<String, String> param) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HttpEntity entity = new HttpEntity<>(param.get(IResult.USER_PRIVILEGES),headers);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_CREATE_USER_PRIVILEGES,HttpMethod.POST,entity, ZdbRestDTO.class, param).getBody();
+		return zdbRestDTO;
+	}
+
+	public ZdbRestDTO updateUserPrivileges(Map<String, String> param) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HttpEntity entity = new HttpEntity<>(param.get(IResult.USER_PRIVILEGES),headers);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USER_PRIVILEGES,HttpMethod.PUT,entity, ZdbRestDTO.class, param).getBody();
+		return zdbRestDTO;
+	}
+
 
 }

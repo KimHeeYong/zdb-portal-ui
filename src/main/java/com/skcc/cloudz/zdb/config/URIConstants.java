@@ -176,6 +176,10 @@ public class URIConstants {
 
 	public static final String URI_GET_USER_PRIVILEGES = "/api/v1/{namespace}/{serviceType}/{serviceName}/database/userPrivileges";
 
+	public static final String URI_CREATE_USER_PRIVILEGES = "/api/v1/{namespace}/{serviceType}/{serviceName}/database/userPrivileges";
+	
+	public static final String URI_UPDATE_USER_PRIVILEGES = "/api/v1/{namespace}/{serviceType}/{serviceName}/database/userPrivileges";
+
 	public static String URI_GET_NODES_INFO = "/api/v1/nodesInfo";
 
 }
