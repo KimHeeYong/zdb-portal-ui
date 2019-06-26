@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<th:block layout:fragment="page_head">
+    <title></title>
+</th:block>
+<th:block layout:fragment="content">
+<!-- location -->
+	<div class="locations-area">
+		<div class="prj-list">
+			<strong>Namespace : </strong>
+			<button id="namespaces" class="Dropdownbutton namespace"></button>
+			<ul class="dropmenu-list hide"> </ul>
+		</div>
+	</div>
+	<div class="contents-box">
+		<div class="top-area">
+           <h2 class="title">스토리지 목록</h2>
+		</div>	
+		<form name="storageForm" method="post">
+			<div class="ctn-info__wrap">
+				<div>
+					<div class="info-list mr30">
+						<span class="info-cnt__title">앱</span> 
+						<div class="Divselect" id="app" name="app">
+							<select>
+								<option value="">전체</option>
+							</select>
+							<span></span>
+						</div>
+					</div>
+					<div class="info-list mr30">				
+						<span class="info-cnt__title">빌링타입</span>
+						<div class="Divselect" id="billingType" name="billingType">
+							<select>
+								<option value="">전체</option>
+							</select>
+							<span></span>
+						</div>
+					</div>
+					<div class="info-list mr30">	
+						<span class="info-cnt__title">상태</span>			
+						<div class="Divselect" id="phase" name="phase">
+							<select>
+								<option value="">전체</option>
+								<option value="Bound">Bound</option>
+								<option value="Pending">Pending</option>
+								<option value="DELETED">DELETED</option>
+							</select>
+							<span></span>
+						</div>
+					</div>	
+					<div class="info-list mr30">
+						<span class="info-cnt__title">스토리지타입</span>
+						<div class="Divselect wd250" id="storageClassName" name="storageClassName" >
+							<select>
+								<option value="">전체</option>
+								<option value="ibmc-block-silver">ibmc-block-silver</option>
+								<option value="ibmc-block-retain-silver">ibmc-block-retain-silver</option>
+								<option value="ibmc-block-gold">ibmc-block-gold</option>
+								<option value="ibmc-file-bronze">ibmc-file-bronze</option>
+								<option value="ibmc-file-silver">ibmc-file-silver</option>
+								<option value="ibmc-file-retain-gold">ibmc-file-retain-gold</option>
+							</select>
+							<span></span>
+						</div>
+					</div>								
+				</div>
+				<div class="crboth">&nbsp;</div>
+				<div>
+					<div class="info-list mr30">
+						<span class="info-cnt__title">생성일시</span>
+						<div class="Daterange" data-default-date="false" data-placeholder="false" data-selectyear="true" data-selectmonth="true">
+							<div class="Startdate Dateinput">
+							    <input id="stDate" name="stDate" type="text" readonly="readonly">
+							    <div class="Calendar"></div>
+							</div>~
+							<div class="Enddate Dateinput">
+							    <input id="edDate" name="edDate" type="text" readonly="readonly">
+							    <div class="Calendar"></div>
+							</div>
+						</div>						
+					</div>	
+					<div class="info-list mr30">
+						<span class="info-cnt__title">검색어</span>
+						<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요." />						
+					</div>	
+					<div class="info-list__select">
+						<button class="Button btn-search" id="searchEvent">검색</button>
+					</div>
+				</div>					
+			</div>
+		</form>
+		<!-- grid -->
+		<div id="gridStorage"></div>		
+    </div> 
+	<script type="text/javascript">
+		let app = {};
+		let gNamespaces = null;     // 네임스페이스 콤보
+		$a.page(function() {
+			this.init = function() {
+				gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
+					gNamespaces = selector.select({id:gSelectedNamespace})
+											.addHandler(function(e){
+											  gCommon.setSelectedNamespace(e.currentTarget.id);
+											  getStorageList();
+											});
+				});
+							  
+				let form = $('form[name=storageForm]');
+				form.find('#searchEvent').on('click',getStorageList);
+				form.find('input[name=keyword]').pressEnter(getStorageList);
+				
+				let gridStorage = $('#gridStorage').alopexGrid({
+					autoColumnIndex: true,
+					height: 605,
+					columnMapping : [  
+						{ title:'네임스페이스', key : 'namespace' , width: '100px', align: 'left'},
+						{ title:'서비스명', key : 'release' , width: '110px', align: 'left'},
+						{ title:'스토리지명', key : 'name' , width: '250px', align: 'left'},
+						{ title:'용량', key : 'storagSize' , width: '60px', align: 'center'},
+						{ title:'앱', key : 'app' , width: '70px', align: 'center'},
+						{ title:'스토리지 타입', key : 'storageClassName' , width: '120px', align: 'left'},
+						{ title:'빌링타입', key : 'billingType' , width: '60px', align: 'center'},
+						{ title:'상태', key : 'phase' , width: '80px', align: 'center'},
+						{ title:'액세스모드', key : 'accessModes' , width: '130px', align: 'center'},
+						{ title:'역할', key : 'component' , width: '60px', align: 'center'},
+						{ title:'생성일시', key : 'creationTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
+						{ title:'업데이트일시', key : 'updateTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
+						{ title:'볼륨명', key : 'volumeName' , width: '400px', align: 'left'}
+					],
+					message: {
+						nodata: gMessage.gridNodata
+					}
+				});
+				getStorageData();
+				//조회 조건 조회
+				function getStorageData(){
+					var param = $('form[name=storageForm]').serializeObject();
+					param = $.extend({},gParam,param);
+					
+					$a.ajax({
+						url: '/zdbapi/getStoragesData',
+						data:param,
+						success: function(res){
+							if(res){
+								let d = res.storagesData||{};
+								for(let k in d){
+									let l = d[k]||[];
+									let combo = form.find('#'+k+' select');
+									for(let i = 0;i < l.length;i++){
+										combo.append($('<option>',{value:l[i],text:l[i]}));
+									}
+								} 								
+							}
+						}
+					});
+				}
+				function getStorageList(){
+					var param = form.serializeObject();
+					param = $.extend({},gParam,param);
+					param.namespace = gSelectedNamespace == G_NAMESPACE_ALL ? '' : gSelectedNamespace;
+					$a.ajax({
+						url: '/zdbapi/getStorages',
+						data:param,
+						success: function(res){
+							var list = res.storages||[];
+							gridStorage.alopexGrid('dataSet',list);
+						}
+					});				
+				};		
+			}
+		});
+	</script>
+</th:block>
+</html>
