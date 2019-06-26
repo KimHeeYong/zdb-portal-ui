@@ -329,7 +329,9 @@ var gCommon = $a.page(function(){
 		}
 		return result;
 	};
+	let isConfirmPopExists = false;
 	this.confirm = function(message,trueCallback,opt){
+		if(isConfirmPopExists)return;
 		gPopData = {};
 		opt = opt||{};
 		gPopData.message = message;
@@ -344,9 +346,15 @@ var gCommon = $a.page(function(){
 	        callback : function(res){
 	        	if(res == "Y"){
 	        		trueCallback(res);
+	        	}else{
+		        	if(opt.falseCallback){
+		        		opt.falseCallback(res);	
+		        	}
 	        	};
+	        	isConfirmPopExists = false;
 	        }
 	    });
+	    isConfirmPopExists = true;
 	};
 	this.credentialConfirm = function(option){
 		let defOpt = {

@@ -872,5 +872,13 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 
+	public ZdbRestDTO deleteUserPrivileges(Map<String, String> param) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HttpEntity entity = new HttpEntity<>(param.get(IResult.USER_PRIVILEGES),headers);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USER_PRIVILEGES,HttpMethod.DELETE,entity, ZdbRestDTO.class, param).getBody();
+		return zdbRestDTO;
+	}
+
 
 }

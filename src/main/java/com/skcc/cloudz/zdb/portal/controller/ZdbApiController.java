@@ -913,7 +913,7 @@ public class ZdbApiController {
 			case "U":	
 				result = zdbApiService.updateUserPrivileges(param);break;
 			case "D":
-				result = zdbApiService.deleteDBUser(param);break;
+				result = zdbApiService.deleteUserPrivileges(param);break;
 		}
 		mav.addObject(CommonConstants.RESULT,result);
 		
