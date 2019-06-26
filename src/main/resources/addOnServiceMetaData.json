@@ -43,25 +43,34 @@
   },
   {
     "id": "zdb0700",
-    "name": "알림",
+    "name": "관리",
     "order": 4,
     "url": "/zdb07/zdb0700",
     "folder": "/zdb07",
     "target": "self",
 	"sub":[
         {
-		    "id": "zdb0710",
-		    "name": "현황",
+		    "id": "zdb0730",
+		    "name": "백업 스케쥴링 목록",
 		    "order": 1,
-		    "url": "/zdb07/zdb0710",
+		    "url": "/zdb07/zdb0730",
     		"folder": "/zdb07",
 		    "target": "self",
-    		"enable": false
+    		"enable": true
+	    },
+	    {
+		    "id": "zdb0740",
+		    "name": "스토리지 사용 현황 목록 조회",
+		    "order": 2,
+		    "url": "/zdb07/zdb0740",
+    		"folder": "/zdb07",
+		    "target": "self",
+    		"enable": true
 	    },
 	    {
 		    "id": "zdb0720",
-		    "name": "규칙",
-		    "order": 2,
+		    "name": "알림",
+		    "order": 3,
 		    "url": "/zdb07/zdb0720",
     		"folder": "/zdb07",
 		    "target": "self",
@@ -100,7 +109,7 @@
       "cluster-admin",
       "admin"
     ],
-    "enable": true
+    "enable": false
   },
   {
     "id": "zdb0800",

@@ -1,5 +1,8 @@
 package com.skcc.cloudz.zdb.portal.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,4 +28,15 @@ public class Zdb07Controller {
 	public ModelAndView zdb0721() {
 		return new ModelAndView();
 	}
+	
+	@GetMapping("zdb0730")
+	public ModelAndView zdb0730(HttpServletRequest request,HttpServletResponse response) {
+		ModelAndView mav = new ModelAndView();
+		return mav;
+	}
+	
+	@GetMapping(value="/zdb0740")
+	public ModelAndView zdb0740() {
+		return new ModelAndView();
+	}	
 }
