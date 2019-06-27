@@ -176,9 +176,9 @@
 									<button class="Button btn sm" id="btnSavePrivileges">적용</button>
 								</div>																 	
 							 </div>
+							</div>
 						</div>
-						</div>
-						<div data-menu="statusVariables">
+						<div data-menu="statusVariables" class="hide">
 							<h3 class="form-title2">Status Variables</h3>
 							<div class="search-wrap tr fi mt20">
 								<input id="txtStatusVariablesFilter" name="txtStatusVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
@@ -226,10 +226,10 @@ let appMariadb = {
 			appMariadb.mariaContent.find('[data-menu]').hide().filter('[data-menu='+menuName+']').show();
 			appMariadb.initMenu(menuName);
 		})
-		//appMariadb.initMenu(appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'));
+		appMariadb.initMenu(appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'));
 		appMariadb.getDatabaseVariables();
 		setTimeout(function(){
-			appMariadb.mariaMenu.find('[data-menu]:eq(5)').trigger('click')
+			//appMariadb.mariaMenu.find('[data-menu]:eq(5)').trigger('click')
 		},100)
 		function fn_isSystemProcess(data){
 			let exIds = ['system user','replicator']; 
@@ -939,7 +939,6 @@ let appMariadb = {
 		getSelectUserSchema: function(){
 			let re = null;
 			let d = (appMariadb.gridUser.alopexGrid('dataGet',{_state :{selected:true}})[0]||{});
-			console.log(d)
 			let user = d.user||'';
 			let host = d.host||'';
 			let schema = (appMariadb.gridUserSchema.alopexGrid('dataGet',{_state :{selected:true}})[0]||{}).name;
