@@ -229,7 +229,7 @@ let appMariadb = {
 		//appMariadb.initMenu(appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'));
 		appMariadb.getDatabaseVariables();
 		setTimeout(function(){
-			appMariadb.mariaMenu.find('[data-menu]:eq(2)').trigger('click')
+			appMariadb.mariaMenu.find('[data-menu]:eq(5)').trigger('click')
 		},100)
 		function fn_isSystemProcess(data){
 			let exIds = ['system user','replicator']; 
@@ -535,7 +535,8 @@ let appMariadb = {
 				},excludeFitWidth:true},					
 				{ key : 'defaultValue', title : 'Default Value', width : '200px', align : 'left' },
 				{ key : '', title : 'Value Range', width : '250px', align : 'left',render:renderValue,tooltip:renderValue},
-				{ key : 'variableComment', title : 'Description', width : '300px', align : 'left' }
+				{ key : 'variableComment', title : 'Description', width : '300px', align : 'left' },
+				{ key : 'sort',hidden:true}
 			]
 		}).on('cellEditInvalid ', function(e){
 			setTimeout(function(evt){
@@ -793,6 +794,7 @@ let appMariadb = {
 						list.push({name:k,value:d[k]});
 					}
 					appMariadb.gridStatusVariables.alopexGrid('dataSet',list);
+					appMariadb.gridStatusVariables.alopexGrid('dataSort', [ {sortingColumn : 'name', sortingDirection: "asc"} ]);
 				}
 			});
 		}, setStatusVariablesFilter:function(){
@@ -804,7 +806,7 @@ let appMariadb = {
 				appMariadb.gridStatusVariables.alopexGrid('setFilter','statusVariablesFilter',function(dt){
 					return dt.name.toLowerCase().indexOf(v) > -1 || dt.value.toLowerCase().indexOf(v) > -1   
 				});
-			}			
+			}
 		}, getSystemVariables : function(){
 			$a.ajax({
 				url:'/zdbapi/getDatabaseSystemVariables',
@@ -816,6 +818,7 @@ let appMariadb = {
 						list.push({name:k,value:d[k]});
 					}
 					appMariadb.gridSystemVariables.alopexGrid('dataSet',list);
+					appMariadb.gridSystemVariables.alopexGrid('dataSort', [ {sortingColumn : 'name', sortingDirection: "asc"} ]);
 				}
 			});
 		}, setSystemVariablesFilter:function(){
@@ -1088,9 +1091,10 @@ let appMariadb = {
 			category 데이터,실데이터,추가콤보 리스트 순으로 생성( 파라미터는 실데이터)		
 		*/
 		setGridMyCnf : function(paramList){
+			let categorySort ={ mysqld:10, mysql:20, mysqld_safe:30, mysqldump:40,client:50 };
 			let categoryList = [{name:'mysqld'},{name:'mysql'},{name:'mysqld_safe'},{name:'mysqldump'},{name:'client'}];
 			categoryList = categoryList.map(function(ob){
-				return $.extend({},ob,{serverData:false,dataColumn:false,categoryColumn:true});
+				return $.extend({},ob,{serverData:false,dataColumn:false,categoryColumn:true,sort:categorySort[ob.name]});
 			});
 			let gridList = categoryList.slice(); //마지막에 보여줄 전체 grid 리스트
 			let comboList = {}; //카테고리별 추가 데이터
@@ -1100,6 +1104,7 @@ let appMariadb = {
 				let ds = dbv[cg];
 				for(let name in ds){
 					let o = ds[name];
+					o.sort = categorySort[o.category];
 					if(!o.category)continue;
 					let mc = gCommon.findObjectByKeyOb(paramList,{category:o.category,name:o.name});
 					//전달 받은 데이터에 있으면 grid리스트에,없으면 추가콤보로 생성
@@ -1117,10 +1122,14 @@ let appMariadb = {
 			
 			for(let k in comboList){
 				let o = comboList[k];
-				gridList.push({category:k, name:'' ,addVariableColumn:true ,dataColumn:false,serverData:false});
+				gridList.push({category:k, name:'' ,addVariableColumn:true ,dataColumn:false,serverData:false,sort:(categorySort[k]+1)});
 				dbv[k].comboList = o;
 			}
-			appMariadb.gridMyCnf.alopexGrid('dataSet',gridList).alopexGrid('expandTreeNode');			
+			appMariadb.gridMyCnf.alopexGrid('dataSet',gridList).alopexGrid('expandTreeNode');
+			appMariadb.gridMyCnf.alopexGrid('dataSort', [
+				{sortingColumn : 'sort', sortingDirection: "asc"},
+				{sortingColumn : 'name', sortingDirection: "asc"}
+			]);
 		},saveGridMyCnf : function(){
 			appMariadb.gridMyCnf.alopexGrid('endRowInlineEdit');
 			let dt = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',function(data) {
