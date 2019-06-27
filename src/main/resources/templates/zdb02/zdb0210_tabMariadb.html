@@ -1,9 +1,9 @@
 <div id="tabMariadb">
 	<div class="Tabs">
-		<div class="tabs-contents bn">
-			<div class="lay-item__box">
+		<div>
+			<div class="lay-item__box mt30">
 				<div style="width:180px;" class="dtc" id="divMariaMenu">
-					<ul class="dropmenu-list bbn" style="height:600px;">
+					<ul class="dropmenu-list bbn">
 						<li class="selected" data-menu="databaseStatus">서버상태</li>
 						<li data-menu="connection">클라이언트 커넥션</li>
 						<li data-menu="userRole">사용자 및 권한관리</li>
@@ -15,14 +15,13 @@
 				<div id="divMariaContent">
 					<div style="padding-left:10px;padding-right:10px;">
 						<div data-menu="databaseStatus">
+							<h3 class="form-title2">Status Variables</h3>
 							<table class="Table Form-type">
 								<colgroup>
-									<col width="150px"></col>
 									<col width="200px"></col>
 									<col width="*"></col>
 								</colgroup>
 								<tr>
-									<th rowspan="6" align="center"><img src="/styles/images/service-img-big-mariadb.png"></th>
 									<th>Host:</th>
 									<td data="hostname"></td>
 								</tr>	
@@ -47,7 +46,7 @@
 									<td data="running"></td>
 								</tr>	
 							</table>
-							<h3 class="form-title">Server Directories</h3>
+							<h3 class="form-title2">Server Directories</h3>
 							<table class="Table Form-type">
 								<colgroup>
 									<col width="200px">
@@ -84,23 +83,47 @@
 							</table>
 						</div>
 						<div data-menu="connection" class="hide">
-							<h3 class="form-title">Client Connections</h3>
-							<div class="row">
-								<div class="cols wd300"> Threads Connected <span class="ml20" data="Threads_connected"></span> </div>
-								<div class="cols wd300"> Threads Running  <span class="ml20" data="Threads_running"></span> </div>
-								<div class="cols wd300"> Threads Created  <span class="ml20" data="Threads_created"></span> </div>
-								<div class="cols wd300"> Threads Cached  <span class="ml20" data="Threads_cached"></span> </div>
-								<div class="cols wd300"> Rejected(over limit) <span class="m20" data="Connection_errors_max_connections"></span></div>
-								<div class="cols wd300"> Total Connections  <span class="ml20" data="Connections"></span></div>
-								<div class="cols wd300"> Connection Limit  <span class="ml20" data="max_connections"></span></div>
-								<div class="cols wd300"> Aborted Clients  <span class="ml20" data="Aborted_clients"></span></div>
-								<div class="cols wd300"> Aborted Connections  <span class="ml20" data="Aborted_connects"></span></div>
-								<div class="cols wd300"> errors</div>
-							</div>
-							<div id="gridConnection"></div>
+							<h3 class="form-title2">Client Connections</h3>
+							<table class="Table Form-type">
+								<colgroup>
+									<col width="200px"></col>
+									<col width="80px"></col>
+									<col width="300px"></col>
+									<col width="80px"></col>
+									<col width="150px"></col>
+									<col width="80px"></col>
+									<col width="*">
+								</colgroup>							
+								<tr>
+									<th>Threads Connected </td>
+									<td data="Threads_connected"></td>
+									<th>Threads_running </td>
+									<td data="Threads_running"></td>
+									<th>Threads_created </td>
+									<td data="Threads_created"></td>
+								</tr>
+								<tr>
+									<td>Threads_cached</td>
+									<td data="Threads_cached"></td>
+									<td>Connection_errors_max_connections </td>
+									<td data="Connection_errors_max_connections"></td>
+									<td>Connections </td>
+									<td data="Connections"></td>
+								</tr>
+								<tr>
+									<td>max_connections </td>
+									<td data="max_connections"></td>
+									<td>Aborted_clients </td>
+									<td data="Aborted_clients"></td>
+									<td>Aborted_connects</td>
+									<td data="Aborted_connects"></td>
+								</tr>
+							</table>
+							<div id="gridConnection" class="mt30"></div>
 						</div>
-						<div data-menu="userRole" class="hide"  style=" min-width: 1100px; ">
-							<h3 class="form-title">Users and Privileges</h3>
+						<div data-menu="userRole" class="hide"  style=" min-width: 950px; ">
+							<h3 class="form-title2">Users and Privileges</h3>
+							<div class="mt20">
 							<div class="fl" style="width:330px;">
 								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
 									<button class="Button btn sm" id="btnAddUser">추가</button>
@@ -149,24 +172,28 @@
 									</ul>
 								</div>
 								</form>
-								<div class="fr" style="margin-bottom: 3px;margin-right:30px;">
+								<div class="fr mt10" style="margin-bottom: 3px;margin-right:30px;">
 									<button class="Button btn sm" id="btnSavePrivileges">적용</button>
 								</div>																 	
 							 </div>
 						</div>
+						</div>
 						<div data-menu="statusVariables">
-							<div class="search-wrap tr fi">
+							<h3 class="form-title2">Status Variables</h3>
+							<div class="search-wrap tr fi mt20">
 								<input id="txtStatusVariablesFilter" name="txtStatusVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
 							</div>
 							<div id="gridStatusVariables"></div>
 						</div>
 						<div data-menu="systemVariables" class="hide">
-							<div class="search-wrap tr fi">
+							<h3 class="form-title2">System Variables</h3>						
+							<div class="search-wrap tr fi mt20">
 								<input id="txtSystemVariablesFilter" name="txtSystemVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
 							</div>
 							<div id="gridSystemVariables"></div>
 						</div>
 						<div data-menu="myCnf" class="hide">
+							<h3 class="form-title2">My.cnf</h3>
 							<div class="btn-wrap">
 								<div class="btn-right">
 									<button class="Button btn bg-red" id="btnSaveMyCnf" style="margin-bottom: 3px;">저장</button>
@@ -274,7 +301,7 @@ let appMariadb = {
 			return data.state == 'A' || (data.user != 'admin');
 		}
 		let editTypeYn = {type:"checkbox",rule:[{value:"Y", checked:true},{value:"N", checked:false}]};
-		let gridUser = this.gridUser = $('#gridUser').alopexGrid({
+		let gridUser = this.gridUser = appMariadb.mariaContent.find('#gridUser').alopexGrid({
 			autoColumnIndex: true,
 			autoResize:true,
 			rowInlineEdit:true,
@@ -287,7 +314,7 @@ let appMariadb = {
 			//restoreFocusOnInvalidInlineEdit :true,
 			leaveDeleted:true,
 			width:320,
-			height: 500,
+			height: 530,
 			columnMapping : [  
 				{ title:'state',key:'state',width:'50px',align:'center',editable:false,hidden:true,excludeFitWidth:true,render:function(value,data){
 					if (data._state.added){data.state = 'A'}
@@ -359,7 +386,7 @@ let appMariadb = {
 				singleSelect : true
 			},
 			width:280,
-			height: 500,
+			height: 530,
 			columnMapping : [  
 				{ title:'state',key:'state',width:'50px',align:'center',editable:false,hidden:true,excludeFitWidth:true,render:function(value,data){
 					if (data._state.added){data.state = 'A'}
