@@ -35,8 +35,14 @@ public class Zdb07Controller {
 		return mav;
 	}
 	
-	@GetMapping(value="/zdb0740")
+	@GetMapping(value="zdb0740")
 	public ModelAndView zdb0740() {
 		return new ModelAndView();
 	}	
+	
+	@GetMapping("zdb0750")
+	public ModelAndView zdb0750(HttpServletRequest request,HttpServletResponse response) {
+		ModelAndView mav = new ModelAndView();
+		return mav;
+	}
 }

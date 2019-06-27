@@ -51,7 +51,7 @@
 	"sub":[
         {
 		    "id": "zdb0730",
-		    "name": "백업 스케쥴링 목록",
+		    "name": "백업스케쥴",
 		    "order": 1,
 		    "url": "/zdb07/zdb0730",
     		"folder": "/zdb07",
@@ -59,10 +59,10 @@
     		"enable": true
 	    },
 	    {
-		    "id": "zdb0740",
-		    "name": "스토리지 사용 현황 목록 조회",
+		    "id": "zdb0750",
+		    "name": "Failover",
 		    "order": 2,
-		    "url": "/zdb07/zdb0740",
+		    "url": "/zdb07/zdb0750",
     		"folder": "/zdb07",
 		    "target": "self",
     		"enable": true
@@ -72,6 +72,15 @@
 		    "name": "알림",
 		    "order": 3,
 		    "url": "/zdb07/zdb0720",
+    		"folder": "/zdb07",
+		    "target": "self",
+    		"enable": true
+	    },
+	    {
+		    "id": "zdb0740",
+		    "name": "스토리지",
+		    "order": 4,
+		    "url": "/zdb07/zdb0740",
     		"folder": "/zdb07",
 		    "target": "self",
     		"enable": true
