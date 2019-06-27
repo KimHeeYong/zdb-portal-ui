@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<th:block layout:fragment="page_head">
+	<title>Failover 관리</title>
+</th:block>
+<th:block layout:fragment="page_js">
+	<script src="/script/app/common/cloudzdb-ui-z0200.js?v=20190523"></script>
+</th:block>
+<th:block layout:fragment="content">
+	<!-- location -->
+	<div class="locations-area">
+		<div class="prj-list">
+			<strong>Namespace : </strong>
+			<button id="namespaces" class="Dropdownbutton namespace"></button>
+			<ul class="dropmenu-list hide">
+			</ul>
+		</div>
+	</div>
+	<div class="contents-box">
+		<div class="top-area">
+           <h2 class="title">Failover 관리</h2>
+		</div>
+		<div class="accor-contents__wrap">
+			<!-- tab contents info detail-->
+			<!-- grid -->
+			<div class="btn-wrap" style="margin-bottom:">
+<!-- 				<div class="btn-right">
+					<button class="Button btn bg-red" id="btnSaveSchedule">저장</button>
+				</div> -->
+			</div>			
+			<div class="grid-line__wrap mt5">
+				<div id="gridFailover"></div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var gNamespaces = null; // 네임스페이스 콤보
+		$a.page(function() {
+			this.init = function() {
+				
+				//  네임스페이스 콤보 목록 조회 
+				gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
+					gNamespaces = selector.addHandler(function(e) {
+										 	gCommon.setSelectedNamespace(e.currentTarget.id);
+										 	fn_getFailoverInfoList();
+										 }).select({
+										 	id:gSelectedNamespace
+										 });
+					
+				});
+				//??
+				$('.Accordion').expandAll();
+				
+				//gridFailover setting
+				let gridFailover = $('#gridFailover').alopexGrid({
+					autoColumnIndex: true,
+					height: 635,
+					autoResize:true,
+					rowInlineEdit:true,
+					rowSelectOption:{
+						clickSelect : true,
+						singleSelect : true
+					},
+					cellSelectable:true,
+					restoreFocusOnInvalidInlineEdit :true,
+					leaveDeleted:true,
+					columnMapping : [  
+					/* 	{ title:'state',key:'state',width:'50px',editable:false,hidden:true,align:'center',excludeFitWidth:true,render:function(value,data){
+							if (data._state.added){data.state = 'A'}
+							else if (data._state.deleted){data.state='D'}
+							else if (data._state.edited){data.state='E'}
+							else {data.state=''}
+							return data.state;
+						}},						
+						{ title:'상태', key : 'backupStatus' , width: '50x',excludeFitWidth:true, align: 'center',render:function(value,data){
+							let status = '';
+							let alt = '';
+							if(value=='YELLOW'){
+								status = 'yellow';
+								alt = '최근 백업이 존재하지 않습니다';
+							} else if(value=='GREEN'){
+								status = 'green';
+								alt = '백업이 정상적으로 수행되고 있습니다';
+							} else if(value=='RED'){
+								status = 'red';
+								alt = '최근 백업이 실패 했습니다';
+							} else if(value=='GREY'){
+								status = 'grey';
+								alt = '수행된 백업이 존재하지 않거나, 백업이 설정되어 있지 않습니다.';
+							} else if(value=='DOING'){
+								status = 'green blinking';
+								alt = '백업이 수행되는 중입니다';
+							}
+							let re = '<div class="state '+status+'" title="'+alt+'"></div>';
+							
+							return re;
+							
+						}}, */
+						{ title:'서비스이름', key : 'serviceName' , width: '250px',excludeFitWidth:true, align: 'left',render:function(value,data){
+							var re = $('<a href="#" title="'+value+'">'+value+'</a>').html(value).on('click',function(){
+							//	fn_setSelected2010Tab('tabBackup');
+							//	gCommon.movePage('/zdb02/zdb0210',{namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName});
+							});
+							
+							return re;
+							
+						}},
+						{ title:'서비스종류', key : 'serviceType' , width: '100px', align: 'center',render:function(value){
+							let img = {
+									mariadb:'<img src="/styles/images/mariadb16.png" width="16px">',
+									redis:'<img src="/styles/images/redis16.jpg" width="16px">'
+								};
+							let re = img[value]; 
+							if(re) return re;	
+						}},
+/* 						{ title:'Autofailover 설정', key : 'backupDiskYn' , width: '100px', align: 'center',render:function(value){
+							let re = '';
+							if(value == 'Y')re='사용';
+							if(value == 'N')re='미사용';
+							return re;
+						}}, */
+						{ title:'Autofailover 설정', key : 'serviceFailOverStatus' , width: '70px', align: 'center',render:function(value,data){
+						
+							let re = fn_getUseYnTemp(value);
+							return re;
+						},editable:function(value,data){
+							//"MasterToMaster"  : off
+							//"MasterToSlave"   : on 
+							let re = fn_getUseYnTemp(value).on('click','button.Button',function(e){
+								let t = $(this);
+								let isValueY = t.data('value') == 'MasterToSlave';
+								let vr = isValueY ? 'off' : 'on';
+
+								let vrYn = isValueY ? 'MasterToMaster' : 'MasterToSlave'; 
+								t.removeClass('btn-off').removeClass('btn-on').addClass('btn-'+vr).text(vr.toUpperCase()).data('value',vrYn);
+							});
+							return re;
+						},editedValue:function(cell){
+							return $(cell).find('button').data('value');
+						}},
+						{ title:'Failover 상태', key : 'serviceFailOverStatus' , width: '150px', align: 'center', render:function(value){
+							let re = 'Nomal';
+							if(value == 'MasterToSlave'){
+								re = "Failover"; 
+							}
+							return re;
+						}},
+						{ title:'Failover시간', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
+							let re = '';
+/* 							if(!cloudUtil.isEmpty(value) && !isNaN(value)){
+								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
+								re = new BigNumber(value).toFormat(); 
+							} */
+							return re;
+						}}						
+						,
+						{ title:'로그', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
+							let re = '';
+/* 							if(!cloudUtil.isEmpty(value) && !isNaN(value)){
+								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
+								re = new BigNumber(value).toFormat(); 
+							} */
+							return re;
+						}}		
+						/* 
+						{ title:'보관기간', key : 'storePeriod' , width: '70px', align: 'center',editable:function(value,data){
+							let re = $('<input data-keyfilter="0-9" class="alopexgrid-default-renderer" type="text" name="storePeriod" value="'+value+'" style="text-align:center;" maxlength="2">');
+							return re;
+						},valid : function(value, data) {
+							if(cloudUtil.isEmpty(value)) {
+								return false;
+							}
+							let v = cloudUtil.parseInt(value);
+							data.storePeriod = v;
+							if(v < 0 || v > 60){
+								return false;
+							}
+							return true;
+						}},
+						{ title:'ICOS 사용량(MB)', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
+							let re = '';
+							if(!cloudUtil.isEmpty(value) && !isNaN(value)){
+								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
+								re = new BigNumber(value).toFormat(); 
+							}
+							return re;
+						}},
+						{ title:'백업주기', key : 'backupExecType' , width: '100px', align: 'center'},
+						{ title:'백업시간', key : 'startTime' , width: '100px', align: 'center',editable:function(value,data){
+							let re = $('<input type="text" name="startTime" value="'+value+'" class="alopexgrid-default-renderer" style="text-align:center;">');
+							$a.maskedinput(re[0],'00:00');
+							return re;
+						},editedValue:function(cell){
+							return $(cell).find('input').val();
+						},valid : function(value, data) {
+							return moment(value,'HH:mm').isValid();
+						}},
+						{ title:'백업용량', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
+							return value == '0'?'-': value;
+						}},
+						{ title:'소요시간', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
+							return cloudUtil.parseInt(value)== 0 ?'-':value;
+						}},
+						{ title:'백업주기', key : 'incrementPeriod' , width: '100px', align: 'center',
+							render:function(value,data){
+								let re = value;
+								if(data.incrementYn == 'N'){
+									re = '-';
+								};
+								return re;
+							},
+							allowEdit:function(value,data){
+								return data.incrementYn == 'Y';
+							},
+							editable:{
+							type:'select',
+							rule:[{value:'0',text:'미사용'},{value:'1',text:'1시간'},{value:'2',text:'2시간'},{value:'6',text:'6시간'},{value:'12',text:'12시간'}]
+						}},
+
+						{ title:'백업용량', key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
+							return value == '0'?'-': value;
+						}},
+						{ title:'소요시간', key : 'incrExecutionTime' , width: '70px', align: 'center', render:function(value){
+							return cloudUtil.parseInt(value)== 0 ?'-':value;
+						}} */
+					],
+					message: {
+						nodata: gMessage.gridNodata
+					},
+					defaultSorting:{
+						sortingColumn: "serviceName",
+						sortingDirection: 'asc'
+					},headerGroup: [
+						{fromIndex:"backupExecType", toIndex:"fullExecutionTime", title:"전체백업"},
+						{fromIndex:"incrementPeriod", toIndex:"incrExecutionTime", title:"증분백업"}
+					],
+				}).on('cellEditInvalid ', function(e){
+					setTimeout(function(evt){
+						var evObj = AlopexGrid.parseEvent(e);
+						var opt = evObj.data;
+						var mapping = evObj.mapping;
+						var col = mapping.columnIndex;
+						var invalidValue = evObj.value;
+						
+						if(opt._state.deleted == true){
+							return;
+						}
+						if(mapping.key == 'storePeriod'){
+							alert('보관기간은 0~60 사이로 입력하세요');
+						}else if(mapping.key == 'startTime'){
+							alert('시:분 형식으로 입력하세요')
+						}
+						gridFailover.alopexGrid('focusCell', opt);
+						setTimeout(function(){
+							gridFailover.alopexGrid('rowSelect', opt, true)
+							gridFailover.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+						},100)
+					},100)
+				}).on('dataChanged',function(e){
+					let isEnalbed = AlopexGrid.trimData(gridFailover.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
+					$('#btnSaveSchedule').setEnabled(isEnalbed);
+				});			
+				function fn_getUseYnTemp(value){
+					//MasterToSlave
+					//let v = value == 'Y'? 'on':'off';
+					
+					let v = value == 'MasterToSlave'? 'on':'off';
+					return $('<div class="onoff-wrap"><button class="Button btn-'+v+'" data-value="'+value+'">'+v.toUpperCase()+'</button></div>');
+				}
+				function fn_getFailoverInfoList(){
+					let param = $('form[name=eventForm]').serializeObject();
+					
+					// /zdbapi/getServiceoverviews
+					// url: '/zdbapi/getScheduleInfoList',
+					$a.ajax({
+						url: '/zdbapi/getFailoverList',
+						data:{namespace:gSelectedNamespace},
+						success: function(res){
+							console.log(res);
+							// 조회 후 list 객체 생성
+							let list = res.serviceoverviews;
+							//grid 에 데이터셋 생성
+							gridFailover.alopexGrid('dataSet',list);
+							
+							
+							
+/* 							gServiceList = res.serviceoverviews;
+							gfn_convertServiceDatas(gServiceList); */
+							
+/* 							let list = res.scheduleInfoList;
+							list = list.map(function(ob){
+								return $.extend({},ob,{incrementPeriod:(''+ob.incrementPeriod)});
+							});
+							gridFailover.alopexGrid('dataSet',list);
+
+							let showCol = gSelectedNamespace == G_NAMESPACE_ALL ?'showCol':'hideCol';
+							gridFailover.alopexGrid(showCol, 'namespace'); */
+						}
+					});				
+				};			
+				$('#searchEvent').on('click',function(){
+					fn_getFailoverInfoList();
+				});
+				$('#btnSaveSchedule').on('click',function(e){
+					fn_saveSchedule();
+				})				
+				function fn_saveSchedule(){
+					gridFailover.alopexGrid('endRowInlineEdit');
+					gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+						let data = AlopexGrid.trimData(gridFailover.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+						if(data.length > 0){
+							for(let i in data){
+								let d = $.extend(data[i],gParam);
+							};
+							$a.ajax({
+								url: '/zdbapi/saveBackupSchedule',
+								method:'put',
+								data: {data:JSON.stringify(data)},
+								success: function(res){
+									fn_getFailoverInfoList();
+								}
+							});	
+						};						
+					})
+				};				
+			}
+		});
+	</script>
+</th:block>
+</html>
