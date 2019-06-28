@@ -16,6 +16,7 @@ import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
+import com.zdb.core.domain.UserPrivileges;
 import com.zdb.core.domain.ZDBConfig;
 import com.zdb.core.domain.ZDBNode;
 
@@ -107,4 +108,6 @@ public class Result {
 	private Map<String,String> databaseSystemVariables;
 	
 	private List<MariaDBVariable> databaseVariables;
+
+	private List<UserPrivileges> userPrivileges;
 }

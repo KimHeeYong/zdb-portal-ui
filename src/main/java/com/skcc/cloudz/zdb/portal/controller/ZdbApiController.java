@@ -32,11 +32,13 @@ import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.IResult;
 import com.zdb.core.domain.MariaDBVariable;
+import com.zdb.core.domain.MariadbUserPrivileges;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
+import com.zdb.core.domain.UserPrivileges;
 import com.zdb.core.domain.ZDBConfig;
 import com.zdb.core.domain.ZDBNode;
 
@@ -888,6 +890,33 @@ public class ZdbApiController {
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		ZdbRestDTO result = zdbApiService.updateUseDatabaseVariables(param);
 		mav.addObject(CommonConstants.RESULT ,result);
+		return mav;
+	}
+	@RequestMapping(value="getUserPrivileges", method=RequestMethod.GET)
+	public ModelAndView getUserPrivileges(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<UserPrivileges> result = zdbApiService.getUserPrivileges(param);
+		mav.addObject(IResult.USER_PRIVILEGES ,result);
+		return mav;
+	}
+	@RequestMapping(value = "saveUserPrivileges", method = RequestMethod.PUT)	
+	public ModelAndView saveUserPrivileges(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = null;
+		String state = param.get("state");
+		switch(state) {
+			case "I":
+				result = zdbApiService.createUserPrivileges(param);break;
+			case "U":	
+				result = zdbApiService.updateUserPrivileges(param);break;
+			case "D":
+				result = zdbApiService.deleteUserPrivileges(param);break;
+		}
+		mav.addObject(CommonConstants.RESULT,result);
+		
 		return mav;
 	}
 }

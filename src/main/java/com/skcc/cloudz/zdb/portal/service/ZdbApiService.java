@@ -42,6 +42,7 @@ import com.zdb.core.domain.ScheduleEntity;
 import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
+import com.zdb.core.domain.UserPrivileges;
 import com.zdb.core.domain.ZDBConfig;
 import com.zdb.core.domain.ZDBNode;
 
@@ -844,5 +845,40 @@ public class ZdbApiService{
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USE_DATABASE_VARIABLES,HttpMethod.PUT,entity, ZdbRestDTO.class, param).getBody();
 		return zdbRestDTO;
 	}
+
+	public List<UserPrivileges> getUserPrivileges(Map<String, String> param) {
+		List<UserPrivileges> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_USER_PRIVILEGES, ZdbRestDTO.class, param);
+		
+		if(zdbRestDTO != null && zdbRestDTO.getResult() != null) {
+			list = zdbRestDTO.getResult().getUserPrivileges();
+		};
+		
+		return list;
+	}
+	public ZdbRestDTO createUserPrivileges(Map<String, String> param) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HttpEntity entity = new HttpEntity<>(param.get(IResult.USER_PRIVILEGES),headers);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_CREATE_USER_PRIVILEGES,HttpMethod.POST,entity, ZdbRestDTO.class, param).getBody();
+		return zdbRestDTO;
+	}
+
+	public ZdbRestDTO updateUserPrivileges(Map<String, String> param) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HttpEntity entity = new HttpEntity<>(param.get(IResult.USER_PRIVILEGES),headers);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USER_PRIVILEGES,HttpMethod.PUT,entity, ZdbRestDTO.class, param).getBody();
+		return zdbRestDTO;
+	}
+
+	public ZdbRestDTO deleteUserPrivileges(Map<String, String> param) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HttpEntity entity = new HttpEntity<>(param.get(IResult.USER_PRIVILEGES),headers);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USER_PRIVILEGES,HttpMethod.DELETE,entity, ZdbRestDTO.class, param).getBody();
+		return zdbRestDTO;
+	}
+
 
 }
