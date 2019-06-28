@@ -208,10 +208,13 @@
 	</div>
 </div>
 <script type="text/javascript">
+/*
 gService = {
 	podName :"zdb-test-mat-mariadb-0"
 }
+*/
 let appMariadb = {
+	selectedMenu:null,	
 	data : {},	
 	init : function(){
 		this.tabMariadb = $('#tabMariadb');
@@ -223,14 +226,18 @@ let appMariadb = {
 			ob.parent().find('li').removeClass('selected');
 			ob.addClass('selected');
 			let menuName = $(ob).data('menu');
-			appMariadb.mariaContent.find('[data-menu]').hide().filter('[data-menu='+menuName+']').show();
+			if(!gService.podName && menuName !='myCnf'){
+				gCommon.alert('서비스가 작동중이지 않을땐 myCnf설정만 가능합니다.');
+				return;
+			}
 			appMariadb.initMenu(menuName);
 		})
-		appMariadb.initMenu(appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'));
 		appMariadb.getDatabaseVariables();
-		setTimeout(function(){
-			//appMariadb.mariaMenu.find('[data-menu]:eq(5)').trigger('click')
-		},100)
+		if(gService.podName){
+			appMariadb.selectedMenu = appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'); 
+		}else{
+			appMariadb.selectedMenu = 'myCnf';
+		}
 		function fn_isSystemProcess(data){
 			let exIds = ['system user','replicator']; 
 			return exIds.indexOf(data.User) > -1; 
@@ -651,7 +658,7 @@ let appMariadb = {
 					if(!data.dataColumn && !isAddVariableColumn)return;
 					let dbv = appMariadb['data']['databaseVariables'];
 					let d = dbv[data.category][data.name]||{};
-					if(d && d.dynamic == true){
+					if(d && d.editable == true){
 						let enumValueList = d.enumValueList|| ''; 
 						if(d.variableType == 'ENUM' || d.variableType == 'BOOLEAN'){
 							let l = enumValueList.split(',');
@@ -707,6 +714,7 @@ let appMariadb = {
 		}
 
 		},initMenu : function(menuName){
+			appMariadb.mariaContent.find('[data-menu]').hide().filter('[data-menu='+menuName+']').show();
 			switch(menuName){
 				case 'databaseStatus':
 					appMariadb.getDatabaseStatus();
@@ -1153,7 +1161,7 @@ let appMariadb = {
 			})
 		},validMyCnf:function(value,data){
 			let re = true;
-			if(!data.dynamic)return re;
+			if(!data.editable)return re;
 			if(data.variableType == 'BIGINT UNSIGNED' || data.variableType == 'INT UNSIGNED') {
 				let numericMinValue = data.numericMinValue || '';
 				let numericMaxValue = data.numericMaxValue || '';
@@ -1179,9 +1187,10 @@ let appMariadb = {
 			return re;
 		} 
 	}
+/*
 $a.page(function() {
 	this.init = function() {
 		appMariadb.init();		
 	}
-});
+});*/
 </script>

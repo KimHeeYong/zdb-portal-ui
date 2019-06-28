@@ -919,4 +919,26 @@ public class ZdbApiController {
 		
 		return mav;
 	}
+	
+	@RequestMapping(value="getFailoverList", method = RequestMethod.GET)
+	public ModelAndView getFailoverList(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		List<ServiceOverview> services = zdbApiService.getServices(param);
+		List<ServiceOverview> failoverList = new ArrayList<ServiceOverview>();
+
+		if(services.size() > 0) {
+			for(ServiceOverview u : services) {
+				if(u.isClusterEnabled()) {
+					((List<ServiceOverview>) failoverList).add(u);
+				}
+			}
+		}
+		
+	//	List<Tag> tags = zdbApiService.getTags(param);
+		mav.addObject(IResult.SERVICEOVERVIEWS,failoverList);
+	//	mav.addObject(IResult.TAGS,tags);
+		return mav;
+	}
 }
