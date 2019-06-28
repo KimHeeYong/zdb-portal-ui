@@ -957,6 +957,7 @@
 					case "tabDatabase": $("#gridDatabase").alopexGrid( "viewUpdate" ); fn_getDatabases(); break;
 					case "tabSystem": fn_getConfigurationInfo(); break;
 					case "tabProcess": $("#gridProcess").alopexGrid( "viewUpdate" ); fn_getProcesses(); break;
+					case "tabMariadb": appMariadb.initMenu(appMariadb.selectedMenu);break;
 				}
 			}
 			$('#backServices').on('click',function(){
@@ -3264,9 +3265,9 @@
 			//page Start
 			fn_getServiceFirst().done(function(){
 				var cookieTabId = $.cookie('selected2010tab')||'tabService';
+				appMariadb.init();				
 				$('#zdbServiceTabs').setTabByContent('#'+cookieTabId);
 				fn_getService();
-				appMariadb.init();
 			});
 		};
 		

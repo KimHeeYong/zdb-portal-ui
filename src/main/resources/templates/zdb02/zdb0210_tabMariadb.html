@@ -214,6 +214,7 @@ gService = {
 }
 */
 let appMariadb = {
+	selectedMenu:null,	
 	data : {},	
 	init : function(){
 		this.tabMariadb = $('#tabMariadb');
@@ -232,13 +233,11 @@ let appMariadb = {
 			appMariadb.initMenu(menuName);
 		})
 		appMariadb.getDatabaseVariables();
-		setTimeout(function(){
-			if(gService.podName){
-				appMariadb.initMenu(appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'));
-			}else{
-				appMariadb.initMenu('myCnf');
-			}
-		},100)
+		if(gService.podName){
+			appMariadb.selectedMenu = appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'); 
+		}else{
+			appMariadb.selectedMenu = 'myCnf';
+		}
 		function fn_isSystemProcess(data){
 			let exIds = ['system user','replicator']; 
 			return exIds.indexOf(data.User) > -1; 
