@@ -65,7 +65,7 @@
 		    "url": "/zdb07/zdb0750",
     		"folder": "/zdb07",
 		    "target": "self",
-    		"enable": true
+    		"enable": false
 	    },
 	    {
 		    "id": "zdb0720",
