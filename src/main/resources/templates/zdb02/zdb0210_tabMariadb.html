@@ -653,7 +653,7 @@ let appMariadb = {
 					if(!data.dataColumn && !isAddVariableColumn)return;
 					let dbv = appMariadb['data']['databaseVariables'];
 					let d = dbv[data.category][data.name]||{};
-					if(d && d.dynamic == true){
+					if(d && d.editable == true){
 						let enumValueList = d.enumValueList|| ''; 
 						if(d.variableType == 'ENUM' || d.variableType == 'BOOLEAN'){
 							let l = enumValueList.split(',');
@@ -1155,7 +1155,7 @@ let appMariadb = {
 			})
 		},validMyCnf:function(value,data){
 			let re = true;
-			if(!data.dynamic)return re;
+			if(!data.editable)return re;
 			if(data.variableType == 'BIGINT UNSIGNED' || data.variableType == 'INT UNSIGNED') {
 				let numericMinValue = data.numericMinValue || '';
 				let numericMaxValue = data.numericMaxValue || '';
