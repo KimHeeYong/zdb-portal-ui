@@ -225,13 +225,19 @@ let appMariadb = {
 			ob.parent().find('li').removeClass('selected');
 			ob.addClass('selected');
 			let menuName = $(ob).data('menu');
-			appMariadb.mariaContent.find('[data-menu]').hide().filter('[data-menu='+menuName+']').show();
+			if(!gService.podName && menuName !='myCnf'){
+				gCommon.alert('서비스가 작동중이지 않을땐 myCnf설정만 가능합니다.');
+				return;
+			}
 			appMariadb.initMenu(menuName);
 		})
-		appMariadb.initMenu(appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'));
 		appMariadb.getDatabaseVariables();
 		setTimeout(function(){
-			//appMariadb.mariaMenu.find('[data-menu]:eq(5)').trigger('click')
+			if(gService.podName){
+				appMariadb.initMenu(appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'));
+			}else{
+				appMariadb.initMenu('myCnf');
+			}
 		},100)
 		function fn_isSystemProcess(data){
 			let exIds = ['system user','replicator']; 
@@ -709,6 +715,7 @@ let appMariadb = {
 		}
 
 		},initMenu : function(menuName){
+			appMariadb.mariaContent.find('[data-menu]').hide().filter('[data-menu='+menuName+']').show();
 			switch(menuName){
 				case 'databaseStatus':
 					appMariadb.getDatabaseStatus();
