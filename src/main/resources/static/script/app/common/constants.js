@@ -70,6 +70,13 @@ const gSliderConstants = {
 			unit : 'Gi',
 			getValue : _gSliderConstantsCommonGetValue,
 			getIndex : _gSliderConstantsCommonGetIndex
+		},
+		storage : {
+			range : _gSliderConstantsCommonRange,
+			value : [0,2,4,10],
+			unit : 'IOPS/GB',
+			getValue : _gSliderConstantsCommonGetValue,
+			getIndex : _gSliderConstantsCommonGetIndex
 		}
 	}
 };

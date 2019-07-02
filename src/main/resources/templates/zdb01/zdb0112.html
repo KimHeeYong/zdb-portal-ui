@@ -103,13 +103,18 @@
 											<th>클러스터</th>
 											<td data="clusterEnabledStr"></td>
 										</tr>
-										<tr>
-											<th>할당메모리</th>
-											<td data="specMemory"></td>
-										</tr>
+										
 										<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
 											<th>Worker Pools</th>
 											<td data="workerPool"></td>
+										</tr>
+										<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
+											<th>스토리지 종류</th>
+											<td data="kindOfStorage"></td>
+										</tr>
+										<tr>
+											<th>할당메모리</th>
+											<td data="specMemory"></td>
 										</tr>
 										<tr th:if="${#request.getParameter('serviceType')=='mariadb' || #request.getParameter('purpose') == 'DATA'}">
 											<th>할당디스크</th>
@@ -117,7 +122,7 @@
 										</tr>
 										<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
 											<th>스토리지 QoS</th>
-											<td data="storageClassStr"></td>
+											<td data="storageClass"></td>
 										</tr>
 									</tbody>
 								</table>
@@ -191,7 +196,9 @@ $a.page(function() {
 				exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
 				backupEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
 				clusterEnabledStr:(gParam.clusterEnabled=='true'?'사용':'미사용'),
-				storageClassStr:(cStorageClassConstants[gParam.storageClass])
+				/* storageClassStr:(cStorageClassConstants[gParam.storageClass]) */
+				storageClass:gParam.storageClass + ' IOPS/GB',
+				kindOfStorage:gParam.kindOfStorage
 			});
 		} else if (gParam.serviceType == cServiceType.redis) {
 			data = $.extend({},gParam,{
@@ -203,7 +210,7 @@ $a.page(function() {
 				exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
 				backupEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
 				clusterEnabledStr:(gParam.clusterEnabled=='true'?'사용':'미사용'),
-				storageClassStr:(cStorageClassConstants[gParam.storageClass])
+				storageClass:(cStorageClassConstants[gParam.storageClass])
 			});
 		}
 		
@@ -221,10 +228,10 @@ $a.page(function() {
 		
 		var table = $('#serviceTable');
 		table.zdbui_setContents(data);
-		if(table.find('td[data=storageClassStr]').length > 0){
-			var descT = ' <span class="ft15">('+(cloudUtil.parseInt(data.specDisk) * cloudUtil.parseInt(data.storageClassStr)) 
+		if(table.find('td[data=storageClass]').length > 0){
+			var descT = ' <span class="ft15">('+(cloudUtil.parseInt(data.specDisk) * cloudUtil.parseInt(data.storageClass)) 
 				      + 'Gb IOPS 스토리지 성능을 보장 합니다.)</span>'
-			table.find('td[data=storageClassStr]').append(descT);
+			table.find('td[data=storageClass]').append(descT);
 		};
 		
 		$('#btnPrev').on('click',function(){
