@@ -100,7 +100,6 @@
 	$a.page(function() {
 		let divServiceListGrid;
 		this.init = function() {
-
 			gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
 				gNamespaces = selector.select({id:gSelectedNamespace})
 									 .addHandler(function(e){

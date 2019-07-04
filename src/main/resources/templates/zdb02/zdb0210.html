@@ -1103,10 +1103,9 @@
 			
 			let getGridContextButton = function(){
 				return $('<button class="Button btn-ico__typeb btn-listview buttonMenu"></button>').on('click',function(e){
-						//console.log('click')
-						$(this).parent().trigger('contextmenu');
-						let d = $('.alopexgrid-contextmenu-wrapper');
-						d.css({left:e.pageX,top:e.pageY});						
+					$(this).parent().trigger('contextmenu');
+ 					let d = $('.alopexgrid-contextmenu-wrapper');
+					d.css({left:e.pageX,top:e.pageY});
 				});
 			}
 			let gridResource = $('#gridResource').alopexGrid({
@@ -1424,7 +1423,7 @@
 							}
 						};
 					}},
-					{ title:'백업 Disk', key : 'backupStorage' , width: '120px', align: 'center', hidden: false, render : {type: "setBackupStorage"
+					{ title:'백업 Disk', key : 'backupStorage' , width: '120px', align: 'center', hidden: true, render : {type: "setBackupStorage"
 					}},
 					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
 					{ title:'Memory(Mi)', key : 'memory' , width: '120px', align: 'center'},
@@ -1566,7 +1565,7 @@
 				};
 				 //redis - user,database탭 삭제, purpose - data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
 				if(gService.serviceType == cServiceType.redis){
-					let delTab = ['tabUser','tabDatabase','tabLog','tabProcess','tabMariadb'];
+				let delTab = ['tabUser','tabDatabase','tabLog','tabProcess','tabMariadb'];
 					if(gCommon.findObjectByKeyOb(gService.tags,{tagName:'data'})==null){
 						$('#tabSystem #divAdvancedConfig').hide();
 						delTab.push('tabBackup');
@@ -2009,7 +2008,9 @@
 				if($(this).hasClass('btn-on')) {
 					isEnable = 'N';
 				};				
+			
 				let param = $.extend({},gParam,{enable:isEnable == 'Y'});
+				
 				gCommon.credentialConfirm({
 			        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:'변경'},
 			        callback : function(res){
@@ -2379,7 +2380,8 @@
 			let bakcupLogShow = true;
 			if(gParam.serviceType == cServiceType.redis){
 				downloadTitle = '다운로드';
-				bakcupLogShow = false;
+				// backup log  버튼 활성화 여부  bakcupLogShow = false; -> true 로 변경 (2019-07-04)
+				bakcupLogShow = true;
 			}
 			let gridBackup = $('#gridBackup').alopexGrid({
 				enableDefaultContextMenu:false,
@@ -2389,6 +2391,9 @@
 				contextMenu : [
 					{   title: '결과',
 						processor:function(data,$cell,grid){
+							
+						console.log('결과');	
+						
 							$a.ajax({
 								url:'/zdbapi/getBackupResult',
 								data:{backupId:data.backupId},
@@ -2396,7 +2401,7 @@
 									let ob = res.backupResult;
 									let r = '<table><colgroup><col class="wd150"></col><col width="*"></col></colgroup>'
 										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '<tr><th class="tl">백업범위(LSN)</th><td class="tl">' + ob.backupScope + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.fromBackup)) r+='<tr><th class="tl">기준이 되는 백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
+									 	if(!cloudUtil.isEmpty(ob.fromBackup)) r+='<tr><th class="tl">기준이 되는 백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.archiveFileSize)) r+='<tr><th class="tl">압축파일크기</th><td class="tl">' + ob.archiveFileSize  +'</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.backupTime)) r+='<tr><th class="tl">백업 소요시간</th><td class="tl">' + ob.backupTime  + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.archiveTime)) r+='<tr><th class="tl">압축 소요시간</th><td class="tl">' + ob.archiveTime  + '</td></tr>' 
@@ -2412,6 +2417,8 @@
 					},
 					{   title: '로그',
 						processor:function(data,$cell,grid){
+							
+							console.log('로그');	
 							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
 						},
 						use: function(data,$cell,grid){
@@ -2456,6 +2463,7 @@
 					{ title:'On-Disk', key : 'ondisk' , width: '160px', align: 'center',hidden:true},
 					{ title:downloadTitle, key : 'archiveFileSize' , width: '100px', align: 'center',excludeFitWidth:true,render:function(value,data,render,mapping){
 						let t = '다운로드';
+						//console.log(data.type);
 						if(['FULL','INCR'].indexOf(data.type) > -1){
 							t = '복원';
 						}
@@ -2591,7 +2599,14 @@
 					data:gParam,
 					success: function(res){
 						var list = res.backupList;
+						
+						if(gParam.serviceType != cServiceType.redis){
+							$("#gridBackup").alopexGrid('showCol', 4);
+						}else{
+							$("#gridBackup").alopexGrid('hideCol', 4);
+						}
 						$('#gridBackup').alopexGrid('dataSet',list);
+						
 						fn_filterBackupInfo();
 					}
 				});				
