@@ -226,14 +226,14 @@ let appMariadb = {
 			ob.parent().find('li').removeClass('selected');
 			ob.addClass('selected');
 			let menuName = $(ob).data('menu');
-			if(!gService.podName && menuName !='myCnf'){
+			if(gService.status == 'red' && menuName !='myCnf'){
 				gCommon.alert('서비스가 작동중이지 않을땐 myCnf설정만 가능합니다.');
 				return;
 			}
 			appMariadb.initMenu(menuName);
 		})
 		appMariadb.getDatabaseVariables();
-		if(gService.podName){
+		if(gService.status != 'red'){
 			appMariadb.selectedMenu = appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'); 
 		}else{
 			appMariadb.selectedMenu = 'myCnf';
@@ -738,17 +738,22 @@ let appMariadb = {
 			}
 			appMariadb.mariaContent.find('[data-menu]:visible .alopexgrid').alopexGrid('viewUpdate')
 		},getDatabaseStatus : function(){
+			
+			
+			
 			let d = $.extend({},gParam,{podName:gService.podName});
 			$a.ajax({
 				url:'/zdbapi/getDatabaseStatus',
 				data:d,
 				success:function(res){
 					ds = res.databaseStatus;
+					
 					let onOffBtn = {
 						ON : '<span class="state green vm"></span> ',
 						OFF : '<span class="state inactive vm"></span> '
 					}
-					if(ds){
+
+					if(ds){  // && ds.compiled
 						ds.compiled = ds.version_compile_os + '('+ds.version_compile_machine+')';
 						ds.running = moment(ds.timestamp * 1000).format('ddd MMM D HH:mm:ss YYYY');
 						BigNumber.config({ ROUNDING_MODE: BigNumber.ROUND_DOWN });
@@ -907,11 +912,12 @@ let appMariadb = {
 			})
 		}, 
 		getUserPrivileges: function(){
-			appMariadb.getUserRoleList().done(function(userList,schemaList){
+			appMariadb.getUserRoleList().done(function(userList,schemaList){				
 				$a.ajax({
 					url:'/zdbapi/getUserPrivileges',
 					data:gParam,
 					success:function(res){
+					
 						let list = res.userPrivileges||[];
 						appMariadb['data']['userPrivileges'] = {};
 						appMariadb['data']['editPrivileges'] = {};//변경중인 데이터 저장
