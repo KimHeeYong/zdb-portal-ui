@@ -35,6 +35,7 @@
 	</div>
 	<script type="text/javascript">
 		var gNamespaces = null; // 네임스페이스 콤보
+		var gConfigData = null;		
 		$a.page(function() {
 			this.init = function() {
 				
@@ -65,45 +66,12 @@
 					restoreFocusOnInvalidInlineEdit :true,
 					leaveDeleted:true,
 					columnMapping : [  
-					/* 	{ title:'state',key:'state',width:'50px',editable:false,hidden:true,align:'center',excludeFitWidth:true,render:function(value,data){
-							if (data._state.added){data.state = 'A'}
-							else if (data._state.deleted){data.state='D'}
-							else if (data._state.edited){data.state='E'}
-							else {data.state=''}
-							return data.state;
-						}},						
-						{ title:'상태', key : 'backupStatus' , width: '50x',excludeFitWidth:true, align: 'center',render:function(value,data){
-							let status = '';
-							let alt = '';
-							if(value=='YELLOW'){
-								status = 'yellow';
-								alt = '최근 백업이 존재하지 않습니다';
-							} else if(value=='GREEN'){
-								status = 'green';
-								alt = '백업이 정상적으로 수행되고 있습니다';
-							} else if(value=='RED'){
-								status = 'red';
-								alt = '최근 백업이 실패 했습니다';
-							} else if(value=='GREY'){
-								status = 'grey';
-								alt = '수행된 백업이 존재하지 않거나, 백업이 설정되어 있지 않습니다.';
-							} else if(value=='DOING'){
-								status = 'green blinking';
-								alt = '백업이 수행되는 중입니다';
-							}
-							let re = '<div class="state '+status+'" title="'+alt+'"></div>';
-							
-							return re;
-							
-						}}, */
 						{ title:'서비스이름', key : 'serviceName' , width: '250px',excludeFitWidth:true, align: 'left',render:function(value,data){
 							var re = $('<a href="#" title="'+value+'">'+value+'</a>').html(value).on('click',function(){
-							//	fn_setSelected2010Tab('tabBackup');
-							//	gCommon.movePage('/zdb02/zdb0210',{namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName});
+								fn_setSelected2010Tab('tabService');
+								gCommon.movePage('/zdb02/zdb0210',{namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName});
 							});
-							
 							return re;
-							
 						}},
 						{ title:'서비스종류', key : 'serviceType' , width: '100px', align: 'center',render:function(value){
 							let img = {
@@ -113,32 +81,50 @@
 							let re = img[value]; 
 							if(re) return re;	
 						}},
-/* 						{ title:'Autofailover 설정', key : 'backupDiskYn' , width: '100px', align: 'center',render:function(value){
-							let re = '';
-							if(value == 'Y')re='사용';
-							if(value == 'N')re='미사용';
-							return re;
-						}}, */
 						{ title:'Autofailover 설정', key : 'failoverEnabled' , width: '150px', align: 'center',render:function(value,data){
+							let re = '';
+							if (data.serviceType == 'mariadb'){
+								// service type 이 mariadb 경우 버튼을 생성한다. 
 							
-							let re = fn_getUseYnTemp(value);
-							if (data.serviceType != 'mariadb') re = '';
-							
-							return re;
-						},editable:function(value,data){
-							//"MasterToMaster"  : off
-							//"MasterToSlave"   : on 
-							let re = fn_getUseYnTemp(value).on('click','button.Button',function(e){
-								let t = $(this);
-								let isValueY = t.data('value') == 'on';
-								let vr = isValueY ? 'off' : 'on';
+								re = $('<div class="onoff-wrap" style="margin:auto"><button class="Button btn-'+value+'" data-value="'+value+'">'+value.toUpperCase()+'</button></div>').on('click',function(){
+									// click 이벤트 발생시 action은 버튼 안에서 일어난다.
 
-								let vrYn = isValueY ? 'on' : 'off'; 
-								t.removeClass('btn-off').removeClass('btn-on').addClass('btn-'+vr).text(vr.toUpperCase()).data('value',vrYn);
-							});
+									//button 객체를 먼저 선언한다. 
+									let t = $(this);
+									let tButton = t.find('button');
+									
+									fn_getCredentialConfirm(data).done(function(result){
+										// btn class 에따라 값을 바꿔서 셋팅해준다.
+										let isEnable = true;
+										if(tButton.hasClass('btn-on')) {
+											isEnable = false;
+										};				
+										
+										// confirm popup 결과 값에 따라 변경하도록 한다. 
+										if(result == "Y"){
+											$a.ajax({
+												url: '/zdbapi/updateAutoFailoverEnable',
+												method:'PUT',
+												data:{namespace:data.namespace ,serviceType:data.serviceType ,serviceName:data.serviceName, enable:isEnable},
+												success: function(res){
+													if(res.result.code!='4'){
+														gCommon.alert(res.result.message);
+														
+										 				gCommon.getConfigData(data.namespace).done(function(re){ 
+															gConfigData = re;
+															
+															let isValueY = tButton.data('value') == 'on'?'off':'on';
+															data.failoverEnabled = isValueY;
+															tButton.removeClass('btn-off').removeClass('btn-on').addClass('btn-'+isValueY).text(isValueY.toUpperCase()).data('value',isValueY);
+										 				});		 
+													}
+												}
+											})											
+										}
+									});	
+								});
+							}
 							return re;
-						},editedValue:function(cell){
-							return $(cell).find('button').data('value');
 						}},
 						{ title:'Failover 상태', key : 'serviceFailOverStatus' , width: '150px', align: 'center', render:function(value){
 							let re = 'Nomal';
@@ -236,7 +222,7 @@
 						{fromIndex:"backupExecType", toIndex:"fullExecutionTime", title:"전체백업"},
 						{fromIndex:"incrementPeriod", toIndex:"incrExecutionTime", title:"증분백업"}
 					],
-				}).on('cellEditInvalid ', function(e){
+/* 				}).on('cellEditInvalid ', function(e){
 					setTimeout(function(evt){
 						var evObj = AlopexGrid.parseEvent(e);
 						var opt = evObj.data;
@@ -260,14 +246,36 @@
 					},100)
 				}).on('dataChanged',function(e){
 					let isEnalbed = AlopexGrid.trimData(gridFailover.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
-					$('#btnSaveSchedule').setEnabled(isEnalbed);
-				});			
+					$('#btnSaveSchedule').setEnabled(isEnalbed); */
+				});		
+				/* on/off 버튼 생성 스크립트  */
 				function fn_getUseYnTemp(value){
 					//MasterToSlave
-					//let v = value == 'Y'? 'on':'off';
 					
 					let v = value == 'on'? 'on':'off';
 					return $('<div class="onoff-wrap"><button class="Button btn-'+v+'" data-value="'+value+'">'+v.toUpperCase()+'</button></div>');
+				}
+				
+				function fn_getCredentialConfirm(data){
+					let deferred = $.Deferred();
+					let re = {};					
+					
+					/* parameter : namespace , serviceType , serviceName , credetial(popup에서 입력받음)  */
+					gCommon.credentialApiConfirm({
+				        data:{namespace:data.namespace ,serviceType:data.serviceType ,serviceName:data.serviceName, msg:'설정을 변경하시려면', okBtnMsg:'변경'},
+				        callback : function(res){
+				        	if(res == null){
+				        		re = res || {};
+								re.isExists = false;
+								deferred.resolve(re);
+				        	}else{
+				        		re = res;
+								re.isExists = true;
+								deferred.resolve(re);				        		
+				        	}
+				        }
+				    }); 
+					return deferred.promise();
 				}
 				function fn_getFailoverInfoList(){
 					let param = $('form[name=eventForm]').serializeObject();
@@ -278,13 +286,12 @@
 						url: '/zdbapi/getFailoverList',
 						data:{namespace:gSelectedNamespace},
 						success: function(res){
-							console.log(res);
+
 							// 조회 후 list 객체 생성
 							let list = res.serviceoverviews;
 							//grid 에 데이터셋 생성
 							gridFailover.alopexGrid('dataSet',list);
-							
-							
+						
 							
 /* 							gServiceList = res.serviceoverviews;
 							gfn_convertServiceDatas(gServiceList); */

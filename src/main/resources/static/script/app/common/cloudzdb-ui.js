@@ -376,6 +376,26 @@ var gCommon = $a.page(function(){
 		}
 	    $a.popup(opt);		
 	}
+	this.credentialApiConfirm = function(option){
+		let defOpt = {
+		        url: "/zdbcom/credentialConfirm",
+		        data:{namespace:option.data.namespace ,serviceType:option.data.serviceType ,serviceName:option.data.serviceName, msg:'설정을 변경하시려면'},
+		        iframe: false,
+		        width: 500,
+		        height: 300,
+		        movable:true,
+		        title : ''
+		    };		
+		let opt = $.extend({},defOpt,option);
+		if(opt.callback){
+			opt.callback=function(res){
+				if(res == 'Y'){
+					option.callback(res);
+				}
+			}
+		}
+	    $a.popup(opt);
+	}	
 	let isAlertPopExists = false;
 	this.alert = function(message,fnCallback,option){
 		if(isAlertPopExists)return;

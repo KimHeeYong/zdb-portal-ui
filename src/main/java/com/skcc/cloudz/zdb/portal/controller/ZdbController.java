@@ -1,6 +1,7 @@
 package com.skcc.cloudz.zdb.portal.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,13 @@ public class ZdbController {
 		ModelAndView mav = new ModelAndView();
 		return mav;
 	}
+	
+	@RequestMapping("/zdbcom/credentialConfirm")
+	public ModelAndView credentialConfirm(HttpServletRequest request,HttpServletResponse response) {
+		ModelAndView mav = new ModelAndView();
+		return mav;
+	}
+	
 	@RequestMapping("/zdbcom/alert")
 	public ModelAndView alert(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();

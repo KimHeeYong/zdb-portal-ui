@@ -181,5 +181,7 @@ public class URIConstants {
 	public static final String URI_UPDATE_USER_PRIVILEGES = "/api/v1/{namespace}/{serviceType}/{serviceName}/database/userPrivileges";
 
 	public static String URI_GET_NODES_INFO = "/api/v1/nodesInfo";
+	
+	public static final String URI_GET_CREDENTIAL_CONFIRM = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/credentialConfirm";
 
 }

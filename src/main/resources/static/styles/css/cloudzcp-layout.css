@@ -2290,7 +2290,7 @@ a.view-detail:active {
 .popup-btn__wrap {
 	position: absolute;
 	bottom: 0;
-	width: 100%;
+	width: 92%;
 	padding: 10px 0;
 	text-align: center;
 	border-top: 1px solid #dddddd;
