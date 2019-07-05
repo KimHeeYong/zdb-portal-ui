@@ -89,6 +89,11 @@ const cStorageClassConstants = {
 	,'ibmc-file-silver':'4 IOPS/GB'
 	,'ibmc-file-gold':'10 IOPS/GB'
 };
+const cConstantsToblockStorage = {
+	 '2':'ibmc-block-bronze'
+	,'4':'ibmc-block-silver'
+	,'10':'ibmc-block-silver'
+};
 const gMessage = {
 	validPage : '잘못된 접근 입니다.',
 	saveSuccess: '정상적으로 저장되었습니다.',

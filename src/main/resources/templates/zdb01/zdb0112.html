@@ -122,7 +122,7 @@
 										</tr>
 										<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
 											<th>스토리지 QoS</th>
-											<td data="storageClass"></td>
+											<td data="storageIops"></td>
 										</tr>
 									</tbody>
 								</table>
@@ -187,6 +187,15 @@ $a.page(function() {
 		
 		var data;
 		if (gParam.serviceType == cServiceType.mariadb) {
+			var storageClassStr;
+			var kindOfStorageStr = gParam.kindOfStorage;
+			
+			if(kindOfStorageStr == 'Endurance') {
+				storageClassStr = cConstantsToblockStorage[gParam.storageIops];
+			} else if (kindOfStorageStr == 'Performance'){
+				storageClassStr = 'ibmc-block-custom';
+			}
+			
 			data = $.extend({},gParam,{
 				specMemory:sliderConstants.memory.getValue(gParam.podSpecIdx,isCluster),
 				memory:sliderConstants.memory.value[gParam.podSpecIdx],
@@ -197,8 +206,9 @@ $a.page(function() {
 				backupEnabledStr:(gParam.backupEnabled=='true'?'사용':'미사용'),
 				clusterEnabledStr:(gParam.clusterEnabled=='true'?'사용':'미사용'),
 				/* storageClassStr:(cStorageClassConstants[gParam.storageClass]) */
-				storageClass:gParam.storageClass + ' IOPS/GB',
-				kindOfStorage:gParam.kindOfStorage
+				storageIops:gParam.storageIops + ' IOPS/GB',
+				kindOfStorage:kindOfStorageStr,
+				storageClass:storageClassStr
 			});
 		} else if (gParam.serviceType == cServiceType.redis) {
 			data = $.extend({},gParam,{

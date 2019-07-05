@@ -268,14 +268,14 @@
 								<th>스토리지 QoS<span class="asterisk">*</span></th>
 								<td>
 									<div class="Divselect wd150" id="storageClassCombo" name="storageClassCombo">
-										<select id="storageClassSel" name="storageClassSel">
+										<select id="storageIopsSel" name="storageIopsSel">
 											<option value="">==선택하세요==</option>
 										</select>
 										<span></span>
 									</div>
-									<span data-for="storageClassSel" class="info-text"></span>
-									<input class="Textinput hide" type="text" id="storageClass" name="storageClass" value="">
-									<span data-for="storageClass" class="info-text hide"></span>
+									<span data-for="storageIopsSel" class="info-text"></span>
+									<input class="Textinput hide" type="text" id="storageIops" name="storageIops" value="">
+									<span data-for="storageIops" class="info-text hide"></span>
 								</td>
 							</tr>
 						</tbody>
@@ -419,7 +419,7 @@ $a.page(function() {
 			setPurpose(this.value);
 		});
 		$('input[name=kindOfStorage]').on('change',function(e){
-			setStorageClass(this.value);
+			setStorageIops(this.value);
 		});
 		//백업사용 on off button
 		$('#backupOnOff.onoff-wrap > button').click(function(e){
@@ -483,9 +483,7 @@ $a.page(function() {
 			let diskSizeCombo = $('#diskSizeCombo').find('select');
 			let diskSize = $('#diskSize'); 
 			
-			let r = sliderConstants.storage.value;
 			let storageClassCombo = $('#storageClassCombo').find('select');
-			let storageClass = $('#storageClass'); 
 			
 			for(let i = 0; i < l.length;i++){
 				let o = l[i];
@@ -494,12 +492,7 @@ $a.page(function() {
 				}
 			}
 			
-			for(let i = 0; i < r.length;i++){
-				let o = r[i];
-				if(o != '0'){
-					storageClassCombo.append($('<option/>',{value:o,text:o+' IOPS/GB'}));				
-				}
-			}
+			setStorageOption(storageClassCombo);
 			
 			diskSizeCombo.append($('<option/>',{value:'custom',text:'사용자 정의'}));
 			diskSizeCombo.on('change',function(){
@@ -507,7 +500,7 @@ $a.page(function() {
 			})
 			
 			storageClassCombo.on('change',function(){
-				setStorageClassValue();
+				setStorageClassValue(storageClassCombo);
 			})
 			
 			function setDiskValue(){
@@ -525,14 +518,14 @@ $a.page(function() {
 			
 			function setStorageClassValue(){
 				if(storageClassCombo.val() == 'custom'){
-					storageClass.show().val('');	
-					$('span[data-for=storageClass]').show();
-					$('span[data-for=storageClassSel]').hide();
+					storageIops.show().val('');	
+					$('span[data-for=storageIops]').show();
+					$('span[data-for=storageIopsSel]').hide();
 				}else{
-					storageClass.val(storageClassCombo.val());
-					storageClass.hide();
-					$('span[data-for=storageClass]').hide();
-					$('span[data-for=storageClassSel]').show();
+					storageIops.val(storageClassCombo.val());
+					storageIops.hide();
+					$('span[data-for=storageIops]').hide();
+					$('span[data-for=storageIopsSel]').show();
 				}				
 			}
 			
@@ -543,7 +536,7 @@ $a.page(function() {
 			$('#diskSize').val(gParam.diskSize);
 		}
 		if(gParam.storageClass){
-			$('#storageClass').val(gParam.storageClass);
+			$('#storageIops').val(gParam.storageClass);
 		}
 		/* if(gParam.exposeType){
 			setExposeType(gParam.exposeType);
@@ -601,16 +594,27 @@ $a.page(function() {
 				$('#exposeOnOff.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
 			}
 		};	
-		function setStorageClass(value){
+		function setStorageIops(value){
 			$('input[name=kindOfStorage]').zdbui_setComponent(value);
 			if(value=='Performance'){
+				$('#storageClassCombo > select > option').remove();
 				$('#storageClassCombo > select').append($('<option/>',{value:'custom',text:'사용자 정의'}));
-				alert('Performance');
 			}else{
+				setStorageOption($('#storageClassCombo').find('select'));
 				$('#storageClassCombo > select > option[value=custom]').remove();
-				alert('Endurance');
 			}
 		};	
+		function setStorageOption(storageClassCombo){
+			let r = sliderConstants.storage.value;
+			let storageIops = $('#storageIops');
+			
+			for(let i = 0; i < r.length;i++){
+				let o = r[i];
+				if(o != '0'){
+					storageClassCombo.append($('<option/>',{value:o,text:o+' IOPS/GB'}));				
+				}
+			}
+		}
 
 	}
 });
