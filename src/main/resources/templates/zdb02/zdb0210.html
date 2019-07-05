@@ -2394,7 +2394,12 @@
 							
 						console.log('결과');	
 						
-							$a.ajax({
+						let r = '<table><colgroup><col class="wd150"></col><col width="*"></col></colgroup>'
+							r+= '</table>';  							
+						gCommon.backupAlert(r,null,{width:500,height:350});
+						
+						
+/* 							$a.ajax({
 								url:'/zdbapi/getBackupResult',
 								data:{backupId:data.backupId},
 								success:function(res){
@@ -2407,9 +2412,9 @@
 										if(!cloudUtil.isEmpty(ob.archiveTime)) r+='<tr><th class="tl">압축 소요시간</th><td class="tl">' + ob.archiveTime  + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.uploadTime)) r+='<tr><th class="tl">업로드 소요시간</th><td class="tl">' + ob.uploadTime  + '</td></tr>' 
 										r+= '</table>';  							
-									gCommon.alert(r,null,{width:500,height:350});
+									gCommon.backupAlert(r,null,{width:500,height:350});
 								}
-							});
+							}); */
 						},
 						use: function(data,$cell,grid){
 							return bakcupLogShow && $cell.data('alopexgrid-key')=="log"

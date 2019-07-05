@@ -419,6 +419,29 @@ var gCommon = $a.page(function(){
 		isAlertPopExists = true;
 		$a.popup(opt);
 	};
+	
+	this.backupAlert = function(message,fnCallback,option){
+		if(isAlertPopExists)return;
+		let defOpt = {
+		        url: "/zdbcom/backupAlert",
+		        data:message,
+		        iframe: false,	        
+		        width: 500,
+		        height: 230,
+		        title : '',
+		        callback: function(){
+		        	isAlertPopExists = false;
+		        	if(fnCallback){
+		        		fnCallback();
+		        	}
+		        }
+		    };
+		let opt = $.extend({},defOpt,option);
+		gPopData = {};
+		gPopData.message = message;
+		isAlertPopExists = true;
+		$a.popup(opt);
+	};	
 });
 
 $.fn.extend({ 

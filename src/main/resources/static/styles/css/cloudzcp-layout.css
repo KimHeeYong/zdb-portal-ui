@@ -631,6 +631,17 @@ body.login {background: #ffffff}
 	letter-spacing: -2px;
 }
 .session-text__box.email {width: 540px;}
+
+.session-text__lg.gray {color: #666666;}
+.session-text__lg.orange {color: #F29661;}
+.session-text__lg.red {color: #ea0530;}
+
+.session-text__md.gray {color: #666666;}
+.session-text__md.orange {color: #F29661;}
+.session-text__md.red {color: #ea0530;}
+
+#ea0530;
+
 .email-send {
 	margin: 0 auto;
 	width: 540px;
