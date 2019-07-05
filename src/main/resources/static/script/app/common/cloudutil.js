@@ -40,12 +40,12 @@ var cloudUtil = {
 			size = cloudUtil.parseInt(size);
 		};
 		
-		if( size > 1024 * 1000 * 1000 * 1000) {
-			size = cloudUtil.truncDecimal((size / 1024 / 1000 / 1000 / 1000),idx) +"Pi";
-		} else if( size > 1024 * 1000 * 1000) {
-			size = cloudUtil.truncDecimal((size / 1024 / 1000 /1000),idx) +"Ti";
-		} else if( size > 1024 * 1000) {
-			size = cloudUtil.truncDecimal((size / 1024 / 1000),idx) +"Gi";
+		if( size > 1024 * 1024 * 1024 * 1024) {
+			size = cloudUtil.truncDecimal((size / 1024 / 1024 / 1024 / 1024),idx) +"Pi";
+		} else if( size > 1024 * 1024 * 1024) {
+			size = cloudUtil.truncDecimal((size / 1024 / 1024 / 1024),idx) +"Ti";
+		} else if( size > 1024 * 1024) {
+			size = cloudUtil.truncDecimal((size / 1024 / 1024),idx) +"Gi";
 		} else if( size > 1024) {
 			size = cloudUtil.truncDecimal((size / 1024),idx) +"Mi";
 		} else {
