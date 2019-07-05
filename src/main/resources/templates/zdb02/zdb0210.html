@@ -2391,15 +2391,7 @@
 				contextMenu : [
 					{   title: '결과',
 						processor:function(data,$cell,grid){
-							
-						console.log('결과');	
-						
-						let r = '<table><colgroup><col class="wd150"></col><col width="*"></col></colgroup>'
-							r+= '</table>';  							
-						gCommon.backupAlert(r,null,{width:500,height:350});
-						
-						
-/* 							$a.ajax({
+						$a.ajax({
 								url:'/zdbapi/getBackupResult',
 								data:{backupId:data.backupId},
 								success:function(res){
@@ -2414,7 +2406,7 @@
 										r+= '</table>';  							
 									gCommon.backupAlert(r,null,{width:500,height:350});
 								}
-							}); */
+							}); 
 						},
 						use: function(data,$cell,grid){
 							return bakcupLogShow && $cell.data('alopexgrid-key')=="log"
