@@ -329,6 +329,26 @@ var gCommon = $a.page(function(){
 		}
 		return result;
 	};
+	this.findObjectByKeyOb = function(listOb,keyOb){
+		var result = null;
+		if(listOb){
+			for(var i = 0 ; i < listOb.length;i++){
+				var ob = listOb[i];
+				var isEqual = true;
+				for(var key in keyOb){
+					if(ob[key]!=keyOb[key]){
+						isEqual = false;
+						break;
+					};
+				};
+				if(isEqual){
+					result = ob;
+					break;
+				};
+			};
+		}
+		return result;
+	};		
 	let isConfirmPopExists = false;
 	this.confirm = function(message,trueCallback,opt){
 		if(isConfirmPopExists)return;
