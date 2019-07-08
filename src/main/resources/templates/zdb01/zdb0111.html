@@ -8,6 +8,12 @@
 </th:block>
 <th:block layout:fragment="page_js">
 	<script type="text/javascript" src="/script/libs/etc/nouislider.min.js"></script>
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+			var gMdbVer = new Array([[${@environment.getProperty('zdb.mariadb.version')}]]);
+			var gRdbVer = new Array([[${@environment.getProperty('zdb.redis.version')}]]);
+		/*]]>*/
+	</script>	
 </th:block>
 <th:block layout:fragment="content">
 	<!-- location -->
@@ -74,11 +80,11 @@
 							<tr>
 								<th>버전</th>
 								<td>
-									<div class="Divselect">
-										<select id="version" name="version" disabled="disabled">
-											<option value="4.0.7">4.0.7</option>
+									<div class="Divselect" id="version" name="version" >
+										<select>
+<!-- 											<option value="4.0.7">4.0.7</option>
 											<option value="4.0.8">4.0.8</option>
-											<option value="4.0.9" selected="selected">4.0.9</option>
+											<option value="4.0.9" selected="selected">4.0.9</option> -->
 										</select>
 										<span></span>
 									</div>
@@ -159,8 +165,8 @@
 								<td>
 									<div class="Divselect" id="version" name="version">
 										<select>
-											<option value="10.2.21">10.2.21</option>
-											<option value="10.2.14">10.2.14</option>
+	<!-- 										<option value="10.2.21">10.2.21</option>
+											<option value="10.2.14">10.2.14</option> -->
 										</select>
 										<span></span>
 									</div>
@@ -282,6 +288,7 @@ var gNamespaces = null;     // 네임스페이스 콤보
 var gConfigData = null;
 $a.page(function() {
 	this.init = function() {
+		
 		//네임스페이스 콤보 설정
 		gCommon.getNamespaceCombo($('#namespaces'),{incAll:false}).done(function(selector){
 			gNamespaces = selector.addHandler(function(e){
@@ -294,6 +301,29 @@ $a.page(function() {
 				gCommon.alert(gMessage.validPage);
 			};
 		});		
+		/* DB Version 값을 application.yml 파일에서 읽어와서 select box 값으로 만들어주는 로직 추가 (2019-07-08) START */
+		var arrDbVer = null;
+		let versionCombo = $('#version');	
+ 		if(gParam.serviceType == cServiceType.mariadb){
+			arrDbVer = String(gMdbVer).replaceAll(' ','').split(',') ;
+		}else{
+			arrDbVer = String(gRdbVer).replaceAll(' ','').split(',') ;
+		} 
+
+ 		if(arrDbVer.length < 2 && cloudUtil.isEmpty(arrDbVer[0])){
+ 			gCommon.alert('환경변수에 DB VERSION 정보가 존재하지 않습니다. <br/> 관리자에 문의하세요.');
+ 			$('#btnNext').prop('disabled',true); //다음버튼을 disabled 처리 시킨다. 
+ 			$('#btnNext').addClass('Disabled');
+ 		}else{
+ 			$('#btnNext').prop('disabled',false); //다음버튼을 disabled 처리 시킨다. 
+ 			$('#btnNext').removeClass('Disabled');
+ 			for(var i = 0; i < arrDbVer.length ;i++ ){
+ 				versionCombo.find('select').append($('<option>',{value:arrDbVer[i],text:arrDbVer[i]}));
+ 			}
+ 			versionCombo.setSelected(versionCombo.find('option:eq(0)').val());
+ 		}
+		/* DB Version 값을 application.yml 파일에서 읽어와서 select box 값으로 만들어주는 로직 추가 (2019-07-08) END */		
+			
 		if(gParam.serviceType == cServiceType.mariadb){
 			$a.ajax({
 				url: '/zdbapi/workerpools',

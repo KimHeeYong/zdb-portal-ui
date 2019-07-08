@@ -67,7 +67,7 @@ cloudzcp:
   url: https://pog-dev-console.cloudzcp.io
 grafana:
   url: https://pog-dev-zdb-monitoring.cloudzcp.io
-  
+
 ---
 spring:
   profiles: cbt
@@ -77,6 +77,12 @@ zdb-api-server:
 
 zdb-demon-server:
   url: http://agent.zdb-dev.jp-tok.containers.mybluemix.net
+
+zdb:
+  mariadb:
+    version: 10.3.16, 10.2.21, 10.2.14
+  redis: 
+    version: 4.0.9
   
 props:
   appName: zdb-portal-local
@@ -95,6 +101,7 @@ cloudzcp:
 grafana:
   url: https://cbt-zdb-monitoring.cloudzcp.io
   
+
 ---
 spring:
   profiles: prod
