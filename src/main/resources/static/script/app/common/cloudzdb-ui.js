@@ -329,14 +329,16 @@ var gCommon = $a.page(function(){
 		}
 		return result;
 	};
-	this.findObjectByKeyOb = function(listOb,keyOb){
+	this.findObjectByKeyObUnder = function(listOb,keyOb){		
 		var result = null;
 		if(listOb){
 			for(var i = 0 ; i < listOb.length;i++){
 				var ob = listOb[i];
 				var isEqual = true;
 				for(var key in keyOb){
-					if(ob[key]!=keyOb[key]){
+					var obName = String(ob[key]).replaceAll('-','_');
+					var keyName = String(keyOb[key]).replaceAll('-','_');					
+					if(obName != keyName){
 						isEqual = false;
 						break;
 					};
