@@ -1119,7 +1119,7 @@ let appMariadb = {
 					let o = ds[name];
 					o.sort = categorySort[o.category];
 					if(!o.category)continue;
-					let mc = gCommon.findObjectByKeyOb(paramList,{category:o.category,name:o.name});
+					let mc = gCommon.findObjectByKeyObUnder(paramList,{category:o.category,name:o.name});
 					//전달 받은 데이터에 있으면 grid리스트에,없으면 추가콤보로 생성
 					if(mc==null){
 						if(!comboList[o.category]){
