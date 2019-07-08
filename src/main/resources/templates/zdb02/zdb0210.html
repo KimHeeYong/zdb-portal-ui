@@ -521,6 +521,7 @@
 								<option value="2">2시간</option>
 								<option value="6">6시간</option>
 								<option value="12">12시간</option>
+								<option value="24">24시간</option>								
 							</select>
 							<span></span>
 						</div>
@@ -2457,6 +2458,17 @@
 					}},
 					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
 					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'상태', key : 'status' , width: '160px', align: 'center' , render:function(value,data,render,mapping){
+						let re = "수행중"; 
+						if(value ==  "OK"){
+							re = "성공"; 
+						}else if(value ==  "DOING"){
+							re = "수행중"; 
+						}else if(value ==  "FAILED"){
+							re = "실패"; 
+						}
+						return re
+					}},
 					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',render:cloudUtil.dtFormat,render:function(value,data){
 						let re = data.fromLsn +' ~ '+data.toLsn ;
 						return re;
@@ -2615,7 +2627,7 @@
 					data:gParam,
 					success: function(res){
 						var list = res.backupList;
-						
+						console.log(res);
 						if(gParam.serviceType != cServiceType.redis){
 							$("#gridBackup").alopexGrid('showCol', 4);
 						}else{
