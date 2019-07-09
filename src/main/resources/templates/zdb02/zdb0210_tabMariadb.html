@@ -213,6 +213,9 @@ gService = {
 	podName :"zdb-test-mat-mariadb-0"
 }
 */
+
+let validExcepArr = ["innodb_fast_shutdown","no-auto-rehash","quick"]; 
+
 let appMariadb = {
 	selectedMenu:null,	
 	data : {},	
@@ -1209,13 +1212,22 @@ let appMariadb = {
 		},validMyCnf:function(value,data){
 			let re = true;
 			if(!data.editable)return re;
+
 			if(data.variableType == 'BIGINT UNSIGNED' || data.variableType == 'INT UNSIGNED') {
 				let numericMinValue = data.numericMinValue || '';
 				let numericMaxValue = data.numericMaxValue || '';
+				
 				if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
 					let val = (value||'').toUpperCase();
 					let reg = /^([\d]+)([K|M]{0,1})$/gi.exec(val);
+					
 					if(reg==null){
+						for(let v in validExcepArr){
+							let excepVal = validExcepArr[v];
+							if(data.name == excepVal ){
+								return re;
+							}							
+						}
 						return false;
 					}
 					let n = new BigNumber(reg[1]);
