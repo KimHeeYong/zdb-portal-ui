@@ -1709,9 +1709,28 @@
 									StorageTooltipMsg += ob.role + "(Data): " + storageSize + "<br>";
 									
 									if(dataIops != "") {
-										StorageQoSTooltipMsg += ob.role + "("+dataIops+" IOPS/GB): " + (storageSize.split('G')[0] * dataIops) + " IOPS<br>";
+										var strlen = storageSize.length;
+										var storageUnit = storageSize.substr(strlen-2, strlen);
+										var iops;
+										
+										if(storageUnit == 'Ki') {
+											iops = (storageSize.substr(0,strlen-2) * dataIops / 1024 / 1024) + " IOPS<br>";
+										} else if(storageUnit == 'Mi') {
+											iops = (storageSize.substr(0,strlen-2) * dataIops / 1024) + " IOPS<br>";
+										} else if(storageUnit == 'Gi') {
+											iops = (storageSize.substr(0,strlen-2) * dataIops) + " IOPS<br>";
+										} else if(storageUnit == 'Ti') {
+											iops = (storageSize.substr(0,strlen-2) * dataIops * 1024) + " IOPS<br>";
+										} else if(storageUnit == 'Pi') {
+											iops = (storageSize.substr(0,strlen-2) * dataIops * 1024 * 1024) + " IOPS<br>";
+										} else {
+											iops = "-<br>"; 
+										}
+										
+										StorageQoSTooltipMsg += ob.role + "("+dataIops+" IOPS/GB): " + iops;
+										
 										if(ob.role == "master"){
-											gServiceScale.storageClass = (storageSize.split('G')[0] * dataIops) + " IOPS";
+											gServiceScale.storageClass = iops;
 										}
 									}
 								}
