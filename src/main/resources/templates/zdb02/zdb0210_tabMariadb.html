@@ -1113,26 +1113,67 @@ let appMariadb = {
 			let comboList = {}; //카테고리별 추가 데이터
 			
 			let dbv = appMariadb['data']['databaseVariables'];
+			
+			// grid 에 담는 로직...(my.cnf 파싱된 값)
+			for(let i = 0; i < paramList.length; i++) {
+				let mc = paramList[i];
+				mc.dataColumn = true;
+				let ds = dbv[mc.category];
+				
+				let key = mc.name;
+				if(key == "transaction-isolation") {
+					key = "tx_isolation";
+				} else if(key == "default-time-zone") {
+					key = "time_zone";
+				}
+				
+				let o = ds[key];
+				if(!o) {
+					o = ds[String(key).replaceAll('-','_')];
+					if(!o) {
+						o = [];
+						console.log(mc.category +" / "+ key);
+						o.name = mc.name;
+						o.alias = mc.name;
+						o.category = mc.category;
+					}
+				}
+				gridList.push($.extend({},mc,o,{value:mc.value}));
+			}
+			
+			// 콤보박스에 들어가는 값 
 			for(let cg in dbv){
 				let ds = dbv[cg];
 				for(let name in ds){
+					if(name == "") continue;
+					
 					let o = ds[name];
 					o.sort = categorySort[o.category];
 					if(!o.category)continue;
-					let mc = gCommon.findObjectByKeyObUnder(paramList,{category:o.category,name:o.name});
-					//전달 받은 데이터에 있으면 grid리스트에,없으면 추가콤보로 생성
-					if(mc==null){
+					
+					let _catname1  = String(o.category+o.name).replaceAll('-','_');
+					let _catalias = String(o.category+o.alias).replaceAll('-','_');
+					
+					let existFlag = false;
+					for(let i = 0; i < paramList.length; i++) {
+						let mc = paramList[i];
+						let _catname2 = String(mc.category+mc.name).replaceAll('-','_');
+						
+						if(_catname1 == _catname2 || _catalias == _catname2) {
+							existFlag = true;
+							
+							break;
+						}
+					}
+					
+					if(!existFlag) {
 						if(!comboList[o.category]){
 							comboList[o.category] = [];
 						}
-						comboList[o.category].push(o);							
-					}else{
-						mc.dataColumn = true;
-						gridList.push($.extend({},mc,o,{value:mc.value}));
+						comboList[o.category].push(o);
 					}
 				}
 			}
-			
 			for(let k in comboList){
 				let o = comboList[k];
 				gridList.push({category:k, name:'' ,addVariableColumn:true ,dataColumn:false,serverData:false,sort:(categorySort[k]+1)});
