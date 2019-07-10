@@ -238,11 +238,12 @@
 						data:{namespace:gSelectedNamespace},
 						success: function(res){
 							let list = res.scheduleInfoList;
-							list = list.map(function(ob){
-								return $.extend({},ob,{incrementPeriod:(''+ob.incrementPeriod)});
-							});
-							gridSchedule.alopexGrid('dataSet',list);
-
+							if(list){
+								list = list.map(function(ob){
+									return $.extend({},ob,{incrementPeriod:(''+ob.incrementPeriod)});
+								});
+								gridSchedule.alopexGrid('dataSet',list);
+							}
 							let showCol = gSelectedNamespace == G_NAMESPACE_ALL ?'showCol':'hideCol';
 							gridSchedule.alopexGrid(showCol, 'namespace');
 						}

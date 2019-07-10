@@ -545,6 +545,7 @@
           	</form>
            	<!-- grid -->
             <div id="gridBackup" class="grid grid-line__wrap dash"></div>
+            <div class="Tooltip" id="backupTooltip" data-position="bottom"></div>
 		</div>
 		<div id="tabEvent">
 			<h3 class="form-title">이벤트</h3>
@@ -2458,14 +2459,14 @@
 					}},
 					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
 					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
-					{ title:'상태', key : 'status' , width: '160px', align: 'center' , render:function(value,data,render,mapping){
+					{ title:'상태', key : 'status' , width: '160px', align: 'center' , tooltip:false , render:function(value,data,render,mapping){
 						let re = "수행중"; 
 						if(value ==  "OK"){
 							re = "성공"; 
 						}else if(value ==  "DOING"){
 							re = "수행중"; 
 						}else if(value ==  "FAILED"){
-							re = "실패"; 
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 실패 <span class="ico_title" style="padding-top:33px;"/></a>' ;
 						}
 						return re
 					}},
@@ -2530,7 +2531,23 @@
 				message: {
 					nodata: gMessage.gridNodata
 				}
-			});
+			}).on('mouseover', '.bodycell .TooltipEvt',function(e){
+				// grid backup 상태(status) 컬럼 실패시 tooltip추가 (2019-07-10)
+				var evObj = AlopexGrid.parseEvent(e);
+				var data = evObj.data;
+				var mapping = evObj.mapping;
+
+				var $tooltip = $('#backupTooltip');
+
+				if (mapping.key === 'status' && data.reason != null){
+					var val = data['reason']||'';
+					$tooltip.html(val.replaceAll('\n','</br>')); 
+					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
+					$tooltip.open();	
+				}else {
+					$tooltip.close();
+				} 
+			});			
 			function setBackupUseYnEvt(val){
 				var msg = val == 'Y'? '백업 설정을 활성화 하시겠습니까?': '백업 설정을 비활성화 하시겠습니까?';
 				gCommon.confirm(msg,function(yn){
