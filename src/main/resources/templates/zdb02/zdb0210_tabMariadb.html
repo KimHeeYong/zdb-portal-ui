@@ -4,8 +4,8 @@
 			<div class="lay-item__box mt30">
 				<div style="width:180px;" class="dtc" id="divMariaMenu">
 					<ul class="dropmenu-list bbn">
-						<li class="selected" data-menu="databaseStatus">서버상태</li>
-						<li data-menu="connection">클라이언트 커넥션</li>
+<!-- 						<li data-menu="databaseStatus">서버상태</li> -->	  
+					    <li class="selected"  data-menu="connection">클라이언트 커넥션</li>
 						<li data-menu="userRole">사용자 및 권한관리</li>
 						<li data-menu="statusVariables">Status Variables</li>
 						<li data-menu="systemVariables">System Variables</li>
@@ -14,7 +14,7 @@
 				</div>
 				<div id="divMariaContent">
 					<div style="padding-left:10px;padding-right:10px;">
-						<div data-menu="databaseStatus">
+<!-- 						<div data-menu="databaseStatus" class="hide">
 							<h3 class="form-title2">Status Variables</h3>
 							<table class="Table Form-type">
 								<colgroup>
@@ -81,10 +81,10 @@
 									<td data="slowQueryLog"></td>
 								</tr>
 							</table>
-						</div>
-						<div data-menu="connection" class="hide">
+						</div> -->
+						<div data-menu="connection" >
 							<h3 class="form-title2">Client Connections</h3>
-							<table class="Table Form-type">
+							<table class="Table Form-type"   table-layout="auto;"> 
 								<colgroup>
 									<col width="200px"></col>
 									<col width="80px"></col>
@@ -542,9 +542,9 @@ let appMariadb = {
 					}					
 					data.valid = re;
 					return re;
-				},excludeFitWidth:true},					
+				},excludeFitWidth:true},
+				{ key : '', title : 'Value Range', width : '250px', align : 'left',render:renderValue,tooltip:renderValue},				
 				{ key : 'defaultValue', title : 'Default Value', width : '200px', align : 'left' },
-				{ key : '', title : 'Value Range', width : '250px', align : 'left',render:renderValue,tooltip:renderValue},
 				{ key : 'variableComment', title : 'Description', width : '300px', align : 'left' },
 				{ key : 'sort',hidden:true}
 			]
@@ -719,9 +719,6 @@ let appMariadb = {
 		},initMenu : function(menuName){
 			appMariadb.mariaContent.find('[data-menu]').hide().filter('[data-menu='+menuName+']').show();
 			switch(menuName){
-				case 'databaseStatus':
-					appMariadb.getDatabaseStatus();
-					break;
 				case 'connection':
 					appMariadb.getProcesses();
 					appMariadb.getDatabaseConnection();
@@ -738,11 +735,12 @@ let appMariadb = {
 				case 'myCnf':
 					appMariadb.getMyCnfList();
 					break;
+/*  				case 'databaseStatus':
+					appMariadb.getDatabaseStatus();
+					break; 		 */			
 			}
 			appMariadb.mariaContent.find('[data-menu]:visible .alopexgrid').alopexGrid('viewUpdate')
 		},getDatabaseStatus : function(){
-			
-			
 			
 			let d = $.extend({},gParam,{podName:gService.podName});
 			$a.ajax({
@@ -1117,33 +1115,6 @@ let appMariadb = {
 			
 			let dbv = appMariadb['data']['databaseVariables'];
 			
-			// grid 에 담는 로직...(my.cnf 파싱된 값)
-			for(let i = 0; i < paramList.length; i++) {
-				let mc = paramList[i];
-				mc.dataColumn = true;
-				let ds = dbv[mc.category];
-				
-				let key = mc.name;
-				if(key == "transaction-isolation") {
-					key = "tx_isolation";
-				} else if(key == "default-time-zone") {
-					key = "time_zone";
-				}
-				
-				let o = ds[key];
-				if(!o) {
-					o = ds[String(key).replaceAll('-','_')];
-					if(!o) {
-						o = [];
-						console.log(mc.category +" / "+ key);
-						o.name = mc.name;
-						o.alias = mc.name;
-						o.category = mc.category;
-					}
-				}
-				gridList.push($.extend({},mc,o,{value:mc.value}));
-			}
-			
 			// 콤보박스에 들어가는 값 
 			for(let cg in dbv){
 				let ds = dbv[cg];
@@ -1176,12 +1147,50 @@ let appMariadb = {
 						comboList[o.category].push(o);
 					}
 				}
+			}			
+			// category 구분을 위한 변수 선언 
+			let tempCategory = "";
+			
+			// grid 에 담는 로직...(my.cnf 파싱된 값)
+			for(let i = 0; i < paramList.length; i++) {
+				let mc = paramList[i];
+				mc.dataColumn = true;
+				let ds = dbv[mc.category];
+				
+				let key = mc.name;
+				if(key == "transaction-isolation") {
+					key = "tx_isolation";
+				} else if(key == "default-time-zone") {
+					key = "time_zone";
+				}
+				
+				let o = ds[key];
+				
+				if(!o) {
+					o = ds[String(key).replaceAll('-','_')];
+					if(!o) {
+						o = [];
+						console.log(mc.category +" / "+ key);
+						o.name = mc.name;
+						o.alias = mc.name;
+						o.category = mc.category;
+					}
+				}
+				
+				if(tempCategory != mc.category){
+					// 콤보박스 셋팅 부부 수정 (22019-07-10)
+					for(let k in comboList){
+						if(mc.category == k){
+							let o = comboList[k];
+							gridList.push({category:k, name:'' ,addVariableColumn:true ,dataColumn:false,serverData:false,sort:(categorySort[k])});
+							dbv[k].comboList = o;
+						}
+					}
+					tempCategory =  mc.category
+				}
+				gridList.push($.extend({},mc,o,{value:mc.value}));
 			}
-			for(let k in comboList){
-				let o = comboList[k];
-				gridList.push({category:k, name:'' ,addVariableColumn:true ,dataColumn:false,serverData:false,sort:(categorySort[k]+1)});
-				dbv[k].comboList = o;
-			}
+
 			appMariadb.gridMyCnf.alopexGrid('dataSet',gridList).alopexGrid('expandTreeNode');
 			appMariadb.gridMyCnf.alopexGrid('dataSort', [
 				{sortingColumn : 'sort', sortingDirection: "asc"},
