@@ -1190,6 +1190,7 @@ let appMariadb = {
 		},saveGridMyCnf : function(){
 			appMariadb.gridMyCnf.alopexGrid('endRowInlineEdit');
 			let dt = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',function(data) {
+				if(data.name == "tx_isolation" || data.name == "time_zone" )data.name = data.alias ;
 			    return data.dataColumn == true && data._state.deleted != true;
 			}));
 			if(gCommon.findObjectByKeyOb(dt,{valid:false}) !=null){
@@ -1197,6 +1198,7 @@ let appMariadb = {
 			};
 			gCommon.confirm("설정을 변경하시겠습니까?",function(){
 				let param = $.extend({},gParam,{databaseVariables:JSON.stringify(dt)});
+								
 				$a.ajax({
 					url:'/zdbapi/updateUseDatabaseVariables',
 					method:'put',
