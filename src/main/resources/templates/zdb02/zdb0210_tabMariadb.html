@@ -1165,7 +1165,6 @@ let appMariadb = {
 				}
 				
 				let o = ds[key];
-				
 				if(!o) {
 					o = ds[String(key).replaceAll('-','_')];
 					if(!o) {
@@ -1174,6 +1173,8 @@ let appMariadb = {
 						o.name = mc.name;
 						o.alias = mc.name;
 						o.category = mc.category;
+						/* sort 컬럼 추가하여 sorting 에러문제 해결 (2019-07-10) */
+						o.sort = categorySort[mc.category];
 					}
 				}
 				
