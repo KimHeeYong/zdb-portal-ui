@@ -581,6 +581,7 @@ let appMariadb = {
 			let grid = arguments[4];
 			let arg = arguments;
 			let isAddVariableColumn = data.addVariableColumn == true;
+			
 			switch(column.key){
 				case 'name':
 					if(data.categoryColumn==true){
@@ -625,7 +626,9 @@ let appMariadb = {
 							let evt = AlopexGrid.parseEvent(e);
 							let dt = evt.data;
 							if(dt.serverData==true){
-								let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
+								let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete';
+								/* 삭제처리 표시 유지 하는 로직 추가 -(2019-07-10)  */
+ 								dt.deleted = d ;
 								appMariadb.gridMyCnf.alopexGrid(d,evt.data);
 							}else{
 								let gridList = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',{dataColumn:true}));
@@ -1135,7 +1138,6 @@ let appMariadb = {
 						
 						if(_catname1 == _catname2 || _catalias == _catname2) {
 							existFlag = true;
-							
 							break;
 						}
 					}
@@ -1156,7 +1158,7 @@ let appMariadb = {
 				let mc = paramList[i];
 				mc.dataColumn = true;
 				let ds = dbv[mc.category];
-				
+
 				let key = mc.name;
 				if(key == "transaction-isolation") {
 					key = "tx_isolation";
@@ -1177,26 +1179,31 @@ let appMariadb = {
 						o.sort = categorySort[mc.category];
 					}
 				}
-				
 				if(tempCategory != mc.category){
-					// 콤보박스 셋팅 부부 수정 (22019-07-10)
-					for(let k in comboList){
-						if(mc.category == k){
-							let o = comboList[k];
-							gridList.push({category:k, name:'' ,addVariableColumn:true ,dataColumn:false,serverData:false,sort:(categorySort[k])});
-							dbv[k].comboList = o;
+					/* select box 중복생성 현상 수정 - 조건식 추가 (2019-07-10)  */
+					if(cloudUtil.isEmpty(tempCategory) || categorySort[tempCategory] < categorySort[mc.category]){
+						// 콤보박스 셋팅 부부 수정 (22019-07-10)
+						for(let k in comboList){
+							if(mc.category == k){
+								let o = comboList[k];
+								gridList.push({category:k, name:'' ,addVariableColumn:true ,dataColumn:false,serverData:false,sort:(categorySort[k])});
+								dbv[k].comboList = o;
+							}
 						}
+						tempCategory =  mc.category
 					}
-					tempCategory =  mc.category
 				}
 				gridList.push($.extend({},mc,o,{value:mc.value}));
+				
 			}
-
+			//appMariadb.gridMyCnf.alopexGrid
 			appMariadb.gridMyCnf.alopexGrid('dataSet',gridList).alopexGrid('expandTreeNode');
 			appMariadb.gridMyCnf.alopexGrid('dataSort', [
 				{sortingColumn : 'sort', sortingDirection: "asc"},
 				{sortingColumn : 'name', sortingDirection: "asc"}
 			]);
+			/* 삭제처리 표시 유지 하는 로직 추가 - (2019-07-10)   */
+			appMariadb.gridMyCnf.alopexGrid('dataDelete', {deleted: "dataDelete"});
 		},saveGridMyCnf : function(){
 			appMariadb.gridMyCnf.alopexGrid('endRowInlineEdit');
 			let dt = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',function(data) {
