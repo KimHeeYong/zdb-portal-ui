@@ -1597,10 +1597,11 @@
 				if(pvSpec){
 					for(var p = 0; p < pvSpec.length; p++) {
 						var scn = pvSpec[p].spec.storageClassName;
-						var strIops = cStorageClassConstants[scn];
+						var scnArr = scn.split("-");
 						
-						if(scn != null) {
-							var scnArr = scn.split("-");
+						if(scn != null && scnArr[2] != "custom") {
+							
+							var strIops = cStorageClassConstants[scn];
 							var iopsArr = strIops.split(" ");
 							
 							if(scnArr[1] == "block") {
@@ -1609,6 +1610,10 @@
 								backupIops = iopsArr[0];
 							}
 							
+						} else {
+							/* TODO */
+							dataIops = "-";
+							backupIops = "-";
 						}
 					}
 				}

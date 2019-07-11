@@ -82,17 +82,17 @@ const gSliderConstants = {
 };
 
 const cStorageClassConstants = {
-	 'ibmc-block-bronze':'2 IOPS/GB'
-	,'ibmc-block-silver':'4 IOPS/GB'
-	,'ibmc-block-gold':'10 IOPS/GB'
-	,'ibmc-file-bronze':'2 IOPS/GB'
-	,'ibmc-file-silver':'4 IOPS/GB'
-	,'ibmc-file-gold':'10 IOPS/GB'
+	 'ibmc-block-bronze':'2'
+	,'ibmc-block-silver':'4'
+	,'ibmc-block-gold':'10'
+	,'ibmc-file-bronze':'2'
+	,'ibmc-file-silver':'4'
+	,'ibmc-file-gold':'10'
 };
 const cConstantsToblockStorage = {
 	 '2':'ibmc-block-bronze'
 	,'4':'ibmc-block-silver'
-	,'10':'ibmc-block-silver'
+	,'10':'ibmc-block-gold'
 };
 const gMessage = {
 	validPage : '잘못된 접근 입니다.',

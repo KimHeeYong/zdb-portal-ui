@@ -221,7 +221,7 @@
 							</tr>
 							<tr>
 								<th>스토리지 종류</th>
-								<td>
+								<td id="kindOfStorage">
 									<input type="radio" name="kindOfStorage" value="Endurance" checked="checked">Endurance
 									<input type="radio" name="kindOfStorage" value="Performance"/>Performance
 								</td>
@@ -254,9 +254,9 @@
 								</td>
 							</tr>
 							<tr>
-								<!-- <th>스토리지 QoS<span class="asterisk">*</span></th>
-								<td>
-									<div class="Divselect" id="storageClass" name="storageClass">
+								<th>스토리지 QoS<span class="asterisk">*</span></th>
+								<td id="storagetd">
+									<div class="Divselect wd150" id="storageClass" name="storageClass">
 										<select>
 											<option value="ibmc-block-bronze">2 IOPS/GB</option>
 											<option value="ibmc-block-silver" selected="selected">4 IOPS/GB</option>
@@ -264,18 +264,9 @@
 										</select>
 										<span></span>
 									</div>
-								</td> -->
-								<th>스토리지 QoS<span class="asterisk">*</span></th>
-								<td>
-									<div class="Divselect wd150" id="storageClassCombo" name="storageClassCombo">
-										<select id="storageIopsSel" name="storageIopsSel">
-											<option value="">==선택하세요==</option>
-										</select>
-										<span></span>
-									</div>
 									<span data-for="storageIopsSel" class="info-text"></span>
-									<input class="Textinput hide" type="text" id="storageIops" name="storageIops" value="">
-									<span data-for="storageIops" class="info-text hide"></span>
+									<input class="Textinput hide wd150" type="text" id="storageIops" name="storageIops" value="">
+									<span data-for="storageIops" class="info-text hide"> IOPS/GB</span>
 								</td>
 							</tr>
 						</tbody>
@@ -392,9 +383,22 @@ $a.page(function() {
 				return;
 			};
 			
+			var storageClassStr;
+			var storageIopsStr;
+			
+			if (param.kindOfStorage == 'Performance') {
+				storageClassStr = 'ibmc-block-custom';
+				storageIopsStr = $('#storageIops').val();
+			} else {
+				storageClassStr = $('#storageClass > select > option[selected=selected]').val();
+				storageIopsStr = cStorageClassConstants[storageClassStr];
+			}
+			
+			param.storageClass = storageClassStr;
+			param.storageIops = storageIopsStr;
+			
 			var dt = $.extend({},param,{clusterEnabled:($('input[name=clusterEnabled]:checked').val()=='true')
 									   ,memory:sliderConstants.memory.value[param.podSpecIdx],cpu:sliderConstants.cpu.value[param.podSpecIdx]
-									   /* ,storageClassStr:$('select[name=storageClass] option:checked').text() */
 									  });
 			
 			if(gConfigData.free_resource_check == 'true'){
@@ -419,6 +423,7 @@ $a.page(function() {
 			setPurpose(this.value);
 		});
 		$('input[name=kindOfStorage]').on('change',function(e){
+			setKindOfStorage(this.value);
 			setStorageIops(this.value);
 		});
 		//백업사용 on off button
@@ -483,8 +488,6 @@ $a.page(function() {
 			let diskSizeCombo = $('#diskSizeCombo').find('select');
 			let diskSize = $('#diskSize'); 
 			
-			let storageClassCombo = $('#storageClassCombo').find('select');
-			
 			for(let i = 0; i < l.length;i++){
 				let o = l[i];
 				if(o != '0'){
@@ -492,15 +495,10 @@ $a.page(function() {
 				}
 			}
 			
-			setStorageOption(storageClassCombo);
 			
 			diskSizeCombo.append($('<option/>',{value:'custom',text:'사용자 정의'}));
 			diskSizeCombo.on('change',function(){
 				setDiskValue();
-			})
-			
-			storageClassCombo.on('change',function(){
-				setStorageClassValue(storageClassCombo);
 			})
 			
 			function setDiskValue(){
@@ -515,34 +513,23 @@ $a.page(function() {
 					$('span[data-for=diskSizeSel]').show();
 				}				
 			}
-			
-			function setStorageClassValue(){
-				if(storageClassCombo.val() == 'custom'){
-					storageIops.show().val('');	
-					$('span[data-for=storageIops]').show();
-					$('span[data-for=storageIopsSel]').hide();
-				}else{
-					storageIops.val(storageClassCombo.val());
-					storageIops.hide();
-					$('span[data-for=storageIops]').hide();
-					$('span[data-for=storageIopsSel]').show();
-				}				
-			}
-			
 		}		
 		
 		form.zdbui_setContents(gParam);
 		if(gParam.diskSize){
 			$('#diskSize').val(gParam.diskSize);
 		}
-		if(gParam.storageClass){
-			$('#storageIops').val(gParam.storageClass);
+		if(gParam.kindOfStorage){
+			setStorageIops(gParam.kindOfStorage);
+			if(gParam.kindOfStorage == 'Performance'){
+				$('#storageIops').val(gParam.storageIops);
+			} /* else {
+				var scValue = cConstantsToblockStorage[gParam.storageIops];
+				var findOption = $('#storageClass').find('option[value='+scValue+']');
+				findOption.
+			} */
 		}
-		/* if(gParam.exposeType){
-			setExposeType(gParam.exposeType);
-		} */
-		//setBackupEnabled(gParam.backupEnabled);
-		//setClusterEnabled(gParam.clusterEnabled);
+		
 		setBackupEnabled('false');
 		setExposeType('private');
 		setClusterEnabled('false');
@@ -594,27 +581,20 @@ $a.page(function() {
 				$('#exposeOnOff.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
 			}
 		};	
-		function setStorageIops(value){
+		function setKindOfStorage(value){
 			$('input[name=kindOfStorage]').zdbui_setComponent(value);
+		}
+		function setStorageIops(value){
 			if(value=='Performance'){
-				$('#storageClassCombo > select > option').remove();
-				$('#storageClassCombo > select').append($('<option/>',{value:'custom',text:'사용자 정의'}));
+				$('#storageClass').hide();
+				$('#storageIops').show().val('');
+				$('span[data-for=storageIops]').show();
 			}else{
-				setStorageOption($('#storageClassCombo').find('select'));
-				$('#storageClassCombo > select > option[value=custom]').remove();
+				$('#storageIops').hide().val('');
+				$('span[data-for=storageIops]').hide();
+				$('#storageClass').show();
 			}
 		};	
-		function setStorageOption(storageClassCombo){
-			let r = sliderConstants.storage.value;
-			let storageIops = $('#storageIops');
-			
-			for(let i = 0; i < r.length;i++){
-				let o = r[i];
-				if(o != '0'){
-					storageClassCombo.append($('<option/>',{value:o,text:o+' IOPS/GB'}));				
-				}
-			}
-		}
 
 	}
 });
