@@ -7,9 +7,9 @@
 <!-- 						<li data-menu="databaseStatus">서버상태</li> -->	  
 					    <li class="selected"  data-menu="connection">클라이언트 커넥션</li>
 						<li data-menu="userRole">사용자 및 권한관리</li>
-						<li data-menu="statusVariables">Status Variables</li>
-						<li data-menu="systemVariables">System Variables</li>
-						<li data-menu="myCnf">my.cnf</li>
+						<li data-menu="statusVariables">상태 변수</li>
+						<li data-menu="systemVariables">시스템 변수</li>
+						<li data-menu="myCnf">환경설정</li>
 					</ul>
 				</div>
 				<div id="divMariaContent">
@@ -83,52 +83,52 @@
 							</table>
 						</div> -->
 						<div data-menu="connection" >
-							<h3 class="form-title2">Client Connections</h3>
+							<h3 class="form-title2">클라이언트 커넥션</h3>
 							<table class="Table Form-type"   table-layout="auto;"> 
 								<colgroup>
-									<col width="200px"></col>
+									<col width="300px"></col>
 									<col width="80px"></col>
 									<col width="300px"></col>
 									<col width="80px"></col>
-									<col width="150px"></col>
+									<col width="300px"></col>
 									<col width="80px"></col>
 									<col width="*">
 								</colgroup>							
 								<tr>
 									<th>Threads Connected </th>
 									<td data="Threads_connected"></td>
-									<th>Threads_running </th>
+									<th>Threads running </th>
 									<td data="Threads_running"></td>
-									<th>Threads_created </th>
+									<th>Threads created </th>
 									<td data="Threads_created"></td>
 								</tr>
 								<tr>
-									<th>Threads_cached</th>
+									<th>Threads cached </th>
 									<td data="Threads_cached"></td>
-									<th>Connection_errors_max_connections </th>
+									<th>Connection errors </th>
 									<td data="Connection_errors_max_connections"></td>
 									<th>Connections </th>
 									<td data="Connections"></td>
 								</tr>
 								<tr>
-									<th>max_connections </th>
+									<th>Max connections </th>
 									<td data="max_connections"></td>
-									<th>Aborted_clients </th>
+									<th>Aborted clients </th>
 									<td data="Aborted_clients"></td>
-									<th>Aborted_connects</th>
+									<th>Aborted connects </th>
 									<td data="Aborted_connects"></td>
 								</tr>
 							</table>
 							<div id="gridConnection" class="mt30"></div>
 						</div>
 						<div data-menu="userRole" class="hide"  style=" min-width: 950px; ">
-							<h3 class="form-title2">Users and Privileges</h3>
+							<h3 class="form-title2">사용자 및 권한 관리</h3>
 							<div class="mt20">
 							<div class="fl" style="width:330px;">
 								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
 									<button class="Button btn sm" id="btnAddUser">추가</button>
 									<button class="Button btn sm" id="btnDeleteUser">삭제</button>
-									<button class="Button btn sm" id="btnDeletePrivileges">Revoke All Privileges</button>
+									<button class="Button btn sm" id="btnDeletePrivileges">권한 회수</button>
 								</div>
 								<div id="gridUser" class="mt30"></div>
 							</div>
@@ -179,21 +179,21 @@
 							</div>
 						</div>
 						<div data-menu="statusVariables" class="hide">
-							<h3 class="form-title2">Status Variables</h3>
+							<h3 class="form-title2">상태 변수</h3>
 							<div class="search-wrap tr fi mt20">
 								<input id="txtStatusVariablesFilter" name="txtStatusVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
 							</div>
 							<div id="gridStatusVariables"></div>
 						</div>
 						<div data-menu="systemVariables" class="hide">
-							<h3 class="form-title2">System Variables</h3>						
+							<h3 class="form-title2">시스템 변수</h3>						
 							<div class="search-wrap tr fi mt20">
 								<input id="txtSystemVariablesFilter" name="txtSystemVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
 							</div>
 							<div id="gridSystemVariables"></div>
 						</div>
 						<div data-menu="myCnf" class="hide">
-							<h3 class="form-title2">My.cnf</h3>
+							<h3 class="form-title2">환경설정</h3>
 							<div class="btn-wrap">
 								<div class="btn-right">
 									<button class="Button btn bg-red" id="btnSaveMyCnf" style="margin-bottom: 3px;">저장</button>
@@ -470,8 +470,8 @@ let appMariadb = {
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
-				{ key : 'name', title : 'name', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key : 'value', title : 'Value', width : '500px', align : 'left',excludeFitWidth:true}	,
+				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key : 'value', title : '값', width : '500px', align : 'left',excludeFitWidth:true}	,
 				{ key:''}
 			]
 		});			
@@ -484,8 +484,8 @@ let appMariadb = {
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
-				{ key : 'name', title : 'name', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key : 'value', title : 'Value', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key : 'value', title : '값', width : '500px', align : 'left',excludeFitWidth:true },
 				{ key:'',title:''}
 			]
 		});				
@@ -530,8 +530,8 @@ let appMariadb = {
 				{ key : 'status' , title : '', width:'50px',excludeFitWidth:true,hidden:true},
 				{ key : 'proc', title : '', width : '70px', align : 'left',render: mycnfRender,excludeFitWidth:true },
 				{ key : 'category', title : 'category', width : '200px', align : 'left',hidden:true,excludeFitWidth:true },
-				{ key : 'name', title : 'Config Name', width : '300px', align : 'left', treeColumn : false ,render:mycnfRender ,editable:mycnfEditable,excludeFitWidth:true},
-				{ key : 'value', title : 'Value', width : '300px', align : 'left',render:mycnfRender,editable:mycnfEditable,editedValue: function(cell, data, render, mapping, grid) {
+				{ key : 'name', title : '변수명', width : '300px', align : 'left', treeColumn : false ,render:mycnfRender ,editable:mycnfEditable,excludeFitWidth:true},
+				{ key : 'value', title : '값', width : '300px', align : 'left',render:mycnfRender,editable:mycnfEditable,editedValue: function(cell, data, render, mapping, grid) {
 					let re = $(cell).find('select,input').val();
 					return re;
 				},valid : function(value, data) {
@@ -543,9 +543,9 @@ let appMariadb = {
 					data.valid = re;
 					return re;
 				},excludeFitWidth:true},
-				{ key : '', title : 'Value Range', width : '250px', align : 'left',render:renderValue,tooltip:renderValue},				
-				{ key : 'defaultValue', title : 'Default Value', width : '200px', align : 'left' },
-				{ key : 'variableComment', title : 'Description', width : '300px', align : 'left' },
+				{ key : '', title : '범위', width : '250px', align : 'left',render:renderValue,tooltip:renderValue},				
+				//{ key : 'defaultValue', title : '기본값', width : '200px', align : 'left' },
+				//{ key : 'variableComment', title : '설명', width : '300px', align : 'left' },
 				{ key : 'sort',hidden:true}
 			]
 		}).on('cellEditInvalid ', function(e){
@@ -585,7 +585,7 @@ let appMariadb = {
 			switch(column.key){
 				case 'name':
 					if(data.categoryColumn==true){
-						re = '<span style="font-size:1.5em;color:midnightblue">['+value+']</span>';
+						re = '<span style="font-size:1.3em;color:black">['+value+']</span>';
 					} else if(isAddVariableColumn){
 						re = getAddVariableColumn(data);
 					} else re = data.alias;
@@ -655,7 +655,7 @@ let appMariadb = {
 			let isAddVariableColumn = data.addVariableColumn == true;
 			switch(column.key){
 				case 'name':
-					if(data.categoryColumn==true)re = '<span style="font-size:1.5em;color:midnightblue">['+value+']</span>';
+					if(data.categoryColumn==true)re = '<span style="font-size:1.3em;color:black">['+value+']</span>';
 					else if(isAddVariableColumn){
 						re = getAddVariableColumn(data);
 					} else re = data.alias;
