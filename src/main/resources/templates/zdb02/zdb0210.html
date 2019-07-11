@@ -1540,12 +1540,15 @@
 				//안내 메세지 출력
 				let infoMsg = $('#divInfoMsg');
 				let msg = gService.statusMessage||'';
-				//let t = $('<div class="Tooltip"></div>').html(msg);
-				//infoMsg.after(t);
-				//$a.convert(t);
-				let m = msg.split('</br>');
-				if(m && m.length > 1){
-					msg = m[0]+'</br>'+m[1];
+				/* msg가 없는 경우에 대한 조건 처리 추가 (2019-07-11) */
+				if(msg != '' ){
+					//let t = $('<div class="Tooltip"></div>').html(msg);
+					//infoMsg.after(t);
+					//$a.convert(t);
+					let m = msg.split('</br>');
+					if(m && m.length > 1){
+						msg = m[0]+'</br>'+m[1];
+					}
 				}
 				infoMsg.html(msg);
 				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정, 프로세스)설정
@@ -1597,19 +1600,29 @@
 				gServiceScale.storageClass = '';
 				if(pvSpec){
 					for(var p = 0; p < pvSpec.length; p++) {
+						/* msg가 없는 경우에 대한 조건 처리 추가 (2019-07-11) */
 						var scn = pvSpec[p].spec.storageClassName;
-						var strIops = cStorageClassConstants[scn];
 						
-						if(scn != null) {
+						if(scn != null ) {
+							var strIops = cStorageClassConstants[scn];
 							var scnArr = scn.split("-");
-							var iopsArr = strIops.split(" ");
+							var iopsArr = ""; 
 							
-							if(scnArr[1] == "block") {
-								dataIops = iopsArr[0];
-							} else {
-								backupIops = iopsArr[0];
+							if(strIops != undefined){
+								iopsArr = strIops.split(" ");
+								
+								if(scnArr[1] == "block") {
+									dataIops = iopsArr[0];
+								} else {
+									backupIops = iopsArr[0];
+								}
+							}else{
+								if(scnArr[1] == "block") {
+									dataIops = iopsArr;
+								} else {
+									backupIops = iopsArr;
+								}
 							}
-							
 						}
 					}
 				}
