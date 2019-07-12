@@ -51,6 +51,12 @@ zdb-api-server:
 zdb-demon-server:
   url: http://agent.zdb-dev.jp-tok.containers.mybluemix.net
   
+zdb:
+  mariadb:
+    version: 10.3.16, 10.2.21, 10.2.14
+  redis: 
+    version: 4.0.9
+    
 props:
   appName: zdb-portal-local
   keycloak:
@@ -131,6 +137,12 @@ management:
 zdb-api-server:
   url: ${api.server}
 
+zdb:
+  mariadb:
+    version: ${zdb.mariadb.version}
+  redis: 
+    version: ${zdb.redis.version}
+    
 logging:
   config: classpath:logback-prod.xml  
   
