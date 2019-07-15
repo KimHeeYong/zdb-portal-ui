@@ -662,8 +662,14 @@ let appMariadb = {
 					break;
 				case 'value':
 					if(!data.dataColumn && !isAddVariableColumn)return;
+					
 					let dbv = appMariadb['data']['databaseVariables'];
 					let d = dbv[data.category][data.name]||{};
+					// data.name 과 일치하는 데이터가 없을 경우 로직 추가 (2019.07.15)
+					if(!d.name){
+						d = dbv[data.category][String(data.name).replaceAll('_','-')]||{};
+					}
+					
 					if(d && d.editable == true){
 						let enumValueList = d.enumValueList|| ''; 
 						if(d.variableType == 'ENUM' || d.variableType == 'BOOLEAN'){
@@ -1167,6 +1173,7 @@ let appMariadb = {
 				}
 				
 				let o = ds[key];
+				
 				if(!o) {
 					o = ds[String(key).replaceAll('-','_')];
 					if(!o) {
@@ -1177,8 +1184,47 @@ let appMariadb = {
 						o.category = mc.category;
 						/* sort 컬럼 추가하여 sorting 에러문제 해결 (2019-07-10) */
 						o.sort = categorySort[mc.category];
+						
 					}
 				}
+				
+				/* innodb_fast_shutdown 항목의 value 값이 없을 경우 defaultValue 로 셋팅한다. (2019-07-15) */
+				if(o.name == "innodb_fast_shutdown"){
+					if(!mc.value && mc.defaultValue ){
+						mc.value = 	mc.defaultValue ;
+					}else if(!mc.value && o.defaultValue ){
+						mc.value = 	o.defaultValue ;	
+					}
+				}
+				
+				/* variableType == 'BOOLEAN' 인 데이터중  ON 인데 화면에 OFF 로 표시되는 현상 수정 적용(2019-07-15) */
+				//variable Type Check
+				let variableType  =  mc.variableType;
+				if(!mc.variableType) variableType  = o.variableType ;
+				
+				if(!variableType && o.name == "skip_external_locking"){
+					variableType = 'BOOLEAN'; //skip_external_locking 일 경우 type을 못찾을수 있다.
+					if(!mc.defaultValue) mc.defaultValue = '1' ;
+				}else if(!variableType && o.name == "skip_name_resolve"){
+					variableType = 'BOOLEAN'; //skip_external_locking 일 경우 type을 못찾을수 있다.
+					if(!mc.defaultValue) mc.defaultValue = '0' ;
+				}
+				//variableType == 'BOOLEAN' : value check
+				if(variableType && variableType == 'BOOLEAN'){
+					//defaultValue check
+					if(mc.defaultValue && (mc.defaultValue = 'ON' || mc.defaultValue == 'OFF') ){
+						mc.defaultValue = 'ON'?'1':'0';
+					}else if(o.defaultValue && (mc.defaultValue = 'ON' || mc.defaultValue == 'OFF')){
+						mc.defaultValue = 'ON'?'1':'0';
+					}
+					// value check 					
+					if(mc.value  && (mc.value = '1' || mc.value == '0')){
+						mc.value = '1'?'ON':'OFF';
+					}else{
+						mc.value = mc.defaultValue == '1'?'ON':'OFF' ;
+					}
+				}
+				
 				if(tempCategory != mc.category){
 					/* select box 중복생성 현상 수정 - 조건식 추가 (2019-07-10)  */
 					if(cloudUtil.isEmpty(tempCategory) || categorySort[tempCategory] < categorySort[mc.category]){
@@ -1194,7 +1240,6 @@ let appMariadb = {
 					}
 				}
 				gridList.push($.extend({},mc,o,{value:mc.value}));
-				
 			}
 			//appMariadb.gridMyCnf.alopexGrid
 			appMariadb.gridMyCnf.alopexGrid('dataSet',gridList).alopexGrid('expandTreeNode');
