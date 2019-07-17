@@ -340,8 +340,9 @@ let appMariadb = {
 				},editedValue: function(cell, data, render, mapping, grid) {
 					return $(cell).find('input').val();
 				}},
-				{ title:'Password', key : 'password' , width: '100px', align: 'left' ,editable:{type:'text'}
+				{ title:'Password', key :'password' , width: '100px', align: 'left' ,editable:{type:'text'}
 					,editable: function(value, data) {
+
 						return '<div><input type="password" class="alopexgrid-default-renderer" value="'+ (value||'') +'" maxlength="15"/></div>'; 
 					},editedValue: function(cell, data, render, mapping, grid) {
 						return $(cell).find('input').val();
@@ -355,23 +356,28 @@ let appMariadb = {
 			], message: { nodata: gMessage.gridNodata }
 		}).on('dataSelect',function(e){
 			let evObj = AlopexGrid.parseEvent(e);
-			let eId = appMariadb['data']['editPrivileges'].id;
-			let dt = gridUser.alopexGrid('dataGet',{_index:{row:0}})[0];
-			if(eId){
-				if(eId != evObj.datalist[0]._index.id){  //변경중인 데이터가 있을 경우 확인창
-					 let opt = {
-						falseCallback:function(){
-							gridUser.alopexGrid('rowSelect',{_index : {id:eId}},true);
-							appMariadb['data']['editPrivileges'].id = eId;
-						}	 
-					 };
-					 gCommon.confirm('변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?',function(){
-						 appMariadb.resetEditPrivileges();
-						 if(dt._state.added==true){
-						 	appMariadb.gridUser.alopexGrid('dataDelete',dt);
-						 }
-					 },opt);
-				}				
+			let eObj = appMariadb['data']['editPrivileges']  ;
+			
+			//변경된 데이터가 없을경우 appMariadb['data']['editPrivileges'] 값이 없어서 스크립트 오류 나는 현상 수정(201-07-16) :조건식 추가 
+			if(eObj.id != undefined){
+				let eId = appMariadb['data']['editPrivileges'].id; 
+				let dt = gridUser.alopexGrid('dataGet',{_index:{row:0}})[0];
+				if(eId){
+					if(eId != evObj.datalist[0]._index.id){  //변경중인 데이터가 있을 경우 확인창
+						let opt = {
+							falseCallback:function(){
+								gridUser.alopexGrid('rowSelect',{_index : {id:eId}},true);
+								appMariadb['data']['editPrivileges'].id = eId;
+							}	 
+						};
+						gCommon.confirm('변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?',function(){
+							appMariadb.resetEditPrivileges();
+							if(dt._state.added==true){
+								appMariadb.gridUser.alopexGrid('dataDelete',dt);
+							}
+						},opt);
+					}				
+				}
 			}
 		}).on('dataSelectEnd',function(e){
 			appMariadb.setUserPrivilegesUi();
@@ -589,18 +595,10 @@ let appMariadb = {
 					} else if(isAddVariableColumn){
 						re = getAddVariableColumn(data);
 					} else re = data.alias;
+					
 					break;
 				case 'value':
 					re = value;	
-					if(data.category && data.name){
-						let dbv = appMariadb['data']['databaseVariables'];
-						let o = dbv[data.category][data.name];
-						if(data.variableType == 'BOOLEAN'){
-							re =  data.value == '1' ? 'ON' : 'OFF';
-						}else{
-							re = data.value;
-						}
-					}
 					break;
 				case 'proc':
 					if(isAddVariableColumn){
@@ -646,6 +644,14 @@ let appMariadb = {
 			}
 			return re;			
 		}
+		/* myCnf 그리드에서 variableType 이 SET 일경우 처리를 위한 function : popup 처리(예정) */
+		function mycnfTypeSetPopup(defaultValue,value){
+/* 			console.log("((((((((((((((((((((((((((((((((((((((((");
+			console.log(defaultValue);
+			console.log(value);
+			console.log("))))))))))))))))))))))))))))))))))))))))"); */
+		}	
+		
 		//mycnf grid 수정 상태일때 보여주는 컬럼 설정
 		function mycnfEditable(){
 			let re = '';
@@ -662,7 +668,6 @@ let appMariadb = {
 					break;
 				case 'value':
 					if(!data.dataColumn && !isAddVariableColumn)return;
-					
 					let dbv = appMariadb['data']['databaseVariables'];
 					let d = dbv[data.category][data.name]||{};
 					// data.name 과 일치하는 데이터가 없을 경우 로직 추가 (2019.07.15)
@@ -670,32 +675,44 @@ let appMariadb = {
 						d = dbv[data.category][String(data.name).replaceAll('_','-')]||{};
 					}
 					
+					if(d.name == "innodb_undo_tablespaces")return;
+					
 					if(d && d.editable == true){
 						let enumValueList = d.enumValueList|| ''; 
+						//if(d.variableType == 'ENUM' || d.variableType == 'BOOLEAN'){
 						if(d.variableType == 'ENUM' || d.variableType == 'BOOLEAN'){
-							let l = enumValueList.split(',');
+							//select box 선언
 							re = $('<div class="Divselect wd250" style="top:-5px;height:32px;"><select></select><span></div>');
-							if(d.variableType == 'ENUM'){
+							
+							if(!d.enumValueList){
+								re.find('select').append($('<option/>',{text:'OFF',value:'0'}));
+								re.find('select').append($('<option/>',{text:'ON',value:'1'}));
+							}else{
+								let l = enumValueList.split(',');
+
 								for(let i = 0; i < l.length;i++){
 									re.find('select').append($('<option/>',{text:l[i],value:l[i]}));
 								}
-							}else if(d.variableType == 'BOOLEAN'){
-								re.find('select').append($('<option/>',{text:'OFF',value:'0'}));
-								re.find('select').append($('<option/>',{text:'ON',value:'1'}));
-							}							
-							
+							}
 							$a.convert(re);
-							if(isAddVariableColumn){
+
+ 							if(isAddVariableColumn){
 								let firstValue = re.find('select option:eq(0)').val();
-								//appMariadb.gridMyCnf.alopexGrid('dataEdit', $.extend({},data,{value:firstValue}),data);
-								//data.value = firstValue;
-								//;
+
 								setTimeout(function(){
 									re.setSelected(firstValue);
 								},100);
 							}else{
 								re.setSelected(data.value);
-							}
+							} 
+						}else if(d.variableType == 'SET'){ 
+							//variableType [SET] 추가 (2019-07-16) : 다건의 내용을 선택할 수 있어야 한다. (예정)
+							//팝업을 이용하여 처리하면 될듯 하다. 
+							
+							re = '<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%">';
+/* 							re = $('<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%" readonly="readonly" >').on('click',function(){
+								mycnfTypeSetPopup(enumValueList,data.value);
+							}); */
 						}else{
 							re = '<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%">';
 						}
@@ -717,9 +734,11 @@ let appMariadb = {
 			}
 			$a.convert(re);
 			re.setSelected(data.name).find('select').on('change',function(evt){
+
 				let name = $(evt.currentTarget).val();
 				let o = dbv[data.category][name];
 				let d = $.extend({},o,{value:''});
+				
 				appMariadb.gridMyCnf.alopexGrid('dataEdit', d,data).alopexGrid('rowSelect', data, true).alopexGrid('startRowInlineEdit',data);
 			});
 			return re
@@ -917,6 +936,7 @@ let appMariadb = {
 					let l = myCnfList.map(function(ob){
 						return $.extend({},ob,{serverData:true});
 					});
+				
 					appMariadb.setGridMyCnf(l);					
 				}
 			})
@@ -992,6 +1012,7 @@ let appMariadb = {
 			let o = s[su.schema];
 			o.isUpdate = true;
 			o[name] = isValue;
+
 			appMariadb['data']['editPrivileges'].id = su.id;
 		},
 		setUserPrivilegesUi:function(){
@@ -1007,30 +1028,37 @@ let appMariadb = {
 			appMariadb['data']['userPrivileges'] = JSON.parse(JSON.stringify(appMariadb['data']['userPrivilegesOrg']));//원본 데이터 저장
 		},
 		saveUserPrivileges:function(){
-			if(!appMariadb['data']['editPrivileges'].id){
-				gCommon.alert('저장 할 데이터가 없습니다.');
-				return;
-			}
 			appMariadb.gridUser.alopexGrid('endRowInlineEdit');
-			let su = appMariadb.getSelectUserSchema();
-			if(cloudUtil.isEmpty(su.user)){
-				gCommon.alert('USER를 입력하세요.');
-				appMariadb.gridUser.alopexGrid('startRowInlineEdit')
-				appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus().trigger('click');;
-				return;
+			let su = appMariadb.getSelectUserSchema();	
+
+			/* 2019-07-15 Mariadb > 관리탭 > 사용자 및 권한관리 수정 (2019-07-16) : 조건문 추가 */
+			if(!appMariadb['data']['editPrivileges'].id){
+				if( cloudUtil.isEmpty(su.password)){
+					gCommon.alert('저장 할 데이터가 없습니다.');
+					return;
+				}
+			}else{
+				if(cloudUtil.isEmpty(su.user)){
+					gCommon.alert('USER를 입력하세요.');
+					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
+					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus().trigger('click');;
+					return;
+				}
+				if(cloudUtil.isEmpty(su.host)){
+					gCommon.alert('HOST를 입력하세요.');
+					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
+					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=3] input').focus().trigger('click');;
+					return;
+				}
+
+				if(su.state == 'I' && cloudUtil.isEmpty(su.password)){
+					gCommon.alert('PASSWORD를 입력하세요.');
+					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
+					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=2] input').focus().trigger('click');;
+					return;
+				}
 			}
-			if(cloudUtil.isEmpty(su.host)){
-				gCommon.alert('HOST를 입력하세요.');
-				appMariadb.gridUser.alopexGrid('startRowInlineEdit')
-				appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=3] input').focus().trigger('click');;
-				return;
-			}
-			if(su.state == 'I' && cloudUtil.isEmpty(su.password)){
-				gCommon.alert('PASSWORD를 입력하세요.');
-				appMariadb.gridUser.alopexGrid('startRowInlineEdit')
-				appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=2] input').focus().trigger('click');;
-				return;
-			}
+			
 			gCommon.confirm('저장 하시 겠습니까?',function(){
 				let param = $.extend({},gParam,{
 					userPrivileges : {
@@ -1039,6 +1067,7 @@ let appMariadb = {
 					},
 					state:su.state
 				});
+				
 				let dt = appMariadb['data']['userPrivileges'][su.id];
 				let l = [];
 				for(let schema in dt){
@@ -1114,6 +1143,7 @@ let appMariadb = {
 			category 데이터,실데이터,추가콤보 리스트 순으로 생성( 파라미터는 실데이터)		
 		*/
 		setGridMyCnf : function(paramList){
+
 			let categorySort ={ mysqld:10, mysql:20, mysqld_safe:30, mysqldump:40,client:50 };
 			let categoryList = [{name:'mysqld'},{name:'mysql'},{name:'mysqld_safe'},{name:'mysqldump'},{name:'client'}];
 			categoryList = categoryList.map(function(ob){
@@ -1189,13 +1219,13 @@ let appMariadb = {
 				}
 				
 				/* innodb_fast_shutdown 항목의 value 값이 없을 경우 defaultValue 로 셋팅한다. (2019-07-15) */
-				if(o.name == "innodb_fast_shutdown"){
+ 				if(o.name == "innodb_fast_shutdown"){
 					if(!mc.value && mc.defaultValue ){
 						mc.value = 	mc.defaultValue ;
 					}else if(!mc.value && o.defaultValue ){
 						mc.value = 	o.defaultValue ;	
 					}
-				}
+				} 
 				
 				/* variableType == 'BOOLEAN' 인 데이터중  ON 인데 화면에 OFF 로 표시되는 현상 수정 적용(2019-07-15) */
 				//variable Type Check
@@ -1209,19 +1239,18 @@ let appMariadb = {
 					variableType = 'BOOLEAN'; //skip_external_locking 일 경우 type을 못찾을수 있다.
 					if(!mc.defaultValue) mc.defaultValue = '0' ;
 				}
+								
 				//variableType == 'BOOLEAN' : value check
-				if(variableType && variableType == 'BOOLEAN'){
-					//defaultValue check
+ 				if(variableType && variableType == 'BOOLEAN'){
+				 	//defaultValue check
 					if(mc.defaultValue && (mc.defaultValue = 'ON' || mc.defaultValue == 'OFF') ){
 						mc.defaultValue = 'ON'?'1':'0';
-					}else if(o.defaultValue && (mc.defaultValue = 'ON' || mc.defaultValue == 'OFF')){
+					}else if(o.defaultValue && (o.defaultValue = 'ON' || o.defaultValue == 'OFF')){
 						mc.defaultValue = 'ON'?'1':'0';
 					}
 					// value check 					
-					if(mc.value  && (mc.value = '1' || mc.value == '0')){
+					if(mc.value  && (mc.value == '1' || mc.value == '0')){
 						mc.value = '1'?'ON':'OFF';
-					}else{
-						mc.value = mc.defaultValue == '1'?'ON':'OFF' ;
 					}
 				}
 				
@@ -1239,8 +1268,11 @@ let appMariadb = {
 						tempCategory =  mc.category
 					}
 				}
+				
 				gridList.push($.extend({},mc,o,{value:mc.value}));
+				
 			}
+			
 			//appMariadb.gridMyCnf.alopexGrid
 			appMariadb.gridMyCnf.alopexGrid('dataSet',gridList).alopexGrid('expandTreeNode');
 			appMariadb.gridMyCnf.alopexGrid('dataSort', [
@@ -1249,6 +1281,7 @@ let appMariadb = {
 			]);
 			/* 삭제처리 표시 유지 하는 로직 추가 - (2019-07-10)   */
 			appMariadb.gridMyCnf.alopexGrid('dataDelete', {deleted: "dataDelete"});
+			
 		},saveGridMyCnf : function(){
 			appMariadb.gridMyCnf.alopexGrid('endRowInlineEdit');
 			let dt = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',function(data) {
@@ -1283,7 +1316,7 @@ let appMariadb = {
 				
 				if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
 					let val = (value||'').toUpperCase();
-					let reg = /^([\d]+)([K|M]{0,1})$/gi.exec(val);
+					let reg = /^([\d]+)([K|M|G]{0,1})$/gi.exec(val);
 					
 					if(reg==null){
 						for(let v in validExcepArr){
