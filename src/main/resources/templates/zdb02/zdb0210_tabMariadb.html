@@ -1309,39 +1309,43 @@ let appMariadb = {
 		},validMyCnf:function(value,data){
 			let re = true;
 			if(!data.editable)return re;
+			// 체크하는 Type의 수를 array로 정리하여 추가함 (201-07-17)
+			let validTypeArr = ["BIGINT UNSIGNED","INT UNSIGNED","INT","BIGINT","DOUBLE"]; 
 
-			if(data.variableType == 'BIGINT UNSIGNED' || data.variableType == 'INT UNSIGNED') {
-				let numericMinValue = data.numericMinValue || '';
-				let numericMaxValue = data.numericMaxValue || '';
-				
-				if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
-					let val = (value||'').toUpperCase();
-					let reg = /^([\d]+)([K|M|G]{0,1})$/gi.exec(val);  //G 단위 추가 (2019-07-17)
+			for(let t in validTypeArr){
+				let typeVal = validTypeArr[t];
+				if(data.variableType == typeVal ){
+					let numericMinValue = data.numericMinValue || '';
+					let numericMaxValue = data.numericMaxValue || '';
 					
-					if(reg==null){
-						for(let v in validExcepArr){
-							let excepVal = validExcepArr[v];
-							if(data.name == excepVal ){
-								return re;
-							}							
+					if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
+						let val = (value||'').toUpperCase();
+						let reg = /^([\d]+)([K|M|G]{0,1})$/gi.exec(val);  //G 단위 추가 (2019-07-17)
+						
+						if(reg==null){
+							for(let v in validExcepArr){
+								let excepVal = validExcepArr[v];
+								if(data.name == excepVal ){
+									return re;
+								}							
+							}
+							return false;
 						}
-						return false;
+						let n = new BigNumber(reg[1]);
+						let unit = 1;
+						if(reg[2] == 'K'){
+							unit = 1024;
+						}else if(reg[2] == 'M'){
+							unit = 1024 * 1024
+						}else if(reg[2] == 'G'){ // giga  단위에 대한 계산식 추가 (2019-07-17)
+							unit = 1024 * 1024 * 1024
+						}
+						let r = n.times(unit);
+						let min = new BigNumber(numericMinValue);
+						let max = new BigNumber(numericMaxValue);
+					    re = (min.isNaN()|| r.gte(min)) && (max.isNaN() || r.lte(max));
 					}
-					let n = new BigNumber(reg[1]);
-					let unit = 1;
-					if(reg[2] == 'K'){
-						unit = 1024;
-					}else if(reg[2] == 'M'){
-						unit = 1024 * 1024
-					}else if(reg[2] == 'G'){ // giga  단위에 대한 계산식 추가 (2019-07-17)
-						unit = 1024 * 1024 * 1024
-					}
-					let r = n.times(unit);
-					let min = new BigNumber(numericMinValue);
-					let max = new BigNumber(numericMaxValue);
-				    re = (min.isNaN()|| r.gte(min)) && (max.isNaN() || r.lte(max));
-
-				}
+				}							
 			}
 			return re;
 		} 
