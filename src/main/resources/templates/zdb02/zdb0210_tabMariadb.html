@@ -1316,7 +1316,7 @@ let appMariadb = {
 				
 				if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
 					let val = (value||'').toUpperCase();
-					let reg = /^([\d]+)([K|M|G]{0,1})$/gi.exec(val);
+					let reg = /^([\d]+)([K|M|G]{0,1})$/gi.exec(val);  //G 단위 추가 (2019-07-17)
 					
 					if(reg==null){
 						for(let v in validExcepArr){
@@ -1333,11 +1333,14 @@ let appMariadb = {
 						unit = 1024;
 					}else if(reg[2] == 'M'){
 						unit = 1024 * 1024
+					}else if(reg[2] == 'G'){ // giga  단위에 대한 계산식 추가 (2019-07-17)
+						unit = 1024 * 1024 * 1024
 					}
 					let r = n.times(unit);
 					let min = new BigNumber(numericMinValue);
 					let max = new BigNumber(numericMaxValue);
 				    re = (min.isNaN()|| r.gte(min)) && (max.isNaN() || r.lte(max));
+
 				}
 			}
 			return re;
