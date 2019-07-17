@@ -1320,8 +1320,8 @@ let appMariadb = {
 					
 					if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
 						let val = (value||'').toUpperCase();
-						let reg = /^([\d]+)([K|M|G]{0,1})$/gi.exec(val);  //G 단위 추가 (2019-07-17)
-						
+						let reg = /^([\d\.?]+)([K|M|G]{0,1})$/gi.exec(val);  //G 단위 추가 ,소수점 단위 처리 추가  (2019-07-17)
+
 						if(reg==null){
 							for(let v in validExcepArr){
 								let excepVal = validExcepArr[v];
