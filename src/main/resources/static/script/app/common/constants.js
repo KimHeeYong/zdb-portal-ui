@@ -75,12 +75,17 @@ const gSliderConstants = {
 };
 
 const cStorageClassConstants = {
-	 'ibmc-block-bronze':'2 IOPS/GB'
-	,'ibmc-block-silver':'4 IOPS/GB'
-	,'ibmc-block-gold':'10 IOPS/GB'
-	,'ibmc-file-bronze':'2 IOPS/GB'
-	,'ibmc-file-silver':'4 IOPS/GB'
-	,'ibmc-file-gold':'10 IOPS/GB'
+	 'ibmc-block-bronze':'2'
+	,'ibmc-block-silver':'4'
+	,'ibmc-block-gold':'10'
+	,'ibmc-file-bronze':'2'
+	,'ibmc-file-silver':'4'
+	,'ibmc-file-gold':'10'
+};
+const cConstantsToblockStorage = {
+	 '2':'ibmc-block-bronze'
+	,'4':'ibmc-block-silver'
+	,'10':'ibmc-block-gold'
 };
 const gMessage = {
 	validPage : '잘못된 접근 입니다.',
@@ -90,7 +95,52 @@ const gMessage = {
 	gridNodata: '데이터가 없습니다.',
 	selectAddColumn : '추가 할 항목을 선택하세요'
 };
-
 const cImg = {
 	checkboxY : '<img src="/styles/images/ico-checkmark.png" style="float:initial;width:20px"></img>'
+}
+const StorageCheckRule = {
+		40 : {
+			min : 100,
+			max : 1000
+		},
+		80 : {
+			min : 100,
+			max : 2000
+		},
+		100 : {
+			min : 100,
+			max : 4000
+		},
+		500 : {
+			min : 100,
+			max : 6000
+		},
+		1000 : {
+			min : 100,
+			max : 10000
+		},
+		2000 : {
+			min : 100,
+			max : 20000
+		},
+		3000 : {
+			min : 200,
+			max : 40000
+		},
+		4000 : {
+			min : 200,
+			max : 48000
+		},
+		8000 : {
+			min : 300,
+			max : 48000
+		},
+		10000 : {
+			min : 500,
+			max : 48000
+		},
+		12001 : {
+			min : 1000,
+			max : 48000
+		}
 }

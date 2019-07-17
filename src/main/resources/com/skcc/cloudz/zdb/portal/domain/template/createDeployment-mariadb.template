@@ -5,6 +5,7 @@
  	"namespace": ${namespace},
  	"clusterEnabled": ${clusterEnabled},
  	"backupEnabled": ${backupEnabled},
+ 	"kindOfStorage": ${kindOfStorage},
  	"podSpec": [
  		{
  		"podType": "master",
@@ -31,11 +32,13 @@
  	"persistenceSpec": [{
  		"podType": "master",
  		"size": ${disk},
- 		"storageClass": ${storageClass}
+ 		"storageClass": ${storageClass},
+ 		"storageIops": ${storageIops}
  	}, {
  		"podType": "slave",
  		"size": ${disk},
- 		"storageClass": ${storageClass}
+ 		"storageClass": ${storageClass},
+ 		"storageIops": ${storageIops}
  	}],
  	"mariaDBConfig": {
  		"mariadbDatabase": ${dbName}
