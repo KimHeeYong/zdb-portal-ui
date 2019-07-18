@@ -1602,27 +1602,21 @@
 					for(var p = 0; p < pvSpec.length; p++) {
 						/* msg가 없는 경우에 대한 조건 처리 추가 (2019-07-11) */
 						var scn = pvSpec[p].spec.storageClassName;
+						var scnArr = scn.split("-");
 						
-						if(scn != null ) {
+						if(scn != null && scnArr[2] != "custom") {
 							var strIops = cStorageClassConstants[scn];
-							var scnArr = scn.split("-");
-							var iopsArr = ""; 
+							var iopsArr = strIops.split(" ");
 							
-							if(strIops != undefined){
-								iopsArr = strIops.split(" ");
-								
-								if(scnArr[1] == "block") {
-									dataIops = iopsArr[0];
-								} else {
-									backupIops = iopsArr[0];
-								}
-							}else{
-								if(scnArr[1] == "block") {
-									dataIops = iopsArr;
-								} else {
-									backupIops = iopsArr;
-								}
+							if(scnArr[1] == "block") {
+								dataIops = iopsArr[0];
+							} else {
+								backupIops = iopsArr[0];
 							}
+						} else {
+							/* TODO */
+							dataIops = "-";
+							backupIops = "-";
 						}
 					}
 				}

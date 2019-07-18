@@ -224,7 +224,14 @@
 										<span></span>
 									</div>
 								</td>
-							</tr>							
+							</tr>
+							<tr>
+								<th>스토리지 종류</th>
+								<td id="kindOfStorage">
+									<input type="radio" name="kindOfStorage" value="Endurance" checked="checked">Endurance
+									<input type="radio" name="kindOfStorage" value="Performance"/>Performance
+								</td>
+							</tr>						
 							<tr>
 								<th class="ht140">할당메모리<span class="asterisk">*</span></th>
 								<td>
@@ -254,15 +261,18 @@
 							</tr>
 							<tr>
 								<th>스토리지 QoS<span class="asterisk">*</span></th>
-								<td>
-									<div class="Divselect" id="storageClass" name="storageClass">
-										<select>
+								<td id="storagetd">
+									<div class="Divselect wd150" id="storageClass" name="storageClass">
+										<select id="storageClassSel" name="storageClassSel">
 											<option value="ibmc-block-bronze">2 IOPS/GB</option>
 											<option value="ibmc-block-silver" selected="selected">4 IOPS/GB</option>
 											<option value="ibmc-block-gold">10 IOPS/GB</option>
 										</select>
 										<span></span>
 									</div>
+									<span data-for="storageIopsSel" class="info-text"></span>
+									<input class="Textinput hide wd150" type="text" id="storageIops" name="storageIops" value="">
+									<span data-for="storageIops" class="info-text hide"> IOPS/GB</span>
 								</td>
 							</tr>
 						</tbody>
@@ -364,6 +374,7 @@ $a.page(function() {
 		}).find('input[name=serviceName]').on('keyup',function(){
 			setDefaultServiceName();
 		});
+		
 		//config값 적용
 		function setDefaultValue(){
 			gCommon.getConfigData().done(function(result){
@@ -403,9 +414,22 @@ $a.page(function() {
 				return;
 			};
 			
+			var storageClassStr;
+			var storageIopsStr;
+			
+			if (param.kindOfStorage == 'Performance') {
+				storageClassStr = 'ibmc-block-custom';
+				storageIopsStr = $('#storageIops').val();
+			} else {
+				storageClassStr = param.storageClass;
+				storageIopsStr = cStorageClassConstants[storageClassStr];
+			}
+			
+			param.storageClass = storageClassStr;
+			param.storageIops = storageIopsStr;
+			
 			var dt = $.extend({},param,{clusterEnabled:($('input[name=clusterEnabled]:checked').val()=='true')
 									   ,memory:sliderConstants.memory.value[param.podSpecIdx],cpu:sliderConstants.cpu.value[param.podSpecIdx]
-									   ,storageClassStr:$('select[name=storageClass] option:checked').text()
 									  });
 			
 			if(gConfigData.free_resource_check == 'true'){
@@ -428,6 +452,10 @@ $a.page(function() {
 		});
 		$('input[name=purpose]').on('change',function(e){
 			setPurpose(this.value);
+		});
+		$('input[name=kindOfStorage]').on('change',function(e){
+			setKindOfStorage(this.value);
+			setStorageIops(this.value);
 		});
 		//백업사용 on off button
 		$('#backupOnOff.onoff-wrap > button').click(function(e){
@@ -456,6 +484,21 @@ $a.page(function() {
 			} else {
 				setClusterEnabled('true');
 			}
+		});
+		
+		$('#storageClassSel').on('change',function(e){
+			var storageClassTemp = $(this).val();
+			setStorageClass(storageClassTemp);
+		}); 
+		
+		$('#diskSizeSel').on('change',function(e){
+			var diskSizeTemp = $(this).val();
+			setStorageIopsRule(diskSizeTemp);
+		});
+		
+		$('#diskSize').on('change',function(e){
+			var diskSizeTemp = $(this).val();
+			setStorageIopsRule(diskSizeTemp);
 		});
 		
 		//슬라이더 값
@@ -518,11 +561,17 @@ $a.page(function() {
 		if(gParam.diskSize){
 			$('#diskSize').val(gParam.diskSize);
 		}
-		/* if(gParam.exposeType){
-			setExposeType(gParam.exposeType);
-		} */
-		//setBackupEnabled(gParam.backupEnabled);
-		//setClusterEnabled(gParam.clusterEnabled);
+		if(gParam.kindOfStorage){
+			setStorageIops(gParam.kindOfStorage);
+			if(gParam.kindOfStorage == 'Performance'){
+				$('#storageIops').val(gParam.storageIops);
+			} /* else {
+				var scValue = cConstantsToblockStorage[gParam.storageIops];
+				var findOption = $('#storageClass').find('option[value='+scValue+']');
+				findOption.
+			} */
+		}
+		
 		setBackupEnabled('false');
 		setExposeType('private');
 		setClusterEnabled('false');
@@ -573,7 +622,101 @@ $a.page(function() {
 				$('input[name=exposeType]').zdbui_setComponent('public');
 				$('#exposeOnOff.onoff-wrap > button').removeClass('btn-off').addClass('btn-on').text('ON');
 			}
-		};		
+		};	
+		function setKindOfStorage(value){
+			$('input[name=kindOfStorage]').zdbui_setComponent(value);
+		}
+		function setStorageClass(value){
+			$('select[name=storageClassSel]').zdbui_setComponent(value);
+		}
+		function setStorageIops(value){
+			if(value=='Performance'){
+				$('#storageClass').hide();
+				$('#storageIops').show().val('');
+				$('span[data-for=storageIops]').show();
+			}else{
+				$('#storageIops').hide().val('');
+				$('span[data-for=storageIops]').hide();
+				$('#storageClass').show();
+				$('form[name=serviceForm]').validator({
+					elements : {
+						'storageIops' : {rule:{required:false}}
+					}
+				});
+			}
+		};	
+		function setStorageIopsRule(diskSizeTemp){
+			var kindOfStorageTemp = $('input[name=kindOfStorage]:checked').val();
+			if(kindOfStorageTemp == 'Performance'){
+				if(diskSizeTemp < 40) {
+					$('form[name=serviceForm]').validator({
+						elements : {
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[40].min,max:StorageCheckRule[40].max}}
+						}
+					});
+				} else if(diskSizeTemp < 80) {
+					$('form[name=serviceForm]').validator({
+						elements : {
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[80].min,max:StorageCheckRule[80].max}}
+						}
+					});
+				} else if(diskSizeTemp < 100) {
+					$('form[name=serviceForm]').validator({
+						elements : {
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[100].min,max:StorageCheckRule[100].max}}
+						}
+					});
+				} else if(diskSizeTemp < 500) {
+					$('form[name=serviceForm]').validator({
+						elements : {
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[500].min,max:StorageCheckRule[500].max}}
+						}
+					});
+				} else if(diskSizeTemp < 1000) {
+					$('form[name=serviceForm]').validator({
+						elements : {
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[1000].min,max:StorageCheckRule[1000].max}}
+						}
+					});
+				} else if(diskSizeTemp < 2000) {
+					$('form[name=serviceForm]').validator({
+						elements : {
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[2000].min,max:StorageCheckRule[2000].max}}
+						}
+					});
+				} else if(diskSizeTemp < 3000) {
+					$('form[name=serviceForm]').validator({
+						elements : {
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[3000].min,max:StorageCheckRule[3000].max}}
+						}
+					});
+				} else if(diskSizeTemp < 4000) {
+					$('form[name=serviceForm]').validator({
+						elements : {
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[4000].min,max:StorageCheckRule[4000].max}}
+						}
+					});
+				} else if(diskSizeTemp < 8000) {
+					$('form[name=serviceForm]').validator({
+						elements : {
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[8000].min,max:StorageCheckRule[8000].max}}
+						}
+					});
+				} else if(diskSizeTemp < 10000) {
+					$('form[name=serviceForm]').validator({
+						elements : {
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[10000].min,max:StorageCheckRule[10000].max}}
+						}
+					});
+				} else if(diskSizeTemp < 12001) {
+					$('form[name=serviceForm]').validator({
+						elements : {
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[12001].min,max:StorageCheckRule[12001].max}}
+						}
+					});
+				}
+			}
+		};
 
 	}
 });
