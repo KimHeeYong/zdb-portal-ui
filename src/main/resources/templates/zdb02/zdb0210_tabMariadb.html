@@ -645,11 +645,9 @@ let appMariadb = {
 			return re;			
 		}
 		/* myCnf 그리드에서 variableType 이 SET 일경우 처리를 위한 function : popup 처리(예정) */
-		function mycnfTypeSetPopup(defaultValue,value){
-/* 			console.log("((((((((((((((((((((((((((((((((((((((((");
-			console.log(defaultValue);
-			console.log(value);
-			console.log("))))))))))))))))))))))))))))))))))))))))"); */
+		function mycnfTypeSetPopup(enumValueList,value,name){
+
+
 		}	
 		
 		//mycnf grid 수정 상태일때 보여주는 컬럼 설정
@@ -705,14 +703,26 @@ let appMariadb = {
 							}else{
 								re.setSelected(data.value);
 							} 
-						}else if(d.variableType == 'SET'){ 
-							//variableType [SET] 추가 (2019-07-16) : 다건의 내용을 선택할 수 있어야 한다. (예정)
-							//팝업을 이용하여 처리하면 될듯 하다. 
-							
-							re = '<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%">';
-/* 							re = $('<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%" readonly="readonly" >').on('click',function(){
-								mycnfTypeSetPopup(enumValueList,data.value);
-							}); */
+						}else if(d.variableType == 'SET'||d.variableType == 'FLAGSET'){ 
+							//variableType [SET] 추가 (2019-07-16) : 다건의 내용을 선택할 수 있어야 한다.
+							//팝업을 이용하여 처리 (2019-07-18) 
+ 							re = $('<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%" readonly="readonly" >').on('click',function(){
+								let t = $(this);
+ 								
+ 								$a.popup({
+ 							        url: "/zdb02/zdb0200p09",
+ 							        data:$.extend({},gParam,{enumValueList:enumValueList ,value:t.val(),name:d.name}),
+ 							        iframe: false,
+ 							        width: 610,
+ 							        height: 300,
+ 							        title : '',
+ 							        callback : function(res){
+ 							        	if(res.result == 'Y'){
+ 							        		t.val(res.value);
+ 							        	}
+ 							        }
+ 							    });
+							}); 
 						}else{
 							re = '<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%">';
 						}
