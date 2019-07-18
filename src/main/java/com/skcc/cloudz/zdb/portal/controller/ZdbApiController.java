@@ -27,6 +27,7 @@ import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.skcc.cloudz.zdb.portal.service.ZdbApiService;
 import com.zdb.core.domain.AlertingRuleEntity;
 import com.zdb.core.domain.ConnectionInfo;
+import com.zdb.core.domain.CredentialConfirm;
 import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
@@ -900,25 +901,7 @@ public class ZdbApiController {
 		mav.addObject(IResult.USER_PRIVILEGES ,result);
 		return mav;
 	}
-	@RequestMapping(value = "saveUserPrivileges", method = RequestMethod.PUT)	
-	public ModelAndView saveUserPrivileges(HttpServletRequest request) {
-		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
-		Map<String,String> param = RequestUtil.getMapFromRequest(request);
-		
-		ZdbRestDTO result = null;
-		String state = param.get("state");
-		switch(state) {
-			case "I":
-				result = zdbApiService.createUserPrivileges(param);break;
-			case "U":	
-				result = zdbApiService.updateUserPrivileges(param);break;
-			case "D":
-				result = zdbApiService.deleteUserPrivileges(param);break;
-		}
-		mav.addObject(CommonConstants.RESULT,result);
-		
-		return mav;
-	}
+
 	
 	@RequestMapping(value="getFailoverList", method = RequestMethod.GET)
 	public ModelAndView getFailoverList(HttpServletRequest request) {
@@ -939,6 +922,37 @@ public class ZdbApiController {
 	//	List<Tag> tags = zdbApiService.getTags(param);
 		mav.addObject(IResult.SERVICEOVERVIEWS,failoverList);
 	//	mav.addObject(IResult.TAGS,tags);
+		return mav;
+	}
+	
+	@RequestMapping(value = "saveUserPrivileges", method = RequestMethod.PUT)	
+	public ModelAndView saveUserPrivileges(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = null;
+		String state = param.get("state");
+		switch(state) {
+			case "I":
+				result = zdbApiService.createUserPrivileges(param);break;
+			case "U":	
+				result = zdbApiService.updateUserPrivileges(param);break;
+			case "D":
+				result = zdbApiService.deleteUserPrivileges(param);break;
+		}
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
+	
+	@RequestMapping(value = "getCredentialConfirm", method = RequestMethod.GET)
+	public ModelAndView getCredentialConfirm(HttpServletRequest request) {
+		
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.getCredentialConfirm(param);
+		mav.addObject(CommonConstants.RESULT,result);
 		return mav;
 	}
 }
