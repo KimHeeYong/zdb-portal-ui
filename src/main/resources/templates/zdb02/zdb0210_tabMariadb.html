@@ -657,6 +657,13 @@ let appMariadb = {
 			let data = arguments[1];
 			let column = arguments[3];
 			let isAddVariableColumn = data.addVariableColumn == true;
+			
+			// port 일경우에 값이 변경 할 수 없도록 수정 & 그로인해 값이 사라지는 현상 수정 적용 (2019-07-19)
+			if(data.name=='port' && column.key == 'value'  ){
+				re = '<input type="text" class="Textinput" value="'+(value||'')+'" style="top:-5px;height:32px; width:80%" readonly="readonly">';
+				return re;
+			}
+			
 			switch(column.key){
 				case 'name':
 					if(data.categoryColumn==true)re = '<span style="font-size:1.3em;color:black">['+value+']</span>';
@@ -957,7 +964,9 @@ let appMariadb = {
 					url:'/zdbapi/getUserPrivileges',
 					data:gParam,
 					success:function(res){
-					
+						console.log("getUserPrivileges::::::::::::::::::::::::::::::::::::::::::::::");
+
+						console.log(res);
 						let list = res.userPrivileges||[];
 						appMariadb['data']['userPrivileges'] = {};
 						appMariadb['data']['editPrivileges'] = {};//변경중인 데이터 저장
@@ -1038,6 +1047,9 @@ let appMariadb = {
 			appMariadb['data']['userPrivileges'] = JSON.parse(JSON.stringify(appMariadb['data']['userPrivilegesOrg']));//원본 데이터 저장
 		},
 		saveUserPrivileges:function(){
+			
+		
+		console.log("saveUserPrivileges:function:::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 			appMariadb.gridUser.alopexGrid('endRowInlineEdit');
 			let su = appMariadb.getSelectUserSchema();	
 
@@ -1079,6 +1091,7 @@ let appMariadb = {
 				});
 				
 				let dt = appMariadb['data']['userPrivileges'][su.id];
+				console.log(dt);
 				let l = [];
 				for(let schema in dt){
 					if(dt[schema].isUpdate){
@@ -1087,6 +1100,7 @@ let appMariadb = {
 						l.push(o);
 					}
 				}
+				console.log(l);
 				param.userPrivileges.privileges = l;
 				param.userPrivileges = JSON.stringify(param.userPrivileges);
 				
@@ -1330,7 +1344,6 @@ let appMariadb = {
 					
 					if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
 						let val = (value||'').toUpperCase();
-						console.log(typeVal);
 						
 						let reg = /^([\-\d]+)([K|M|G]{0,1})$/gi.exec(val); //INT UNSIGNED , INT형일 경우 ,소수점 단위 처리 추가  (2019-07-17)
 						if(typeVal == 'DOUBLE'){
