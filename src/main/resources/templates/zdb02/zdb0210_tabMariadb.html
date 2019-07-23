@@ -645,11 +645,9 @@ let appMariadb = {
 			return re;			
 		}
 		/* myCnf 그리드에서 variableType 이 SET 일경우 처리를 위한 function : popup 처리(예정) */
-		function mycnfTypeSetPopup(defaultValue,value){
-/* 			console.log("((((((((((((((((((((((((((((((((((((((((");
-			console.log(defaultValue);
-			console.log(value);
-			console.log("))))))))))))))))))))))))))))))))))))))))"); */
+		function mycnfTypeSetPopup(enumValueList,value,name){
+
+
 		}	
 		
 		//mycnf grid 수정 상태일때 보여주는 컬럼 설정
@@ -659,6 +657,13 @@ let appMariadb = {
 			let data = arguments[1];
 			let column = arguments[3];
 			let isAddVariableColumn = data.addVariableColumn == true;
+			
+			// port 일경우에 값이 변경 할 수 없도록 수정 & 그로인해 값이 사라지는 현상 수정 적용 (2019-07-19)
+			if(data.name=='port' && column.key == 'value'  ){
+				re = '<input type="text" class="Textinput" value="'+(value||'')+'" style="top:-5px;height:32px; width:80%" readonly="readonly">';
+				return re;
+			}
+			
 			switch(column.key){
 				case 'name':
 					if(data.categoryColumn==true)re = '<span style="font-size:1.3em;color:black">['+value+']</span>';
@@ -705,14 +710,26 @@ let appMariadb = {
 							}else{
 								re.setSelected(data.value);
 							} 
-						}else if(d.variableType == 'SET'){ 
-							//variableType [SET] 추가 (2019-07-16) : 다건의 내용을 선택할 수 있어야 한다. (예정)
-							//팝업을 이용하여 처리하면 될듯 하다. 
-							
-							re = '<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%">';
-/* 							re = $('<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%" readonly="readonly" >').on('click',function(){
-								mycnfTypeSetPopup(enumValueList,data.value);
-							}); */
+						}else if(d.variableType == 'SET'||d.variableType == 'FLAGSET'){ 
+							//variableType [SET] 추가 (2019-07-16) : 다건의 내용을 선택할 수 있어야 한다.
+							//팝업을 이용하여 처리 (2019-07-18) 
+ 							re = $('<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%" readonly="readonly" >').on('click',function(){
+								let t = $(this);
+ 								
+ 								$a.popup({
+ 							        url: "/zdb02/zdb0200p09",
+ 							        data:$.extend({},gParam,{enumValueList:enumValueList ,value:t.val(),name:d.name}),
+ 							        iframe: false,
+ 							        width: 610,
+ 							        height: 300,
+ 							        title : '',
+ 							        callback : function(res){
+ 							        	if(res.result == 'Y'){
+ 							        		t.val(res.value);
+ 							        	}
+ 							        }
+ 							    });
+							}); 
 						}else{
 							re = '<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%">';
 						}
@@ -947,7 +964,9 @@ let appMariadb = {
 					url:'/zdbapi/getUserPrivileges',
 					data:gParam,
 					success:function(res){
-					
+						console.log("getUserPrivileges::::::::::::::::::::::::::::::::::::::::::::::");
+
+						console.log(res);
 						let list = res.userPrivileges||[];
 						appMariadb['data']['userPrivileges'] = {};
 						appMariadb['data']['editPrivileges'] = {};//변경중인 데이터 저장
@@ -1028,6 +1047,9 @@ let appMariadb = {
 			appMariadb['data']['userPrivileges'] = JSON.parse(JSON.stringify(appMariadb['data']['userPrivilegesOrg']));//원본 데이터 저장
 		},
 		saveUserPrivileges:function(){
+			
+		
+		console.log("saveUserPrivileges:function:::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 			appMariadb.gridUser.alopexGrid('endRowInlineEdit');
 			let su = appMariadb.getSelectUserSchema();	
 
@@ -1069,6 +1091,7 @@ let appMariadb = {
 				});
 				
 				let dt = appMariadb['data']['userPrivileges'][su.id];
+				console.log(dt);
 				let l = [];
 				for(let schema in dt){
 					if(dt[schema].isUpdate){
@@ -1077,6 +1100,7 @@ let appMariadb = {
 						l.push(o);
 					}
 				}
+				console.log(l);
 				param.userPrivileges.privileges = l;
 				param.userPrivileges = JSON.stringify(param.userPrivileges);
 				
@@ -1309,39 +1333,55 @@ let appMariadb = {
 		},validMyCnf:function(value,data){
 			let re = true;
 			if(!data.editable)return re;
+			// 체크하는 Type의 수를 array로 정리하여 추가함 (201-07-17)
+			let validTypeArr = ["BIGINT UNSIGNED","INT UNSIGNED","INT","BIGINT","DOUBLE"]; 
 
-			if(data.variableType == 'BIGINT UNSIGNED' || data.variableType == 'INT UNSIGNED') {
-				let numericMinValue = data.numericMinValue || '';
-				let numericMaxValue = data.numericMaxValue || '';
-				
-				if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
-					let val = (value||'').toUpperCase();
-					let reg = /^([\d]+)([K|M|G]{0,1})$/gi.exec(val);  //G 단위 추가 (2019-07-17)
+			for(let t in validTypeArr){
+				let typeVal = validTypeArr[t];
+				if(data.variableType == typeVal ){
+					let numericMinValue = data.numericMinValue || '';
+					let numericMaxValue = data.numericMaxValue || '';
 					
-					if(reg==null){
-						for(let v in validExcepArr){
-							let excepVal = validExcepArr[v];
-							if(data.name == excepVal ){
-								return re;
-							}							
+					if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
+						let val = (value||'').toUpperCase();
+						
+						let reg = /^([\-\d]+)([K|M|G]{0,1})$/gi.exec(val); //INT UNSIGNED , INT형일 경우 ,소수점 단위 처리 추가  (2019-07-17)
+						if(typeVal == 'DOUBLE'){
+							reg = /^([\d\.?]+)([K|M|G]{0,1})$/gi.exec(val);  //DOUBLE 형일 경우 ,소수점 단위 처리 추가  (2019-07-17)
 						}
-						return false;
-					}
-					let n = new BigNumber(reg[1]);
-					let unit = 1;
-					if(reg[2] == 'K'){
-						unit = 1024;
-					}else if(reg[2] == 'M'){
-						unit = 1024 * 1024
-					}else if(reg[2] == 'G'){ // giga  단위에 대한 계산식 추가 (2019-07-17)
-						unit = 1024 * 1024 * 1024
-					}
-					let r = n.times(unit);
-					let min = new BigNumber(numericMinValue);
-					let max = new BigNumber(numericMaxValue);
-				    re = (min.isNaN()|| r.gte(min)) && (max.isNaN() || r.lte(max));
+						
+						/*
+						//BIGINT type 에서도 음수 사용이 되어야 하기 때문에 기본 정규식을 음수 포함으로 변경 
+						else if(typeVal == 'INT UNSIGNED' || typeVal =="INT"){
+							reg = /^([\d]+)([K|M|G]{0,1})$/gi.exec(val);  //G 단위 추가 (2019-07-17) 
+								
+						} */
 
-				}
+						
+						if(reg==null){
+							for(let v in validExcepArr){
+								let excepVal = validExcepArr[v];
+								if(data.name == excepVal ){
+									return re;
+								}							
+							}
+							return false;
+						}
+						let n = new BigNumber(reg[1]);
+						let unit = 1;
+						if(reg[2] == 'K'){
+							unit = 1024;
+						}else if(reg[2] == 'M'){
+							unit = 1024 * 1024
+						}else if(reg[2] == 'G'){ // giga  단위에 대한 계산식 추가 (2019-07-17)
+							unit = 1024 * 1024 * 1024
+						}
+						let r = n.times(unit);
+						let min = new BigNumber(numericMinValue);
+						let max = new BigNumber(numericMaxValue);
+					    re = (min.isNaN()|| r.gte(min)) && (max.isNaN() || r.lte(max));
+					}
+				}							
 			}
 			return re;
 		} 
