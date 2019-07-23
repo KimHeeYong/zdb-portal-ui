@@ -1,0 +1,77 @@
+<div class="popup-wrap">
+	<div class="popup-mcontents">
+		<form name="enumValueForm">
+		<div class="hide" data-show-service-type="mariadb"></div>
+		<div style="float:left; height:155px; width:600px;overflow-y: auto;overflow-x: hidden; padding-top: 1px !important;" id="enumType" name="enumType" ></div>
+		</form> 	
+ 	</div>
+	<!--button-->
+	<div class="popup-btn__wrap" style="width:100%">
+		<button class="Button btn bg-gray ok">확인</button>
+		<button class="Button btn bg-gray no">취소</button>
+	</div>
+	<!--//button-->
+</div>
+<script type="text/javascript">
+let enumValueForm = $('form[name=enumValueForm]');
+
+$a.page(function() {
+	this.init = function(id,param) {
+	 	//mariadb 에서만 사용됨 
+		$('[data-show-service-type*='+gParam.serviceType+']').show(); 
+	 	
+	 	console.log("zdb0200p09:::START");
+	 	console.log(param.enumValueList);	 	
+	 	console.log(param.value);
+	 	console.log(param.name);	 	
+	 	console.log("zdb0200p09:::END");
+	 	
+	 	//결과값 변수 선언 
+	 	var reValue = ''; 
+	 	
+	 	// enumValueList 정보 check box 로 생성 로직 
+	 	if(param.enumValueList){
+	 		var arrEnumValue = param.enumValueList.split(',');
+	 		for(var e in arrEnumValue){
+	 			var enumElement  = arrEnumValue[e];
+	 			var strElement = enumElement.trim();
+	 			var chkHtml = '<div style="width:200px;float:left;overflow:hidden;padding-bottom:10px;">';	 			
+	 			chkHtml +=	'<label style="display:-webkit-box;float:left;line-height:1em;font-size: 1.07rem;" for="'+strElement+'">' ;
+	 			chkHtml += '<input class="Checkbox" style="display:-webkit-box;float:left;line-height:1em;" type="checkbox" id="'+strElement+'"/>'+strElement
+	 			chkHtml += '</label>';
+	 			chkHtml += '</div>';
+	 			$('#enumType').append(chkHtml);
+	 		}
+	 	}
+	 	//전달된 value 값으로 해당 value 값을 check 처리 하는 로직
+	 	if(param.value){
+	 		var arrValue = param.value.split(',');
+	 		console.log(arrValue.length);
+	 		for(var v in arrValue){
+	 			var chkValue  = arrValue[v];
+	 			var strValue = chkValue.trim();
+	 			enumValueForm.find("input:checkbox[id='"+strValue+"']").prop("checked", true);
+	 		}
+	 	}
+		
+		//확인버튼 클릭이벤트
+		$('button.ok').click(function(){
+			var idx = 0 ;
+			enumValueForm.find('input:checkbox').each(function(index,item){
+				if(item.checked){
+					if(idx > 0 )  reValue += ',';
+					reValue += item.id;
+					idx++;
+				}
+			});			
+			
+			$a.close({result:'Y',value:reValue});
+		});
+		//취소버튼 클릭이벤트 
+		$('button.no').click(function(){
+			$a.close('N');
+		});	
+	}
+});
+	
+</script>

@@ -329,6 +329,28 @@ var gCommon = $a.page(function(){
 		}
 		return result;
 	};
+	this.findObjectByKeyObUnder = function(listOb,keyOb){		
+		var result = null;
+		if(listOb){
+			for(var i = 0 ; i < listOb.length;i++){
+				var ob = listOb[i];
+				var isEqual = true;
+				for(var key in keyOb){
+					var obName = String(ob[key]).replaceAll('-','_');
+					var keyName = String(keyOb[key]).replaceAll('-','_');					
+					if(obName != keyName){
+						isEqual = false;
+						break;
+					};
+				};
+				if(isEqual){
+					result = ob;
+					break;
+				};
+			};
+		}
+		return result;
+	};		
 	let isConfirmPopExists = false;
 	this.confirm = function(message,trueCallback,opt){
 		if(isConfirmPopExists)return;
@@ -376,6 +398,26 @@ var gCommon = $a.page(function(){
 		}
 	    $a.popup(opt);		
 	}
+	this.credentialApiConfirm = function(option){
+		let defOpt = {
+		        url: "/zdbcom/credentialConfirm",
+		        data:{namespace:option.data.namespace ,serviceType:option.data.serviceType ,serviceName:option.data.serviceName, msg:'설정을 변경하시려면'},
+		        iframe: false,
+		        width: 500,
+		        height: 300,
+		        movable:true,
+		        title : ''
+		    };		
+		let opt = $.extend({},defOpt,option);
+		if(opt.callback){
+			opt.callback=function(res){
+				if(res == 'Y'){
+					option.callback(res);
+				}
+			}
+		}
+	    $a.popup(opt);
+	}	
 	let isAlertPopExists = false;
 	this.alert = function(message,fnCallback,option){
 		if(isAlertPopExists)return;
@@ -399,6 +441,29 @@ var gCommon = $a.page(function(){
 		isAlertPopExists = true;
 		$a.popup(opt);
 	};
+	
+	this.backupAlert = function(message,fnCallback,option){
+		if(isAlertPopExists)return;
+		let defOpt = {
+		        url: "/zdbcom/backupAlert",
+		        data:message,
+		        iframe: false,	        
+		        width: 500,
+		        height: 230,
+		        title : '',
+		        callback: function(){
+		        	isAlertPopExists = false;
+		        	if(fnCallback){
+		        		fnCallback();
+		        	}
+		        }
+		    };
+		let opt = $.extend({},defOpt,option);
+		gPopData = {};
+		gPopData.message = message;
+		isAlertPopExists = true;
+		$a.popup(opt);
+	};	
 });
 
 $.fn.extend({ 

@@ -4,17 +4,17 @@
 			<div class="lay-item__box mt30">
 				<div style="width:180px;" class="dtc" id="divMariaMenu">
 					<ul class="dropmenu-list bbn">
-						<li class="selected" data-menu="databaseStatus">서버상태</li>
-						<li data-menu="connection">클라이언트 커넥션</li>
+<!-- 						<li data-menu="databaseStatus">서버상태</li> -->	  
+					    <li class="selected"  data-menu="connection">클라이언트 커넥션</li>
 						<li data-menu="userRole">사용자 및 권한관리</li>
-						<li data-menu="statusVariables">Status Variables</li>
-						<li data-menu="systemVariables">System Variables</li>
-						<li data-menu="myCnf">my.cnf</li>
+						<li data-menu="statusVariables">상태 변수</li>
+						<li data-menu="systemVariables">시스템 변수</li>
+						<li data-menu="myCnf">환경설정</li>
 					</ul>
 				</div>
 				<div id="divMariaContent">
 					<div style="padding-left:10px;padding-right:10px;">
-						<div data-menu="databaseStatus">
+<!-- 						<div data-menu="databaseStatus" class="hide">
 							<h3 class="form-title2">Status Variables</h3>
 							<table class="Table Form-type">
 								<colgroup>
@@ -81,54 +81,54 @@
 									<td data="slowQueryLog"></td>
 								</tr>
 							</table>
-						</div>
-						<div data-menu="connection" class="hide">
-							<h3 class="form-title2">Client Connections</h3>
-							<table class="Table Form-type">
+						</div> -->
+						<div data-menu="connection" >
+							<h3 class="form-title2">클라이언트 커넥션</h3>
+							<table class="Table Form-type"   table-layout="auto;"> 
 								<colgroup>
-									<col width="200px"></col>
+									<col width="300px"></col>
 									<col width="80px"></col>
 									<col width="300px"></col>
 									<col width="80px"></col>
-									<col width="150px"></col>
+									<col width="300px"></col>
 									<col width="80px"></col>
 									<col width="*">
 								</colgroup>							
 								<tr>
 									<th>Threads Connected </th>
 									<td data="Threads_connected"></td>
-									<th>Threads_running </th>
+									<th>Threads running </th>
 									<td data="Threads_running"></td>
-									<th>Threads_created </th>
+									<th>Threads created </th>
 									<td data="Threads_created"></td>
 								</tr>
 								<tr>
-									<th>Threads_cached</th>
+									<th>Threads cached </th>
 									<td data="Threads_cached"></td>
-									<th>Connection_errors_max_connections </th>
+									<th>Connection errors </th>
 									<td data="Connection_errors_max_connections"></td>
 									<th>Connections </th>
 									<td data="Connections"></td>
 								</tr>
 								<tr>
-									<th>max_connections </th>
+									<th>Max connections </th>
 									<td data="max_connections"></td>
-									<th>Aborted_clients </th>
+									<th>Aborted clients </th>
 									<td data="Aborted_clients"></td>
-									<th>Aborted_connects</th>
+									<th>Aborted connects </th>
 									<td data="Aborted_connects"></td>
 								</tr>
 							</table>
 							<div id="gridConnection" class="mt30"></div>
 						</div>
 						<div data-menu="userRole" class="hide"  style=" min-width: 950px; ">
-							<h3 class="form-title2">Users and Privileges</h3>
+							<h3 class="form-title2">사용자 및 권한 관리</h3>
 							<div class="mt20">
 							<div class="fl" style="width:330px;">
 								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
 									<button class="Button btn sm" id="btnAddUser">추가</button>
 									<button class="Button btn sm" id="btnDeleteUser">삭제</button>
-									<button class="Button btn sm" id="btnDeletePrivileges">Revoke All Privileges</button>
+									<button class="Button btn sm" id="btnDeletePrivileges">권한 회수</button>
 								</div>
 								<div id="gridUser" class="mt30"></div>
 							</div>
@@ -179,21 +179,21 @@
 							</div>
 						</div>
 						<div data-menu="statusVariables" class="hide">
-							<h3 class="form-title2">Status Variables</h3>
+							<h3 class="form-title2">상태 변수</h3>
 							<div class="search-wrap tr fi mt20">
 								<input id="txtStatusVariablesFilter" name="txtStatusVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
 							</div>
 							<div id="gridStatusVariables"></div>
 						</div>
 						<div data-menu="systemVariables" class="hide">
-							<h3 class="form-title2">System Variables</h3>						
+							<h3 class="form-title2">시스템 변수</h3>						
 							<div class="search-wrap tr fi mt20">
 								<input id="txtSystemVariablesFilter" name="txtSystemVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
 							</div>
 							<div id="gridSystemVariables"></div>
 						</div>
 						<div data-menu="myCnf" class="hide">
-							<h3 class="form-title2">My.cnf</h3>
+							<h3 class="form-title2">환경설정</h3>
 							<div class="btn-wrap">
 								<div class="btn-right">
 									<button class="Button btn bg-red" id="btnSaveMyCnf" style="margin-bottom: 3px;">저장</button>
@@ -213,6 +213,9 @@ gService = {
 	podName :"zdb-test-mat-mariadb-0"
 }
 */
+
+let validExcepArr = ["innodb_fast_shutdown","no-auto-rehash","quick"]; 
+
 let appMariadb = {
 	selectedMenu:null,	
 	data : {},	
@@ -226,14 +229,14 @@ let appMariadb = {
 			ob.parent().find('li').removeClass('selected');
 			ob.addClass('selected');
 			let menuName = $(ob).data('menu');
-			if(!gService.podName && menuName !='myCnf'){
+			if(gService.status == 'red' && menuName !='myCnf'){
 				gCommon.alert('서비스가 작동중이지 않을땐 myCnf설정만 가능합니다.');
 				return;
 			}
 			appMariadb.initMenu(menuName);
 		})
 		appMariadb.getDatabaseVariables();
-		if(gService.podName){
+		if(gService.status != 'red'){
 			appMariadb.selectedMenu = appMariadb.mariaContent.find('[data-menu]:eq(0)').data('menu'); 
 		}else{
 			appMariadb.selectedMenu = 'myCnf';
@@ -337,8 +340,9 @@ let appMariadb = {
 				},editedValue: function(cell, data, render, mapping, grid) {
 					return $(cell).find('input').val();
 				}},
-				{ title:'Password', key : 'password' , width: '100px', align: 'left' ,editable:{type:'text'}
+				{ title:'Password', key :'password' , width: '100px', align: 'left' ,editable:{type:'text'}
 					,editable: function(value, data) {
+
 						return '<div><input type="password" class="alopexgrid-default-renderer" value="'+ (value||'') +'" maxlength="15"/></div>'; 
 					},editedValue: function(cell, data, render, mapping, grid) {
 						return $(cell).find('input').val();
@@ -352,23 +356,28 @@ let appMariadb = {
 			], message: { nodata: gMessage.gridNodata }
 		}).on('dataSelect',function(e){
 			let evObj = AlopexGrid.parseEvent(e);
-			let eId = appMariadb['data']['editPrivileges'].id;
-			let dt = gridUser.alopexGrid('dataGet',{_index:{row:0}})[0];
-			if(eId){
-				if(eId != evObj.datalist[0]._index.id){  //변경중인 데이터가 있을 경우 확인창
-					 let opt = {
-						falseCallback:function(){
-							gridUser.alopexGrid('rowSelect',{_index : {id:eId}},true);
-							appMariadb['data']['editPrivileges'].id = eId;
-						}	 
-					 };
-					 gCommon.confirm('변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?',function(){
-						 appMariadb.resetEditPrivileges();
-						 if(dt._state.added==true){
-						 	appMariadb.gridUser.alopexGrid('dataDelete',dt);
-						 }
-					 },opt);
-				}				
+			let eObj = appMariadb['data']['editPrivileges']  ;
+			
+			//변경된 데이터가 없을경우 appMariadb['data']['editPrivileges'] 값이 없어서 스크립트 오류 나는 현상 수정(201-07-16) :조건식 추가 
+			if(eObj.id != undefined){
+				let eId = appMariadb['data']['editPrivileges'].id; 
+				let dt = gridUser.alopexGrid('dataGet',{_index:{row:0}})[0];
+				if(eId){
+					if(eId != evObj.datalist[0]._index.id){  //변경중인 데이터가 있을 경우 확인창
+						let opt = {
+							falseCallback:function(){
+								gridUser.alopexGrid('rowSelect',{_index : {id:eId}},true);
+								appMariadb['data']['editPrivileges'].id = eId;
+							}	 
+						};
+						gCommon.confirm('변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?',function(){
+							appMariadb.resetEditPrivileges();
+							if(dt._state.added==true){
+								appMariadb.gridUser.alopexGrid('dataDelete',dt);
+							}
+						},opt);
+					}				
+				}
 			}
 		}).on('dataSelectEnd',function(e){
 			appMariadb.setUserPrivilegesUi();
@@ -467,8 +476,8 @@ let appMariadb = {
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
-				{ key : 'name', title : 'name', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key : 'value', title : 'Value', width : '500px', align : 'left',excludeFitWidth:true}	,
+				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key : 'value', title : '값', width : '500px', align : 'left',excludeFitWidth:true}	,
 				{ key:''}
 			]
 		});			
@@ -481,8 +490,8 @@ let appMariadb = {
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
-				{ key : 'name', title : 'name', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key : 'value', title : 'Value', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key : 'value', title : '값', width : '500px', align : 'left',excludeFitWidth:true },
 				{ key:'',title:''}
 			]
 		});				
@@ -527,8 +536,8 @@ let appMariadb = {
 				{ key : 'status' , title : '', width:'50px',excludeFitWidth:true,hidden:true},
 				{ key : 'proc', title : '', width : '70px', align : 'left',render: mycnfRender,excludeFitWidth:true },
 				{ key : 'category', title : 'category', width : '200px', align : 'left',hidden:true,excludeFitWidth:true },
-				{ key : 'name', title : 'Config Name', width : '300px', align : 'left', treeColumn : false ,render:mycnfRender ,editable:mycnfEditable,excludeFitWidth:true},
-				{ key : 'value', title : 'Value', width : '300px', align : 'left',render:mycnfRender,editable:mycnfEditable,editedValue: function(cell, data, render, mapping, grid) {
+				{ key : 'name', title : '변수명', width : '300px', align : 'left', treeColumn : false ,render:mycnfRender ,editable:mycnfEditable,excludeFitWidth:true},
+				{ key : 'value', title : '값', width : '300px', align : 'left',render:mycnfRender,editable:mycnfEditable,editedValue: function(cell, data, render, mapping, grid) {
 					let re = $(cell).find('select,input').val();
 					return re;
 				},valid : function(value, data) {
@@ -539,10 +548,10 @@ let appMariadb = {
 					}					
 					data.valid = re;
 					return re;
-				},excludeFitWidth:true},					
-				{ key : 'defaultValue', title : 'Default Value', width : '200px', align : 'left' },
-				{ key : '', title : 'Value Range', width : '250px', align : 'left',render:renderValue,tooltip:renderValue},
-				{ key : 'variableComment', title : 'Description', width : '300px', align : 'left' },
+				},excludeFitWidth:true},
+				{ key : '', title : '범위', width : '250px', align : 'left',render:renderValue,tooltip:renderValue},				
+				//{ key : 'defaultValue', title : '기본값', width : '200px', align : 'left' },
+				//{ key : 'variableComment', title : '설명', width : '300px', align : 'left' },
 				{ key : 'sort',hidden:true}
 			]
 		}).on('cellEditInvalid ', function(e){
@@ -578,25 +587,18 @@ let appMariadb = {
 			let grid = arguments[4];
 			let arg = arguments;
 			let isAddVariableColumn = data.addVariableColumn == true;
+			
 			switch(column.key){
 				case 'name':
 					if(data.categoryColumn==true){
-						re = '<span style="font-size:1.5em;color:midnightblue">['+value+']</span>';
+						re = '<span style="font-size:1.3em;color:black">['+value+']</span>';
 					} else if(isAddVariableColumn){
 						re = getAddVariableColumn(data);
 					} else re = data.alias;
+					
 					break;
 				case 'value':
 					re = value;	
-					if(data.category && data.name){
-						let dbv = appMariadb['data']['databaseVariables'];
-						let o = dbv[data.category][data.name];
-						if(data.variableType == 'BOOLEAN'){
-							re =  data.value == '1' ? 'ON' : 'OFF';
-						}else{
-							re = data.value;
-						}
-					}
 					break;
 				case 'proc':
 					if(isAddVariableColumn){
@@ -622,7 +624,9 @@ let appMariadb = {
 							let evt = AlopexGrid.parseEvent(e);
 							let dt = evt.data;
 							if(dt.serverData==true){
-								let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
+								let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete';
+								/* 삭제처리 표시 유지 하는 로직 추가 -(2019-07-10)  */
+ 								dt.deleted = d ;
 								appMariadb.gridMyCnf.alopexGrid(d,evt.data);
 							}else{
 								let gridList = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',{dataColumn:true}));
@@ -640,6 +644,12 @@ let appMariadb = {
 			}
 			return re;			
 		}
+		/* myCnf 그리드에서 variableType 이 SET 일경우 처리를 위한 function : popup 처리(예정) */
+		function mycnfTypeSetPopup(enumValueList,value,name){
+
+
+		}	
+		
 		//mycnf grid 수정 상태일때 보여주는 컬럼 설정
 		function mycnfEditable(){
 			let re = '';
@@ -647,9 +657,16 @@ let appMariadb = {
 			let data = arguments[1];
 			let column = arguments[3];
 			let isAddVariableColumn = data.addVariableColumn == true;
+			
+			// port 일경우에 값이 변경 할 수 없도록 수정 & 그로인해 값이 사라지는 현상 수정 적용 (2019-07-19)
+			if(data.name=='port' && column.key == 'value'  ){
+				re = '<input type="text" class="Textinput" value="'+(value||'')+'" style="top:-5px;height:32px; width:80%" readonly="readonly">';
+				return re;
+			}
+			
 			switch(column.key){
 				case 'name':
-					if(data.categoryColumn==true)re = '<span style="font-size:1.5em;color:midnightblue">['+value+']</span>';
+					if(data.categoryColumn==true)re = '<span style="font-size:1.3em;color:black">['+value+']</span>';
 					else if(isAddVariableColumn){
 						re = getAddVariableColumn(data);
 					} else re = data.alias;
@@ -658,32 +675,61 @@ let appMariadb = {
 					if(!data.dataColumn && !isAddVariableColumn)return;
 					let dbv = appMariadb['data']['databaseVariables'];
 					let d = dbv[data.category][data.name]||{};
+					// data.name 과 일치하는 데이터가 없을 경우 로직 추가 (2019.07.15)
+					if(!d.name){
+						d = dbv[data.category][String(data.name).replaceAll('_','-')]||{};
+					}
+					
+					if(d.name == "innodb_undo_tablespaces")return;
+					
 					if(d && d.editable == true){
 						let enumValueList = d.enumValueList|| ''; 
+						//if(d.variableType == 'ENUM' || d.variableType == 'BOOLEAN'){
 						if(d.variableType == 'ENUM' || d.variableType == 'BOOLEAN'){
-							let l = enumValueList.split(',');
+							//select box 선언
 							re = $('<div class="Divselect wd250" style="top:-5px;height:32px;"><select></select><span></div>');
-							if(d.variableType == 'ENUM'){
+							
+							if(!d.enumValueList){
+								re.find('select').append($('<option/>',{text:'OFF',value:'0'}));
+								re.find('select').append($('<option/>',{text:'ON',value:'1'}));
+							}else{
+								let l = enumValueList.split(',');
+
 								for(let i = 0; i < l.length;i++){
 									re.find('select').append($('<option/>',{text:l[i],value:l[i]}));
 								}
-							}else if(d.variableType == 'BOOLEAN'){
-								re.find('select').append($('<option/>',{text:'OFF',value:'0'}));
-								re.find('select').append($('<option/>',{text:'ON',value:'1'}));
-							}							
-							
+							}
 							$a.convert(re);
-							if(isAddVariableColumn){
+
+ 							if(isAddVariableColumn){
 								let firstValue = re.find('select option:eq(0)').val();
-								//appMariadb.gridMyCnf.alopexGrid('dataEdit', $.extend({},data,{value:firstValue}),data);
-								//data.value = firstValue;
-								//;
+
 								setTimeout(function(){
 									re.setSelected(firstValue);
 								},100);
 							}else{
 								re.setSelected(data.value);
-							}
+							} 
+						}else if(d.variableType == 'SET'||d.variableType == 'FLAGSET'){ 
+							//variableType [SET] 추가 (2019-07-16) : 다건의 내용을 선택할 수 있어야 한다.
+							//팝업을 이용하여 처리 (2019-07-18) 
+ 							re = $('<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%" readonly="readonly" >').on('click',function(){
+								let t = $(this);
+ 								
+ 								$a.popup({
+ 							        url: "/zdb02/zdb0200p09",
+ 							        data:$.extend({},gParam,{enumValueList:enumValueList ,value:t.val(),name:d.name}),
+ 							        iframe: false,
+ 							        width: 610,
+ 							        height: 300,
+ 							        title : '',
+ 							        callback : function(res){
+ 							        	if(res.result == 'Y'){
+ 							        		t.val(res.value);
+ 							        	}
+ 							        }
+ 							    });
+							}); 
 						}else{
 							re = '<input type="text" class="Textinput" value="'+(data.value||'')+'" style="top:-5px;height:32px; width:80%">';
 						}
@@ -705,9 +751,11 @@ let appMariadb = {
 			}
 			$a.convert(re);
 			re.setSelected(data.name).find('select').on('change',function(evt){
+
 				let name = $(evt.currentTarget).val();
 				let o = dbv[data.category][name];
 				let d = $.extend({},o,{value:''});
+				
 				appMariadb.gridMyCnf.alopexGrid('dataEdit', d,data).alopexGrid('rowSelect', data, true).alopexGrid('startRowInlineEdit',data);
 			});
 			return re
@@ -716,9 +764,6 @@ let appMariadb = {
 		},initMenu : function(menuName){
 			appMariadb.mariaContent.find('[data-menu]').hide().filter('[data-menu='+menuName+']').show();
 			switch(menuName){
-				case 'databaseStatus':
-					appMariadb.getDatabaseStatus();
-					break;
 				case 'connection':
 					appMariadb.getProcesses();
 					appMariadb.getDatabaseConnection();
@@ -735,20 +780,26 @@ let appMariadb = {
 				case 'myCnf':
 					appMariadb.getMyCnfList();
 					break;
+/*  				case 'databaseStatus':
+					appMariadb.getDatabaseStatus();
+					break; 		 */			
 			}
 			appMariadb.mariaContent.find('[data-menu]:visible .alopexgrid').alopexGrid('viewUpdate')
 		},getDatabaseStatus : function(){
+			
 			let d = $.extend({},gParam,{podName:gService.podName});
 			$a.ajax({
 				url:'/zdbapi/getDatabaseStatus',
 				data:d,
 				success:function(res){
 					ds = res.databaseStatus;
+					
 					let onOffBtn = {
 						ON : '<span class="state green vm"></span> ',
 						OFF : '<span class="state inactive vm"></span> '
 					}
-					if(ds){
+
+					if(ds){  // && ds.compiled
 						ds.compiled = ds.version_compile_os + '('+ds.version_compile_machine+')';
 						ds.running = moment(ds.timestamp * 1000).format('ddd MMM D HH:mm:ss YYYY');
 						BigNumber.config({ ROUNDING_MODE: BigNumber.ROUND_DOWN });
@@ -902,16 +953,20 @@ let appMariadb = {
 					let l = myCnfList.map(function(ob){
 						return $.extend({},ob,{serverData:true});
 					});
+				
 					appMariadb.setGridMyCnf(l);					
 				}
 			})
 		}, 
 		getUserPrivileges: function(){
-			appMariadb.getUserRoleList().done(function(userList,schemaList){
+			appMariadb.getUserRoleList().done(function(userList,schemaList){				
 				$a.ajax({
 					url:'/zdbapi/getUserPrivileges',
 					data:gParam,
 					success:function(res){
+						console.log("getUserPrivileges::::::::::::::::::::::::::::::::::::::::::::::");
+
+						console.log(res);
 						let list = res.userPrivileges||[];
 						appMariadb['data']['userPrivileges'] = {};
 						appMariadb['data']['editPrivileges'] = {};//변경중인 데이터 저장
@@ -976,6 +1031,7 @@ let appMariadb = {
 			let o = s[su.schema];
 			o.isUpdate = true;
 			o[name] = isValue;
+
 			appMariadb['data']['editPrivileges'].id = su.id;
 		},
 		setUserPrivilegesUi:function(){
@@ -991,30 +1047,40 @@ let appMariadb = {
 			appMariadb['data']['userPrivileges'] = JSON.parse(JSON.stringify(appMariadb['data']['userPrivilegesOrg']));//원본 데이터 저장
 		},
 		saveUserPrivileges:function(){
-			if(!appMariadb['data']['editPrivileges'].id){
-				gCommon.alert('저장 할 데이터가 없습니다.');
-				return;
-			}
+			
+		
+		console.log("saveUserPrivileges:function:::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 			appMariadb.gridUser.alopexGrid('endRowInlineEdit');
-			let su = appMariadb.getSelectUserSchema();
-			if(cloudUtil.isEmpty(su.user)){
-				gCommon.alert('USER를 입력하세요.');
-				appMariadb.gridUser.alopexGrid('startRowInlineEdit')
-				appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus().trigger('click');;
-				return;
+			let su = appMariadb.getSelectUserSchema();	
+
+			/* 2019-07-15 Mariadb > 관리탭 > 사용자 및 권한관리 수정 (2019-07-16) : 조건문 추가 */
+			if(!appMariadb['data']['editPrivileges'].id){
+				if( cloudUtil.isEmpty(su.password)){
+					gCommon.alert('저장 할 데이터가 없습니다.');
+					return;
+				}
+			}else{
+				if(cloudUtil.isEmpty(su.user)){
+					gCommon.alert('USER를 입력하세요.');
+					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
+					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus().trigger('click');;
+					return;
+				}
+				if(cloudUtil.isEmpty(su.host)){
+					gCommon.alert('HOST를 입력하세요.');
+					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
+					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=3] input').focus().trigger('click');;
+					return;
+				}
+
+				if(su.state == 'I' && cloudUtil.isEmpty(su.password)){
+					gCommon.alert('PASSWORD를 입력하세요.');
+					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
+					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=2] input').focus().trigger('click');;
+					return;
+				}
 			}
-			if(cloudUtil.isEmpty(su.host)){
-				gCommon.alert('HOST를 입력하세요.');
-				appMariadb.gridUser.alopexGrid('startRowInlineEdit')
-				appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=3] input').focus().trigger('click');;
-				return;
-			}
-			if(su.state == 'I' && cloudUtil.isEmpty(su.password)){
-				gCommon.alert('PASSWORD를 입력하세요.');
-				appMariadb.gridUser.alopexGrid('startRowInlineEdit')
-				appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=2] input').focus().trigger('click');;
-				return;
-			}
+			
 			gCommon.confirm('저장 하시 겠습니까?',function(){
 				let param = $.extend({},gParam,{
 					userPrivileges : {
@@ -1023,7 +1089,9 @@ let appMariadb = {
 					},
 					state:su.state
 				});
+				
 				let dt = appMariadb['data']['userPrivileges'][su.id];
+				console.log(dt);
 				let l = [];
 				for(let schema in dt){
 					if(dt[schema].isUpdate){
@@ -1032,6 +1100,7 @@ let appMariadb = {
 						l.push(o);
 					}
 				}
+				console.log(l);
 				param.userPrivileges.privileges = l;
 				param.userPrivileges = JSON.stringify(param.userPrivileges);
 				
@@ -1098,6 +1167,7 @@ let appMariadb = {
 			category 데이터,실데이터,추가콤보 리스트 순으로 생성( 파라미터는 실데이터)		
 		*/
 		setGridMyCnf : function(paramList){
+
 			let categorySort ={ mysqld:10, mysql:20, mysqld_safe:30, mysqldump:40,client:50 };
 			let categoryList = [{name:'mysqld'},{name:'mysql'},{name:'mysqld_safe'},{name:'mysqldump'},{name:'client'}];
 			categoryList = categoryList.map(function(ob){
@@ -1107,39 +1177,139 @@ let appMariadb = {
 			let comboList = {}; //카테고리별 추가 데이터
 			
 			let dbv = appMariadb['data']['databaseVariables'];
+			
+			// 콤보박스에 들어가는 값 
 			for(let cg in dbv){
 				let ds = dbv[cg];
 				for(let name in ds){
+					if(name == "") continue;
+					
 					let o = ds[name];
 					o.sort = categorySort[o.category];
 					if(!o.category)continue;
-					let mc = gCommon.findObjectByKeyOb(paramList,{category:o.category,name:o.name});
-					//전달 받은 데이터에 있으면 grid리스트에,없으면 추가콤보로 생성
-					if(mc==null){
+					
+					let _catname1  = String(o.category+o.name).replaceAll('-','_');
+					let _catalias = String(o.category+o.alias).replaceAll('-','_');
+					
+					let existFlag = false;
+					for(let i = 0; i < paramList.length; i++) {
+						let mc = paramList[i];
+						let _catname2 = String(mc.category+mc.name).replaceAll('-','_');
+						
+						if(_catname1 == _catname2 || _catalias == _catname2) {
+							existFlag = true;
+							break;
+						}
+					}
+					
+					if(!existFlag) {
 						if(!comboList[o.category]){
 							comboList[o.category] = [];
 						}
-						comboList[o.category].push(o);							
-					}else{
-						mc.dataColumn = true;
-						gridList.push($.extend({},mc,o,{value:mc.value}));
+						comboList[o.category].push(o);
 					}
 				}
+			}			
+			// category 구분을 위한 변수 선언 
+			let tempCategory = "";
+			
+			// grid 에 담는 로직...(my.cnf 파싱된 값)
+			for(let i = 0; i < paramList.length; i++) {
+				let mc = paramList[i];
+				mc.dataColumn = true;
+				let ds = dbv[mc.category];
+
+				let key = mc.name;
+				if(key == "transaction-isolation") {
+					key = "tx_isolation";
+				} else if(key == "default-time-zone") {
+					key = "time_zone";
+				}
+				
+				let o = ds[key];
+				
+				if(!o) {
+					o = ds[String(key).replaceAll('-','_')];
+					if(!o) {
+						o = [];
+						console.log(mc.category +" / "+ key);
+						o.name = mc.name;
+						o.alias = mc.name;
+						o.category = mc.category;
+						/* sort 컬럼 추가하여 sorting 에러문제 해결 (2019-07-10) */
+						o.sort = categorySort[mc.category];
+						
+					}
+				}
+				
+				/* innodb_fast_shutdown 항목의 value 값이 없을 경우 defaultValue 로 셋팅한다. (2019-07-15) */
+ 				if(o.name == "innodb_fast_shutdown"){
+					if(!mc.value && mc.defaultValue ){
+						mc.value = 	mc.defaultValue ;
+					}else if(!mc.value && o.defaultValue ){
+						mc.value = 	o.defaultValue ;	
+					}
+				} 
+				
+				/* variableType == 'BOOLEAN' 인 데이터중  ON 인데 화면에 OFF 로 표시되는 현상 수정 적용(2019-07-15) */
+				//variable Type Check
+				let variableType  =  mc.variableType;
+				if(!mc.variableType) variableType  = o.variableType ;
+				
+				if(!variableType && o.name == "skip_external_locking"){
+					variableType = 'BOOLEAN'; //skip_external_locking 일 경우 type을 못찾을수 있다.
+					if(!mc.defaultValue) mc.defaultValue = '1' ;
+				}else if(!variableType && o.name == "skip_name_resolve"){
+					variableType = 'BOOLEAN'; //skip_external_locking 일 경우 type을 못찾을수 있다.
+					if(!mc.defaultValue) mc.defaultValue = '0' ;
+				}
+								
+				//variableType == 'BOOLEAN' : value check
+ 				if(variableType && variableType == 'BOOLEAN'){
+				 	//defaultValue check
+					if(mc.defaultValue && (mc.defaultValue = 'ON' || mc.defaultValue == 'OFF') ){
+						mc.defaultValue = 'ON'?'1':'0';
+					}else if(o.defaultValue && (o.defaultValue = 'ON' || o.defaultValue == 'OFF')){
+						mc.defaultValue = 'ON'?'1':'0';
+					}
+					// value check 					
+					if(mc.value  && (mc.value == '1' || mc.value == '0')){
+						mc.value = '1'?'ON':'OFF';
+					}
+				}
+				
+				if(tempCategory != mc.category){
+					/* select box 중복생성 현상 수정 - 조건식 추가 (2019-07-10)  */
+					if(cloudUtil.isEmpty(tempCategory) || categorySort[tempCategory] < categorySort[mc.category]){
+						// 콤보박스 셋팅 부부 수정 (22019-07-10)
+						for(let k in comboList){
+							if(mc.category == k){
+								let o = comboList[k];
+								gridList.push({category:k, name:'' ,addVariableColumn:true ,dataColumn:false,serverData:false,sort:(categorySort[k])});
+								dbv[k].comboList = o;
+							}
+						}
+						tempCategory =  mc.category
+					}
+				}
+				
+				gridList.push($.extend({},mc,o,{value:mc.value}));
+				
 			}
 			
-			for(let k in comboList){
-				let o = comboList[k];
-				gridList.push({category:k, name:'' ,addVariableColumn:true ,dataColumn:false,serverData:false,sort:(categorySort[k]+1)});
-				dbv[k].comboList = o;
-			}
+			//appMariadb.gridMyCnf.alopexGrid
 			appMariadb.gridMyCnf.alopexGrid('dataSet',gridList).alopexGrid('expandTreeNode');
 			appMariadb.gridMyCnf.alopexGrid('dataSort', [
 				{sortingColumn : 'sort', sortingDirection: "asc"},
 				{sortingColumn : 'name', sortingDirection: "asc"}
 			]);
+			/* 삭제처리 표시 유지 하는 로직 추가 - (2019-07-10)   */
+			appMariadb.gridMyCnf.alopexGrid('dataDelete', {deleted: "dataDelete"});
+			
 		},saveGridMyCnf : function(){
 			appMariadb.gridMyCnf.alopexGrid('endRowInlineEdit');
 			let dt = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',function(data) {
+				if(data.name == "tx_isolation" || data.name == "time_zone" )data.name = data.alias ;
 			    return data.dataColumn == true && data._state.deleted != true;
 			}));
 			if(gCommon.findObjectByKeyOb(dt,{valid:false}) !=null){
@@ -1147,6 +1317,7 @@ let appMariadb = {
 			};
 			gCommon.confirm("설정을 변경하시겠습니까?",function(){
 				let param = $.extend({},gParam,{databaseVariables:JSON.stringify(dt)});
+								
 				$a.ajax({
 					url:'/zdbapi/updateUseDatabaseVariables',
 					method:'put',
@@ -1162,27 +1333,55 @@ let appMariadb = {
 		},validMyCnf:function(value,data){
 			let re = true;
 			if(!data.editable)return re;
-			if(data.variableType == 'BIGINT UNSIGNED' || data.variableType == 'INT UNSIGNED') {
-				let numericMinValue = data.numericMinValue || '';
-				let numericMaxValue = data.numericMaxValue || '';
-				if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
-					let val = (value||'').toUpperCase();
-					let reg = /^([\d]+)([K|M]{0,1})$/gi.exec(val);
-					if(reg==null){
-						return false;
+			// 체크하는 Type의 수를 array로 정리하여 추가함 (201-07-17)
+			let validTypeArr = ["BIGINT UNSIGNED","INT UNSIGNED","INT","BIGINT","DOUBLE"]; 
+
+			for(let t in validTypeArr){
+				let typeVal = validTypeArr[t];
+				if(data.variableType == typeVal ){
+					let numericMinValue = data.numericMinValue || '';
+					let numericMaxValue = data.numericMaxValue || '';
+					
+					if(!cloudUtil.isEmpty(numericMinValue)||!cloudUtil.isEmpty(numericMaxValue)){
+						let val = (value||'').toUpperCase();
+						
+						let reg = /^([\-\d]+)([K|M|G]{0,1})$/gi.exec(val); //INT UNSIGNED , INT형일 경우 ,소수점 단위 처리 추가  (2019-07-17)
+						if(typeVal == 'DOUBLE'){
+							reg = /^([\d\.?]+)([K|M|G]{0,1})$/gi.exec(val);  //DOUBLE 형일 경우 ,소수점 단위 처리 추가  (2019-07-17)
+						}
+						
+						/*
+						//BIGINT type 에서도 음수 사용이 되어야 하기 때문에 기본 정규식을 음수 포함으로 변경 
+						else if(typeVal == 'INT UNSIGNED' || typeVal =="INT"){
+							reg = /^([\d]+)([K|M|G]{0,1})$/gi.exec(val);  //G 단위 추가 (2019-07-17) 
+								
+						} */
+
+						
+						if(reg==null){
+							for(let v in validExcepArr){
+								let excepVal = validExcepArr[v];
+								if(data.name == excepVal ){
+									return re;
+								}							
+							}
+							return false;
+						}
+						let n = new BigNumber(reg[1]);
+						let unit = 1;
+						if(reg[2] == 'K'){
+							unit = 1024;
+						}else if(reg[2] == 'M'){
+							unit = 1024 * 1024
+						}else if(reg[2] == 'G'){ // giga  단위에 대한 계산식 추가 (2019-07-17)
+							unit = 1024 * 1024 * 1024
+						}
+						let r = n.times(unit);
+						let min = new BigNumber(numericMinValue);
+						let max = new BigNumber(numericMaxValue);
+					    re = (min.isNaN()|| r.gte(min)) && (max.isNaN() || r.lte(max));
 					}
-					let n = new BigNumber(reg[1]);
-					let unit = 1;
-					if(reg[2] == 'K'){
-						unit = 1024;
-					}else if(reg[2] == 'M'){
-						unit = 1024 * 1024
-					}
-					let r = n.times(unit);
-					let min = new BigNumber(numericMinValue);
-					let max = new BigNumber(numericMaxValue);
-				    re = (min.isNaN()|| r.gte(min)) && (max.isNaN() || r.lte(max));
-				}
+				}							
 			}
 			return re;
 		} 

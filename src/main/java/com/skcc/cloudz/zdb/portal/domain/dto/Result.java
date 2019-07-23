@@ -19,6 +19,7 @@ import com.zdb.core.domain.Tag;
 import com.zdb.core.domain.UserPrivileges;
 import com.zdb.core.domain.ZDBConfig;
 import com.zdb.core.domain.ZDBNode;
+import com.zdb.core.domain.CredentialConfirm;
 
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.client.dsl.PodResource;
@@ -110,4 +111,6 @@ public class Result {
 	private List<MariaDBVariable> databaseVariables;
 
 	private List<UserPrivileges> userPrivileges;
+	
+	private CredentialConfirm credentialConfirm;
 }

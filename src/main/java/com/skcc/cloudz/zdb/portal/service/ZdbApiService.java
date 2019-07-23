@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,7 @@ import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.zdb.core.domain.AlertingRuleEntity;
 import com.zdb.core.domain.ConnectionInfo;
+import com.zdb.core.domain.CredentialConfirm;
 import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
@@ -879,6 +881,16 @@ public class ZdbApiService{
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_UPDATE_USER_PRIVILEGES,HttpMethod.DELETE,entity, ZdbRestDTO.class, param).getBody();
 		return zdbRestDTO;
 	}
+	
+	public ZdbRestDTO getCredentialConfirm(Map<String, String> param) {
+		
+		//HttpHeaders headers = new HttpHeaders();
+		//headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		//HttpEntity entity = new HttpEntity<>(param.get(IResult.CREDENTIAL_CONFIRM),headers);
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
 
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_GET_CREDENTIAL_CONFIRM,HttpMethod.POST,entity, ZdbRestDTO.class, param).getBody();
+		return zdbRestDTO;
+	}
 
 }

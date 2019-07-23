@@ -100,7 +100,6 @@
 	$a.page(function() {
 		let divServiceListGrid;
 		this.init = function() {
-
 			gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
 				gNamespaces = selector.select({id:gSelectedNamespace})
 									 .addHandler(function(e){
@@ -135,6 +134,8 @@
 			});
 			//서비스 목록 조회 태그 선택
 			$('body').on('click','#tagArea span.Label',function(){
+
+				/* CHECK TAG */
 				let selectTag = $(this).data('id')||'';
 				if(selectTag == 'all'){
 					gSelectedTag = [];
@@ -380,14 +381,17 @@
 			}
 		}
 		//서비스 목록 조회 && 태그 조회
+		/* 2019-07-01 namespace 값을 gSelectedNamespace ->  G_NAMESPACE_ALL 으로 변경   */
+		/* 2019-07-01 fn_getViewNamespaces() 추가   */		
 		function fn_getServicesFirst(){
 			$a.ajax({
 				url: '/zdbapi/getServiceoverviews',
-				data: {namespace:gSelectedNamespace} , 
+				data: {namespace:G_NAMESPACE_ALL} , 
 				success: function(res){
 					gServiceList = res.serviceoverviews;
 					gfn_convertServiceDatas(gServiceList);
 					gTagList = res.tags;
+					fn_getViewNamespaces();
 					fn_displayServices();
 				}
 			});
@@ -518,16 +522,30 @@
 					};
 				};
 				if(gSelectedTag.length!=0){
+					/* Tag 선택된것들이 충족하는 건만 조회 되도록 수정 (2019-07-08) 수정  */
 					let isTag = false;
+					let selTag = null;
+					let selTagCnt = gSelectedTag.length ;
+					let chkCnt = 0; 
+					let tagList = ob.tags ; 
+					
 					for(let i in gSelectedTag){
 						let t = gSelectedTag[i];
-						let temp = gCommon.findObjectByKeyOb(gTagList,{id:t});
-						let fTag = gCommon.findObjectByKeyOb(ob.tags,{tagName:temp.tagName});
-						if(fTag)isTag = true;
+						selTag = gCommon.findObjectByKeyOb(gTagList,{id:t});
+						for(let j in tagList){
+							let tag = tagList[j];
+							if(selTag['tagName'] == tag['tagName']){
+								chkCnt++;
+							}
+						}						
 					}
+					if(selTagCnt == chkCnt){
+						isTag = true;
+					}
+					
 					if(!isTag){
 						continue;
-					};
+					}; 
 				};
 				if($("#txtServiceFilter").val()!=''){
 					if(ob.serviceName.toLowerCase().indexOf($("#txtServiceFilter").val().toLowerCase()) < 0){

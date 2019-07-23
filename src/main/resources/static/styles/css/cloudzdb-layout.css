@@ -162,6 +162,10 @@ body {background-color: #eaedf2;}
 	font-size: 20px;
 	color: #222222;
 }
+.info-text__typet {
+	font-size: 20px;
+	color: #ea0530;
+}
 /*---------------------------------------
 	header css
 ---------------------------------------*/

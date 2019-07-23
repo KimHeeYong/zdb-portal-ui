@@ -100,7 +100,7 @@
 			<li data-content="#tabSystem">환경설정</li>
 			<li data-content="#tabLog">로그</li>
 			<li data-content="#tabProcess">프로세스</li>
-<!-- 			<li data-content="#tabMariadb" th:if="${#request.getParameter('serviceType')=='mariadb'}">Mariadb관리</li> -->
+ 			<li data-content="#tabMariadb" th:if="${#request.getParameter('serviceType')=='mariadb'}">관리</li> 
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
 		<div id="tabService">
@@ -521,6 +521,7 @@
 								<option value="2">2시간</option>
 								<option value="6">6시간</option>
 								<option value="12">12시간</option>
+								<option value="24">24시간</option>								
 							</select>
 							<span></span>
 						</div>
@@ -544,6 +545,7 @@
           	</form>
            	<!-- grid -->
             <div id="gridBackup" class="grid grid-line__wrap dash"></div>
+            <div class="Tooltip" id="backupTooltip" data-position="bottom"></div>
 		</div>
 		<div id="tabEvent">
 			<h3 class="form-title">이벤트</h3>
@@ -903,7 +905,7 @@
 				<div id="gridProcess"></div>
 			</div>		
 		</div>
-	<!-- 	<th:block th:id="tabMariadb" th:if="${#request.getParameter('serviceType')=='mariadb'}" th:include="zdb02/zdb0210_tabMariadb"></th:block> -->
+	 	<th:block th:id="tabMariadb" th:if="${#request.getParameter('serviceType')=='mariadb'}" th:include="zdb02/zdb0210_tabMariadb"></th:block> 
 	</div>
 </div>
 <script type="text/javascript">
@@ -958,7 +960,7 @@
 					case "tabDatabase": $("#gridDatabase").alopexGrid( "viewUpdate" ); fn_getDatabases(); break;
 					case "tabSystem": fn_getConfigurationInfo(); break;
 					case "tabProcess": $("#gridProcess").alopexGrid( "viewUpdate" ); fn_getProcesses(); break;
-/* 					case "tabMariadb": appMariadb.initMenu(appMariadb.selectedMenu);break; */
+ 					case "tabMariadb": appMariadb.initMenu(appMariadb.selectedMenu);break; 
 				}
 			}
 			$('#backServices').on('click',function(){
@@ -1103,10 +1105,9 @@
 			
 			let getGridContextButton = function(){
 				return $('<button class="Button btn-ico__typeb btn-listview buttonMenu"></button>').on('click',function(e){
-						//console.log('click')
-						$(this).parent().trigger('contextmenu');
-						let d = $('.alopexgrid-contextmenu-wrapper');
-						d.css({left:e.pageX,top:e.pageY});						
+					$(this).parent().trigger('contextmenu');
+ 					let d = $('.alopexgrid-contextmenu-wrapper');
+					d.css({left:e.pageX,top:e.pageY});
 				});
 			}
 			let gridResource = $('#gridResource').alopexGrid({
@@ -1424,7 +1425,7 @@
 							}
 						};
 					}},
-					{ title:'백업 Disk', key : 'backupStorage' , width: '120px', align: 'center', hidden: false, render : {type: "setBackupStorage"
+					{ title:'백업 Disk', key : 'backupStorage' , width: '120px', align: 'center', hidden: true, render : {type: "setBackupStorage"
 					}},
 					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
 					{ title:'Memory(Mi)', key : 'memory' , width: '120px', align: 'center'},
@@ -1539,12 +1540,15 @@
 				//안내 메세지 출력
 				let infoMsg = $('#divInfoMsg');
 				let msg = gService.statusMessage||'';
-				//let t = $('<div class="Tooltip"></div>').html(msg);
-				//infoMsg.after(t);
-				//$a.convert(t);
-				let m = msg.split('</br>');
-				if(m && m.length > 1){
-					msg = m[0]+'</br>'+m[1];
+				/* msg가 없는 경우에 대한 조건 처리 추가 (2019-07-11) */
+				if(msg != '' ){
+					//let t = $('<div class="Tooltip"></div>').html(msg);
+					//infoMsg.after(t);
+					//$a.convert(t);
+					let m = msg.split('</br>');
+					if(m && m.length > 1){
+						msg = m[0]+'</br>'+m[1];
+					}
 				}
 				infoMsg.html(msg);
 				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정, 프로세스)설정
@@ -1566,7 +1570,7 @@
 				};
 				 //redis - user,database탭 삭제, purpose - data가 아니면 백업탭 삭제, 환경설정의 AdvancedConfig 숨김
 				if(gService.serviceType == cServiceType.redis){
-					let delTab = ['tabUser','tabDatabase','tabLog','tabProcess','tabMariadb'];
+				let delTab = ['tabUser','tabDatabase','tabLog','tabProcess','tabMariadb'];
 					if(gCommon.findObjectByKeyOb(gService.tags,{tagName:'data'})==null){
 						$('#tabSystem #divAdvancedConfig').hide();
 						delTab.push('tabBackup');
@@ -1596,11 +1600,12 @@
 				gServiceScale.storageClass = '';
 				if(pvSpec){
 					for(var p = 0; p < pvSpec.length; p++) {
+						/* msg가 없는 경우에 대한 조건 처리 추가 (2019-07-11) */
 						var scn = pvSpec[p].spec.storageClassName;
-						var strIops = cStorageClassConstants[scn];
+						var scnArr = scn.split("-");
 						
-						if(scn != null) {
-							var scnArr = scn.split("-");
+						if(scn != null && scnArr[2] != "custom") {
+							var strIops = cStorageClassConstants[scn];
 							var iopsArr = strIops.split(" ");
 							
 							if(scnArr[1] == "block") {
@@ -1608,7 +1613,10 @@
 							} else {
 								backupIops = iopsArr[0];
 							}
-							
+						} else {
+							/* TODO */
+							dataIops = "-";
+							backupIops = "-";
 						}
 					}
 				}
@@ -1709,9 +1717,28 @@
 									StorageTooltipMsg += ob.role + "(Data): " + storageSize + "<br>";
 									
 									if(dataIops != "") {
-										StorageQoSTooltipMsg += ob.role + "("+dataIops+" IOPS/GB): " + (storageSize.split('G')[0] * dataIops) + " IOPS<br>";
+										var strlen = storageSize.length;
+										var storageUnit = storageSize.substr(strlen-2, strlen);
+										var iops;
+										
+										if(storageUnit == 'Ki') {
+											iops = (storageSize.substr(0,strlen-2) * dataIops / 1024 / 1024) + " IOPS<br>";
+										} else if(storageUnit == 'Mi') {
+											iops = (storageSize.substr(0,strlen-2) * dataIops / 1024) + " IOPS<br>";
+										} else if(storageUnit == 'Gi') {
+											iops = (storageSize.substr(0,strlen-2) * dataIops) + " IOPS<br>";
+										} else if(storageUnit == 'Ti') {
+											iops = (storageSize.substr(0,strlen-2) * dataIops * 1024) + " IOPS<br>";
+										} else if(storageUnit == 'Pi') {
+											iops = (storageSize.substr(0,strlen-2) * dataIops * 1024 * 1024) + " IOPS<br>";
+										} else {
+											iops = "-<br>"; 
+										}
+										
+										StorageQoSTooltipMsg += ob.role + "("+dataIops+" IOPS/GB): " + iops;
+										
 										if(ob.role == "master"){
-											gServiceScale.storageClass = (storageSize.split('G')[0] * dataIops) + " IOPS";
+											gServiceScale.storageClass = iops;
 										}
 									}
 								}
@@ -2009,7 +2036,9 @@
 				if($(this).hasClass('btn-on')) {
 					isEnable = 'N';
 				};				
+			
 				let param = $.extend({},gParam,{enable:isEnable == 'Y'});
+				
 				gCommon.credentialConfirm({
 			        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:'변경'},
 			        callback : function(res){
@@ -2379,7 +2408,8 @@
 			let bakcupLogShow = true;
 			if(gParam.serviceType == cServiceType.redis){
 				downloadTitle = '다운로드';
-				bakcupLogShow = false;
+				// backup log  버튼 활성화 여부  bakcupLogShow = false; -> true 로 변경 (2019-07-04)
+				bakcupLogShow = true;
 			}
 			let gridBackup = $('#gridBackup').alopexGrid({
 				enableDefaultContextMenu:false,
@@ -2389,22 +2419,22 @@
 				contextMenu : [
 					{   title: '결과',
 						processor:function(data,$cell,grid){
-							$a.ajax({
+						$a.ajax({
 								url:'/zdbapi/getBackupResult',
 								data:{backupId:data.backupId},
 								success:function(res){
 									let ob = res.backupResult;
 									let r = '<table><colgroup><col class="wd150"></col><col width="*"></col></colgroup>'
 										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '<tr><th class="tl">백업범위(LSN)</th><td class="tl">' + ob.backupScope + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.fromBackup)) r+='<tr><th class="tl">기준이 되는 백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
+									 	if(!cloudUtil.isEmpty(ob.fromBackup)) r+='<tr><th class="tl">기준이 되는 백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.archiveFileSize)) r+='<tr><th class="tl">압축파일크기</th><td class="tl">' + ob.archiveFileSize  +'</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.backupTime)) r+='<tr><th class="tl">백업 소요시간</th><td class="tl">' + ob.backupTime  + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.archiveTime)) r+='<tr><th class="tl">압축 소요시간</th><td class="tl">' + ob.archiveTime  + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.uploadTime)) r+='<tr><th class="tl">업로드 소요시간</th><td class="tl">' + ob.uploadTime  + '</td></tr>' 
 										r+= '</table>';  							
-									gCommon.alert(r,null,{width:500,height:350});
+									gCommon.backupAlert(r,null,{width:500,height:350});
 								}
-							});
+							}); 
 						},
 						use: function(data,$cell,grid){
 							return bakcupLogShow && $cell.data('alopexgrid-key')=="log"
@@ -2412,6 +2442,8 @@
 					},
 					{   title: '로그',
 						processor:function(data,$cell,grid){
+							
+							console.log('로그');	
 							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
 						},
 						use: function(data,$cell,grid){
@@ -2434,6 +2466,17 @@
 					}},
 					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
 					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'상태', key : 'status' , width: '160px', align: 'center' , tooltip:false , render:function(value,data,render,mapping){
+						let re = "수행중"; 
+						if(value ==  "OK"){
+							re = "성공"; 
+						}else if(value ==  "DOING"){
+							re = "수행중"; 
+						}else if(value ==  "FAILED"){
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 실패 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+						}
+						return re
+					}},
 					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',render:cloudUtil.dtFormat,render:function(value,data){
 						let re = data.fromLsn +' ~ '+data.toLsn ;
 						return re;
@@ -2456,6 +2499,7 @@
 					{ title:'On-Disk', key : 'ondisk' , width: '160px', align: 'center',hidden:true},
 					{ title:downloadTitle, key : 'archiveFileSize' , width: '100px', align: 'center',excludeFitWidth:true,render:function(value,data,render,mapping){
 						let t = '다운로드';
+						//console.log(data.type);
 						if(['FULL','INCR'].indexOf(data.type) > -1){
 							t = '복원';
 						}
@@ -2494,7 +2538,23 @@
 				message: {
 					nodata: gMessage.gridNodata
 				}
-			});
+			}).on('mouseover', '.bodycell .TooltipEvt',function(e){
+				// grid backup 상태(status) 컬럼 실패시 tooltip추가 (2019-07-10)
+				var evObj = AlopexGrid.parseEvent(e);
+				var data = evObj.data;
+				var mapping = evObj.mapping;
+
+				var $tooltip = $('#backupTooltip');
+
+				if (mapping.key === 'status' && data.reason != null){
+					var val = data['reason']||'';
+					$tooltip.html(val.replaceAll('\n','</br>')); 
+					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
+					$tooltip.open();	
+				}else {
+					$tooltip.close();
+				} 
+			});			
 			function setBackupUseYnEvt(val){
 				var msg = val == 'Y'? '백업 설정을 활성화 하시겠습니까?': '백업 설정을 비활성화 하시겠습니까?';
 				gCommon.confirm(msg,function(yn){
@@ -2591,7 +2651,14 @@
 					data:gParam,
 					success: function(res){
 						var list = res.backupList;
+						console.log(res);
+						if(gParam.serviceType != cServiceType.redis){
+							$("#gridBackup").alopexGrid('showCol', 4);
+						}else{
+							$("#gridBackup").alopexGrid('hideCol', 4);
+						}
 						$('#gridBackup').alopexGrid('dataSet',list);
+						
 						fn_filterBackupInfo();
 					}
 				});				

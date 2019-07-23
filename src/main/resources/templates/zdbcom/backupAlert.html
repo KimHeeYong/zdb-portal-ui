@@ -1,0 +1,27 @@
+<div class="popup-wrap" id="divAlertPop">
+	<div class="popup-alert">
+		<div class="popup-text">
+			<div id="message"></div>
+		</div>
+	</div>
+	<!--button-->
+	<div class="popup-btn__wrap">
+		<button class="Button btn bg-gray ok">확인</button>
+	</div>
+	<!--//button-->
+</div>
+<script type="text/javascript">
+$a.page(function() {
+	this.init = function() {
+		//var sTitle = "백업 수행 결과1" ;
+		var sTitle =  '<span class="session-text__md orange">백업 수행 결과</span>' ;
+		$('.dialog_header').html(sTitle);
+		
+		$('#divAlertPop #message').html(gPopData.message);
+		$('#divAlertPop button.ok').click(function(){
+			$a.close('Y');
+		});
+	}
+});
+	
+</script>

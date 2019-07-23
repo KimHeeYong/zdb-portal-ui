@@ -9,6 +9,9 @@ var gValid = {
 	},
 	checkUnitSize :{
 		message:'범위를 확인해주세요'
+	},
+	storageIops : {
+		message:'범위를 확인해주세요'
 	}
 	
 }; 
@@ -35,6 +38,11 @@ $a.page(function() {
 			let min = bigInt(param.split(':')[0]);
 			let max = bigInt(param.split(':')[1]);
 		    return (r.greaterOrEquals(min) && r.lesserOrEquals(max));
+		});
+		Validator.addMethod('storageIops', function(element,value,param) {
+			console.log("element: "+ element);
+			console.log("value: "+ value);
+			console.log("param: "+ param);
 		});
 	};
 });
