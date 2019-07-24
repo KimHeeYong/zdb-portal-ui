@@ -1615,7 +1615,14 @@
 							}
 						} else {
 							/* TODO */
-							dataIops = "-";
+							var tempDataIops = pvSpec[p].spec.resources.requests.iops;
+							
+							if(tempDataIops.charAt(tempDataIops.length-1) == 'k') {
+								dataIops = tempDataIops.slice(0,-1) * 1000;
+							} else {
+								dataIops = tempDataIops;
+							}
+							
 							backupIops = "-";
 						}
 					}
@@ -1708,11 +1715,11 @@
 									}
 									totalStorage += dataStorage.size;
 									
-									ob.disk = cloudUtil.truncDecimal((dataStorage.used / (1024*1024)),2) + ' / ' + (hasUseRateData? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A')) 
+									ob.disk = cloudUtil.truncDecimal((dataStorage.used / (1024*1024)),2) + ' / ' + (hasUseRateData? cloudUtil.convertDiskSize(dataStorage.size) :(gServiceScale.disk||'N/A')) 
 									        + (hasUseRateData? ' ('+dataStorage.useRate+')' : '' ) ;
 									ob.diskUpdateTime = dataStorage.updateTime;
 									
-									var storageSize = hasUseRateData? cloudUtil.convertSize(dataStorage.size) :(gServiceScale.disk||'N/A');
+									var storageSize = hasUseRateData? cloudUtil.convertDiskSize(dataStorage.size) :(gServiceScale.disk||'N/A');
 									
 									StorageTooltipMsg += ob.role + "(Data): " + storageSize + "<br>";
 									
@@ -1752,7 +1759,7 @@
 					
 					if(backupStorage != null) {
 						
-						var backupStorageSize = hasUseRateBackup? cloudUtil.convertSize(backupStorage.size) :(gServiceScale.disk||'N/A');
+						var backupStorageSize = hasUseRateBackup? cloudUtil.convertDiskSize(backupStorage.size) :(gServiceScale.disk||'N/A');
 						
 						StorageTooltipMsg += "Backup: " + backupStorageSize  + "<br>";
 						if(backupIops != "") {
@@ -1764,7 +1771,7 @@
 					$('#configInfo').zdbui_setContents(
 							{ cpu:resorceSpec.cpu||''
 							 ,memory:resorceSpec.memory||''
-							 ,disk:gService.persistentVolumeClaims.length==0?'사용안함':cloudUtil.convertSize(totalStorage)||''
+							 ,disk:gService.persistentVolumeClaims.length==0?'사용안함':cloudUtil.convertDiskSize(totalStorage)||''
 							 ,storageClass:gServiceScale.storageClass
 							}
 						);

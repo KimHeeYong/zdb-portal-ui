@@ -1,5 +1,6 @@
 package com.skcc.cloudz.zdb.portal.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,14 +14,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.skcc.cloudz.zdb.api.iam.domain.vo.ApiResponseVo;
 import com.skcc.cloudz.zdb.common.component.ZdbRestConnector;
 import com.skcc.cloudz.zdb.common.security.service.SecurityService;
@@ -33,7 +37,6 @@ import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.zdb.core.domain.AlertingRuleEntity;
 import com.zdb.core.domain.ConnectionInfo;
-import com.zdb.core.domain.CredentialConfirm;
 import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
@@ -133,13 +136,45 @@ public class ZdbApiService{
 		
 		return list;
 	}
+	
+//	public ServiceOverview getServiceoverview(Map<String, String> param) {
+//		ServiceOverview ob = null;
+//		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_SERVICE, ZdbRestDTO.class,param);
+//		if(zdbRestDTO != null) {
+//			ob = zdbRestDTO.getResult().getServiceoverview();
+//		};
+//		
+//		return ob;
+//	}
+	
 	public ServiceOverview getServiceoverview(Map<String, String> param) {
 		ServiceOverview ob = null;
-		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_SERVICE, ZdbRestDTO.class,param);
-		if(zdbRestDTO != null) {
-			ob = zdbRestDTO.getResult().getServiceoverview();
-		};
+//		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_SERVICE, ZdbRestDTO.class, param);
 		
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			List<MediaType> mediaTypeList = new ArrayList<MediaType>();
+			mediaTypeList.add(MediaType.APPLICATION_JSON);
+			headers.setAccept(mediaTypeList);
+			headers.set("Content-Type", "application/json-patch+json");
+			
+			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+			
+			String endpoint = apiServer + URIConstants.URI_GET_SERVICE;
+			RestTemplate rest = new RestTemplate();
+			
+			ResponseEntity<String> result = rest.exchange(endpoint, HttpMethod.GET, requestEntity, String.class, param);
+			
+			if(result.getStatusCode() == HttpStatus.OK) {
+				Gson gson = new GsonBuilder().setDateFormat("yyyyMMddHHmmss").create();
+				ZdbRestDTO zdbRestDTO = gson.fromJson(result.getBody(), ZdbRestDTO.class);
+				if(zdbRestDTO != null) {
+					ob = zdbRestDTO.getResult().getServiceoverview();
+				};
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return ob;
 	}
 	
