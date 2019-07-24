@@ -63,12 +63,12 @@ var cloudUtil = {
 		let sizeBn = new BigNumber(size);
 		let re = '';
 		
-		if(sizeBn.gte(1024 * 1000 * 1000 * 1000)) {
-			re = sizeBn.div(1024*1000*1000*1000).integerValue().toFixed() +'Pi';
-		}else if(sizeBn.gte(1024 * 1000 * 1000)) {
-			re = sizeBn.div(1024*1000*1000).integerValue().toFixed() +'Ti';
-		}else if(sizeBn.gte(1024 * 1000)) {
-			re = sizeBn.div(1024*1000).integerValue().toFixed() +'Gi';
+		if(sizeBn.gte(1024 * 1024 * 1024 * 1024)) {
+			re = sizeBn.div(1024*1024*1024*1024).integerValue().toFixed() +'Pi';
+		}else if(sizeBn.gte(1024 * 1024 * 1024)) {
+			re = sizeBn.div(1024*1024*1024).integerValue().toFixed() +'Ti';
+		}else if(sizeBn.gte(1024 * 1024)) {
+			re = sizeBn.div(1024*1024).integerValue().toFixed() +'Gi';
 		}else if(sizeBn.gte(1024)) {
 			re = sizeBn.div(1024).integerValue().toFixed() +'Mi';
 		}else{
