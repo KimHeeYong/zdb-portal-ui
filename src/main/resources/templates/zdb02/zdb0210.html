@@ -1598,35 +1598,6 @@
 				gServiceScale.memoryVal = cloudUtil.parseInt(gServiceScale.memory);
 				gServiceScale.disk = psSpec.size;
 				gServiceScale.storageClass = '';
-				if(pvSpec){
-					for(var p = 0; p < pvSpec.length; p++) {
-						/* msg가 없는 경우에 대한 조건 처리 추가 (2019-07-11) */
-						var scn = pvSpec[p].spec.storageClassName;
-						var scnArr = scn.split("-");
-						
-						if(scn != null && scnArr[2] != "custom") {
-							var strIops = cStorageClassConstants[scn];
-							var iopsArr = strIops.split(" ");
-							
-							if(scnArr[1] == "block") {
-								dataIops = iopsArr[0];
-							} else {
-								backupIops = iopsArr[0];
-							}
-						} else {
-							/* TODO */
-							var tempDataIops = pvSpec[p].spec.resources.requests.iops;
-							
-							if(tempDataIops.charAt(tempDataIops.length-1) == 'k') {
-								dataIops = tempDataIops.slice(0,-1) * 1000;
-							} else {
-								dataIops = tempDataIops;
-							}
-							
-							backupIops = "-";
-						}
-					}
-				}
 				
 				let resorceSpec = gService.resourceSpec||{};
 				let persistenceSpec = gService.persistenceSpec||{};
@@ -1709,6 +1680,8 @@
 								}
 								
 								if(dataStorage != null) {
+									dataIops = dataStorage.storageIops;
+									
 									var hasUseRateData = dataStorage.useRate?true:false;
 									if(backupStorage != null) {
 										hasUseRateBackup = backupStorage.useRate?true:false;
@@ -1720,32 +1693,18 @@
 									ob.diskUpdateTime = dataStorage.updateTime;
 									
 									var storageSize = hasUseRateData? cloudUtil.convertDiskSize(dataStorage.size) :(gServiceScale.disk||'N/A');
-									
 									StorageTooltipMsg += ob.role + "(Data): " + storageSize + "<br>";
 									
 									if(dataIops != "") {
-										var strlen = storageSize.length;
-										var storageUnit = storageSize.substr(strlen-2, strlen);
-										var iops;
-										
-										if(storageUnit == 'Ki') {
-											iops = (storageSize.substr(0,strlen-2) * dataIops / 1024 / 1024) + " IOPS<br>";
-										} else if(storageUnit == 'Mi') {
-											iops = (storageSize.substr(0,strlen-2) * dataIops / 1024) + " IOPS<br>";
-										} else if(storageUnit == 'Gi') {
-											iops = (storageSize.substr(0,strlen-2) * dataIops) + " IOPS<br>";
-										} else if(storageUnit == 'Ti') {
-											iops = (storageSize.substr(0,strlen-2) * dataIops * 1024) + " IOPS<br>";
-										} else if(storageUnit == 'Pi') {
-											iops = (storageSize.substr(0,strlen-2) * dataIops * 1024 * 1024) + " IOPS<br>";
+										if(dataStorage.storageClass.indexOf("custom") == -1) {
+											var enduranceIops = cStorageClassConstants[dataStorage.storageClass];
+											StorageQoSTooltipMsg += ob.role + "("+enduranceIops+" IOPS/GB): " + dataIops + " IOPS<br>";
 										} else {
-											iops = "-<br>"; 
+											StorageQoSTooltipMsg += ob.role + "("+dataIops+" IOPS/GB): " + dataIops + " IOPS<br>";
 										}
 										
-										StorageQoSTooltipMsg += ob.role + "("+dataIops+" IOPS/GB): " + iops;
-										
 										if(ob.role == "master"){
-											gServiceScale.storageClass = iops;
+											gServiceScale.storageClass = dataIops + " IOPS<br>";
 										}
 									}
 								}
@@ -1758,12 +1717,19 @@
 					
 					
 					if(backupStorage != null) {
+						backupIops = backupStorage.storageIops;
 						
 						var backupStorageSize = hasUseRateBackup? cloudUtil.convertDiskSize(backupStorage.size) :(gServiceScale.disk||'N/A');
-						
 						StorageTooltipMsg += "Backup: " + backupStorageSize  + "<br>";
+						
 						if(backupIops != "") {
-							StorageQoSTooltipMsg += "Backup("+backupIops+" IOPS/GB): " + (backupStorageSize.split('G')[0] * backupIops) + " IOPS<br>";
+							if(backupStorage.storageClass.indexOf("custom") == -1) {
+								var enduranceIops = cStorageClassConstants[dataStorage.storageClass];
+								StorageQoSTooltipMsg += "Backup("+enduranceIops+" IOPS/GB): " + backupIops + " IOPS<br>";
+							} else {
+								StorageQoSTooltipMsg += "Backup("+backupIops+" IOPS/GB): " + backupIops + " IOPS<br>";
+							}
+							
 						}
 						totalStorage += backupStorage.size;
 					}
@@ -1771,7 +1737,7 @@
 					$('#configInfo').zdbui_setContents(
 							{ cpu:resorceSpec.cpu||''
 							 ,memory:resorceSpec.memory||''
-							 ,disk:gService.persistentVolumeClaims.length==0?'사용안함':cloudUtil.convertDiskSize(totalStorage)||''
+							 ,disk:totalStorage==0?'사용안함':cloudUtil.convertDiskSize(totalStorage)||''
 							 ,storageClass:gServiceScale.storageClass
 							}
 						);
