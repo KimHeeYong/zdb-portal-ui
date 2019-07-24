@@ -1680,7 +1680,7 @@
 								}
 								
 								if(dataStorage != null) {
-									dataIops = dataStorage.storageIops;
+									dataIops = dataStorage.storageIops.toUpperCase();
 									
 									var hasUseRateData = dataStorage.useRate?true:false;
 									if(backupStorage != null) {
@@ -1700,6 +1700,7 @@
 											var enduranceIops = cStorageClassConstants[dataStorage.storageClass];
 											StorageQoSTooltipMsg += ob.role + "("+enduranceIops+" IOPS/GB): " + dataIops + " IOPS<br>";
 										} else {
+											//var performanceIops = dataIops.toUpperCase();
 											StorageQoSTooltipMsg += ob.role + "("+dataIops+" IOPS/GB): " + dataIops + " IOPS<br>";
 										}
 										
@@ -1717,7 +1718,7 @@
 					
 					
 					if(backupStorage != null) {
-						backupIops = backupStorage.storageIops;
+						backupIops = backupStorage.storageIops.toUpperCase();;
 						
 						var backupStorageSize = hasUseRateBackup? cloudUtil.convertDiskSize(backupStorage.size) :(gServiceScale.disk||'N/A');
 						StorageTooltipMsg += "Backup: " + backupStorageSize  + "<br>";
