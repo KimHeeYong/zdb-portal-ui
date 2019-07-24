@@ -2436,6 +2436,7 @@
 						    case 'FULL': t = '전체백업'; break;
 						    default : t = '즉시백업'; break;
 						}
+						if(data.scheduleYn == "N")t +='<img src="/styles/images/ico-checkmark.png" style="float:initial;width:20px"></img>';
 						return '<button class="Button gridbtn btn">'+t+'</button>';
 					}},
 					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
@@ -2452,7 +2453,8 @@
 						return re
 					}},
 					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',render:cloudUtil.dtFormat,render:function(value,data){
-						let re = data.fromLsn +' ~ '+data.toLsn ;
+						let re = ' - ' ;
+				  		if(data.type == "DUMP") re = data.fromLsn +' ~ '+data.toLsn ;
 						return re;
 					}},
 					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
