@@ -166,7 +166,7 @@
 								Other Rights
 								<div class="item-wrap2" style="height:90px">
 									<ul>
-										<li><input class="Checkbox" type="checkbox" name="grantOption" value="Y">GRANT OPTION</li>
+ 										<li><input class="Checkbox" type="checkbox" name="grantOption" value="Y">GRANT OPTION</li>
 										<li><input class="Checkbox" type="checkbox" name="createTemporaryTables" value="Y">CREATE TEMPORARY TABLES</li>
 										<li><input class="Checkbox" type="checkbox" name="lockTables" value="Y">LOCK TABLES</li>
 									</ul>
@@ -215,6 +215,9 @@ gService = {
 */
 
 let validExcepArr = ["innodb_fast_shutdown","no-auto-rehash","quick"]; 
+let sIdx = 0 ;
+let userRoleList ;
+let userPriMap ; 
 
 let appMariadb = {
 	selectedMenu:null,	
@@ -301,6 +304,8 @@ let appMariadb = {
 					}}
 				],
 			});
+		
+		/* 사용자 및 권한관리 시작 */
 		this.formUserRole = appMariadb.mariaContent.find('form[name=formUserRole]');
 		
 		let tabUser = appMariadb.mariaContent.find('[data-menu=userRole]');
@@ -354,43 +359,59 @@ let appMariadb = {
 					return data._state.added == true;
 				}}
 			], message: { nodata: gMessage.gridNodata }
-		}).on('dataSelect',function(e){
-			let evObj = AlopexGrid.parseEvent(e);
-			let eObj = appMariadb['data']['editPrivileges']  ;
-			
-			//변경된 데이터가 없을경우 appMariadb['data']['editPrivileges'] 값이 없어서 스크립트 오류 나는 현상 수정(201-07-16) :조건식 추가 
-			if(eObj.id != undefined){
-				let eId = appMariadb['data']['editPrivileges'].id; 
-				let dt = gridUser.alopexGrid('dataGet',{_index:{row:0}})[0];
-				if(eId){
-					if(eId != evObj.datalist[0]._index.id){  //변경중인 데이터가 있을 경우 확인창
-						let opt = {
-							falseCallback:function(){
-								gridUser.alopexGrid('rowSelect',{_index : {id:eId}},true);
-								appMariadb['data']['editPrivileges'].id = eId;
-							}	 
-						};
-						gCommon.confirm('변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?',function(){
-							appMariadb.resetEditPrivileges();
-							if(dt._state.added==true){
-								appMariadb.gridUser.alopexGrid('dataDelete',dt);
-							}
-						},opt);
-					}				
-				}
-			}
-		}).on('dataSelectEnd',function(e){
-			appMariadb.setUserPrivilegesUi();
 		}).on('click','.bodycell',function(e){
-			let evObj = AlopexGrid.parseEvent(e);
-			let dg = gridUser.alopexGrid('dataGet',{_index:{row:0}});
-			let dt = dg[0];
 			
-			appMariadb.gridUser.alopexGrid('rowSelect',evObj.data,true);
+			let evObj = AlopexGrid.parseEvent(e); //선택된 ROW 데이터 
+			if(evObj.data._state.selected == false) gridUser.alopexGrid('rowSelect', {_index:{row:sIdx}}, true); 
+			
+			if(sIdx != evObj.data._index.row){  // click 된 row를 체크하여 다른 row일 경우에만 처리
+				
+				let dt = gridUser.alopexGrid('dataGet'); // gridUser 의 모든 data를 가지고 온다. 
+				let vEdited = false;
+				let vAdded = false;
+				let msg = '변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?' ;
+				let mIdx = 0;
+	
+				for(let m in dt){
+					let data = dt[m];
+					if(data._state.edited == true){
+						vEdited = true;
+						mIdx = m;
+					}
+					if(data._state.added == true) vAdded = true; 
+					
+				}
+			
+				if(vEdited == true){ // 수정 상태의 데이터가 있을 경우 처리 
+					gCommon.confirm(msg,function(yn){
+						if(vAdded == true){
+							appMariadb.gridUser.alopexGrid('dataDelete',dt[0]);
+							appMariadb.gridUser.alopexGrid('rowSelect',{_index:{row:0}},true);
+						}else{
+							appMariadb.gridUser.alopexGrid('updateOption', {defaultState: {}});
+							appMariadb.gridUser.alopexGrid('dataRestore');									
+							appMariadb.gridUser.alopexGrid('rowSelect',evObj.data,true);
+						}
+						sIdx = evObj.data._index.row; // 기 선택 되었던 ROW index setting
+						appMariadb.getUserPrivileges();
+					}); 
+
+				}else{
+					sIdx = evObj.data._index.row; 
+					appMariadb.getUserPrivileges();
+				}
+				
+				setTimeout(function(){   // gCommon.confirm 처리시 시간적인 차이가 필요 함 
+					if(vEdited == true){
+						gridUser.alopexGrid('rowSelect', {_index:{row:mIdx}}, true);
+						sIdx = mIdx;
+					}
+				},100)
+			}
 		}).on('focusout',function(e){
 			let r = e.relatedTarget;
 			if(!r|| !$(r).hasClass('alopexgrid-default-renderer')){
-				//gridUser.alopexGrid('endRowInlineEdit');
+				gridUser.alopexGrid('endRowInlineEdit');
 			}
 		});
 		this.gridUserSchema = $('#gridUserSchema').alopexGrid({
@@ -420,12 +441,17 @@ let appMariadb = {
 				}}
 			], message: { nodata: gMessage.gridNodata }				
 		}).on('dataSelectEnd',function(e){
-			appMariadb.setUserPrivilegesUi();
+		
+/* 			let eObj = appMariadb['data']['editPrivileges']  ;
+			if(eObj != undefined){
+				appMariadb.setUserPrivilegesUi();
+			} */
 		}).on('click','.bodycell',function(e){
 			var evObj = AlopexGrid.parseEvent(e);
 			appMariadb.gridUserSchema.alopexGrid('rowSelect',evObj.data,true);
+			appMariadb.getUserPrivileges();		
 		});
-		
+		/* 사용자및 권한 관리 - 사용자 추가 버튼  */
 		tabUser.find('#btnAddUser').on('click', function(e){
 			gridUser.alopexGrid('endRowInlineEdit');
 			let dt = gridUser.alopexGrid('dataGet');
@@ -443,8 +469,10 @@ let appMariadb = {
 				gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
 				appMariadb.setUserPrivilegesUi();
 				appMariadb['data']['editPrivileges'].id = gridUser.alopexGrid('dataGet',{_index:{row:0}})[0]._index.id;
+				appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
 			},100)
 		});
+		/* 사용자및 권한 관리 - 사용자 삭제 버튼  */
 		tabUser.find('#btnDeleteUser').on('click',function(e){
 			let dg = gridUser.alopexGrid( 'dataGet' , {_state:{selected:true}});
 			if(dg.length == 0){
@@ -462,8 +490,9 @@ let appMariadb = {
 			}
 			appMariadb.deleteDbUser();
 		})
-		tabUser.find('input:checkbox').on('click',function(e){
-			appMariadb.updateUserPrivilegesData($(this).attr('name'),$(this).is(':checked')?'Y':'N')
+
+		tabUser.find('input:checkbox').on('click',function(e){ 		//  Privileges check click event 
+			//appMariadb.updateUserPrivilegesData($(this).attr('name'),$(this).is(':checked')?'Y':'N');
 		});
 		tabUser.find('#btnSavePrivileges').on('click',function(){
 			appMariadb.saveUserPrivileges();
@@ -471,6 +500,9 @@ let appMariadb = {
 		tabUser.find('#btnDeletePrivileges').on('click',function(){
 			appMariadb.deleteUserPrivileges();
 		});
+		
+		/* 사용자 및 권한관리 끝 */
+		
 		this.gridStatusVariables = $('#gridStatusVariables').alopexGrid({
 			height:580,
 			message: { nodata: gMessage.gridNodata },
@@ -769,7 +801,8 @@ let appMariadb = {
 					appMariadb.getDatabaseConnection();
 					break;
 				case 'userRole':
-					appMariadb.getUserPrivileges();
+					//appMariadb.getUserPrivileges();
+					appMariadb.getUserRoleList();
 					break;
 				case 'statusVariables':
 					appMariadb.getStatusVariables();
@@ -928,17 +961,31 @@ let appMariadb = {
 					method:'get',
 					data: gParam,
 					success: function(res){
-						let bl = ['information_schema','mysql','performance_schema'];
+
+						let bl = ['information_schema','mysql','performance_schema']; //나타내지 않을 DB 목록 
 						let databases = resDatabases.databases||[];
 						let list = res.userGrants;
+						userRoleList = list; //origin data setting
 						let dl = [{name:'*'}].concat(databases)//.push({name:'mmmmmm'});
 						
+						// 나타내지 않을 DB 목록  Filtering 
 						dl = dl.filter(function(ob){
 							return bl.indexOf(ob.name)==-1
 						});
-						appMariadb.gridUserSchema.alopexGrid('dataSet',dl);
-						appMariadb.gridUser.alopexGrid('dataSet',list);
+						
+						appMariadb.gridUserSchema.alopexGrid('dataSet',dl);// schema list setting
+						appMariadb.gridUser.alopexGrid('dataSet',list);// user list setting 
+						
 						deferred.resolve(list,dl);
+						
+						appMariadb.gridUser.alopexGrid('rowSelect',{_index:{row:0}},true); //최초 선택 처리 - griduser
+						appMariadb.gridUserSchema.alopexGrid('rowSelect',{_index:{row:0}},true);//최초 선택 처리 - griduserSchema
+						
+						//수정 처리를 위한 공간 생성 - 추후 삭제 예정 
+						appMariadb['data']['userPrivileges'] = {};
+						appMariadb['data']['editPrivileges'] = {};//변경중인 데이터 저장
+					
+						appMariadb.getUserPrivileges(); // User Privileges 조회 실행
 					}
 				});				
 			})
@@ -959,45 +1006,31 @@ let appMariadb = {
 			})
 		}, 
 		getUserPrivileges: function(){
-			appMariadb.getUserRoleList().done(function(userList,schemaList){				
-				$a.ajax({
-					url:'/zdbapi/getUserPrivileges',
-					data:gParam,
-					success:function(res){
-						console.log("getUserPrivileges::::::::::::::::::::::::::::::::::::::::::::::");
-
-						console.log(res);
-						let list = res.userPrivileges||[];
-						appMariadb['data']['userPrivileges'] = {};
-						appMariadb['data']['editPrivileges'] = {};//변경중인 데이터 저장
-						for(let i in list){
-							let o = list[i];
-							let grantee = o.grantee;
-							try{
-								let user = grantee.split('@')[0].replace(/'/g,'');
-								let host = grantee.split('@')[1].replace(/'/g,'');
-								let dt = appMariadb.gridUser.alopexGrid('dataGet',{user:user,host:host})[0];
-								let id = dt._index.id;
-								if(id){
-									if(!appMariadb['data']['userPrivileges'][id]){
-										appMariadb['data']['userPrivileges'][id] = {};
-									}
-									if(!appMariadb['data']['userPrivileges'][id][o.tableSchema]){
-										appMariadb['data']['userPrivileges'][id][o.tableSchema] = {};
-									}
-									let n = o.privilegeType.toLowerCase().replace(/(\s[a-z])/g,function($1){return $1.trim().toUpperCase();})
-									appMariadb['data']['userPrivileges'][id][o.tableSchema][n] = 'Y';									
-								}
-							}catch(ex){
-							}
+			
+			/* UserRoleList 조회 성공시 셋팅 -> 함수 호출시 조회로 변경   */
+			let d = (appMariadb.gridUser.alopexGrid('dataGet',{_state :{selected:true}})[0]||{});
+			let user = d.user||'';
+			let host = d.host||'';
+			let schema = (appMariadb.gridUserSchema.alopexGrid('dataGet',{_state :{selected:true}})[0]||{}).name;		
+		
+			$a.ajax({
+				url:'/zdbapi/getUserPrivileges',
+		        data:$.extend({},gParam,{user:user ,host:host,schema:schema}),
+				success:function(res){
+					if(res){
+						let list = res.userPrivilegesForSchema||[];
+						 
+						if(list.length > 0){						
+							let privilegesMap = list[0] ;	
+							userPriMap = privilegesMap;  
+							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
+							appMariadb.mariaContent.find('form[name=formUserRole]').zdbui_setContents(privilegesMap);
+						}else{
+							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
 						}
-						appMariadb.gridUser.alopexGrid('rowSelect',{_index:{row:0}},true);
-						appMariadb.gridUserSchema.alopexGrid('rowSelect',{_index:{row:0}},true);
-						
-						appMariadb['data']['userPrivilegesOrg'] = JSON.parse(JSON.stringify(appMariadb['data']['userPrivileges']));//원본 데이터 저장
-					}
-				})			
-			});
+					}	
+				}
+			})	 		
 		},
 		getSelectUserSchema: function(){
 			let re = null;
@@ -1017,7 +1050,11 @@ let appMariadb = {
 			return re;
 		},
 		updateUserPrivilegesData(name,isValue){
-			let su = appMariadb.getSelectUserSchema();
+			console.log("updateUserPrivilegesData>>>>>");
+			
+			
+			
+			/* 			let su = appMariadb.getSelectUserSchema();
 			if(su ==null)return;
 			
 			let g = appMariadb['data']['userPrivileges'];
@@ -1032,75 +1069,100 @@ let appMariadb = {
 			o.isUpdate = true;
 			o[name] = isValue;
 
-			appMariadb['data']['editPrivileges'].id = su.id;
+			appMariadb['data']['editPrivileges'].id = su.id; */
 		},
 		setUserPrivilegesUi:function(){
-			let su = appMariadb.getSelectUserSchema();
-			appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
-			if(su!=null){
-				let up = ((appMariadb['data']['userPrivileges'][su.id]||{})[su.schema]||{});
-				appMariadb.mariaContent.find('form[name=formUserRole]').zdbui_setContents(up);
-			}
+			console.log("setUserPrivilegesUi>>>>>");	
+		
+		/* 			
+ 
+		//	 let su = appMariadb.getSelectUserSchema();
+		//	appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
+		//	if(su!=null){
+		//		let up = ((appMariadb['data']['userPrivileges'][su.id]||{})[su.schema]||{});
+		//		appMariadb.mariaContent.find('form[name=formUserRole]').zdbui_setContents(up);
+		//	}
+			*/
 		},
 		resetEditPrivileges:function(){
 			appMariadb['data']['editPrivileges'] = {};
 			appMariadb['data']['userPrivileges'] = JSON.parse(JSON.stringify(appMariadb['data']['userPrivilegesOrg']));//원본 데이터 저장
 		},
 		saveUserPrivileges:function(){
-			
-		
-		console.log("saveUserPrivileges:function:::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-			appMariadb.gridUser.alopexGrid('endRowInlineEdit');
-			let su = appMariadb.getSelectUserSchema();	
+			// grid user data 
+			let d = (appMariadb.gridUser.alopexGrid('dataGet',{_state :{selected:true}})[0]||{});
+			let user = d.user||'';
+			let host = d.host||'';
+			let password = d.password||'';
+			let state = d._state.added == true ? 'I':'U' ;	
 
-			/* 2019-07-15 Mariadb > 관리탭 > 사용자 및 권한관리 수정 (2019-07-16) : 조건문 추가 */
-			if(!appMariadb['data']['editPrivileges'].id){
-				if( cloudUtil.isEmpty(su.password)){
-					gCommon.alert('저장 할 데이터가 없습니다.');
-					return;
+			let schema = (appMariadb.gridUserSchema.alopexGrid('dataGet',{_state :{selected:true}})[0]||{}).name;
+			let grantee = ('\''+user+'\'@\''+host+'\'');
+			
+			appMariadb.gridUser.alopexGrid('endRowInlineEdit');
+
+			// 1. 변경된 권한 정보가 있는지 체크 한다. 
+			let editChk = false;				
+			let o = {};
+			
+			appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').each(function(){
+
+				let ob = $(this);
+				let obVal = ob.is(':checked')?'Y':'N';
+				let obName = ob.attr('name');
+				
+				o[obName] = obVal ;
+				
+				for(let mapName in userPriMap){
+					
+					if(mapName == obName && obVal != userPriMap[mapName]){
+						editChk = true ;
+					}
 				}
-			}else{
-				if(cloudUtil.isEmpty(su.user)){
+			});
+
+			if(editChk){
+				if(cloudUtil.isEmpty(user)){
 					gCommon.alert('USER를 입력하세요.');
 					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
 					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus().trigger('click');;
 					return;
 				}
-				if(cloudUtil.isEmpty(su.host)){
+				if(cloudUtil.isEmpty(host)){
 					gCommon.alert('HOST를 입력하세요.');
 					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
 					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=3] input').focus().trigger('click');;
 					return;
 				}
 
-				if(su.state == 'I' && cloudUtil.isEmpty(su.password)){
+				if(state == 'I' && cloudUtil.isEmpty(password)){
 					gCommon.alert('PASSWORD를 입력하세요.');
 					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
 					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=2] input').focus().trigger('click');;
 					return;
 				}
-			}
 			
+			}else{
+				//2. 변경된 권한 정보가 없을 경우 패스워드 변경여부 체크 
+				if(cloudUtil.isEmpty(password)){ // 2-1 선택된 user의 패스워드가 있는지 여부를 체크 한다.   
+					gCommon.alert('저장 할 데이터가 없습니다.');
+					return;
+				} 
+			}
+
 			gCommon.confirm('저장 하시 겠습니까?',function(){
 				let param = $.extend({},gParam,{
 					userPrivileges : {
-						grantee:su.grantee,
-						password:su.password
+						grantee:grantee,
+						password:password
 					},
-					state:su.state
+					state:state
 				});
 				
-				let dt = appMariadb['data']['userPrivileges'][su.id];
-				console.log(dt);
 				let l = [];
-				for(let schema in dt){
-					if(dt[schema].isUpdate){
-						let o = dt[schema];
-						o.schema = schema;
-						l.push(o);
-					}
-				}
-				console.log(l);
+				o.schema = schema;
+				l.push(o);		
+
 				param.userPrivileges.privileges = l;
 				param.userPrivileges = JSON.stringify(param.userPrivileges);
 				
@@ -1109,6 +1171,8 @@ let appMariadb = {
 					method:'put',
 					data:param,
 					success:function(res){
+						appMariadb.gridUser.alopexGrid('cellEdit', "", {_index: {row: true}}, 'password');
+						appMariadb.gridUser.alopexGrid('dataRestore');	
 						appMariadb.getUserPrivileges();
 					}
 				});			
@@ -1116,16 +1180,28 @@ let appMariadb = {
 		},
 		deleteUserPrivileges:function(){
 			appMariadb.gridUser.alopexGrid('endRowInlineEdit');
-			let su = appMariadb.getSelectUserSchema();
+			//let su = appMariadb.getSelectUserSchema();
+			
+			let d = (appMariadb.gridUser.alopexGrid('dataGet',{_state :{selected:true}})[0]||{});
+			let user = d.user||'';
+			let host = d.host||'';
+			let password = d.password||'';
+			let state = d._state.added == true ? 'I':'U' ;	
+	
+			let schema = (appMariadb.gridUserSchema.alopexGrid('dataGet',{_state :{selected:true}})[0]||{}).name;
+			let grantee = ('\''+user+'\'@\''+host+'\'');
+			
 			gCommon.confirm('선택된 사용자의 권한을 삭제 하시 겠습니까?',function(){
 				let param = $.extend({},gParam,{
 					userPrivileges : {
-						grantee:su.grantee
+						grantee:grantee
 					},
 					state:'D'
 				});
 				let l = [];
 				let dt = appMariadb.gridUserSchema.alopexGrid('dataGet');
+				console.log(dt);
+				
 				for(let i = 0 ; i < dt.length;i++){
 					let o = {schema:dt[i].name};
 					l.push(o);
@@ -1137,6 +1213,7 @@ let appMariadb = {
 					method:'put',
 					data:param,
 					success:function(res){
+					//	appMariadb.getUserRoleList();	
 						appMariadb.getUserPrivileges();
 					}
 				});			
@@ -1144,20 +1221,25 @@ let appMariadb = {
 		},
 		deleteDbUser:function(){
 			appMariadb.gridUser.alopexGrid('endRowInlineEdit');
-			let su = appMariadb.getSelectUserSchema();
+
+			let d = (appMariadb.gridUser.alopexGrid('dataGet',{_state :{selected:true}})[0]||{});
+			let user = d.user||'';
+			let host = d.host||'';
+		
 			gCommon.confirm('선택된 사용자를 삭제 하시 겠습니까?',function(){
 				let param = $.extend({},gParam,{
 					state:'D',
-					user : su.user,
-					host : su.host,
-					accountId : su.user
+					user : user,
+					host : host,
+					accountId : user
 				});
 				$a.ajax({
 					url:'/zdbapi/saveDBUser',
 					method:'put',
 					data:{data:JSON.stringify([param])},
 					success:function(res){
-						appMariadb.getUserPrivileges();
+						//appMariadb.getUserPrivileges();
+						appMariadb.getUserRoleList();		
 					}
 				});			
 			});			

@@ -17,6 +17,7 @@ import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 import com.zdb.core.domain.UserPrivileges;
+import com.zdb.core.domain.UserPrivilegesForSchema;
 import com.zdb.core.domain.ZDBConfig;
 import com.zdb.core.domain.ZDBNode;
 import com.zdb.core.domain.CredentialConfirm;
@@ -113,4 +114,6 @@ public class Result {
 	private List<UserPrivileges> userPrivileges;
 	
 	private CredentialConfirm credentialConfirm;
+	
+	private List<UserPrivilegesForSchema> userPrivilegesForSchema;
 }
