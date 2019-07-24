@@ -707,6 +707,7 @@ let appMariadb = {
 					if(!data.dataColumn && !isAddVariableColumn)return;
 					let dbv = appMariadb['data']['databaseVariables'];
 					let d = dbv[data.category][data.name]||{};
+					let setVal = "";
 					// data.name 과 일치하는 데이터가 없을 경우 로직 추가 (2019.07.15)
 					if(!d.name){
 						d = dbv[data.category][String(data.name).replaceAll('_','-')]||{};
@@ -758,6 +759,7 @@ let appMariadb = {
  							        callback : function(res){
  							        	if(res.result == 'Y'){
  							        		t.val(res.value);
+ 											appMariadb.gridMyCnf.alopexGrid('cellEdit', res.value, {_state :{selected:true}}, 'value');
  							        	}
  							        }
  							    });
@@ -770,6 +772,7 @@ let appMariadb = {
 					}
 				break;
 			}
+
 			return re;
 		}
 		//mycnf grid 추가 컬럼 설정
@@ -1050,7 +1053,7 @@ let appMariadb = {
 			return re;
 		},
 		updateUserPrivilegesData(name,isValue){
-			console.log("updateUserPrivilegesData>>>>>");
+
 			
 			
 			
@@ -1072,7 +1075,7 @@ let appMariadb = {
 			appMariadb['data']['editPrivileges'].id = su.id; */
 		},
 		setUserPrivilegesUi:function(){
-			console.log("setUserPrivilegesUi>>>>>");	
+
 		
 		/* 			
  
@@ -1200,7 +1203,6 @@ let appMariadb = {
 				});
 				let l = [];
 				let dt = appMariadb.gridUserSchema.alopexGrid('dataGet');
-				console.log(dt);
 				
 				for(let i = 0 ; i < dt.length;i++){
 					let o = {schema:dt[i].name};
@@ -1389,17 +1391,24 @@ let appMariadb = {
 			appMariadb.gridMyCnf.alopexGrid('dataDelete', {deleted: "dataDelete"});
 			
 		},saveGridMyCnf : function(){
+			
 			appMariadb.gridMyCnf.alopexGrid('endRowInlineEdit');
+			
 			let dt = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',function(data) {
 				if(data.name == "tx_isolation" || data.name == "time_zone" )data.name = data.alias ;
+				
 			    return data.dataColumn == true && data._state.deleted != true;
 			}));
+
 			if(gCommon.findObjectByKeyOb(dt,{valid:false}) !=null){
 				return;
 			};
+			
+
+			
 			gCommon.confirm("설정을 변경하시겠습니까?",function(){
 				let param = $.extend({},gParam,{databaseVariables:JSON.stringify(dt)});
-								
+		
 				$a.ajax({
 					url:'/zdbapi/updateUseDatabaseVariables',
 					method:'put',
