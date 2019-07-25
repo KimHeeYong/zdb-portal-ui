@@ -480,7 +480,7 @@
 					    <a class="Up"></a>
 					    <a class="Down"></a>
 					</div>
-					<span class="ml20">일</span>
+					<span>일</span>
 				</div>
 				<div class="mr30 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
@@ -2461,8 +2461,9 @@
 						    case 'FULL': t = '전체백업'; break;
 						    default : t = '즉시백업'; break;
 						}
-						if(data.scheduleYn == "N")t +='<img src="/styles/images/ico-checkmark.png" style="float:initial;width:20px"></img>';
-						return '<button class="Button gridbtn btn">'+t+'</button>';
+						let reBtn = '<button class="Button gridbtn btn">'+t+'</button>';
+						if(data.scheduleYn == "N") reBtn = '<button class="Button gridbtn btn bg-gray">'+t+'</button>';
+						return reBtn ;
 					}},
 					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
 					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
@@ -2478,8 +2479,8 @@
 						return re
 					}},
 					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',render:cloudUtil.dtFormat,render:function(value,data){
-						let re = ' - ' ;
-				  		if(data.type == "DUMP") re = data.fromLsn +' ~ '+data.toLsn ;
+						let  re = data.fromLsn +' ~ '+data.toLsn ; 
+				  		if(data.type == "DUMP") re = ' - ' ;
 						return re;
 					}},
 					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
