@@ -2375,7 +2375,9 @@
 			    });
 			});
 			$('button#addBackupDisk').on('click',function(){
-				let diskSize = gService.persistenceSpec.size;
+				/*backupdisk-test*/
+				let vPodName = gService.podName ;  
+				let diskSize = gService.diskUsageOfPodMap[vPodName][0].size; // gService.persistenceSpec.size; 수정 (2019-07-25)
 				if(gService.statefulSets.length > 1){
 					diskSize = cloudUtil.parseInt(diskSize) / 2 + 'Gi';
 				}
