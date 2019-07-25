@@ -2037,26 +2037,30 @@
 				};				
 			
 				let param = $.extend({},gParam,{enable:isEnable == 'Y'});
-				
-				gCommon.credentialConfirm({
-			        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:'변경'},
-			        callback : function(res){
-						$a.ajax({
-							url: '/zdbapi/updateAutoFailoverEnable',
-							method:'PUT',
-							data:param,
-							success: function(res){
-								if(res.result.code!='4'){
-									gCommon.alert(res.result.message);
-									fn_getServiceFirst();
-									gCommon.getConfigData(gParam.namespace).done(function(re){
-										gConfigData = re;
-									});		
+				let msg = "Auto Failover 기능을 적용합니다.<br>처음적용시 서비스가 재시작 됩니다." ;
+				gCommon.confirm(msg,function(yn){
+					gCommon.credentialConfirm({
+				        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:'변경'},
+				        callback : function(res){
+							$a.ajax({
+								url: '/zdbapi/updateAutoFailoverEnable',
+								method:'PUT',
+								data:param,
+								success: function(res){
+									if(res.result.code!='4'){
+										if(res.result.code!='0'){
+											gCommon.alert(res.result.message);
+										}
+										fn_getServiceFirst();
+										gCommon.getConfigData(gParam.namespace).done(function(re){
+											gConfigData = re;
+										});		
+									}
 								}
-							}
-						})
-			        }
-			    });		
+							})
+				        }
+				    });	
+				}); 
 			});
 			tabService.find('#divFailoverBtn button').on('click',function(e){
 				e.preventDefault();

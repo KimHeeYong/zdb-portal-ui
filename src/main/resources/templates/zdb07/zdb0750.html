@@ -108,8 +108,9 @@
 												data:{namespace:data.namespace ,serviceType:data.serviceType ,serviceName:data.serviceName, enable:isEnable},
 												success: function(res){
 													if(res.result.code!='4'){
-														gCommon.alert(res.result.message);
-														
+														if(res.result.code!='0'){
+															gCommon.alert(res.result.message);
+														}
 										 				gCommon.getConfigData(data.namespace).done(function(re){ 
 															gConfigData = re;
 															
@@ -260,21 +261,24 @@
 					let deferred = $.Deferred();
 					let re = {};					
 					
-					/* parameter : namespace , serviceType , serviceName , credetial(popup에서 입력받음)  */
-					gCommon.credentialApiConfirm({
-				        data:{namespace:data.namespace ,serviceType:data.serviceType ,serviceName:data.serviceName, msg:'설정을 변경하시려면', okBtnMsg:'변경'},
-				        callback : function(res){
-				        	if(res == null){
-				        		re = res || {};
-								re.isExists = false;
-								deferred.resolve(re);
-				        	}else{
-				        		re = res;
-								re.isExists = true;
-								deferred.resolve(re);				        		
-				        	}
-				        }
-				    }); 
+					let msg = "Auto Failover 기능을 적용합니다.<br>처음적용시 서비스가 재시작 됩니다." ;  // confirm massage 처리 순서 바꿈(2019-07-25)
+					gCommon.confirm(msg,function(yn){
+						/* parameter : namespace , serviceType , serviceName , credetial(popup에서 입력받음)  */
+						gCommon.credentialApiConfirm({
+					        data:{namespace:data.namespace ,serviceType:data.serviceType ,serviceName:data.serviceName, msg:'설정을 변경하시려면', okBtnMsg:'변경'},
+					        callback : function(res){
+					        	if(res == null){
+					        		re = res || {};
+									re.isExists = false;
+									deferred.resolve(re);
+					        	}else{
+					        		re = res;
+									re.isExists = true;
+									deferred.resolve(re);				        		
+					        	}
+					        }
+					    }); 
+					}); 
 					return deferred.promise();
 				}
 				function fn_getFailoverInfoList(){
