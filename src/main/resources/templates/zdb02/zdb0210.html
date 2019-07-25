@@ -2453,7 +2453,7 @@
 				height: 400,
 				columnMapping : [
 					{ key:'check',width:'30px',selectorColumn : true},
-					{ title:'백업유형', key : 'type' , width: '100px', align: 'center',render:function(value,data,render,mapping){						
+					{ title:'백업유형', key : 'type' , width: '100px', align: 'center',tooltip:false ,render:function(value,data,render,mapping){						
 						let t = '';
 						switch(value){
 						    case 'INCR': t = '증분백업'; break;
@@ -2461,12 +2461,14 @@
 						    case 'FULL': t = '전체백업'; break;
 						    default : t = '즉시백업'; break;
 						}
-						let reBtn = '<button class="Button gridbtn btn">'+t+'</button>';
-						if(data.scheduleYn == "N") reBtn = '<button class="Button gridbtn btn bg-gray">'+t+'</button>';
+						let reBtn = '<button class="Button gridbtn btn TooltipEvt">'+t+'</button>';
+						if(data.scheduleYn == "N"){
+							reBtn = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"><button class="Button gridbtn btn bg-gray TooltipEvt">'+t+'</button></a>' ;
+						}
 						return reBtn ;
 					}},
-					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
-					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat},
+					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat},
 					{ title:'상태', key : 'status' , width: '160px', align: 'center' , tooltip:false , render:function(value,data,render,mapping){
 						let re = "수행중"; 
 						if(value ==  "OK"){
@@ -2478,12 +2480,12 @@
 						}
 						return re
 					}},
-					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',render:cloudUtil.dtFormat,render:function(value,data){
+					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat,render:function(value,data){
 						let  re = data.fromLsn +' ~ '+data.toLsn ; 
 				  		if(data.type == "DUMP") re = ' - ' ;
 						return re;
 					}},
-					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
+					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center',tooltip:false , render:function(value,data,render,mapping){
 						var val = '';
 						if(value < 1024 ) {
 							val = value +'B';
@@ -2499,19 +2501,18 @@
 						return re;
 					}},
 					{ title:'On-Disk', key : 'ondisk' , width: '160px', align: 'center',hidden:true},
-					{ title:downloadTitle, key : 'archiveFileSize' , width: '100px', align: 'center',excludeFitWidth:true,render:function(value,data,render,mapping){
+					{ title:downloadTitle, key : 'archiveFileSize' , width: '100px', align: 'center',excludeFitWidth:true,tooltip:false ,render:function(value,data,render,mapping){
 						let t = '다운로드';
 						//console.log(data.type);
 						if(['FULL','INCR'].indexOf(data.type) > -1){
 							t = '복원';
 						}
-						
 						var re = $('<button class="Button btn-download '+(data.status != 'OK'?'Disabled':'')+'">'+t+'</button>').on('click',function(){
 							fn_downloadBackupFile(data);
 						});
 						return re;
 					},tooltip:null},
-					{ title:'Log', key : 'log' , width: '60px',width:'70px',excludeFitWidth:true, align: 'center',render:function(value,data,render,mapping){
+					{ title:'Log', key : 'log' , width: '60px',width:'70px',excludeFitWidth:true, align: 'center',tooltip:false ,render:function(value,data,render,mapping){
 						return getGridContextButton();
 					}}
 				],
@@ -2548,14 +2549,22 @@
 
 				var $tooltip = $('#backupTooltip');
 
-				if (mapping.key === 'status' && data.reason != null){
+				if (mapping.key === 'status' ){ // && data.reason != null
 					var val = data['reason']||'';
+					console.log(val);
 					$tooltip.html(val.replaceAll('\n','</br>')); 
 					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
 					$tooltip.open();	
-				}else {
+				}else if(mapping.key === 'type'  ) { //&& data.scheduleYn == "N"
+					
+					var val = '사용자 백업'||'';
+					$tooltip.html(val.replaceAll('\n','</br>')); 
+					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
+					$tooltip.open();	
+				} else{
 					$tooltip.close();
-				} 
+				}
+				
 			});			
 			function setBackupUseYnEvt(val){
 				var msg = val == 'Y'? '백업 설정을 활성화 하시겠습니까?': '백업 설정을 비활성화 하시겠습니까?';
