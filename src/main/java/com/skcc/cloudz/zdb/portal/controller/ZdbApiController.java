@@ -40,6 +40,7 @@ import com.zdb.core.domain.ScheduleInfoEntity;
 import com.zdb.core.domain.ServiceOverview;
 import com.zdb.core.domain.Tag;
 import com.zdb.core.domain.UserPrivileges;
+import com.zdb.core.domain.UserPrivilegesForSchema;
 import com.zdb.core.domain.ZDBConfig;
 import com.zdb.core.domain.ZDBNode;
 
@@ -897,8 +898,10 @@ public class ZdbApiController {
 	public ModelAndView getUserPrivileges(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
-		List<UserPrivileges> result = zdbApiService.getUserPrivileges(param);
-		mav.addObject(IResult.USER_PRIVILEGES ,result);
+		List<UserPrivilegesForSchema> result = zdbApiService.getUserPrivileges(param);
+		mav.addObject(IResult.USER_PRIVILEGES_FOR_SCHEMA ,result);
+		
+	/*	mav.addObject(IResult.USER_PRIVILEGES ,result);*/
 		return mav;
 	}
 

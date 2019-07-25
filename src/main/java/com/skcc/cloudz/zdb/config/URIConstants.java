@@ -183,5 +183,7 @@ public class URIConstants {
 	public static String URI_GET_NODES_INFO = "/api/v1/nodesInfo";
 	
 	public static final String URI_GET_CREDENTIAL_CONFIRM = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/credentialConfirm";
+	
+	public static final String URI_GET_USER_PRIVILEGES_FOR_SCHEMA = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/userPrivileges/{user}/{host}/{schema}";
 
 }
