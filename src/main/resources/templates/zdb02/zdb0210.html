@@ -1583,6 +1583,13 @@
 					if(gService.clusterEnabled != true){
 						$('li#divScaleOut').hide();
 					};
+				}else{
+					let delTab = ['tabUser','tabSystem','tabProcess'];
+					for(var ti = $('#zdbServiceTabs').getLength()-1; ti > -1; ti-- ){
+						if(delTab.indexOf($('#zdbServiceTabs').getTabContentByIndex(ti).id) > -1){
+							$('#zdbServiceTabs').removeTab(ti);
+						};
+					};
 				};
 				
 				var StorageQoSTooltipMsg = "";
