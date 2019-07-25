@@ -466,25 +466,25 @@
 			<h3 class="form-title">백업</h3>
            	<!-- tab contents info detail-->
          	<form name="backupForm" method="post">
-           	<div class="ctn-info__wrap">
-         		<div class="mr30 info-list">
+           	<div class="ctn-info__wrap" style="border-bottom:0px;">
+         		<div class="mr30 wd300 fl info-list">
          			<span class="config-title">백업설정 :</span>
 					<div class="onoff-wrap"><button class="Button btn-off" data-target="useYn">OFF</button></div>
 					<div class="hide">
 						<select name="useYn"> <option value="Y">Y</option> <option value="N">N</option> </select>
 					</div>									
-				</div>
-				<div class="mr30 info-list"><span class="config-title">보관기간:</span> 
+				</div>	           	
+				<div class="mr30 wd300 fl info-list"><span class="config-title">보관기간:</span> 
 					<div class="Spinner" data-min="0" data-max="60" data-step="1" id="storePeriodSpinner">
 					    <input id="storePeriod" name="storePeriod" value="1" style="width:80px;">
 					    <a class="Up"></a>
 					    <a class="Down"></a>
 					</div>
-					<span class="fr">일</span>
+					<span class="ml20">일</span>
 				</div>
-				<div class="mr30 info-list">
+				<div class="mr30 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
-						<span class="config-title">전체백업 수행주기:</span>
+						<span class="config-title">전체백업 수행주기: </span>
 						<div class="Divselect" id="scheduleDay" name="scheduleDay">
 							<select>
 								<option value="0">매일 수행</option>
@@ -500,7 +500,9 @@
 						</div>
 					</div>
 				</div>
-				<div class="mr30 info-list">
+          	</div>	
+			<div class="ctn-info__wrap" style="border-top:0px;">
+				<div class="mr30 wd300 fl info-list">
 					<span class="config-title">전체 백업 시간:</span>
 					<div class="Spinner Time" data-locale="en" id="startTime" data-hours="24H" data-bind="time:date">
 					    <input data-hour>
@@ -511,7 +513,7 @@
 					    <a class="Down"></a>
 					</div>
 				</div>
-				<div class="mr30 info-list">
+				<div class="mr30 wd300 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
 						<span class="config-title">증분 백업:</span>
 						<div class="Divselect" id="incrementPeriod" name="incrementPeriod">
@@ -526,9 +528,25 @@
 							<span></span>
 						</div>
 					</div>
-					<button class="Button btn bg-red Disabled ml5" id="saveSchedule">수정</button>
 				</div>
-				<div class="info-list__select">
+				<div class="mr30 wd300 fl info-list">
+					<div class="hide fl mr30" data-show-service-type="mariadb">
+						<span class="config-title">수행모드:</span>
+						<div class="Divselect" id="throttleYn" name="throttleYn">
+							<select>
+								<option value="Y">정상모드</option>
+								<option value="N">저속모드</option>
+							</select>
+							<span></span>
+						</div>
+					</div>
+				</div>	
+				<div class="fr info-list">	
+					<button class="Button btn bg-red Disabled fr" id="saveSchedule">수정</button>	
+				</div>				
+			</div>          	
+          	<div class="mt10" style="height:40px;">
+				<div class="info-list__select fr">
 					<div class="fl" id="divAddBackup" style="margin-right:4px;">	
 						<button class="Button btn hide" id="addBackupDisk">백업디스크 추가</button>
 						<button class="Button btn hide" id="removeBackupDisk">백업디스크 제거</button>
@@ -536,8 +554,8 @@
 					<button class="Button btn ml1" id="deleteBackup">삭제</button>
 					<button class="Button btn ml1" id="updateBackup">지금 백업하기</button>
 					<button class="Button btn ml1" id="searchBackup">조회</button>
-				</div>	
-          	</div>					
+				</div>	          	
+          	</div>
            	<div class="info-list__select mt10 hide" data-show-service-type="mariadb">
            		<input class="Checkbox" type="checkbox" id="backupSearchType" checked="checked"/>증분백업포함
 				<!-- button class="Button btn-search" id="searchBackup">검색</button-->
@@ -2578,11 +2596,13 @@
 					backupForm.find('#startTime').setEnabled(true);
 					backupForm.find('#incrementPeriod').setEnabled(true);
 					backupForm.find('#scheduleDay').setEnabled(true);
+					backupForm.find('#throttleYn').setEnabled(true);
 				}else{
 					backupForm.find('#storePeriodSpinner').setEnabled(false);
 					backupForm.find('#startTime').setEnabled(false);
 					backupForm.find('#incrementPeriod').setEnabled(false);
 					backupForm.find('#scheduleDay').setEnabled(false);
+					backupForm.find('#throttleYn').setEnabled(false);
 				}
 			};			
 			function fn_getBackupScheduleInfo(){
@@ -2618,6 +2638,9 @@
 				var param = $.extend({},gParam,backupForm.serializeObject());
 				param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
 				param.incrementYn = backupForm.find('#incrementPeriod select').val() == '0' ? 'N' : 'Y';
+				
+				console.log(param);
+
 				$a.ajax({
 					url: '/zdbapi/updateSchedule',
 					data:param,
