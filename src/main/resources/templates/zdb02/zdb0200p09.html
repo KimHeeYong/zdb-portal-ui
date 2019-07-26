@@ -2,7 +2,7 @@
 	<div class="popup-mcontents">
 		<form name="enumValueForm">
 		<div class="hide" data-show-service-type="mariadb"></div>
-		<div style="float:left; height:155px; width:600px;overflow-y: auto;overflow-x: hidden; padding-top: 1px !important;" id="enumType" name="enumType" ></div>
+		<div style="float:left; height:155px; width:900px;overflow-y: auto;overflow-x: hidden; padding-top: 1px !important; background: #ffffff;" id="enumType" name="enumType" ></div>
 		</form> 	
  	</div>
 	<!--button-->
@@ -35,7 +35,7 @@ $a.page(function() {
 	 		for(var e in arrEnumValue){
 	 			var enumElement  = arrEnumValue[e];
 	 			var strElement = enumElement.trim();
-	 			var chkHtml = '<div style="width:200px;float:left;overflow:hidden;padding-bottom:10px;">';	 			
+	 			var chkHtml = '<div style="width:300px;float:left;overflow:hidden;padding-bottom:10px;">';	 			
 	 			chkHtml +=	'<label style="display:-webkit-box;float:left;line-height:1em;font-size: 1.07rem;" for="'+strElement+'">' ;
 	 			chkHtml += '<input class="Checkbox" style="display:-webkit-box;float:left;line-height:1em;" type="checkbox" id="'+strElement+'"/>'+strElement
 	 			chkHtml += '</label>';
@@ -59,8 +59,12 @@ $a.page(function() {
 			var idx = 0 ;
 			enumValueForm.find('input:checkbox').each(function(index,item){
 				if(item.checked){
-					if(idx > 0 )  reValue += ',';
-					reValue += item.id;
+					if(idx > 0 )  reValue += ",";
+					if(param.name == "optimizer_switch"){
+						reValue += "'"+item.id+"=on'";
+					}else{
+						reValue += item.id;
+					}
 					idx++;
 				}
 			});			

@@ -466,25 +466,25 @@
 			<h3 class="form-title">백업</h3>
            	<!-- tab contents info detail-->
          	<form name="backupForm" method="post">
-           	<div class="ctn-info__wrap">
-         		<div class="mr30 info-list">
+           	<div class="ctn-info__wrap" style="border-bottom:0px;">
+         		<div class="mr30 wd300 fl info-list">
          			<span class="config-title">백업설정 :</span>
 					<div class="onoff-wrap"><button class="Button btn-off" data-target="useYn">OFF</button></div>
 					<div class="hide">
 						<select name="useYn"> <option value="Y">Y</option> <option value="N">N</option> </select>
 					</div>									
-				</div>
-				<div class="mr30 info-list"><span class="config-title">보관기간:</span> 
+				</div>	           	
+				<div class="mr30 wd300 fl info-list"><span class="config-title">보관기간:</span> 
 					<div class="Spinner" data-min="0" data-max="60" data-step="1" id="storePeriodSpinner">
-					    <input id="storePeriod" name="storePeriod" value="1" style="width:80px;">
+					    <input id="storePeriod" name="storePeriod" value="1" style="width:50px;text-align:right;">일</input>
 					    <a class="Up"></a>
 					    <a class="Down"></a>
 					</div>
-					<span class="fr">일</span>
+					
 				</div>
-				<div class="mr30 info-list">
+				<div class="mr30 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
-						<span class="config-title">전체백업 수행주기:</span>
+						<span class="config-title">전체백업 수행주기: </span>
 						<div class="Divselect" id="scheduleDay" name="scheduleDay">
 							<select>
 								<option value="0">매일 수행</option>
@@ -500,7 +500,9 @@
 						</div>
 					</div>
 				</div>
-				<div class="mr30 info-list">
+          	</div>	
+			<div class="ctn-info__wrap" style="border-top:0px;">
+				<div class="mr30 wd300 fl info-list">
 					<span class="config-title">전체 백업 시간:</span>
 					<div class="Spinner Time" data-locale="en" id="startTime" data-hours="24H" data-bind="time:date">
 					    <input data-hour>
@@ -511,7 +513,7 @@
 					    <a class="Down"></a>
 					</div>
 				</div>
-				<div class="mr30 info-list">
+				<div class="mr30 wd300 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
 						<span class="config-title">증분 백업:</span>
 						<div class="Divselect" id="incrementPeriod" name="incrementPeriod">
@@ -526,9 +528,25 @@
 							<span></span>
 						</div>
 					</div>
-					<button class="Button btn bg-red Disabled ml5" id="saveSchedule">수정</button>
 				</div>
-				<div class="info-list__select">
+				<div class="mr30 wd300 fl info-list">
+					<div class="hide fl mr30" data-show-service-type="mariadb">
+						<span class="config-title">수행모드:</span>
+						<div class="Divselect" id="throttleYn" name="throttleYn">
+							<select>
+								<option value="Y">정상모드</option>
+								<option value="N">저속모드</option>
+							</select>
+							<span></span>
+						</div>
+					</div>
+				</div>	
+				<div class="fr info-list">	
+					<button class="Button btn bg-red Disabled fr" id="saveSchedule">수정</button>	
+				</div>				
+			</div>          	
+          	<div class="mt10" style="height:40px;">
+				<div class="info-list__select fr">
 					<div class="fl" id="divAddBackup" style="margin-right:4px;">	
 						<button class="Button btn hide" id="addBackupDisk">백업디스크 추가</button>
 						<button class="Button btn hide" id="removeBackupDisk">백업디스크 제거</button>
@@ -536,8 +554,8 @@
 					<button class="Button btn ml1" id="deleteBackup">삭제</button>
 					<button class="Button btn ml1" id="updateBackup">지금 백업하기</button>
 					<button class="Button btn ml1" id="searchBackup">조회</button>
-				</div>	
-          	</div>					
+				</div>	          	
+          	</div>
            	<div class="info-list__select mt10 hide" data-show-service-type="mariadb">
            		<input class="Checkbox" type="checkbox" id="backupSearchType" checked="checked"/>증분백업포함
 				<!-- button class="Button btn-search" id="searchBackup">검색</button-->
@@ -2019,26 +2037,30 @@
 				};				
 			
 				let param = $.extend({},gParam,{enable:isEnable == 'Y'});
-				
-				gCommon.credentialConfirm({
-			        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:'변경'},
-			        callback : function(res){
-						$a.ajax({
-							url: '/zdbapi/updateAutoFailoverEnable',
-							method:'PUT',
-							data:param,
-							success: function(res){
-								if(res.result.code!='4'){
-									gCommon.alert(res.result.message);
-									fn_getServiceFirst();
-									gCommon.getConfigData(gParam.namespace).done(function(re){
-										gConfigData = re;
-									});		
+				let msg = "Auto Failover 기능을 적용합니다.<br>처음적용시 서비스가 재시작 됩니다." ;
+				gCommon.confirm(msg,function(yn){
+					gCommon.credentialConfirm({
+				        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:'변경'},
+				        callback : function(res){
+							$a.ajax({
+								url: '/zdbapi/updateAutoFailoverEnable',
+								method:'PUT',
+								data:param,
+								success: function(res){
+									if(res.result.code!='4'){
+										if(res.result.code!='0'){
+											gCommon.alert(res.result.message);
+										}
+										fn_getServiceFirst();
+										gCommon.getConfigData(gParam.namespace).done(function(re){
+											gConfigData = re;
+										});		
+									}
 								}
-							}
-						})
-			        }
-			    });		
+							})
+				        }
+				    });	
+				}); 
 			});
 			tabService.find('#divFailoverBtn button').on('click',function(e){
 				e.preventDefault();
@@ -2353,7 +2375,9 @@
 			    });
 			});
 			$('button#addBackupDisk').on('click',function(){
-				let diskSize = gService.persistenceSpec.size;
+				/*backupdisk-test*/
+				let vPodName = gService.podName ;  
+				let diskSize = gService.diskUsageOfPodMap[vPodName][0].size; // gService.persistenceSpec.size; 수정 (2019-07-25)
 				if(gService.statefulSets.length > 1){
 					diskSize = cloudUtil.parseInt(diskSize) / 2 + 'Gi';
 				}
@@ -2435,7 +2459,7 @@
 				height: 400,
 				columnMapping : [
 					{ key:'check',width:'30px',selectorColumn : true},
-					{ title:'백업유형', key : 'type' , width: '100px', align: 'center',render:function(value,data,render,mapping){						
+					{ title:'백업유형', key : 'type' , width: '100px', align: 'center',tooltip:false ,render:function(value,data,render,mapping){						
 						let t = '';
 						switch(value){
 						    case 'INCR': t = '증분백업'; break;
@@ -2443,11 +2467,14 @@
 						    case 'FULL': t = '전체백업'; break;
 						    default : t = '즉시백업'; break;
 						}
-						if(data.scheduleYn == "N")t +='<img src="/styles/images/ico-checkmark.png" style="float:initial;width:20px"></img>';
-						return '<button class="Button gridbtn btn">'+t+'</button>';
+						let reBtn = '<button class="Button gridbtn btn TooltipEvt">'+t+'</button>';
+						if(data.scheduleYn == "N"){
+							reBtn = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"><button class="Button gridbtn btn bg-gray TooltipEvt">'+t+'</button></a>' ;
+						}
+						return reBtn ;
 					}},
-					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
-					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',render:cloudUtil.dtFormat},
+					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat},
+					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat},
 					{ title:'상태', key : 'status' , width: '160px', align: 'center' , tooltip:false , render:function(value,data,render,mapping){
 						let re = "수행중"; 
 						if(value ==  "OK"){
@@ -2459,12 +2486,12 @@
 						}
 						return re
 					}},
-					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',render:cloudUtil.dtFormat,render:function(value,data){
-						let re = ' - ' ;
-				  		if(data.type == "DUMP") re = data.fromLsn +' ~ '+data.toLsn ;
+					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat,render:function(value,data){
+						let  re = data.fromLsn +' ~ '+data.toLsn ; 
+				  		if(data.type == "DUMP") re = ' - ' ;
 						return re;
 					}},
-					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center', render:function(value,data,render,mapping){
+					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center',tooltip:false , render:function(value,data,render,mapping){
 						var val = '';
 						if(value < 1024 ) {
 							val = value +'B';
@@ -2480,19 +2507,18 @@
 						return re;
 					}},
 					{ title:'On-Disk', key : 'ondisk' , width: '160px', align: 'center',hidden:true},
-					{ title:downloadTitle, key : 'archiveFileSize' , width: '100px', align: 'center',excludeFitWidth:true,render:function(value,data,render,mapping){
+					{ title:downloadTitle, key : 'archiveFileSize' , width: '100px', align: 'center',excludeFitWidth:true,tooltip:false ,render:function(value,data,render,mapping){
 						let t = '다운로드';
 						//console.log(data.type);
 						if(['FULL','INCR'].indexOf(data.type) > -1){
 							t = '복원';
 						}
-						
 						var re = $('<button class="Button btn-download '+(data.status != 'OK'?'Disabled':'')+'">'+t+'</button>').on('click',function(){
 							fn_downloadBackupFile(data);
 						});
 						return re;
 					},tooltip:null},
-					{ title:'Log', key : 'log' , width: '60px',width:'70px',excludeFitWidth:true, align: 'center',render:function(value,data,render,mapping){
+					{ title:'Log', key : 'log' , width: '60px',width:'70px',excludeFitWidth:true, align: 'center',tooltip:false ,render:function(value,data,render,mapping){
 						return getGridContextButton();
 					}}
 				],
@@ -2529,14 +2555,22 @@
 
 				var $tooltip = $('#backupTooltip');
 
-				if (mapping.key === 'status' && data.reason != null){
+				if (mapping.key === 'status' ){ // && data.reason != null
 					var val = data['reason']||'';
+					console.log(val);
 					$tooltip.html(val.replaceAll('\n','</br>')); 
 					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
 					$tooltip.open();	
-				}else {
+				}else if(mapping.key === 'type'  ) { //&& data.scheduleYn == "N"
+					
+					var val = '사용자 백업'||'';
+					$tooltip.html(val.replaceAll('\n','</br>')); 
+					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
+					$tooltip.open();	
+				} else{
 					$tooltip.close();
-				} 
+				}
+				
 			});			
 			function setBackupUseYnEvt(val){
 				var msg = val == 'Y'? '백업 설정을 활성화 하시겠습니까?': '백업 설정을 비활성화 하시겠습니까?';
@@ -2578,11 +2612,13 @@
 					backupForm.find('#startTime').setEnabled(true);
 					backupForm.find('#incrementPeriod').setEnabled(true);
 					backupForm.find('#scheduleDay').setEnabled(true);
+					backupForm.find('#throttleYn').setEnabled(true);
 				}else{
 					backupForm.find('#storePeriodSpinner').setEnabled(false);
 					backupForm.find('#startTime').setEnabled(false);
 					backupForm.find('#incrementPeriod').setEnabled(false);
 					backupForm.find('#scheduleDay').setEnabled(false);
+					backupForm.find('#throttleYn').setEnabled(false);
 				}
 			};			
 			function fn_getBackupScheduleInfo(){
@@ -2618,6 +2654,9 @@
 				var param = $.extend({},gParam,backupForm.serializeObject());
 				param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
 				param.incrementYn = backupForm.find('#incrementPeriod select').val() == '0' ? 'N' : 'Y';
+				
+				console.log(param);
+
 				$a.ajax({
 					url: '/zdbapi/updateSchedule',
 					data:param,
