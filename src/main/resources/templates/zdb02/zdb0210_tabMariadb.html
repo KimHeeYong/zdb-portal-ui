@@ -1024,8 +1024,7 @@ let appMariadb = {
 				}
 			});
 		}, setStatusVariablesFilter:function(){
-			
-			$('#txtSystemVariablesFilter').val(''); // 메뉴 클릭시 검색 창 초기화 
+
 			
 			let v = appMariadb.tabMariadb.find('[data-menu=statusVariables] input[name=txtStatusVariablesFilter]').val();
 			if(cloudUtil.isEmpty(v)){
@@ -1037,6 +1036,9 @@ let appMariadb = {
 				});
 			}
 		}, getSystemVariables : function(){
+			
+			$('#txtSystemVariablesFilter').val(''); // 메뉴 클릭시 검색 창 초기화 
+		
 			$a.ajax({
 				url:'/zdbapi/getDatabaseSystemVariables',
 				data:$.extend({},gParam,{podName:gService.podName}),
