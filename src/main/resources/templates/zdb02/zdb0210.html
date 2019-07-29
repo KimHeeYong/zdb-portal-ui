@@ -476,7 +476,7 @@
 				</div>	           	
 				<div class="mr30 wd300 fl info-list"><span class="config-title">보관기간:</span> 
 					<div class="Spinner" data-min="0" data-max="60" data-step="1" id="storePeriodSpinner">
-					    <input id="storePeriod" name="storePeriod" value="1" style="width:50px;text-align:right;">일</input>
+					    <input id="storePeriod" name="storePeriod" value="1" style="width:40px;text-align:left;">일&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					    <a class="Up"></a>
 					    <a class="Down"></a>
 					</div>
@@ -1387,6 +1387,7 @@
 					}},
 					//{ title:'Role', key : 'role' , width: '90px', align: 'center', render : function(value, data){
 					{ title:'역할', key : 'role' , width: '90px', align: 'center', render : function(value, data){
+						
 						let re = '';
 						let roleIcon = {
 							master : '<img src="/styles/images/master.png" style="width: 16px;height: 16px;">',
@@ -1396,27 +1397,31 @@
 						switch(gParam.serviceType){
 							case cServiceType.mariadb:
 								if(data.role == 'master'){
-									if(data.svc.spec.selector.component == 'master'){
+									if(data.svc &&  data.svc.spec.selector.component == 'master'){
 										re = roleIcon.master
 									}
 								}else if(data.role == 'slave'){
-									if(masterPod.svc.spec.selector.component == 'slave'){
-										re = roleIcon.master
-									}else{
-										re = roleIcon.slave
-									} 
+									if(data.svc){
+										if(masterPod.svc.spec.selector.component == 'slave'){
+											re = roleIcon.master
+										}else{
+											re = roleIcon.slave
+										} 
+									}
 								}
 								break;
 							case cServiceType.redis:
 								if(data.role == 'master'){
-									if(data.svc.spec.selector.role == 'master'){
+									if(data.svc && data.svc.spec.selector.role == 'master'){
 										re = roleIcon.master
 									}
 								}else if(data.role == 'slave'){
-									if(masterPod.svc.spec.selector.role == 'slave'){
-										re = roleIcon.master
-									}else{
-										re = roleIcon.slave
+									if(data.svc){
+										if(masterPod.svc.spec.selector.role == 'slave'){
+											re = roleIcon.master
+										}else{
+											re = roleIcon.slave
+										}
 									}
 								}
 								break;
@@ -2378,8 +2383,10 @@
 				/*backupdisk-test*/
 				let vPodName = gService.podName ;  
 				let diskSize = gService.diskUsageOfPodMap[vPodName][0].size; // gService.persistenceSpec.size; 수정 (2019-07-25)
+				
+				diskSize = cloudUtil.convertDiskSize(diskSize) ;
 				if(gService.statefulSets.length > 1){
-					diskSize = cloudUtil.parseInt(diskSize) / 2 + 'Gi';
+					diskSize = cloudUtil.parseInt(diskSize) / 2 ;
 				}
 				$a.popup({
 				        data:$.extend({},gParam,{credential:$("#credential").val(),diskSize:diskSize}),
@@ -2557,7 +2564,7 @@
 
 				if (mapping.key === 'status' ){ // && data.reason != null
 					var val = data['reason']||'';
-					console.log(val);
+					
 					$tooltip.html(val.replaceAll('\n','</br>')); 
 					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
 					$tooltip.open();	
@@ -2631,6 +2638,7 @@
 					url: '/zdbapi/getSchedule',
 					data:param,
 					success: function(res){
+						
 						var data = {};
 						if(!res.schedule){
 							data.useYn = 'N';
@@ -2654,9 +2662,7 @@
 				var param = $.extend({},gParam,backupForm.serializeObject());
 				param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
 				param.incrementYn = backupForm.find('#incrementPeriod select').val() == '0' ? 'N' : 'Y';
-				
-				console.log(param);
-
+		
 				$a.ajax({
 					url: '/zdbapi/updateSchedule',
 					data:param,
@@ -2673,7 +2679,7 @@
 					data:gParam,
 					success: function(res){
 						var list = res.backupList;
-						console.log(res);
+						
 						if(gParam.serviceType != cServiceType.redis){
 							$("#gridBackup").alopexGrid('showCol', 4);
 						}else{
