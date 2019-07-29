@@ -223,7 +223,10 @@
 						},100)
 					},100)
 				}).on('dataChanged',function(e){
-					let isEnalbed = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
+					//let isEnalbed = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
+					let isEnalbed = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{_state: {edited:true}},{_state: {added:true}},{_state: {deleted:true}})).length > 0;					
+					
+					
 					$('#btnSaveSchedule').setEnabled(isEnalbed);
 				});			
 				function fn_getUseYnTemp(value){
