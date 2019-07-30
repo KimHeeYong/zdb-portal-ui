@@ -185,5 +185,9 @@ public class URIConstants {
 	public static final String URI_GET_CREDENTIAL_CONFIRM = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/credentialConfirm";
 	
 	public static final String URI_GET_USER_PRIVILEGES_FOR_SCHEMA = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/userPrivileges/{user}/{host}/{schema}";
+	
+	public static final String URI_GET_LAST_FAIL_OVER_INFO = "/api/v1/failover/{namespace}/{serviceName}/info"; 
+
+	public static final String URI_GET_FAIL_OVER_SERVICES_WITH_NAMESPACES = "/api/v1/{namespace}/failover/services";
 
 }

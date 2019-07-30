@@ -32,6 +32,7 @@ import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.IResult;
+
 import com.zdb.core.domain.MariaDBVariable;
 import com.zdb.core.domain.MariadbUserPrivileges;
 import com.zdb.core.domain.RequestEvent;
@@ -908,23 +909,13 @@ public class ZdbApiController {
 	
 	@RequestMapping(value="getFailoverList", method = RequestMethod.GET)
 	public ModelAndView getFailoverList(HttpServletRequest request) {
+		// SERVER API 변경 (2019-07-30) 
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
-		List<ServiceOverview> services = zdbApiService.getServices(param);
-		List<ServiceOverview> failoverList = new ArrayList<ServiceOverview>();
+		List<ServiceOverview> services = zdbApiService.getFailoverServicesWithNamespaces(param);
+		mav.addObject(IResult.SERVICEOVERVIEWS,services);
 
-		if(services.size() > 0) {
-			for(ServiceOverview u : services) {
-				if(u.isClusterEnabled()) {
-					((List<ServiceOverview>) failoverList).add(u);
-				}
-			}
-		}
-		
-	//	List<Tag> tags = zdbApiService.getTags(param);
-		mav.addObject(IResult.SERVICEOVERVIEWS,failoverList);
-	//	mav.addObject(IResult.TAGS,tags);
 		return mav;
 	}
 	
@@ -956,6 +947,16 @@ public class ZdbApiController {
 		
 		ZdbRestDTO result = zdbApiService.getCredentialConfirm(param);
 		mav.addObject(CommonConstants.RESULT,result);
+		return mav;
+	}
+	
+	@RequestMapping(value="getLastFailoverInfo", method=RequestMethod.GET)
+	public ModelAndView getLastFailoverInfo(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		Map<String,String>  result = zdbApiService.getLastFailoverInfo(param);
+		mav.addObject(IResult.LAST_FAILOVER ,result);
 		return mav;
 	}
 }

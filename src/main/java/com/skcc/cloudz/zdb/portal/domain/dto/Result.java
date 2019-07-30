@@ -116,4 +116,6 @@ public class Result {
 	private CredentialConfirm credentialConfirm;
 	
 	private List<UserPrivilegesForSchema> userPrivilegesForSchema;
+
+	private Map<String,String> lastFailover;
 }
