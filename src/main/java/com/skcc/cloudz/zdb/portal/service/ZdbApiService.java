@@ -41,6 +41,7 @@ import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
 import com.zdb.core.domain.EventMetaData;
 import com.zdb.core.domain.IResult;
+
 import com.zdb.core.domain.MariaDBVariable;
 import com.zdb.core.domain.RequestEvent;
 import com.zdb.core.domain.ScheduleEntity;
@@ -928,5 +929,36 @@ public class ZdbApiService{
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_GET_CREDENTIAL_CONFIRM,HttpMethod.POST,entity, ZdbRestDTO.class, param).getBody();
 		return zdbRestDTO;
 	}
-
+	
+	public Map<String,String> getLastFailoverInfo(Map<String, String> param) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HttpEntity entity = new HttpEntity<>(param.get(IResult.LAST_FAILOVER),headers);
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_GET_LAST_FAIL_OVER_INFO,HttpMethod.GET,entity, ZdbRestDTO.class, param).getBody();
+		
+		Map<String,String> result = null;
+		
+		if(zdbRestDTO != null && zdbRestDTO.getResult() != null) {
+			result = zdbRestDTO.getResult().getLastFailover();
+		};
+		
+		return result;
+	}
+	
+	public List<ServiceOverview> getFailoverServicesWithNamespaces(Map<String,String> param) {
+		List<ServiceOverview> list = Collections.emptyList();
+		String url = URIConstants.URI_GET_FAIL_OVER_SERVICES_WITH_NAMESPACES; 
+		
+		if(CommonConstants.NAMESPACE_ALL.equals(param.get(CommonConstants.NAMESPACE))) {
+			//String namespaces = connector.getSessionNamespaces();
+			param.put(CommonConstants.NAMESPACE, CommonConstants.NAMESPACE_ALL_MARK);
+		};
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + url, ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			list = zdbRestDTO.getResult().getServiceoverviews();
+		};
+		
+		return list;
+	}		
 }

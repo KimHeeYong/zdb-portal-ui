@@ -271,13 +271,15 @@
 						success:function(res){
 							let ruleList = res.alertRules;
 							$('input[name$=value2]').val('');
-							for(let i = 0;i < ruleList.length;i++){
-								let o = ruleList[i];
-								let type = o.type.split('-')[2];
-								$('input[name='+type+'-useYn][value=Y]').setSelected('Y');
-								$('input[name='+type+'-priority][value='+o.priority+']').setSelected(o.priority);
-								$('select[name='+type+'-condition]').val(o.condition);
-								$('input[name='+type+'-value2]').val(o.value2);
+							if(ruleList != null){ // length 사용중 이상 현상 발생으로 수정 (2019-07-15)
+								for(let i = 0;i < ruleList.length;i++){
+									let o = ruleList[i];
+									let type = o.type.split('-')[2];
+									$('input[name='+type+'-useYn][value=Y]').setSelected('Y');
+									$('input[name='+type+'-priority][value='+o.priority+']').setSelected(o.priority);
+									$('select[name='+type+'-condition]').val(o.condition);
+									$('input[name='+type+'-value2]').val(o.value2);
+								}
 							}
 						}
 					})

@@ -108,14 +108,19 @@
 					url:'/zdbapi/getAlertRules',
 					data:{namespace:namespace},
 					success:function(res){
-						let ruleList = res.alertRules;
-						for(let i = 0;i < ruleList.length;i++){
-							let o = ruleList[i];
-							let n = o.type.split('-')[2];
-							if(!gRules[o.serviceName]){
-								gRules[o.serviceName] = new Object();
+						
+						console.log(res.alertRules);
+						
+						let ruleList = 	res.alertRules ;
+						if(ruleList != null ){  // Null 일 경우 length 처리에 문제가 생김 수정 (2019-07-15)
+							for(let i = 0;i < ruleList.length;i++){
+								let o = ruleList[i];
+								let n = o.type.split('-')[2];
+								if(!gRules[o.serviceName]){
+									gRules[o.serviceName] = new Object();
+								}
+								gRules[o.serviceName][n] = o.value;
 							}
-							gRules[o.serviceName][n] = o.value;
 						}
 						let l = [];
 						for(let i = 0;i < gServiceList.length;i++){

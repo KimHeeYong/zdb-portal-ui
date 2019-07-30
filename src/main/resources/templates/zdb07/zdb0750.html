@@ -39,6 +39,8 @@
 		$a.page(function() {
 			this.init = function() {
 				
+				let lastFailover = null;
+				
 				//  네임스페이스 콤보 목록 조회 
 				gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
 					gNamespaces = selector.addHandler(function(e) {
@@ -83,10 +85,13 @@
 						}},
 						{ title:'Autofailover 설정', key : 'failoverEnabled' , width: '150px', align: 'center',render:function(value,data){
 							let re = '';
+							
+							let switVal = value == 'true'?'on':'off';
+							
 							if (data.serviceType == 'mariadb'){
 								// service type 이 mariadb 경우 버튼을 생성한다. 
 							
-								re = $('<div class="onoff-wrap" style="margin:auto"><button class="Button btn-'+value+'" data-value="'+value+'">'+value.toUpperCase()+'</button></div>').on('click',function(){
+								re = $('<div class="onoff-wrap" style="margin:auto"><button class="Button btn-'+switVal+'" data-value="'+switVal+'">'+switVal.toUpperCase()+'</button></div>').on('click',function(){
 									// click 이벤트 발생시 action은 버튼 안에서 일어난다.
 
 									//button 객체를 먼저 선언한다. 
@@ -134,84 +139,10 @@
 							}
 							return re;
 						}},
-						{ title:'Failover시간', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
-							let re = '';
-/* 							if(!cloudUtil.isEmpty(value) && !isNaN(value)){
-								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
-								re = new BigNumber(value).toFormat(); 
-							} */
-							return re;
-						}}						
-						,
-						{ title:'로그', key : 'icosDiskUsage' , width: '50px', align: 'center', render:function(value){
-							let re = '';
-/* 							if(!cloudUtil.isEmpty(value) && !isNaN(value)){
-								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
-								re = new BigNumber(value).toFormat(); 
-							} */
+						{ title:'Failover시간', key : 'serviceFailOverTime' , width: '250px',excludeFitWidth:true, align: 'center',render:function(value,data){
+							let re = value;								
 							return re;
 						}}		
-						/* 
-						{ title:'보관기간', key : 'storePeriod' , width: '70px', align: 'center',editable:function(value,data){
-							let re = $('<input data-keyfilter="0-9" class="alopexgrid-default-renderer" type="text" name="storePeriod" value="'+value+'" style="text-align:center;" maxlength="2">');
-							return re;
-						},valid : function(value, data) {
-							if(cloudUtil.isEmpty(value)) {
-								return false;
-							}
-							let v = cloudUtil.parseInt(value);
-							data.storePeriod = v;
-							if(v < 0 || v > 60){
-								return false;
-							}
-							return true;
-						}},
-						{ title:'ICOS 사용량(MB)', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
-							let re = '';
-							if(!cloudUtil.isEmpty(value) && !isNaN(value)){
-								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
-								re = new BigNumber(value).toFormat(); 
-							}
-							return re;
-						}},
-						{ title:'백업주기', key : 'backupExecType' , width: '100px', align: 'center'},
-						{ title:'백업시간', key : 'startTime' , width: '100px', align: 'center',editable:function(value,data){
-							let re = $('<input type="text" name="startTime" value="'+value+'" class="alopexgrid-default-renderer" style="text-align:center;">');
-							$a.maskedinput(re[0],'00:00');
-							return re;
-						},editedValue:function(cell){
-							return $(cell).find('input').val();
-						},valid : function(value, data) {
-							return moment(value,'HH:mm').isValid();
-						}},
-						{ title:'백업용량', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
-							return value == '0'?'-': value;
-						}},
-						{ title:'소요시간', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
-							return cloudUtil.parseInt(value)== 0 ?'-':value;
-						}},
-						{ title:'백업주기', key : 'incrementPeriod' , width: '100px', align: 'center',
-							render:function(value,data){
-								let re = value;
-								if(data.incrementYn == 'N'){
-									re = '-';
-								};
-								return re;
-							},
-							allowEdit:function(value,data){
-								return data.incrementYn == 'Y';
-							},
-							editable:{
-							type:'select',
-							rule:[{value:'0',text:'미사용'},{value:'1',text:'1시간'},{value:'2',text:'2시간'},{value:'6',text:'6시간'},{value:'12',text:'12시간'}]
-						}},
-
-						{ title:'백업용량', key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
-							return value == '0'?'-': value;
-						}},
-						{ title:'소요시간', key : 'incrExecutionTime' , width: '70px', align: 'center', render:function(value){
-							return cloudUtil.parseInt(value)== 0 ?'-':value;
-						}} */
 					],
 					message: {
 						nodata: gMessage.gridNodata
@@ -223,31 +154,6 @@
 						{fromIndex:"backupExecType", toIndex:"fullExecutionTime", title:"전체백업"},
 						{fromIndex:"incrementPeriod", toIndex:"incrExecutionTime", title:"증분백업"}
 					],
-/* 				}).on('cellEditInvalid ', function(e){
-					setTimeout(function(evt){
-						var evObj = AlopexGrid.parseEvent(e);
-						var opt = evObj.data;
-						var mapping = evObj.mapping;
-						var col = mapping.columnIndex;
-						var invalidValue = evObj.value;
-						
-						if(opt._state.deleted == true){
-							return;
-						}
-						if(mapping.key == 'storePeriod'){
-							alert('보관기간은 0~60 사이로 입력하세요');
-						}else if(mapping.key == 'startTime'){
-							alert('시:분 형식으로 입력하세요')
-						}
-						gridFailover.alopexGrid('focusCell', opt);
-						setTimeout(function(){
-							gridFailover.alopexGrid('rowSelect', opt, true)
-							gridFailover.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
-						},100)
-					},100)
-				}).on('dataChanged',function(e){
-					let isEnalbed = AlopexGrid.trimData(gridFailover.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
-					$('#btnSaveSchedule').setEnabled(isEnalbed); */
 				});		
 				/* on/off 버튼 생성 스크립트  */
 				function fn_getUseYnTemp(value){
@@ -281,11 +187,10 @@
 					}); 
 					return deferred.promise();
 				}
+				
 				function fn_getFailoverInfoList(){
 					let param = $('form[name=eventForm]').serializeObject();
 					
-					// /zdbapi/getServiceoverviews
-					// url: '/zdbapi/getScheduleInfoList',
 					$a.ajax({
 						url: '/zdbapi/getFailoverList',
 						data:{namespace:gSelectedNamespace},
@@ -295,19 +200,6 @@
 							let list = res.serviceoverviews;
 							//grid 에 데이터셋 생성
 							gridFailover.alopexGrid('dataSet',list);
-						
-							
-/* 							gServiceList = res.serviceoverviews;
-							gfn_convertServiceDatas(gServiceList); */
-							
-/* 							let list = res.scheduleInfoList;
-							list = list.map(function(ob){
-								return $.extend({},ob,{incrementPeriod:(''+ob.incrementPeriod)});
-							});
-							gridFailover.alopexGrid('dataSet',list);
-
-							let showCol = gSelectedNamespace == G_NAMESPACE_ALL ?'showCol':'hideCol';
-							gridFailover.alopexGrid(showCol, 'namespace'); */
 						}
 					});				
 				};			
