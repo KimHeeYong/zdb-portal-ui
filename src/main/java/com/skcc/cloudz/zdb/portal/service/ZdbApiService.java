@@ -950,8 +950,8 @@ public class ZdbApiService{
 		String url = URIConstants.URI_GET_FAIL_OVER_SERVICES_WITH_NAMESPACES; 
 		
 		if(CommonConstants.NAMESPACE_ALL.equals(param.get(CommonConstants.NAMESPACE))) {
-			String namespaces = connector.getSessionNamespaces();
-			param.put(CommonConstants.NAMESPACE, namespaces);
+			//String namespaces = connector.getSessionNamespaces();
+			param.put(CommonConstants.NAMESPACE, CommonConstants.NAMESPACE_ALL_MARK);
 		};
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + url, ZdbRestDTO.class,param);
 		
