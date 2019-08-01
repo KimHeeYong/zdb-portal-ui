@@ -36,6 +36,7 @@ import com.skcc.cloudz.zdb.portal.domain.dto.NamespaceResource;
 import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.zdb.core.domain.AlertingRuleEntity;
+import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
@@ -960,5 +961,51 @@ public class ZdbApiService{
 		};
 		
 		return list;
-	}		
+	}
+	
+	
+	public List<Namespace> getMigrationBackup(Map<String,String> param) {
+		List<Namespace> list = Collections.emptyList();
+		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_GET_MIGRATION_BACKUP, HttpMethod.GET, null,  ZdbRestDTO.class).getBody();
+		
+		if(zdbRestDTO != null && zdbRestDTO.getResult() != null) {
+			list = zdbRestDTO.getResult().getNamespaces();
+		};
+		
+		return list;
+	}
+	
+	public List<BackupEntity> getMigrationBackupList(Map<String,String> param) {
+		List<BackupEntity>  result = null;
+		String url = URIConstants.URI_GET_MIGRATION_BACKUP_LIST; 
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + url, ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			result = zdbRestDTO.getResult().getMigrationBackupList();
+		};
+		
+		return result;
+	}	
+	
+	public List<String> getMigrationBackupServiceList(Map<String,String> param) {
+		List<String> list = Collections.emptyList();
+		String url = URIConstants.URI_GET_MIGRATION_BACKUP_SERVICE_LIST; 
+		
+		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + url, ZdbRestDTO.class,param);
+		
+		if(zdbRestDTO!=null) {
+			list = zdbRestDTO.getResult().getServiceLists();
+		};
+		
+		return list;
+	}	
+	
+	public ZdbRestDTO setMigrationBackup(Map<String, String> param) {
+		ZdbRestDTO zdbRestDTO = null;
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+
+		zdbRestDTO = connector.exchange(demonServer + URIConstants.URI_GET_MIGRATION_BACKUP_AGENT, HttpMethod.GET,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
 }

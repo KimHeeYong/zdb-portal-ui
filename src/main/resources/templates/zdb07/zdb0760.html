@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
+<th:block layout:fragment="page_head">
+    <title></title>
+</th:block>
+<th:block layout:fragment="content">
+	<!-- location : name space combo box  Start -->
+	<div class="locations-area">
+		<div class="prj-list">
+		<!-- Namespace Area : not use -->
+		</div>
+	</div>
+	<!-- location : name space combo box  End -->	
+	<!-- contents-box : Content Area Start -->
+	<div class="contents-box">
+		<!-- Top Title Area Start -->
+		<div class="top-area">
+           	<h2 class="title">DB 복제</h2>
+			<div class="tag-wrap">
+				<span class="tag">사용중인 MariaDB 서비스의 백업본으로 다른 MariaDB 서비스에 복제합니다.</span>
+			</div>           
+		</div>	
+		<!-- Top Title Area End -->
+		<!-- Table Area Start : copyDbDiv-->
+		<form name="copyDbForm" method="post">
+			<div class="accor-contents__wrap">	
+				<!-- Table area Start   -->
+				<table id="copyDbTable" class="Table Form-type">
+					<colgroup>
+						<col style="width: 15%;"> </col>
+						<col style="width: 30%;"> </col>
+						<col style="width: 15%;"> </col>
+						<col style="width: 15%;"> </col>
+						<col style="width: 25%;"> </col>						
+					</colgroup>							
+					<tbody> 
+						<tr style="height: 70px;">						
+							<th style="font-weight: bold;font-size: 18px;">Source DB</th>
+							<td></td>
+							<!-- DB 복제 기능 버튼 부분 -->
+      						<td rowspan="4" style="text-align:center;border-left: 1px solid #e2e4e7;border-right: 1px solid #e2e4e7;"><p class="item-img"><img src="/styles/images/ico-right-arrow-database.png" alt="Copy Database"></p></td>
+							<th  style="font-weight: bold;font-size: 18px;">Target DB</th>
+							<td></td>							
+						</tr>
+						<tr>
+							<th>Namespace</th>
+							<td>						
+								<div class="Divselect" id="sourceNamespaces" name="sourceNamespaces">
+									<select></select>
+									<span></span>
+								</div>							
+							</td>
+							<th>Namespace</th>
+							<td>
+								<div class="Divselect" id="targetNamespaces" name="targetNamespaces">
+									<select></select>
+									<span></span>
+								</div>									
+							</td>							
+						</tr>
+						<tr>
+							<th>Service Name </th>
+							<td>
+								<div class="Divselect" id="sourceServiceName" name="sourceServiceName" style="width:200px">
+									<select></select>
+									<span></span>
+								</div>								
+							</td>							
+							<th>Service Name</th>
+							<td>
+								<div class="Divselect" id="targetServiceName" name="targetServiceName" style="width:200px">
+									<select></select>
+									<span></span>
+								</div>								
+							</td>							
+						</tr>
+						<tr>
+							<th>Backup Date</th>
+							<td>
+								<div class="Divselect" id="backupList" name="backupList" style="width:200px">
+									<select></select>
+									<span></span>
+								</div>		
+							</td>
+							<th></th>
+							<td></td>							
+						</tr>				
+					</tbody>
+				</table>
+				<!-- Table area End   -->				
+				<!-- Bottom button Area Start -->
+	            <div class="btn-wrap__right">
+		        	<button class="Button btn bg-red" id="saveVariables" name="saveVariables">적용하기</button>
+		        </div>	
+		     	<!-- Bottom button Area End -->
+			</div>
+		</form>
+		<!-- Table Area Start -->
+		<!-- grid -->
+    </div> 
+	<!-- contents-box : Content Area End -->    
+	<!-- Script Area Start -->	
+	<script type="text/javascript">
+		let app = {};
+		let gNamespaces = null;     // 네임스페이스 콤보
+		let vNamespace = null;     // 네임스페이스 콤보
+		let vServiceTpe = "mariadb";
+		$a.page(function() {
+			this.init = function() {
+				// form 설정 				
+				let form = $('form[name=copyDbForm]');
+				
+				//Namespaces 조회 하여 combo 셋팅
+				getMigrationBackup();
+				//조회 조건 조회
+				function getMigrationBackup(){
+					var param = form.serializeObject();
+					
+					$a.ajax({
+						url: '/zdbapi/getMigrationBackup',
+						data:param,
+						success: function(res){
+
+ 							if(res){
+ 								//metadata
+								let d = res.namespaces||{};
+								let combo1 = form.find('#sourceNamespaces');
+								let combo2 = form.find('#targetNamespaces');
+								for(let k in d){
+									let l = d[k]||[];
+									
+									combo1.find('select').append($('<option>',{value:l.metadata.name,text:l.metadata.name}));									;
+ 									combo2.find('select').append($('<option>',{value:l.metadata.name,text:l.metadata.name}));
+								} 	
+								
+								combo1.setSelected(combo1.find('option:eq(0)').val());	
+								combo2.setSelected(combo2.find('option:eq(0)').val());
+							} 
+						}
+					});
+				}
+				
+				form.find('#sourceNamespaces select').on('change',function(){
+					vNamespace = $(this).val();
+					if($(this).val() != ''){
+						
+						getMigrationBackupServiceList($(this).val() , vServiceTpe , 'source');
+					}
+				});	
+				
+				form.find('#targetNamespaces select').on('change',function(){
+					if($(this).val() != ''){
+						
+						getMigrationBackupServiceList($(this).val() , vServiceTpe , 'target');
+					}
+				});		
+				
+				form.find('#sourceServiceName select').on('change',function(){
+					if($(this).val() != ''){
+						getMigrationBackupList(vNamespace , vServiceTpe , $(this).val());
+					}
+				});	 
+				
+				function getMigrationBackupList(namespace , serviceType , serviceName){
+					let backupCombo = form.find('#backupList'); // backupLsit selectbox 
+					backupCombo.find('select').empty();
+					backupCombo.find('span').empty();
+					
+		    		var data = {namespace:namespace,serviceType:serviceType,serviceName:serviceName};  //parameter
+
+		    		$a.ajax({
+						url: '/zdbapi/getMigrationBackupList',
+						data: data, 
+						success: function(res){
+							
+							let backList  = res.BackupList||{};	
+							let b = "";
+							//completeDatetime 을 내림차순으로 정렬한다. 
+							backList.sort(function(a,b){
+								return a.completeDatetime > b.completeDatetime?-1 : a.completeDatetime < b.completeDatetime?1 : 0 ;
+							});
+							
+							//sort 된 데이터를 selectbox 에 데이터 삽입 
+							if(backList.length > 0){
+								for(let k in backList){
+									b = backList[k] ;
+									let d = moment(b.completeDatetime,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm');
+									backupCombo.find('select').append($('<option>',{value:b.backupId,text:d}));
+								}	
+								backupCombo.setSelected(backupCombo.find('option:eq(0)').val());			
+							}
+	
+						}
+					});
+				} 				
+				function getMigrationBackupServiceList(namespace , serviceType , type){
+					let serviceCombo = form.find('#sourceServiceName');
+					if(type == 'target') serviceCombo = form.find('#targetServiceName');	
+					
+					serviceCombo.find('select').empty();
+					serviceCombo.find('span').empty();
+					
+		    		var data = {namespace:namespace,serviceType:serviceType,type:type};
+					$a.ajax({
+						url: '/zdbapi/getMigrationBackupServiceList',
+						data: data, 
+						success: function(res){
+ 							if(res){
+			
+								let opt = res.serviceoverviews||{};
+								let l = "";
+
+								if(opt.length > 0){
+									
+									for(let k in opt){
+										l = opt[k];
+										serviceCombo.find('select').append($('<option>',{value:l,text:l}));
+									}
+									serviceCombo.setSelected(serviceCombo.find('option:eq(0)').val());											
+								}else{
+									if(type != 'target'){
+										let backupCombo = form.find('#backupList'); // backupLsit selectbox 
+										backupCombo.find('select').empty();
+										backupCombo.find('span').empty();
+									}
+								}
+ 							}							
+						}
+					});
+				} 
+				
+				$('#saveVariables').on('click',function(e){
+					
+					let backupCombo = $("#backupList").find('select').val() ;
+					let tNameSpace =  $("#targetNamespaces").find('select').val() ; 
+					let tServiceName =  $("#targetServiceName").find('select').val() ; 
+					
+					let sNameSpace =  $("#sourceNamespaces").find('select').val() ; 
+					let sServiceName =  $("#sourceServiceName").find('select').val() ; 
+					
+					
+					if(cloudUtil.isEmpty(backupCombo)){
+						gCommon.alert('Backup Date 를 선택해 주세요..');return;
+					};
+					
+					
+					if(cloudUtil.isEmpty(tNameSpace)){
+						gCommon.alert('대상 Namespace 를 선택해 주세요.');return;
+					};
+					
+					if(cloudUtil.isEmpty(tServiceName)){
+						gCommon.alert('대상 Service 를 선택해 주세요.');return;
+					};
+					
+					if(tNameSpace == sNameSpace && tServiceName == sServiceName ){
+						gCommon.alert('동일한 Service 입니다.<br> 대상 Service 를 다시 선택해 주세요.');return;
+					}
+					
+					e.preventDefault();
+					gCommon.confirm('Migration 작업수행을 하시 겠습니까?',function(){
+						var data = {namespace:tNameSpace,serviceType:vServiceTpe,serviceName:tServiceName,backupId:backupCombo.val()};
+						
+						$a.ajax({
+							url: '/zdbapi/setMigrationBackup',
+							method:'PUT',
+							data:data,
+							success: function(res){
+								gCommon.alert(res.result.message);
+							}
+						})
+					});
+				}) 
+			}
+		});
+	</script>
+	<!-- Script Area End -->	
+</th:block>
+</html>

@@ -48,7 +48,6 @@ public class Zdb07Controller {
 	
 	@GetMapping("zdb0760")
 	public ModelAndView zdb0780(HttpServletRequest request,HttpServletResponse response) {
-		System.out.println("zdb0760");
 		ModelAndView mav = new ModelAndView();
 		return mav;
 	}	
