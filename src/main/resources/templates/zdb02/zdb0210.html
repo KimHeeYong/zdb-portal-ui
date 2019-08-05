@@ -2394,9 +2394,9 @@
 				let diskSize = gService.diskUsageOfPodMap[vPodName][0].size; // gService.persistenceSpec.size; 수정 (2019-07-25)
 				
 				diskSize = cloudUtil.convertDiskSize(diskSize) ;
-				if(gService.statefulSets.length > 1){
+/* 				if(gService.statefulSets.length > 1){
 					diskSize = cloudUtil.parseInt(diskSize) / 2 ;
-				}
+				} */  // 주석처리 ; 수정 (2019-08-05)
 				$a.popup({
 				        data:$.extend({},gParam,{credential:$("#credential").val(),diskSize:diskSize}),
 				        url: '/zdb02/zdb0200p08',
