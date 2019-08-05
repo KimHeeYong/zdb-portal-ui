@@ -91,16 +91,20 @@
 											<th>용도</th>
 											<td data="purpose"></td>
 										</tr>
-										<tr>
+										<tr >
 											<th>백업 여부</th>
 											<td data="backupEnabledStr"></td>
 										</tr>
-										<tr>
+										<tr th:if="${#request.getParameter('exposeType')} == 'private'">
 											<th>Public 접근 허용</th>
 											<td data="exposeTypeStr"></td>
 										</tr>
+										<tr th:if="${#request.getParameter('exposeType')} == 'public'">
+											<th>Public 접근 허용</th>
+											<td ><span>Private / </span><span data="exposeTypeStr"></span></td>
+										</tr>
 										<tr>
-											<th>클러스터</th>
+											<th>이중화 여부</th>
 											<td data="clusterEnabledStr"></td>
 										</tr>
 										
@@ -108,13 +112,13 @@
 											<th>Worker Pools</th>
 											<td data="workerPool"></td>
 										</tr>
-										<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
-											<th>스토리지 종류</th>
-											<td data="kindOfStorage"></td>
-										</tr>
 										<tr>
 											<th>할당메모리</th>
 											<td data="specMemory"></td>
+										</tr>
+										<tr th:if="${#request.getParameter('serviceType')=='mariadb'}">
+											<th>스토리지 종류</th>
+											<td><span>BlockStorage(<span data="kindOfStorage"></span>)</span></td>
 										</tr>
 										<tr th:if="${#request.getParameter('serviceType')=='mariadb' || #request.getParameter('purpose') == 'DATA'}">
 											<th>할당디스크</th>

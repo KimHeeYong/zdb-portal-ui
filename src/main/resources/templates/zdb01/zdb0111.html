@@ -118,7 +118,7 @@
 								</td>
 							</tr>
 							<tr>
-								<th>클러스터</th>
+								<th>이중화 여부</th>
 								<td>
 									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
@@ -207,7 +207,7 @@
 								</td>
 							</tr>
 							<tr>
-								<th>클러스터</th>
+								<th>이중화 여부</th>
 								<td>
 									<div class="onoff-wrap" id="clusterOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
@@ -224,14 +224,7 @@
 										<span></span>
 									</div>
 								</td>
-							</tr>
-							<tr>
-								<th>스토리지 종류</th>
-								<td id="kindOfStorage">
-									<input type="radio" name="kindOfStorage" value="Endurance" checked="checked">Endurance
-									<input type="radio" name="kindOfStorage" value="Performance"/>Performance
-								</td>
-							</tr>						
+							</tr>					
 							<tr>
 								<th class="ht140">할당메모리<span class="asterisk">*</span></th>
 								<td>
@@ -244,7 +237,14 @@
 										</div>
 									</div>
 								</td>
-							</tr>			
+							</tr>	
+							<tr>
+								<th>스토리지 종류</th>
+								<td id="kindOfStorage">
+									<input type="radio" name="kindOfStorage" value="Endurance" checked="checked">BlockStorage(Endurance)
+									<input type="radio" name="kindOfStorage" value="Performance"/>BlockStorage(Performance)
+								</td>
+							</tr>		
 							<tr>
 								<th>할당디스크<span class="asterisk">*</span></th>
 								<td>
