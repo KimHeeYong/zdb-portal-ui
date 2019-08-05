@@ -2578,3 +2578,8 @@
 .alopexgrid.alopexgrid-filterdropdown-wrapper {
 	z-index: 73;
 }
+
+/* 헤더에 표시되는 필터링 셀 디자인 */
+.alopexgrid .headercell.border-left {
+	border-left: 1px solid #e2e2e2;
+}
