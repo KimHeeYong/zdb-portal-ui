@@ -151,7 +151,7 @@
 							}
 							return re;
 						}},
-						{ title:'백업주기', key : 'backupExecType' , width: '100px', align: 'center'},
+						{ title:'백업주기', key : 'backupExecType' , width: '100px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
 						{ title:'백업시간', key : 'startTime' , width: '100px', align: 'center',editable:function(value,data){
 							let re = $('<input type="text" name="startTime" value="'+value+'" class="alopexgrid-default-renderer" style="text-align:center;">');
 							$a.maskedinput(re[0],'00:00');
@@ -167,7 +167,7 @@
 						{ title:'소요시간', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
 							return cloudUtil.parseInt(value)== 0 ?'-':value;
 						}},
-						{ title:'백업주기', key : 'incrementPeriod' , width: '100px', align: 'center',
+						{ title:'백업주기', key : 'incrementPeriod' ,headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'}, width: '100px', align: 'center',
 							render:function(value,data){
 								let re = value;
 								if(data.incrementYn == 'N'){
@@ -197,8 +197,8 @@
 						sortingColumn: "serviceName",
 						sortingDirection: 'asc'
 					},headerGroup: [
-						{fromIndex:"backupExecType", toIndex:"fullExecutionTime", title:"전체백업"},
-						{fromIndex:"incrementPeriod", toIndex:"incrExecutionTime", title:"증분백업"}
+						{fromIndex:"backupExecType", toIndex:"fullExecutionTime", headerStyleclass: 'border-left' , title:"전체백업"},
+						{fromIndex:"incrementPeriod", toIndex:"incrExecutionTime", headerStyleclass: 'border-left'  , title:"증분백업"}
 					],
 				}).on('cellEditInvalid ', function(e){
 					setTimeout(function(evt){
