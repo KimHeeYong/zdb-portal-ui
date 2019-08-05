@@ -1489,6 +1489,10 @@
 						gTagList = service.tags;
 						fn_displayService();
 						fn_getServiceCallback();
+						
+						if(gService.backupDiskUsed){
+							$("#gridResource").alopexGrid('showCol', 'backupStorage');
+						}
 					},complete:function(res){
 						deferred.resolve(res.responseJSON);
 					}
