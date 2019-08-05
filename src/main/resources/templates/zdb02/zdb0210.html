@@ -14,7 +14,6 @@
 			background-position: -25px -173px; 
 		}
 		.TooltipEvt{
-			font-size:1.0em;
 		}
 	</style>  
 </th:block>
@@ -531,8 +530,9 @@
 				</div>
 				<div class="mr30 wd300 fl info-list">
 					<div class="hide fl mr30" data-show-service-type="mariadb">
-						<span class="config-title">수행모드:</span>
-						<div class="Divselect" id="throttleYn" name="throttleYn">
+						<span class="config-title">수행모드 <span class="ico_question" id="throttleYnTooltip"></span> : </span>
+						<span data="disk"></span>
+						<div class="Tooltip" data-base="#throttleYnTooltip" id="throttleYnTooltipMsg" data-position="bottom" data-animation="fade"></div>	<div class="Divselect" id="throttleYn" name="throttleYn">
 							<select>
 								<option value="N">정상모드</option>
 								<option value="Y">저속모드</option>
@@ -1489,6 +1489,10 @@
 						gTagList = service.tags;
 						fn_displayService();
 						fn_getServiceCallback();
+						
+						if(gService.backupDiskUsed){
+							$("#gridResource").alopexGrid('showCol', 'backupStorage');
+						}
 					},complete:function(res){
 						deferred.resolve(res.responseJSON);
 					}
@@ -1574,8 +1578,9 @@
 					}
 				}
 				infoMsg.html(msg);
-				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정, 프로세스)설정
-				var tabDisList = ['tabBackup','tabUser','tabDatabase','tabSystem','tabProcess']; 
+				//service 상태가 GREEN이 아니면 탭이동 불가(스케일, 백업, 사용자, 환경설정, 프로세스)설정 
+				// 백업은 대상에서 제외 (2019-08-01)
+				var tabDisList = ['tabUser','tabDatabase','tabSystem','tabProcess']; 
 				if(gService.serviceType == cServiceType.mariadb){ //mariadb 면 tabSystem 이동되도록
 					tabDisList.splice(tabDisList.indexOf('tabSystem'),1);
 				};
@@ -2325,6 +2330,10 @@
 					setBackupUseYnEvt('Y');
 				}
 			});
+			
+			let throttleYnTooltipMsg = "백업 수행되는 속도를 저속으로 제어하는 모드 입니다.<br>백업 수행되는 중에 데이터베이스 서비스의 영향을 최소화 합니다." ; 
+			$('#throttleYnTooltipMsg').html(throttleYnTooltipMsg).tooltip();
+			
 			$('button#saveSchedule').on('click',function(){
 				if(backupStatus=='I'){
 					gCommon.confirm('백업 설정을 수정 하시겠습니까?',function(){
@@ -2385,9 +2394,9 @@
 				let diskSize = gService.diskUsageOfPodMap[vPodName][0].size; // gService.persistenceSpec.size; 수정 (2019-07-25)
 				
 				diskSize = cloudUtil.convertDiskSize(diskSize) ;
-				if(gService.statefulSets.length > 1){
+/* 				if(gService.statefulSets.length > 1){
 					diskSize = cloudUtil.parseInt(diskSize) / 2 ;
-				}
+				} */  // 주석처리 ; 수정 (2019-08-05)
 				$a.popup({
 				        data:$.extend({},gParam,{credential:$("#credential").val(),diskSize:diskSize}),
 				        url: '/zdb02/zdb0200p08',
@@ -2638,6 +2647,15 @@
 					url: '/zdbapi/getSchedule',
 					data:param,
 					success: function(res){
+						var isStatusGreen = gService.status == 'green'; 
+						
+						if(isStatusGreen){
+							$('#addBackupDisk').setEnabled(true);
+							$('#updateBackup').setEnabled(true);
+						}else{
+							$('#addBackupDisk').setEnabled(false);
+							$('#updateBackup').setEnabled(false);
+						}
 						
 						var data = {};
 						if(!res.schedule){

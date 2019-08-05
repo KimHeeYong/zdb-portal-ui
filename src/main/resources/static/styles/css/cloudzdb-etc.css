@@ -170,7 +170,15 @@ div.grid {
 	height: 32px;
 	background: transparent url(/styles/images/icons.png) no-repeat;
 	background-position: -294px -113px;
-	padding: 30px 12px 0px 10px
+	padding: 30px 12px 0px 10px;
+}
+
+.ico_question {
+	width: 31px;
+	height: 32px;
+	background: transparent url(/styles/images/ico-question-circle.png) no-repeat;
+	background-position: 0px 32px;
+	padding: 30px 12px 0px 10px;
 }
 
 .newpop {
