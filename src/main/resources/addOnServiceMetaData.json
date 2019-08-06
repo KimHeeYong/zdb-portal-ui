@@ -87,9 +87,7 @@
 	    }
     ],
     "accessRoles": [
-      "cluster-admin",
-      "admin",
-      "member"
+      "cluster-admin"
     ],
     "enable": true
   },
@@ -101,9 +99,7 @@
     "folder": "/zdb04",
     "target": "self",
     "accessRoles": [
-      "cluster-admin",
-      "admin",
-      "member"
+      "cluster-admin"
     ],
     "enable": true
   },
