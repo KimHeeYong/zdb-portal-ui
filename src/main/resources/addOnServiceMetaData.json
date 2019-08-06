@@ -51,7 +51,7 @@
 	"sub":[
         {
 		    "id": "zdb0730",
-		    "name": "백업스케쥴",
+		    "name": "백업스케줄",
 		    "order": 1,
 		    "url": "/zdb07/zdb0730",
     		"folder": "/zdb07",
