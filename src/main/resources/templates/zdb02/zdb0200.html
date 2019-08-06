@@ -317,6 +317,7 @@
 								try{
 									let r = pods[j];
 									let c = r.spec.containers[0].resources;
+									let x = r.spec.containers[1].resources; // cpu , memory 수치 변경시 필요 추가 (2019-08-06)
 									let t = {
 											cpuRequest : c.requests.cpu.amount,
 											cpuLimit:c.limits.cpu.amount,
@@ -342,6 +343,10 @@
 									console.log(ex)
 								}
 							}
+							
+							
+							console.log(podResources);
+							
 							let o = gCommon.findObjectByKeyOb(nTreeDt,{serviceName:k});
 							if(o){
 								o.podResource = podResources;		
@@ -389,6 +394,7 @@
 				data: {namespace:G_NAMESPACE_ALL} , 
 				success: function(res){
 					gServiceList = res.serviceoverviews;
+
 					gfn_convertServiceDatas(gServiceList);
 					gTagList = res.tags;
 					fn_getViewNamespaces();
