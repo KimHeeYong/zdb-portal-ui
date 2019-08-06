@@ -227,8 +227,10 @@
 						}
 						return re;
 					}, treeColumn : true},
+					{ title:'CPU', key:'cpu',width:'70px',align:'center',hidden:true},		 			
 					{ title:'Requests', key:'cpuRequest',width:'70px',align:'center',hidden:true},
 					{ title:'Limits', key:'cpuLimit',width:'70px',align:'center',hidden:true},
+ 					{ title:'MEMORY', key:'memory',width:'70px',align:'center',hidden:true},	 
 					{ title:'Requests', key:'memoryRequest',width:'70px',align:'center',hidden:true},
 					{ title:'Limits', key:'memoryLimit',width:'70px',align:'center',hidden:true},
 					{ title:'데이터', key:'storageData',width:'70px',align:'center',hidden:true},
@@ -293,12 +295,18 @@
 		function fn_getPodResources(){
 			let nTreeDt = AlopexGrid.trimData(divServiceListGrid.alopexGrid('dataGet',{_state:{expandedTreeNode:true}})); 
 			let isHidden = nTreeDt.length == 0 
-			divServiceListGrid.alopexGrid('updateColumn', {hidden:isHidden}, ['cpuRequest', 'cpuLimit', 'memoryRequest','memoryLimit','storageData','storageBackup']);
+			//divServiceListGrid.alopexGrid('updateColumn', {hidden:isHidden}, ['cpuRequest', 'cpuLimit', 'memoryRequest','memoryLimit','storageData','storageBackup']);
+			// hidden column 변경 적용 (2019-08-06)
+			divServiceListGrid.alopexGrid('updateColumn', {hidden:isHidden}, ['cpu','memory','storageData','storageBackup']);
+			
+			
 			if(isHidden){
 				divServiceListGrid.alopexGrid('updateOption', {headerGroup: null} );
 			}else{
-				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [ {fromIndex:'cpuRequest', toIndex:'cpuLimit', title:'CPU'}
-				, {fromIndex:'memoryRequest', toIndex:'memoryLimit', title:"MEMORY"} , {fromIndex:'storageData', toIndex:'storageBackup', title:"스토리지"}]});
+/* 				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [ {fromIndex:'cpuRequest', toIndex:'cpuLimit', title:'CPU'}
+				, {fromIndex:'memoryRequest', toIndex:'memoryLimit', title:"MEMORY"} , {fromIndex:'storageData', toIndex:'storageBackup', title:"스토리지"}]}); */
+				
+				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [  {fromIndex:'storageData', toIndex:'storageBackup', title:"스토리지"}]});
 			}
 			let p = nTreeDt.map(function(dt){
 				return {namespace:dt.namespace,serviceType:dt.serviceType,serviceName:dt.serviceName};
@@ -318,9 +326,12 @@
 									let r = pods[j];
 									let c = r.spec.containers[0].resources;
 									let x = r.spec.containers[1].resources; // cpu , memory 수치 변경시 필요 추가 (2019-08-06)
+									
 									let t = {
+											cpu : cloudUtil.parseInt(c.limits.cpu.amount) +  cloudUtil.parseInt(x.limits.cpu.amount) +'m',
 											cpuRequest : c.requests.cpu.amount,
 											cpuLimit:c.limits.cpu.amount,
+											memory : cloudUtil.parseInt(c.limits.memory.amount) +  cloudUtil.parseInt(x.limits.memory.amount) +'Mi',
 											memoryRequest:c.requests.memory.amount,
 											memoryLimit:c.limits.memory.amount,
 										}

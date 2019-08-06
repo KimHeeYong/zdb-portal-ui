@@ -532,7 +532,8 @@
 					<div class="hide fl mr30" data-show-service-type="mariadb">
 						<span class="config-title">수행모드 <span class="ico_question" id="throttleYnTooltip"></span> : </span>
 						<span data="disk"></span>
-						<div class="Tooltip" data-base="#throttleYnTooltip" id="throttleYnTooltipMsg" data-position="bottom" data-animation="fade"></div>	<div class="Divselect" id="throttleYn" name="throttleYn">
+						<div class="Tooltip" data-base="#throttleYnTooltip" id="throttleYnTooltipMsg" style="color:#ffffff;" data-position="bottom" data-animation="fade"></div>	
+						<div class="Divselect" id="throttleYn" name="throttleYn">
 							<select>
 								<option value="N">정상모드</option>
 								<option value="Y">저속모드</option>
@@ -2828,6 +2829,7 @@
 					data:param,
 					success: function(res){
 						var list = res.operationEvents;
+						console.log(list);
 						$('#gridEvent').alopexGrid('dataSet',list);
 					}
 				});				

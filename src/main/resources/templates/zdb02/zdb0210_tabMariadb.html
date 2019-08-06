@@ -195,6 +195,12 @@
 							<h3 class="form-title2">환경설정</h3>
 							<div class="btn-wrap">
 								<div class="btn-right">
+									<div class="Divselect" id="selCategory" name="selCategory">
+										<select>
+											<option value="">전체</option>
+										</select>
+										<span></span>
+									</div>
 									<button class="Button btn bg-red" id="btnSaveMyCnf" style="margin-bottom: 3px;">저장</button>
 								</div>
 							</div>								
@@ -219,6 +225,9 @@ let scIdx = 0 ;
 let newUserId = "" ; 
 let userRoleList ;
 let userPriMap ; 
+let selCategory  = $('#selCategory');
+let categorySort ={ mysqld:10, mysql:20, mysqld_safe:30, mysqldump:40,client:50 };
+let selCategoryVal  = '';
 
 let appMariadb = {
 	selectedMenu:null,	
@@ -256,14 +265,14 @@ let appMariadb = {
 					let state = (data.State||'').toLowerCase();
 					let time = (data.Time || 0);
 
-					if(!fn_isSystemProcess(data)){
+				//	if(!fn_isSystemProcess(data)){  // 2019-08-06 클라이언트 커넥션 하이라이트 적용 (2019-08-06)
 						if( state.indexOf('waiting for') > -1 || 
 								   (state.indexOf('sending data') > -1 && time >= 10) ||
 								   (state.indexOf('updating') > -1 && time >= 10) ||
 								   (state == 'copying to tmp table on disk')){
 							re = 'warning-color';
 						}
-					}
+				//	}
 					
 					return re;
 				}
@@ -926,6 +935,17 @@ let appMariadb = {
 			});
 			return re
 		}
+		
+		for(let n in categorySort){
+			selCategory.find('select').append($('<option>',{value:n,text:n}));
+		}
+		
+		selCategory.on('change',function(e){
+			selCategoryVal = e.target.value;
+			appMariadb.getMyCnfList();
+			//0806
+		});
+		
 
 		},initMenu : function(menuName){
 			appMariadb.mariaContent.find('[data-menu]').hide().filter('[data-menu='+menuName+']').show();
@@ -1148,6 +1168,13 @@ let appMariadb = {
 				data:gParam,
 				success:function(res){
 					let myCnfList = res.databaseVariables||[];
+					//0806
+					if(selCategoryVal !=''){
+						myCnfList = myCnfList.filter(function(o){
+							return (o.category == selCategoryVal)  
+						});	
+					}
+					
 					let l = myCnfList.map(function(ob){
 						return $.extend({},ob,{serverData:true});
 					});
@@ -1403,14 +1430,18 @@ let appMariadb = {
 			category 데이터,실데이터,추가콤보 리스트 순으로 생성( 파라미터는 실데이터)		
 		*/
 		setGridMyCnf : function(paramList){
+			
 
-			let categorySort ={ mysqld:10, mysql:20, mysqld_safe:30, mysqldump:40,client:50 };
 			let categoryList = [{name:'mysqld'},{name:'mysql'},{name:'mysqld_safe'},{name:'mysqldump'},{name:'client'}];
 			categoryList = categoryList.map(function(ob){
 				return $.extend({},ob,{serverData:false,dataColumn:false,categoryColumn:true,sort:categorySort[ob.name]});
 			});
 			let gridList = categoryList.slice(); //마지막에 보여줄 전체 grid 리스트
 			let comboList = {}; //카테고리별 추가 데이터
+			// 카테고리 selectbox 생성 
+
+
+
 			
 			let dbv = appMariadb['data']['databaseVariables'];
 			
@@ -1541,6 +1572,7 @@ let appMariadb = {
 			]);
 			/* 삭제처리 표시 유지 하는 로직 추가 - (2019-07-10)   */
 			appMariadb.gridMyCnf.alopexGrid('dataDelete', {deleted: "dataDelete"});
+
 			
 		},saveGridMyCnf : function(){
 			
