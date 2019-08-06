@@ -1019,6 +1019,7 @@ let appMariadb = {
 				data:$.extend({},gParam,{podName:gService.podName}),
 				success:function(res){
 					let d = res.databaseStatusVariables;
+					console.log(d);
 					let list = [];
 					for(let k in d){
 						list.push({name:k,value:d[k]});
