@@ -325,13 +325,15 @@
 								try{
 									let r = pods[j];
 									let c = r.spec.containers[0].resources;
-									let x = r.spec.containers[1].resources; // cpu , memory 수치 변경시 필요 추가 (2019-08-06)
+									//let x = r.spec.containers[1].resources; // cpu , memory 수치 변경시 필요 추가 (2019-08-06) // 재수정-Container Resource만 표시(2019-08-06)
 									
 									let t = {
-											cpu : cloudUtil.parseInt(c.limits.cpu.amount) +  cloudUtil.parseInt(x.limits.cpu.amount) +'m',
+											//cpu : cloudUtil.parseInt(c.limits.cpu.amount) +  cloudUtil.parseInt(x.limits.cpu.amount) +'m', //재수정-Container Resource만 표시(2019-08-06)
+											cpu : cloudUtil.parseInt(c.limits.cpu.amount)+'m',
 											cpuRequest : c.requests.cpu.amount,
 											cpuLimit:c.limits.cpu.amount,
-											memory : cloudUtil.parseInt(c.limits.memory.amount) +  cloudUtil.parseInt(x.limits.memory.amount) +'Mi',
+											//memory : cloudUtil.parseInt(c.limits.memory.amount) +  cloudUtil.parseInt(x.limits.memory.amount) +'Mi', //재수정-Container Resource만 표시(2019-08-06)
+											memory : cloudUtil.parseInt(c.limits.memory.amount)+'Mi',
 											memoryRequest:c.requests.memory.amount,
 											memoryLimit:c.limits.memory.amount,
 										}

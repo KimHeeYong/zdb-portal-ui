@@ -1493,6 +1493,8 @@
 						
 						if(gService.backupDiskUsed){
 							$("#gridResource").alopexGrid('showCol', 'backupStorage');
+						} else {
+							$("#gridResource").alopexGrid('hideCol', 'backupStorage'); // 백업Disk hide Test
 						}
 					},complete:function(res){
 						deferred.resolve(res.responseJSON);
@@ -1515,6 +1517,12 @@
 							gTagList = service.tags;
 							fn_displayService();
 							fn_getServiceCallback();
+							
+							if(gService.backupDiskUsed){
+								$("#gridResource").alopexGrid('showCol', 'backupStorage');
+							} else {
+								$("#gridResource").alopexGrid('hideCol', 'backupStorage'); // 백업Disk hide Test
+							}
 						});
 						//gClient.subscribe('/service/'+gService.serviceName+'/refresh', function(res) {
 						//	fn_getServiceFirst();
@@ -1742,7 +1750,6 @@
 											var enduranceIops = cStorageClassConstants[dataStorage.storageClass];
 											StorageQoSTooltipMsg += ob.role + "("+enduranceIops+" IOPS/GB): " + dataIops + " IOPS<br>";
 										} else {
-											//var performanceIops = dataIops.toUpperCase();
 											StorageQoSTooltipMsg += ob.role + "("+dataIops+" IOPS/GB): " + dataIops + " IOPS<br>";
 										}
 										
