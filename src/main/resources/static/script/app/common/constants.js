@@ -29,7 +29,7 @@ const gSliderConstants = {
 	redis :{
 		memory : {
 			range : _gSliderConstantsCommonRange,
-			value :[0,256,512,1000,3000,5000,8000,12000],
+			value :[0,256,512,1024,2048,4096,8192,16384],
 			unit : 'Mi',
 			getValue : _gSliderConstantsCommonGetValue,
 			getIndex : _gSliderConstantsCommonGetIndex

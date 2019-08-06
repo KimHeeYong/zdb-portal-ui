@@ -2412,18 +2412,22 @@
 				    });
 			})			
 			$('button#removeBackupDisk').on('click',function(){
-				gCommon.confirm('백업 디스크를 제거하시겠습니까?',function(){
-					$a.ajax({
-						url:'/zdbapi/removeBackupDisk',
-						method:'put',
-						data:gParam,
-						success:function(res){
-							if(res.result.code=='0'){
-								fn_getServiceFirst();
+				
+				gCommon.credentialConfirm({
+			        data:{credential:$("#credential").val(),msg:'백업 디스크를 제거하시려면',okBtnMsg:'제거'},
+			        callback : function(res){
+						$a.ajax({
+							url:'/zdbapi/removeBackupDisk',
+							method:'put',
+							data:gParam,
+							success:function(res){
+								if(res.result.code=='0'){
+									fn_getServiceFirst();
+								}
 							}
-						}
-					});
-				})
+						});
+			        }
+			    });	
 			})			
 			let downloadTitle = '복원/다운로드';
 			let bakcupLogShow = true;

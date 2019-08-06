@@ -431,7 +431,6 @@ $a.page(function() {
 			var dt = $.extend({},param,{clusterEnabled:($('input[name=clusterEnabled]:checked').val()=='true')
 									   ,memory:sliderConstants.memory.value[param.podSpecIdx],cpu:sliderConstants.cpu.value[param.podSpecIdx]
 									  });
-			
 			if(gConfigData.free_resource_check == 'true'){
 				$a.ajax({
 					url: '/zdbapi/isAvailable',
@@ -504,6 +503,8 @@ $a.page(function() {
 		//슬라이더 값
 		var sliderConstants = gSliderConstants[gParam.serviceType];
 		var memorySlider = document.getElementById('memorySlider');
+
+		console.log(sliderConstants);
 		
 		noUiSlider.create(memorySlider, {
 			start:[gParam.podSpecIdx||0],
@@ -515,6 +516,7 @@ $a.page(function() {
 				density: 100,					
 				format: {
 				  to: function ( value ) {
+
 					return sliderConstants.memory.getValue(value);
 				  },
 				  from: function ( value ) {
@@ -523,9 +525,10 @@ $a.page(function() {
 				}
 			}
 		}).on('slide', function ( values, handle ) {
+			console.log(values);
+			console.log(handle);
 			setSliderValue(parseInt(values[handle]));
 		});
-		
 		memorySlider.noUiSlider.set(gParam.podSpecIdx||1)
 		setSliderValue(gParam.podSpecIdx||1);
 		
