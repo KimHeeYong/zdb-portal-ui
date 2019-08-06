@@ -532,7 +532,8 @@
 					<div class="hide fl mr30" data-show-service-type="mariadb">
 						<span class="config-title">수행모드 <span class="ico_question" id="throttleYnTooltip"></span> : </span>
 						<span data="disk"></span>
-						<div class="Tooltip" data-base="#throttleYnTooltip" id="throttleYnTooltipMsg" data-position="bottom" data-animation="fade"></div>	<div class="Divselect" id="throttleYn" name="throttleYn">
+						<div class="Tooltip" data-base="#throttleYnTooltip" id="throttleYnTooltipMsg" style="color:#ffffff;" data-position="bottom" data-animation="fade"></div>	
+						<div class="Divselect" id="throttleYn" name="throttleYn">
 							<select>
 								<option value="N">정상모드</option>
 								<option value="Y">저속모드</option>
@@ -1381,7 +1382,7 @@
 						return re;
 					}},
 					//{ title:'Replicas', key : 'replicas' , width: '70px', align: 'center'},
-					{ title:'인스턴스 수', key : 'replicas' , width: '70px', align: 'center'},
+					{ title:'인스턴스 수', key : 'replicas' , width: '100px', align: 'center'},
 					//{ title:'Replication', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
 					{ title:'복제', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
 					}},
@@ -1492,6 +1493,8 @@
 						
 						if(gService.backupDiskUsed){
 							$("#gridResource").alopexGrid('showCol', 'backupStorage');
+						} else {
+							$("#gridResource").alopexGrid('hideCol', 'backupStorage'); // 백업Disk hide Test
 						}
 					},complete:function(res){
 						deferred.resolve(res.responseJSON);
@@ -1514,6 +1517,12 @@
 							gTagList = service.tags;
 							fn_displayService();
 							fn_getServiceCallback();
+							
+							if(gService.backupDiskUsed){
+								$("#gridResource").alopexGrid('showCol', 'backupStorage');
+							} else {
+								$("#gridResource").alopexGrid('hideCol', 'backupStorage'); // 백업Disk hide Test
+							}
 						});
 						//gClient.subscribe('/service/'+gService.serviceName+'/refresh', function(res) {
 						//	fn_getServiceFirst();
@@ -1627,13 +1636,13 @@
 				var rsSpec = gCommon.getObjectByIdx(gService.resourceSpecOfPodMap,0)||{};
 				var psSpec = gCommon.getObjectByIdx(gService.persistenceSpecOfPodMap,0)||{};
 				var pvSpec = gService.persistentVolumeClaims;
+				
 				gServiceScale.cpu = rsSpec.cpu;
 				gServiceScale.memory = rsSpec.memory;
 				gServiceScale.cpuVal = cloudUtil.parseInt(gServiceScale.cpu);
 				gServiceScale.memoryVal = cloudUtil.parseInt(gServiceScale.memory);
 				gServiceScale.disk = psSpec.size;
 				gServiceScale.storageClass = '';
-				
 				let resorceSpec = gService.resourceSpec||{};
 				let persistenceSpec = gService.persistenceSpec||{};
 				
@@ -1671,7 +1680,7 @@
 				
 				var StorageTooltipMsg = "";
 				
-				//cpu,memory,disk resource 셋팅  
+				//cpu,memory,disk resource 셋팅 -test0806  
 				podData = (function(data){
 					var list = [];
 					var hasUseRateBackup = false;
@@ -1682,17 +1691,23 @@
 							var cl = gService.cpuUsageOfPodMap;
 							var ml = gService.memoryUsageOfPodMap;
 							var dl = gService.diskUsageOfPodMap;
+							
+							
+							console.log(cl);console.log(ml);console.log(cl);console.log(gService);
+							
 							if(cl && cl[ob.name]){
 								var cpuUsage = cl[ob.name];
 								ob.cpu = (cpuUsage.length ? cpuUsage[cpuUsage.length-1].value:'') / 1000 + ' / ' + gService.resourceSpecOfPodMap[ob.name].cpu;
 							} else {
-								ob.cpu = gService.resourceSpecOfPodMap[ob.name].cpu;
+								ob.cpu = gService.resourceSpecOfPodMap[ob.name].cpu; 
+								//ob.cpu = resorceSpec.cpu;  // 상단 수치와 일치 작업 수정 (2019-08-06) - 재수정
 							}
 							if(ml && ml[ob.name]){
 								var memUsage = ml[ob.name];
 								ob.memory = cloudUtil.truncDecimal(((memUsage.length? memUsage[memUsage.length-1].value:'')),2) + 'Mi / ' + gService.resourceSpecOfPodMap[ob.name].memory;
 							} else {
-								ob.memory = gService.resourceSpecOfPodMap[ob.name].memory;
+								ob.memory = gService.resourceSpecOfPodMap[ob.name].memory; 
+								//ob.memory = resorceSpec.memory;		// 상단 수치와 일치 작업 수정 (2019-08-06)	-재수정					
 							}
 							var dataStorage = null;
 							
@@ -1735,7 +1750,6 @@
 											var enduranceIops = cStorageClassConstants[dataStorage.storageClass];
 											StorageQoSTooltipMsg += ob.role + "("+enduranceIops+" IOPS/GB): " + dataIops + " IOPS<br>";
 										} else {
-											//var performanceIops = dataIops.toUpperCase();
 											StorageQoSTooltipMsg += ob.role + "("+dataIops+" IOPS/GB): " + dataIops + " IOPS<br>";
 										}
 										
@@ -1748,10 +1762,11 @@
 						}catch(e){ 
 							
 						}
+					
 						list.push(ob);
 					};
 					
-					
+
 					if(backupStorage != null) {
 						backupIops = backupStorage.storageIops.toUpperCase();;
 						
@@ -1769,7 +1784,7 @@
 						}
 						totalStorage += backupStorage.size;
 					}
-					
+
 					$('#configInfo').zdbui_setContents(
 							{ cpu:resorceSpec.cpu||''
 							 ,memory:resorceSpec.memory||''
@@ -1839,6 +1854,7 @@
 								memory:gServiceScale.memory,
 								colspanCol:false
 							};
+						
 						if(dt.status == 'green') {
 							if(tp=='statefulSets'){
 								pod = gCommon.findObjectByKeyOb(podData,{stName:dt.name});
@@ -1861,7 +1877,7 @@
 								isMasterRed = true;
 							}						
 						}
-												
+						
 						if(pod != null){
 							pod.status = dt.status;
 							pod.role = dt.role;
@@ -2783,7 +2799,7 @@
 					},excludeFitWidth:true},
 					{ title:'이벤트', key : 'operation' , width: '180px', align: 'left'},
 					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',inlineStyle: {'padding-left':'10px','padding-right':'10px'},tooltip:false,render: {type: "evtMsgTooltip"}},
-					{ title:'User ID', key : 'userId' , width: '250px', align: 'left'}
+					{ title:'UserName', key : 'userId' , width: '250px', align: 'left'}
 				],
 				message: {
 					nodata: gMessage.gridNodata
@@ -2820,6 +2836,7 @@
 					data:param,
 					success: function(res){
 						var list = res.operationEvents;
+						console.log(list);
 						$('#gridEvent').alopexGrid('dataSet',list);
 					}
 				});				

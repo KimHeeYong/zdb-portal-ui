@@ -136,7 +136,7 @@
 							</div>
 							<div style="width:280px;margin-top:25px;overflow: hidden">
 								<form name="formUserRole">
-								Object Rights
+								Object 권한변경
 								<div class="item-wrap2" style="height:155px;">
 									<ul>
 										<li><input class="Checkbox" type="checkbox" name="select" value="Y">SELECT</li>
@@ -147,7 +147,7 @@
 										<li><input class="Checkbox" type="checkbox" name="showView" value="Y">SHOW VIEW</li>
 									</ul>
 								</div>
-								DDL Rights
+								DDL 권한변경
 								<div class="item-wrap2" style="height:250px;">
 									<ul>
 										<li><input class="Checkbox" type="checkbox" name="create" value="Y">CREATE</li>
@@ -162,7 +162,7 @@
 										<li><input class="Checkbox" type="checkbox" name="trigger" value="Y">TRIGGER</li>
 									</ul>
 								</div>
-								Other Rights
+								Other 권한변경
 								<div class="item-wrap2" style="height:90px">
 									<ul>
  										<li><input class="Checkbox" type="checkbox" name="grantOption" value="Y">GRANT OPTION</li>
@@ -178,15 +178,15 @@
 							</div>
 						</div>
 						<div data-menu="statusVariables" class="hide">
-							<h3 class="form-title2">상태 변수</h3>
-							<div class="search-wrap tr fi mt20">
+							<h3 class="form-title2" >상태 변수</h3>
+							<div class="search-wrap tr fi mt20" style="width:800px">
 								<input id="txtStatusVariablesFilter" name="txtStatusVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
 							</div>
 							<div id="gridStatusVariables"></div>
 						</div>
 						<div data-menu="systemVariables" class="hide">
-							<h3 class="form-title2">시스템 변수</h3>						
-							<div class="search-wrap tr fi mt20">
+							<h3 class="form-title2" >시스템 변수</h3>						
+							<div class="search-wrap tr fi mt20"  style="width:800px" >
 								<input id="txtSystemVariablesFilter" name="txtSystemVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
 							</div>
 							<div id="gridSystemVariables"></div>
@@ -195,6 +195,12 @@
 							<h3 class="form-title2">환경설정</h3>
 							<div class="btn-wrap">
 								<div class="btn-right">
+									<div class="Divselect" id="selCategory" name="selCategory">
+										<select>
+											<option value="">전체</option>
+										</select>
+										<span></span>
+									</div>
 									<button class="Button btn bg-red" id="btnSaveMyCnf" style="margin-bottom: 3px;">저장</button>
 								</div>
 							</div>								
@@ -219,6 +225,9 @@ let scIdx = 0 ;
 let newUserId = "" ; 
 let userRoleList ;
 let userPriMap ; 
+let selCategory  = $('#selCategory');
+let categorySort ={ mysqld:10, mysql:20, mysqld_safe:30, mysqldump:40,client:50 };
+let selCategoryVal  = '';
 
 let appMariadb = {
 	selectedMenu:null,	
@@ -255,14 +264,15 @@ let appMariadb = {
 					let re = '';
 					let state = (data.State||'').toLowerCase();
 					let time = (data.Time || 0);
-					if(!fn_isSystemProcess(data)){
+
+				//	if(!fn_isSystemProcess(data)){  // 2019-08-06 클라이언트 커넥션 하이라이트 적용 (2019-08-06)
 						if( state.indexOf('waiting for') > -1 || 
 								   (state.indexOf('sending data') > -1 && time >= 10) ||
 								   (state.indexOf('updating') > -1 && time >= 10) ||
 								   (state == 'copying to tmp table on disk')){
 							re = 'warning-color';
 						}
-					}
+				//	}
 					
 					return re;
 				}
@@ -270,42 +280,45 @@ let appMariadb = {
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
-					{ key : 'Id', title : 'Id', width : '70px', align : 'center'},
-					{ key : 'User', title : 'User', width : '80px', align : 'left' },
-					{ key : 'Host', title : 'Host', width : '80px', align : 'center' },
-					{ key : 'db', title : 'DB', width : '100px', align : 'center' },
-					{ key : 'Command', title : 'Command', width : '100px', align : 'center' },
-					{ key : 'Time', title : 'Time', width : '100px', align : 'center'},
-					{ key : 'State', title : 'State', width : '130px', align : 'center'},
-					{ key : 'Info', title : 'Info', width : '250px', align : 'left'},
-					{ key : '', title : '', width : '80px', align : 'center',render:function(value,data){
+					{ key : 'Id', title : 'Id', width : '50px', align : 'center',tooltip:false},
+					{ key : 'User', title : 'User', width : '80px', align : 'left',tooltip:false },
+					{ key : 'Host', title : 'Host', width : '150px', align : 'center' ,tooltip:false},
+					{ key : 'db', title : 'DB', width : '100px', align : 'center',tooltip:false },
+					{ key : 'Command', title : 'Command', width : '100px', align : 'center',tooltip:false },
+					{ key : 'Time', title : 'Time', width : '100px', align : 'center',tooltip:false},
+					{ key : 'State', title : 'State', width : '250px', align : 'center',tooltip:true },  
+					{ key : 'Info', title : 'Info', width : '100px', align : 'left' ,tooltip:true},
+					{ key : '', title : '', width : '50px', align : 'center',tooltip:false,render:function(value,data){
 						let disabled = '';
 						if(fn_isSystemProcess(data) == true){
 							disabled = 'Disabled';
 						}
-						return $('<button class="Button sm '+disabled+'">종료</button>').on('click',function(){
-							if($(this).hasClass('Disabled')){
-								return;
-							}
-							gCommon.credentialConfirm({
-						        data:{credential:$("#credential").val(),msg:'프로세스를 종료하시려면',okBtnMsg:'종료'},
-						        callback : function(res){
-									$a.ajax({
-										url: '/zdbapi/killProcess',
-										data:$.extend({},gParam,{pid:data.Id,podName:gService.podName}),
-										success: function(res){
-											console.log("killProcess:::::::::::::::::::");
-											console.log(res);
-											if(res.result.code == '0'){
-											//	appMariadb.getConnection();
-												appMariadb.getProcesses();
-												appMariadb.getDatabaseConnection();
+
+						if(data.User != "system user" &&  data.Host != "local" ){   //User: system user 등일 경우 종료버튼 지우기 & Host: local 일때 종료버튼 지우기 적용
+							return $('<button class="Button sm '+disabled+'">종료</button>').on('click',function(){
+								if($(this).hasClass('Disabled')){
+									return;
+								}
+								gCommon.credentialConfirm({
+							        data:{credential:$("#credential").val(),msg:'프로세스를 종료하시려면',okBtnMsg:'종료'},
+							        callback : function(res){
+										$a.ajax({
+											url: '/zdbapi/killProcess',
+											data:$.extend({},gParam,{pid:data.Id,podName:gService.podName}),
+											success: function(res){
+												if(res.result.code == '0'){
+												//	appMariadb.getConnection();
+													appMariadb.getProcesses();
+													appMariadb.getDatabaseConnection();
+												}
 											}
-										}
-									})
-						        }
-						    });
-						});
+										})
+							        }
+							    });
+							});
+						}else{
+							return false;
+						}
 					}}
 				],
 			});
@@ -360,7 +373,7 @@ let appMariadb = {
 						return (value||'').replace(/./g,'*');
 					}
 				},
-				{ title:'From HOST', key : 'host' , width: '120px', align: 'left' ,editable:true,allowEdit:function(value,data){
+				{ title:'접근 HOST', key : 'host' , width: '120px', align: 'left' ,editable:true,allowEdit:function(value,data){
 					return data._state.added == true;
 				}}
 			], message: { nodata: gMessage.gridNodata }
@@ -474,7 +487,7 @@ let appMariadb = {
 			
 			if(evObj.data._state.selected == false) gridUserSchema.alopexGrid('rowSelect', {_index:{row:scIdx}}, true); 
 			
-			console.log(scIdx+":"+evObj.data._index.row);
+/* 			console.log(scIdx+":"+evObj.data._index.row); */
 			
 			if(scIdx != evObj.data._index.row){  // click 된 row를 체크하여 다른 row일 경우에만 처리
 				
@@ -522,7 +535,7 @@ let appMariadb = {
 				
  				setTimeout(function(){   // gCommon.confirm 처리시 시간적인 차이가 필요 함 
 					if(vEdited == true){
-						console.log(scIdx);
+/* 						console.log(scIdx); */
 						appMariadb.gridUserSchema.alopexGrid('rowSelect', {_index:{row:scIdx}}, true);
 					}
 				},100) 
@@ -632,12 +645,12 @@ let appMariadb = {
 		
 		this.gridStatusVariables = $('#gridStatusVariables').alopexGrid({
 			height:580,
+			width:800,			
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
 				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key : 'value', title : '값', width : '500px', align : 'left',excludeFitWidth:true}	,
-				{ key:''}
+				{ key : 'value', title : '값', width : '200px', align : 'left',excludeFitWidth:false}	
 			]
 		});			
 		appMariadb.tabMariadb.find('[data-menu=statusVariables] input[name=txtStatusVariablesFilter]').on('input propertychange',function(){
@@ -646,12 +659,12 @@ let appMariadb = {
 		
 		this.gridSystemVariables = $('#gridSystemVariables').alopexGrid({
 			height:580,
+			width:800,
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
 				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key : 'value', title : '값', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key:'',title:''}
+				{ key : 'value', title : '값', width : '200px', align : 'left',excludeFitWidth:false }
 			]
 		});				
 		appMariadb.tabMariadb.find('[data-menu=systemVariables] input[name=txtSystemVariablesFilter]').on('input propertychange',function(){
@@ -922,6 +935,17 @@ let appMariadb = {
 			});
 			return re
 		}
+		
+		for(let n in categorySort){
+			selCategory.find('select').append($('<option>',{value:n,text:n}));
+		}
+		
+		selCategory.on('change',function(e){
+			selCategoryVal = e.target.value;
+			appMariadb.getMyCnfList();
+			//0806
+		});
+		
 
 		},initMenu : function(menuName){
 			appMariadb.mariaContent.find('[data-menu]').hide().filter('[data-menu='+menuName+']').show();
@@ -1015,6 +1039,7 @@ let appMariadb = {
 				data:$.extend({},gParam,{podName:gService.podName}),
 				success:function(res){
 					let d = res.databaseStatusVariables;
+					console.log(d);
 					let list = [];
 					for(let k in d){
 						list.push({name:k,value:d[k]});
@@ -1116,10 +1141,10 @@ let appMariadb = {
 						appMariadb.gridUser.alopexGrid('dataSet',list);// user list setting 
 						
 						deferred.resolve(list,dl);
-						console.log(newUserId);
+/* 						console.log(newUserId); */
 						if(newUserId != ""){
 							
-							console.log(list);
+/* 							console.log(list); */
 							appMariadb.gridUser.alopexGrid('rowSelect',{user:newUserId},true); //최초 선택 처리 - griduser
 							newUserId = "";
 						}else{
@@ -1143,6 +1168,13 @@ let appMariadb = {
 				data:gParam,
 				success:function(res){
 					let myCnfList = res.databaseVariables||[];
+					//0806
+					if(selCategoryVal !=''){
+						myCnfList = myCnfList.filter(function(o){
+							return (o.category == selCategoryVal)  
+						});	
+					}
+					
 					let l = myCnfList.map(function(ob){
 						return $.extend({},ob,{serverData:true});
 					});
@@ -1398,14 +1430,18 @@ let appMariadb = {
 			category 데이터,실데이터,추가콤보 리스트 순으로 생성( 파라미터는 실데이터)		
 		*/
 		setGridMyCnf : function(paramList){
+			
 
-			let categorySort ={ mysqld:10, mysql:20, mysqld_safe:30, mysqldump:40,client:50 };
 			let categoryList = [{name:'mysqld'},{name:'mysql'},{name:'mysqld_safe'},{name:'mysqldump'},{name:'client'}];
 			categoryList = categoryList.map(function(ob){
 				return $.extend({},ob,{serverData:false,dataColumn:false,categoryColumn:true,sort:categorySort[ob.name]});
 			});
 			let gridList = categoryList.slice(); //마지막에 보여줄 전체 grid 리스트
 			let comboList = {}; //카테고리별 추가 데이터
+			// 카테고리 selectbox 생성 
+
+
+
 			
 			let dbv = appMariadb['data']['databaseVariables'];
 			
@@ -1536,6 +1572,7 @@ let appMariadb = {
 			]);
 			/* 삭제처리 표시 유지 하는 로직 추가 - (2019-07-10)   */
 			appMariadb.gridMyCnf.alopexGrid('dataDelete', {deleted: "dataDelete"});
+
 			
 		},saveGridMyCnf : function(){
 			
