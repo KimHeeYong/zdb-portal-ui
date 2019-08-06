@@ -67,25 +67,28 @@
 							else {data.state=''}
 							return data.state;
 						}},						
-						{ title:'상태', key : 'backupStatus' , width: '50x',excludeFitWidth:true, align: 'center',render:function(value,data){
+						{ title:'상태', key : '' , width: '50x',excludeFitWidth:true, align: 'center',render:function(value,data){
+							
+							console.log(data.backupStatus);
+							//'backupStatus'
 							let status = '';
 							let alt = '';
-							if(value=='YELLOW'){
+							if(data.backupStatus=='YELLOW'){
 								status = 'yellow';
 								alt = '최근 백업이 존재하지 않습니다';
-							} else if(value=='GREEN'){
+							} else if(data.backupStatus=='GREEN'){
 								status = 'green';
 								alt = '백업이 정상적으로 수행되고 있습니다';
-							} else if(value=='RED'){
+							} else if(data.backupStatus=='RED'){
 								status = 'red';
 								alt = '최근 백업이 실패 했습니다';
-							} else if(value=='GREY'){
+							} else if(data.backupStatus=='GREY'){
 								status = 'grey';
 								alt = '수행된 백업이 존재하지 않거나, 백업이 설정되어 있지 않습니다.';
-							} else if(value=='DOING'){
+							} else if(data.backupStatus=='DOING'){
 								status = 'green blinking';
 								alt = '백업이 수행되는 중입니다';
-							}
+							} 
 							let re = '<div class="state '+status+'" title="'+alt+'"></div>';
 							
 							return re;
@@ -233,6 +236,17 @@
 					let v = value == 'Y'? 'on':'off';
 					return $('<div class="onoff-wrap"><button class="Button btn-'+v+'" data-value="'+value+'">'+v.toUpperCase()+'</button></div>');
 				}
+				
+				let renderValue = function(value,data){
+					let re = '';
+					if(!cloudUtil.isEmpty(data.enumValueList)){
+						re = data.enumValueList;
+					}else if(!cloudUtil.isEmpty(data.numericMinValue)){
+						re = data.numericMinValue + ' ~ ' + data.numericMaxValue;
+					}	
+					return re;
+				}
+				
 				function fn_getScheduleInfoList(){
 					let param = $('form[name=eventForm]').serializeObject();
 
