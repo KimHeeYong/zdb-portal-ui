@@ -68,8 +68,7 @@
 							return data.state;
 						}},						
 						{ title:'상태', key : '' , width: '50x',excludeFitWidth:true, align: 'center',render:function(value,data){
-							
-							console.log(data.backupStatus);
+
 							//'backupStatus'
 							let status = '';
 							let alt = '';
@@ -255,6 +254,9 @@
 						data:{namespace:gSelectedNamespace},
 						success: function(res){
 							let list = res.scheduleInfoList;
+							
+							console.log(res);
+							
 							if(list){
 								list = list.map(function(ob){
 									return $.extend({},ob,{incrementPeriod:(''+ob.incrementPeriod)});

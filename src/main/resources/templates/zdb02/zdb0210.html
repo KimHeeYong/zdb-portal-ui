@@ -1452,7 +1452,7 @@
 					{ title:'백업 Disk', key : 'backupStorage' , width: '120px', align: 'center', hidden: true, render : {type: "setBackupStorage"
 					}},
 					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
-					{ title:'Memory(Mi)', key : 'memory' , width: '120px', align: 'center'},
+					{ title:'Memory(Mi)', key : 'memory' , width: '180px', align: 'center'},
 					//{ title:'Last Uptime', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
 					{ title:'기간', key : 'lastTransitionTime' , width: '150px', align: 'center', render : {type: "setTerm"}, tooltip : function(value, data, mapping){
 						var lTT = data.condition? data.condition.lastTransitionTime : '';
@@ -1697,14 +1697,19 @@
 							
 							if(cl && cl[ob.name]){
 								var cpuUsage = cl[ob.name];
-								ob.cpu = (cpuUsage.length ? cpuUsage[cpuUsage.length-1].value:'') / 1000 + ' / ' + gService.resourceSpecOfPodMap[ob.name].cpu;
+								var cpuUsageVal = cloudUtil.truncDecimal(cpuUsage.length ?(cloudUtil.parseInt(cpuUsage[cpuUsage.length-1].value) / cloudUtil.parseInt(gService.resourceSpecOfPodMap[ob.name].cpu))*100 :''); //usage 추가 (2019-08-07)
+
+								//ob.cpu = (cpuUsage.length ? cpuUsage[cpuUsage.length-1].value:'') / 1000 + ' / ' + gService.resourceSpecOfPodMap[ob.name].cpu;
+								ob.cpu = (cpuUsage.length ? cpuUsage[cpuUsage.length-1].value:'') + 'm / ' + gService.resourceSpecOfPodMap[ob.name].cpu + ' ('+cpuUsageVal+'%)'; //단위를 맞추기 위해 /1000 삭제적용 (2019-08-07)
 							} else {
 								ob.cpu = gService.resourceSpecOfPodMap[ob.name].cpu; 
 								//ob.cpu = resorceSpec.cpu;  // 상단 수치와 일치 작업 수정 (2019-08-06) - 재수정
 							}
 							if(ml && ml[ob.name]){
 								var memUsage = ml[ob.name];
-								ob.memory = cloudUtil.truncDecimal(((memUsage.length? memUsage[memUsage.length-1].value:'')),2) + 'Mi / ' + gService.resourceSpecOfPodMap[ob.name].memory;
+								var memUsageVal = cloudUtil.truncDecimal(memUsage.length ?(cloudUtil.parseInt(memUsage[memUsage.length-1].value) / cloudUtil.parseInt(gService.resourceSpecOfPodMap[ob.name].memory))*100 :'');
+
+								ob.memory = cloudUtil.truncDecimal(((memUsage.length? memUsage[memUsage.length-1].value:'')),2) + 'Mi / ' + gService.resourceSpecOfPodMap[ob.name].memory + ' ('+memUsageVal+'%)'; //usage 추가 (2019-08-07)
 							} else {
 								ob.memory = gService.resourceSpecOfPodMap[ob.name].memory; 
 								//ob.memory = resorceSpec.memory;		// 상단 수치와 일치 작업 수정 (2019-08-06)	-재수정					
@@ -2695,6 +2700,8 @@
 				param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
 				param.incrementYn = backupForm.find('#incrementPeriod select').val() == '0' ? 'N' : 'Y';
 		
+				console.log(param);
+				
 				$a.ajax({
 					url: '/zdbapi/updateSchedule',
 					data:param,
