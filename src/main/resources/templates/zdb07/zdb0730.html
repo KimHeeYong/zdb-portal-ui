@@ -146,11 +146,11 @@
 							return true;
 						}},
 						{ title:'ICOS 사용량', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
-							let re = '';
-							if(!cloudUtil.isEmpty(value) && !isNaN(value)){
+							let re = value;
+						/* 	if(!cloudUtil.isEmpty(value) && !isNaN(value)){
 								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
 								re = new BigNumber(value).toFormat(); 
-							}
+							} */
 							return re;
 						}},
 						{ title:'백업주기', key : 'backupExecType' , width: '100px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
