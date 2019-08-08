@@ -68,8 +68,7 @@
 							return data.state;
 						}},						
 						{ title:'상태', key : '' , width: '50x',excludeFitWidth:true, align: 'center',render:function(value,data){
-							
-							console.log(data.backupStatus);
+
 							//'backupStatus'
 							let status = '';
 							let alt = '';
@@ -111,10 +110,10 @@
 							let re = img[value]; 
 							if(re) return re;	
 						}},
-						{ title:'백업디스크', key : 'backupDiskYn' , width: '100px', align: 'center',render:function(value){
-							let re = '';
-							if(value == 'Y')re='사용';
-							if(value == 'N')re='미사용';
+						{ title:'백업디스크', key : 'backupDiskInfo' , width: '100px', align: 'center',render:function(value){
+							let re = value;
+/* 							if(value == 'Y')re='사용';
+							if(value == 'N')re='미사용'; */
 							return re;
 						}},
 						{ title:'백업설정', key : 'useYn' , width: '70px', align: 'center',render:function(value,data){
@@ -146,12 +145,12 @@
 							}
 							return true;
 						}},
-						{ title:'ICOS 사용량(MB)', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
-							let re = '';
-							if(!cloudUtil.isEmpty(value) && !isNaN(value)){
+						{ title:'ICOS 사용량', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
+							let re = value;
+						/* 	if(!cloudUtil.isEmpty(value) && !isNaN(value)){
 								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
 								re = new BigNumber(value).toFormat(); 
-							}
+							} */
 							return re;
 						}},
 						{ title:'백업주기', key : 'backupExecType' , width: '100px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
@@ -165,17 +164,19 @@
 							return moment(value,'HH:mm').isValid();
 						}},
 						{ title:'백업용량', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
-							return value == '0'?'-': value;
+							//return value == '0'?'-': value;
+							return value;
 						}},
 						{ title:'소요시간', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
-							return cloudUtil.parseInt(value)== 0 ?'-':value;
+							//return cloudUtil.parseInt(value)== 0 ?'-':value;
+							return value;
 						}},
 						{ title:'백업주기', key : 'incrementPeriod' ,headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'}, width: '100px', align: 'center',
 							render:function(value,data){
 								let re = value;
-								if(data.incrementYn == 'N'){
+/* 								if(data.incrementYn == 'N'){
 									re = '-';
-								};
+								}; */
 								return re;
 							},
 							allowEdit:function(value,data){
@@ -187,10 +188,12 @@
 						}},
 
 						{ title:'백업용량', key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
-							return value == '0'?'-': value;
+							//return value == '0'?'-': value;
+							return value;
 						}},
 						{ title:'소요시간', key : 'incrExecutionTime' , width: '70px', align: 'center', render:function(value){
-							return cloudUtil.parseInt(value)== 0 ?'-':value;
+							//return cloudUtil.parseInt(value)== 0 ?'-':value;
+							return value;
 						}}
 					],
 					message: {
@@ -255,6 +258,9 @@
 						data:{namespace:gSelectedNamespace},
 						success: function(res){
 							let list = res.scheduleInfoList;
+							
+							console.log(res);
+							
 							if(list){
 								list = list.map(function(ob){
 									return $.extend({},ob,{incrementPeriod:(''+ob.incrementPeriod)});

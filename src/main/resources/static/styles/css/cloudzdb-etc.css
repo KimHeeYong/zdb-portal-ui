@@ -279,6 +279,9 @@ a.grid:active  { text-decoration:underline; }
 .warning-color{
 	background-color: #ff0e0e75 !important;
 }
+.check-color{
+	background-color: #F9E79F !important; /* 환경설정 change check용 2019-08-08 */
+}
 .white{
 	color: white;
 }

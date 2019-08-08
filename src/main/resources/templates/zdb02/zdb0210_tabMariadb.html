@@ -487,8 +487,6 @@ let appMariadb = {
 			
 			if(evObj.data._state.selected == false) gridUserSchema.alopexGrid('rowSelect', {_index:{row:scIdx}}, true); 
 			
-/* 			console.log(scIdx+":"+evObj.data._index.row); */
-			
 			if(scIdx != evObj.data._index.row){  // click 된 row를 체크하여 다른 row일 경우에만 처리
 				
 				let dt = gridUser.alopexGrid('dataGet'); // gridUser 의 모든 data를 가지고 온다. 
@@ -535,7 +533,6 @@ let appMariadb = {
 				
  				setTimeout(function(){   // gCommon.confirm 처리시 시간적인 차이가 필요 함 
 					if(vEdited == true){
-/* 						console.log(scIdx); */
 						appMariadb.gridUserSchema.alopexGrid('rowSelect', {_index:{row:scIdx}}, true);
 					}
 				},100) 
@@ -680,6 +677,15 @@ let appMariadb = {
 			}	
 			return re;
 		}
+		
+		let renderDefaultValue = function(value,data){
+			let re = '';
+			
+			if(!cloudUtil.isEmpty(data.defaultValue)){
+				re = 'Default Value : ' + data.defaultValue;
+			}
+			return re;
+		}
 		this.gridMyCnf = $('#gridMyCnf').alopexGrid({
 			rowInlineEdit:true,
 			rowSelectOption:{
@@ -688,7 +694,13 @@ let appMariadb = {
 			},
 			rowOption : { 
 				styleclass : function(data, rowOption){
-					if(data.categoryColumn==true) return 'header-row';
+					if(data.categoryColumn==true){
+						return 'header-row';
+					}
+
+					if(data._state.edited || data._state.added){
+						return 'check-color';
+					}
 				}
 			},			
 			restoreFocusOnInvalidInlineEdit :true,
@@ -708,16 +720,19 @@ let appMariadb = {
 				{ key : 'status' , title : '', width:'50px',excludeFitWidth:true,hidden:true},
 				{ key : 'proc', title : '', width : '70px', align : 'left',render: mycnfRender,excludeFitWidth:true },
 				{ key : 'category', title : 'category', width : '200px', align : 'left',hidden:true,excludeFitWidth:true },
-				{ key : 'name', title : '변수명', width : '300px', align : 'left', treeColumn : false ,render:mycnfRender ,editable:mycnfEditable,excludeFitWidth:true},
+				{ key : 'name', title : '변수명', width : '300px', align : 'left',tooltip:renderDefaultValue ,treeColumn : false ,render:mycnfRender ,editable:mycnfEditable,excludeFitWidth:true},
 				{ key : 'value', title : '값', width : '300px', align : 'left',render:mycnfRender,editable:mycnfEditable,editedValue: function(cell, data, render, mapping, grid) {
+//					$(cell).find('select,input').css('color','black');
+					
 					let re = $(cell).find('select,input').val();
 					return re;
 				},valid : function(value, data) {
+					
 					let re = true;
 					if(!appMariadb.validMyCnf(value,data)){
 						re = false;
 						value = data.value;
-					}					
+					}				
 					data.valid = re;
 					return re;
 				},excludeFitWidth:true},
@@ -732,16 +747,19 @@ let appMariadb = {
 				var opt = evObj.data;
 				var mapping = evObj.mapping;
 				var col = mapping.columnIndex;
-				
+				var msg = '입력값을 확인하세요.';
+
 				if(opt._state.deleted == true){
 					return;
 				}
-				alert('입력값을 확인하세요.');
+				//alert('입력값을 확인하세요.');
 				appMariadb.gridMyCnf.alopexGrid('focusCell', opt);
 				
 				setTimeout(function(){
 					appMariadb.gridMyCnf.alopexGrid('rowSelect', opt, true)
 					let input = appMariadb.gridMyCnf.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input');
+					input.val(msg);
+					input.css('color','red');
 					input.focus().trigger('click');
 				},100)
 			},100)
@@ -779,16 +797,21 @@ let appMariadb = {
 							appMariadb.gridMyCnf.alopexGrid('dataGet');
 							let evt = AlopexGrid.parseEvent(e);
 							let dt = AlopexGrid.trimData(evt.data);
+							
+							let data = evt.data;
+							
 							if(dt.valid == false)return;
 							let newList = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',{dataColumn:true}));
-							if(cloudUtil.isEmpty(dt.name) || dt.name == gMessage.selectAddColumn){
+							
+							if(cloudUtil.isEmpty(dt.name)||cloudUtil.isEmpty(dt.value) || dt.name == gMessage.selectAddColumn){
 								gCommon.alert(gMessage.selectAddColumn);return;
 							}
+					
 							newList.push({
 								category:dt.category, name:dt.name, value:dt.value, dataColumn:true
 							});
 							appMariadb.setGridMyCnf(newList);
-							appMariadb.gridMyCnf.alopexGrid('focusCell',{category:dt.category,name:dt.name})
+							appMariadb.gridMyCnf.alopexGrid('focusCell',{category:dt.category,name:dt.name});
 						});
 					} else if(!cloudUtil.isEmpty(data.category)){
 						re = $('<button class="Button btn sm">삭제</button>').on('click',function(e){
@@ -917,6 +940,7 @@ let appMariadb = {
 		}
 		//mycnf grid 추가 컬럼 설정
 		function getAddVariableColumn(data){
+		
 			let dbv = appMariadb['data']['databaseVariables'];
 			let comboList = dbv[data.category].comboList;
 			let re = $('<div class="Divselect wd250" style="top:-5px;height:32px;"><select><option value="">'+gMessage.selectAddColumn+'</option></select><span></div>');
@@ -1039,7 +1063,7 @@ let appMariadb = {
 				data:$.extend({},gParam,{podName:gService.podName}),
 				success:function(res){
 					let d = res.databaseStatusVariables;
-					console.log(d);
+
 					let list = [];
 					for(let k in d){
 						list.push({name:k,value:d[k]});
@@ -1141,10 +1165,8 @@ let appMariadb = {
 						appMariadb.gridUser.alopexGrid('dataSet',list);// user list setting 
 						
 						deferred.resolve(list,dl);
-/* 						console.log(newUserId); */
 						if(newUserId != ""){
 							
-/* 							console.log(list); */
 							appMariadb.gridUser.alopexGrid('rowSelect',{user:newUserId},true); //최초 선택 처리 - griduser
 							newUserId = "";
 						}else{
@@ -1439,9 +1461,6 @@ let appMariadb = {
 			let gridList = categoryList.slice(); //마지막에 보여줄 전체 grid 리스트
 			let comboList = {}; //카테고리별 추가 데이터
 			// 카테고리 selectbox 생성 
-
-
-
 			
 			let dbv = appMariadb['data']['databaseVariables'];
 			
@@ -1563,17 +1582,25 @@ let appMariadb = {
 				gridList.push($.extend({},mc,o,{value:mc.value}));
 				
 			}
-			
+			/* 변경 된 데이터의 하이라이트 처리 추가 (2019-08-08) */
+			let oldDt = appMariadb.gridMyCnf.alopexGrid('dataGet',{_state:{edited:true}}); //기존 데이터를 가져온다.
+
 			//appMariadb.gridMyCnf.alopexGrid
 			appMariadb.gridMyCnf.alopexGrid('dataSet',gridList).alopexGrid('expandTreeNode');
 			appMariadb.gridMyCnf.alopexGrid('dataSort', [
 				{sortingColumn : 'sort', sortingDirection: "asc"},
 				{sortingColumn : 'name', sortingDirection: "asc"}
 			]);
+			/* 변경 된 데이터의 하이라이트 처리 추가 (2019-08-08) */
+			if(oldDt.length > 0){
+				for(let m in oldDt){
+					let data = oldDt[m];
+					appMariadb.gridMyCnf.alopexGrid('dataEdit', {_state : {edited : true}}, {category:data.category ,name:data.name});
+				}
+			}
+			
 			/* 삭제처리 표시 유지 하는 로직 추가 - (2019-07-10)   */
 			appMariadb.gridMyCnf.alopexGrid('dataDelete', {deleted: "dataDelete"});
-
-			
 		},saveGridMyCnf : function(){
 			
 			appMariadb.gridMyCnf.alopexGrid('endRowInlineEdit');
@@ -1632,7 +1659,6 @@ let appMariadb = {
 								
 						} */
 
-						
 						if(reg==null){
 							for(let v in validExcepArr){
 								let excepVal = validExcepArr[v];
