@@ -368,7 +368,7 @@ $a.page(function() {
 		            rule:{required:true,checkRule:gValid.dbName.rule},
 		            message:{checkRule:gValid.dbName.message}
 		        }
-		       , 'diskSize':{rule:{required:true,min:20},message:{min:'최소 용량은 20Gi입니다'}}
+		       , 'diskSize':{rule:{required:true,min:20,max:12000},message:{min:'최소 용량은 20Gi입니다', max:'최대 용량은 12Ti(12,000Gi)입니다'}}
 		       , 'diskSizeSel':{rule:{required:true},message:{required:'용량을 선택하세요'}}
 		    }
 		}).find('input[name=serviceName]').on('keyup',function(){
