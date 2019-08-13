@@ -6,7 +6,7 @@
     "url": "/zdb01/zdb0110",
     "folder": "/zdb01",
     "target": "self",
-    "accessRoles": [
+    "clusterRoles": [
       "cluster-admin",
       "admin",
       "member"
@@ -20,7 +20,7 @@
     "url": "/zdb02/zdb0200",
     "folder": "/zdb02",
     "target": "self",
-    "accessRoles": [
+    "clusterRoles": [
       "cluster-admin",
       "admin",
       "member"
@@ -35,7 +35,7 @@
     "url": "/zdb03/zdb0300",
     "folder": "/zdb03",
     "target": "blank",
-    "accessRoles": [
+    "clusterRoles": [
       "cluster-admin",
       "admin",
       "member"
@@ -96,7 +96,7 @@
     		"enable": true
 	    }
     ],
-    "accessRoles": [
+    "clusterRoles": [
       "cluster-admin",
       "admin",
       "member"
@@ -110,7 +110,7 @@
     "url": "/zdb04/zdb0400",
     "folder": "/zdb04",
     "target": "self",
-    "accessRoles": [
+    "clusterRoles": [
       "cluster-admin",
       "admin",
       "member"
@@ -124,7 +124,7 @@
     "url": "/zdb05/zdb0500",
     "folder": "/zdb05",
     "target": "self",
-    "accessRoles": [
+    "clusterRoles": [
       "cluster-admin",
       "admin"
     ],
@@ -137,7 +137,7 @@
     "url": "/zdb08/zdb0800",
     "folder": "/zdb08",
     "target": "self",
-    "accessRoles": [
+    "clusterRoles": [
       "cluster-admin",
       "admin"
     ],
@@ -150,7 +150,7 @@
     "url": "/zdb09/zdb0900",
     "folder": "/zdb09",
     "target": "self",
-    "accessRoles": [
+    "clusterRoles": [
       "cluster-admin",
       "admin",
       "member"
