@@ -26,6 +26,7 @@ import com.skcc.cloudz.zdb.portal.domain.dto.Result;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 import com.skcc.cloudz.zdb.portal.service.ZdbApiService;
 import com.zdb.core.domain.AlertingRuleEntity;
+import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.CredentialConfirm;
 import com.zdb.core.domain.DBUser;
@@ -957,6 +958,51 @@ public class ZdbApiController {
 		
 		Map<String,String>  result = zdbApiService.getLastFailoverInfo(param);
 		mav.addObject(IResult.LAST_FAILOVER ,result);
+		return mav;
+	}
+	
+	@RequestMapping(value="getMigrationBackup", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE }, method = RequestMethod.GET)
+	@ResponseBody
+	public ModelAndView getMigrationBackup(HttpServletRequest request)throws Exception {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<Namespace> namespaces = zdbApiService.getMigrationBackup(param); 
+		if(namespaces == null || namespaces.size() < 1) {
+			throw new ZdbPortalException("네임스페이스가 존재하지 않습니다.<br>네임스페이스 등록 및 권한 할당이 필요합니다.");
+		}
+		mav.addObject(IResult.NAMESPACES ,namespaces);
+		
+		return mav;
+	}
+	
+	@RequestMapping(value="getMigrationBackupList", method = RequestMethod.GET)
+	public ModelAndView getMigrationBackupList(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<BackupEntity> services = zdbApiService.getMigrationBackupList(param);
+		mav.addObject(IResult.BACKUP_LIST,services);
+
+		return mav;
+	}
+
+	@RequestMapping(value="getMigrationBackupServiceList", method = RequestMethod.GET)
+	public ModelAndView getMigrationBackupServiceList(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		List<String> services = zdbApiService.getMigrationBackupServiceList(param);
+		mav.addObject(IResult.SERVICEOVERVIEWS,services);
+
+		return mav;
+	}
+	
+	@RequestMapping(value = "setMigrationBackup", method = RequestMethod.PUT)
+	public ModelAndView setMigrationBackup(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.setMigrationBackup(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
 		return mav;
 	}
 }

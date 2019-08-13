@@ -1,7 +1,5 @@
 package com.skcc.cloudz.zdb.config;
 
-import org.springframework.web.bind.annotation.RequestParam;
-
 public class URIConstants {
 
 	// namespace list
@@ -189,5 +187,13 @@ public class URIConstants {
 	public static final String URI_GET_LAST_FAIL_OVER_INFO = "/api/v1/failover/{namespace}/{serviceName}/info"; 
 
 	public static final String URI_GET_FAIL_OVER_SERVICES_WITH_NAMESPACES = "/api/v1/{namespace}/failover/services";
-
+	
+	public static final String URI_GET_MIGRATION_BACKUP = "/api/v1/migrationBackup";
+	
+	public static final String URI_GET_MIGRATION_BACKUP_SERVICE_LIST = "/api/v1/migrationBackupServiceList?namespace={namespace}&serviceType={serviceType}&type={type}";
+	
+	public static final String URI_GET_MIGRATION_BACKUP_LIST = "/api/v1/migrationBackupList?namespace={namespace}&serviceType={serviceType}&serviceName={serviceName}";
+	
+	public static final String URI_GET_MIGRATION_BACKUP_AGENT = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/migration/{backupId}";
+	
 }

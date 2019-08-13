@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.zdb.core.domain.AlertingRuleEntity;
+import com.zdb.core.domain.BackupEntity;
 import com.zdb.core.domain.ConnectionInfo;
 import com.zdb.core.domain.DBUser;
 import com.zdb.core.domain.Database;
@@ -118,4 +119,8 @@ public class Result {
 	private List<UserPrivilegesForSchema> userPrivilegesForSchema;
 
 	private Map<String,String> lastFailover;
+	
+	private List<String> serviceLists;
+	
+	private List<BackupEntity> migrationBackupList;
 }
