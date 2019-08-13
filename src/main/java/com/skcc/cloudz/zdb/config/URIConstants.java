@@ -196,4 +196,6 @@ public class URIConstants {
 	
 	public static final String URI_GET_MIGRATION_BACKUP_AGENT = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/migration/{backupId}";
 	
+	public static final String URI_PUT_WORKERPOOL_NODE = "/api/v1/nodes/{node}/workerpool/{workerpool}";
+	
 }

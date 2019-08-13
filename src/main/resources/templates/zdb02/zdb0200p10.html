@@ -1,0 +1,49 @@
+<div class="popup-wrap">
+	<div class="popup-mcontents">
+		<div class="popup-cont">
+			<form id="passwordPopForm" name="passwordPopForm">
+			<div> 
+				<div id="divMsg"></div>
+				<div> 관리자 비밀번호</div>
+				<input class="Textinput" type="password" id="password" name="password"></input> 
+				<p data-for="password" class="warn-text"></p>
+			</div>
+			</form>
+		<!--button-->
+		<div class="popup-btn__wrap">
+			<button class="Button btn ok" id="btnOk"></button>
+			<button class="Button btn popClose">취소</button>
+		</div>			
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+$a.page(function() {
+    this.init = function(id, param) {
+    	var form = $('form[name=passwordPopForm]');
+    	form.find('#divMsg').html(param.msg||'');
+    	var okBtn = $('.popup-btn__wrap').find('#btnOk'); 
+    	okBtn.html(param.okBtnMsg||'확인');
+    	form.validator({
+		    elements :{ 
+		        'password': {rule:{required:true,equalTo:param.password}}
+		    },
+		    message:{
+		    	'equalTo': "비밀번호가 일치하지 않습니다."
+		    }
+		});	
+    	okBtn.on('click',function(){
+    		if(!form.validate()){
+				return;
+			};
+			$a.close('Y');
+    	});
+    	
+    	$('.popClose').on('click',function(){
+    		$a.close();
+    	});
+    }
+});
+</script>

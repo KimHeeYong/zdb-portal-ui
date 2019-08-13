@@ -21,13 +21,19 @@
 
 	<script type="text/javascript">
 	let gNamespaces;
+	let sWorkerPool = []; /* workerPool 항목의 editable select box  화를 위한 변수 선언 */
     $.alopex.page(function() {
         this.init = function(id, param) {
         	gCommon.getNamespaceCombo($('#namespaces')).done(function(selector){
             	getNodeList();
             	getNamespaceList();
         	});
+        	 getWorkerpools();
+			/* test data setting -> function 화 예정 */
+/* 			sWorkerPool.push({'text':'dev','value':'dev'});
+			sWorkerPool.push({'text':'prod','value':'prod'}); */
         	
+			
         	function getProgressbarType(value){
                 let type = '';
                 if(Number(value) > 90) {
@@ -120,6 +126,8 @@
         	    defaultColumnMapping : { sorting: true, resizing : true },
         	    message: { nodata: 'Nodes 데이터가 없습니다.' },
         	    autoColumnIndex: true,
+        	    cellInlineEdit : true,        	    
+        	    cellSelectable : true,        	    
         	    enableDefaultContextMenu: false,
         	    columnMapping: [
         	        { key: 'status', title: 'Status', width: '90px', align: 'center' },
@@ -130,7 +138,9 @@
         	        	}	
         	        }},
         	        //{ key: 'nodeRoles', title: 'Roles', width: '100px', align: 'center', render: function(value){ return value || '-'; } },
-        	        { key: 'workerPool', title: 'WorkerPool', width: '100px', align: 'center' },
+        	        /* workerPool cloumn  형식을 editable select box 로 변경  (2019-07-31) */
+        	        { key: 'workerPool', title: 'WorkerPool', width: '100px', align: 'center' ,render:function(value,data){return value;},
+        	        	editable :{type:'select', rule:function(value,data){return sWorkerPool; }}},
         	        { key: 'cpu', title: 'Cpu', width: '70px', align: 'center' },
         	        { key: 'memory', title: 'Memory', width: '80px', align: 'center' },
         	        { key: 'cpuRequests', title: ' ', width: '40px', align: 'right' },
@@ -147,6 +157,37 @@
         	        	} 
         	        }}*/
         	    ],
+        	}).on( 'cellValueEditing' , function(e) {
+	        		let evObj = AlopexGrid.parseEvent(e);
+	        		let value = evObj.prevValue;
+	        		
+	        		let data = evObj.data;
+	        		let mapping = evObj.mapping;
+	        		
+	        		if(data._state.editing !== false && mapping.key === "workerPool") {
+	        			gCommon.adminPwConfirm({
+					        data:{password:'4567'},
+					        callback : function(res){
+								console.log(res);
+								var param = {node:data.nodeName,workerpool:evObj.value};
+								console.log(param);
+								$a.ajax({
+									url: '/zdbapi/putWorkerPoolNode',
+									method:'PUT',
+									data:param,
+									success: function(res){
+										console.log(res);
+										gCommon.alert("설정이 변경되었습니다.");
+										getNodeList();
+									}
+								})
+					        }
+					    });
+	        			
+						setTimeout(function(){
+							evObj.$grid.alopexGrid('cellEdit', value, {_index: {id: data._index.id}}, 'workerPool');
+						},100)
+	        		}
         	});
         	let gridNamespace = $('#gridNamespace').alopexGrid({
         		renderMapping : renderBar,
@@ -207,6 +248,28 @@
 					}
 				});
         	}
+        	
+        	function getWorkerpools(){
+            	$a.ajax({
+    				url: '/zdbapi/workerpools',
+    				async: false,
+    				success:function(res){
+    					let list = res.result.result.workerPools;
+
+    					if(list && list.length > 0){
+    						for(o in list){
+    							let t = list[o]
+    							sWorkerPool.push({'text':t,'value':t});
+    						}
+    					}
+    				}
+    			});
+        	}
+        	
+/*         	
+        	gCommon.confirm('Migration 작업수행을 하시 겠습니까?',function(){
+
+			}); */
         }
     });
 </script>

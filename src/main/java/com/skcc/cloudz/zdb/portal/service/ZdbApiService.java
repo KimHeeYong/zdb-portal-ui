@@ -1008,4 +1008,12 @@ public class ZdbApiService{
 		zdbRestDTO = connector.exchange(demonServer + URIConstants.URI_GET_MIGRATION_BACKUP_AGENT, HttpMethod.GET,entity,ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
 	}
+	
+	public ZdbRestDTO putWorkerPoolNode(Map<String, String> param) {
+		ZdbRestDTO zdbRestDTO = null;
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+
+		zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_PUT_WORKERPOOL_NODE, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}	
 }
