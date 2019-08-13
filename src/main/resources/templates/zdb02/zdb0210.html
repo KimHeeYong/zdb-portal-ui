@@ -2518,12 +2518,16 @@
 							re = "수행중"; 
 						}else if(value ==  "FAILED"){
 							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 실패 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+						}else if(value ==  "ABORTED"){
+							re = "수행중지"; 
 						}
 						return re
 					}},
 					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat,render:function(value,data){
 						let  re = data.fromLsn +' ~ '+data.toLsn ; 
-				  		if(data.type == "DUMP") re = ' - ' ;
+				  		if(data.type == "DUMP" || data.status == "ABORTED"){
+				  			re = ' - ' ;
+				  		}
 						return re;
 					}},
 					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center',tooltip:false , render:function(value,data,render,mapping){
@@ -2538,10 +2542,21 @@
 							val = cloudUtil.truncDecimal((value / (1024*1024*1024)),2) +'Gi';
 						}
 						var st = data.status == 'DELETED'? 'text-decoration: line-through;': '';
-						var re = '<span style="font:inherit;'+st+'">'+val+'</span>' 
+						var re = '<span style="font:inherit;'+st+'">'+val+'</span>' ;
+						
+				  		if(data.status == "ABORTED"){
+				  			re = ' - ' ;
+				  		}
 						return re;
 					}},
-					{ title:'On-Disk', key : 'ondisk' , width: '160px', align: 'center',hidden:true},
+					{ title:'On-Disk', key : 'ondisk' , width: '160px', align: 'center',hidden:true, render:function(value,data){
+						let  re = value; 
+						
+						if(data.status == "ABORTED"){
+				  			re = ' - ' ;
+				  		}
+						return re;
+					}},
 					{ title:downloadTitle, key : 'archiveFileSize' , width: '100px', align: 'center',excludeFitWidth:true,tooltip:false ,render:function(value,data,render,mapping){
 						let t = '다운로드';
 						//console.log(data.type);
