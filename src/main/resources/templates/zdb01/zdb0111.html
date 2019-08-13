@@ -654,67 +654,83 @@ $a.page(function() {
 				if(diskSizeTemp < 40) {
 					$('form[name=serviceForm]').validator({
 						elements : {
-							'storageIops' : {rule:{required:true,min:StorageCheckRule[40].min,max:StorageCheckRule[40].max}}
+							'storageIops' : {
+								rule:{required:true,min:StorageCheckRule[40].min,max:StorageCheckRule[40].max,checkInputUnit:100},
+								message:{checkInputUnit:'기본 입력단위는 100IOPS입니다.'}
+							}
 						}
 					});
 				} else if(diskSizeTemp < 80) {
 					$('form[name=serviceForm]').validator({
 						elements : {
-							'storageIops' : {rule:{required:true,min:StorageCheckRule[80].min,max:StorageCheckRule[80].max}}
+							'storageIops' : {
+								rule:{required:true,min:StorageCheckRule[80].min,max:StorageCheckRule[80].max,checkInputUnit:100},
+								message:{checkInputUnit:'기본 입력단위는 100IOPS입니다.'}}
 						}
 					});
 				} else if(diskSizeTemp < 100) {
 					$('form[name=serviceForm]').validator({
 						elements : {
-							'storageIops' : {rule:{required:true,min:StorageCheckRule[100].min,max:StorageCheckRule[100].max}}
+							'storageIops' : {
+								rule:{required:true,min:StorageCheckRule[100].min,max:StorageCheckRule[100].max,checkInputUnit:100},
+								message:{checkInputUnit:'기본 입력단위는 100IOPS입니다.'}}
 						}
 					});
 				} else if(diskSizeTemp < 500) {
 					$('form[name=serviceForm]').validator({
 						elements : {
-							'storageIops' : {rule:{required:true,min:StorageCheckRule[500].min,max:StorageCheckRule[500].max}}
+							'storageIops' : {
+								rule:{required:true,min:StorageCheckRule[500].min,max:StorageCheckRule[500].max,checkInputUnit:100},
+								message:{checkInputUnit:'기본 입력단위는 100IOPS입니다.'}}
 						}
 					});
 				} else if(diskSizeTemp < 1000) {
 					$('form[name=serviceForm]').validator({
 						elements : {
-							'storageIops' : {rule:{required:true,min:StorageCheckRule[1000].min,max:StorageCheckRule[1000].max}}
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[1000].min,max:StorageCheckRule[1000].max,checkInputUnit:100},
+								message:{checkInputUnit:'기본 입력단위는 100IOPS입니다.'}}
 						}
 					});
 				} else if(diskSizeTemp < 2000) {
 					$('form[name=serviceForm]').validator({
 						elements : {
-							'storageIops' : {rule:{required:true,min:StorageCheckRule[2000].min,max:StorageCheckRule[2000].max}}
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[2000].min,max:StorageCheckRule[2000].max,checkInputUnit:100},
+								message:{checkInputUnit:'기본 입력단위는 100IOPS입니다.'}}
 						}
 					});
 				} else if(diskSizeTemp < 3000) {
 					$('form[name=serviceForm]').validator({
 						elements : {
-							'storageIops' : {rule:{required:true,min:StorageCheckRule[3000].min,max:StorageCheckRule[3000].max}}
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[3000].min,max:StorageCheckRule[3000].max,checkInputUnit:100},
+								message:{checkInputUnit:'기본 입력단위는 100IOPS입니다.'}}
 						}
 					});
 				} else if(diskSizeTemp < 4000) {
 					$('form[name=serviceForm]').validator({
 						elements : {
-							'storageIops' : {rule:{required:true,min:StorageCheckRule[4000].min,max:StorageCheckRule[4000].max}}
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[4000].min,max:StorageCheckRule[4000].max,checkInputUnit:100},
+								message:{checkInputUnit:'기본 입력단위는 100IOPS입니다.'}}
 						}
 					});
 				} else if(diskSizeTemp < 8000) {
 					$('form[name=serviceForm]').validator({
 						elements : {
-							'storageIops' : {rule:{required:true,min:StorageCheckRule[8000].min,max:StorageCheckRule[8000].max}}
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[8000].min,max:StorageCheckRule[8000].max,checkInputUnit:100},
+								message:{checkInputUnit:'기본 입력단위는 100IOPS입니다.'}}
 						}
 					});
 				} else if(diskSizeTemp < 10000) {
 					$('form[name=serviceForm]').validator({
 						elements : {
-							'storageIops' : {rule:{required:true,min:StorageCheckRule[10000].min,max:StorageCheckRule[10000].max}}
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[10000].min,max:StorageCheckRule[10000].max,checkInputUnit:100},
+								message:{checkInputUnit:'기본 입력단위는 100IOPS입니다.'}}
 						}
 					});
 				} else if(diskSizeTemp < 12001) {
 					$('form[name=serviceForm]').validator({
 						elements : {
-							'storageIops' : {rule:{required:true,min:StorageCheckRule[12001].min,max:StorageCheckRule[12001].max}}
+							'storageIops' : {rule:{required:true,min:StorageCheckRule[12001].min,max:StorageCheckRule[12001].max,checkInputUnit:100},
+								message:{checkInputUnit:'기본 입력단위는 100IOPS입니다.'}}
 						}
 					});
 				}
