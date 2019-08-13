@@ -8,10 +8,10 @@ var gValid = {
 		message:'DB명 양식이 올바르지 않습니다.' 
 	},
 	checkUnitSize :{
-		message:'범위를 확인해주세요'
+		message:'범위를 확인해주세요.'
 	},
 	storageIops : {
-		message:'범위를 확인해주세요'
+		message:'입력 단위가 100입니다.'
 	}
 	
 }; 
@@ -39,10 +39,13 @@ $a.page(function() {
 			let max = bigInt(param.split(':')[1]);
 		    return (r.greaterOrEquals(min) && r.lesserOrEquals(max));
 		});
-		Validator.addMethod('storageIops', function(element,value,param) {
-			console.log("element: "+ element);
-			console.log("value: "+ value);
-			console.log("param: "+ param);
+		Validator.addMethod('checkInputUnit', function(element,value,param) {
+			let re = value % param;
+			if(re == 0) {
+				return true;
+			}
+			
+			return false;
 		});
 	};
 });
