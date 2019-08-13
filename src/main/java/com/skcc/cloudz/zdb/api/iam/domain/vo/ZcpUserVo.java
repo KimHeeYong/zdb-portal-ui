@@ -19,9 +19,13 @@ public class ZcpUserVo {
     private Date createdDate;
     private Boolean enabled;
     private Boolean emailVerified;
-    private String clusterRole;
     private List<String> namespaces;
     private String defaultNamespace;
     private int usedNamespace;
     
+	private Boolean totp;
+	private ClusterRole clusterRole;
+	private List<CredentialActionType> requiredActions;
+	private ClusterRole namespacedRole;
+	private Boolean zdbAdmin;
 }

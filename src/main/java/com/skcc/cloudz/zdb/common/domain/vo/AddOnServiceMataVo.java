@@ -2,7 +2,8 @@ package com.skcc.cloudz.zdb.common.domain.vo;
 
 import java.util.List;
 
-import com.skcc.cloudz.zdb.common.security.vo.AccessRole;
+import com.skcc.cloudz.zdb.api.iam.domain.vo.ClusterRole;
+
 
 public class AddOnServiceMataVo implements Comparable<AddOnServiceMataVo> {
     private String id;
@@ -11,7 +12,7 @@ public class AddOnServiceMataVo implements Comparable<AddOnServiceMataVo> {
     private String url;
     private String target;
     private List<AddOnServiceMataSubVo> sub;
-    private List<AccessRole> accessRoles;
+    private List<ClusterRole> clusterRoles;
     private boolean enable;
     private String folder;
     
@@ -65,12 +66,12 @@ public class AddOnServiceMataVo implements Comparable<AddOnServiceMataVo> {
         this.sub = sub;
     }
     
-    public List<AccessRole> getAccessRoles() {
-        return accessRoles;
+    public List<ClusterRole> getClusterRoles() {
+        return clusterRoles;
     }
 
-    public void setAccessRoles(List<AccessRole> accessRoles) {
-        this.accessRoles = accessRoles;
+    public void setClusterRoles(List<ClusterRole> clusterRoles) {
+        this.clusterRoles = clusterRoles;
     }
 
     public boolean isEnable() {

@@ -108,9 +108,11 @@ public class ZdbRestConnector extends RestTemplate{
 			headers.set("userName", userInfo.getUsername());
 			headers.set("email", userInfo.getEmail());
 			headers.set("firstName", userInfo.getFirstName());
-			headers.set("accessRole", userInfo.getAccessRole());
+			headers.set("clusterRole", userInfo.getClusterRole());
 			headers.set("namespaces", getSessionNamespaces());
 			headers.set("defaultNamespace", userInfo.getDefaultNamespace());
+			headers.set("enabled", userInfo.getEnabled() == null ? "false" : userInfo.getEnabled()+"");
+			headers.set("zdbAdmin", userInfo.getZdbAdmin() == null ? "false" : userInfo.getZdbAdmin()+"");
 		}
 	}
 }

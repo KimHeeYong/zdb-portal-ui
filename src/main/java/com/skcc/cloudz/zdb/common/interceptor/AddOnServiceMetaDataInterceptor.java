@@ -18,11 +18,11 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skcc.cloudz.zdb.api.iam.domain.vo.ClusterRole;
 import com.skcc.cloudz.zdb.common.component.AddOnServiceMataComponent;
 import com.skcc.cloudz.zdb.common.domain.vo.AddOnServiceMataSubVo;
 import com.skcc.cloudz.zdb.common.domain.vo.AddOnServiceMataVo;
 import com.skcc.cloudz.zdb.common.security.service.SecurityService;
-import com.skcc.cloudz.zdb.common.security.vo.AccessRole;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,8 +66,8 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
         ObjectMapper mapper = new ObjectMapper();
         
         try {
-            String userAccessRole = securityService.getUserDetails().getAccessRole();
-            log.debug("userAccessRole : {}", userAccessRole);
+            String userClusterRole = securityService.getUserDetails().getClusterRole();
+            log.debug("userClusterRole : {}", userClusterRole);
             InputStream inputStream = AddOnServiceMetaDataInterceptor.class.getClassLoader().getResourceAsStream("addOnServiceMetaData.json");
             if (inputStream == null) {
                 throw new Exception();
@@ -75,8 +75,8 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
             List<AddOnServiceMataVo> addOnServiceMataList = mapper.readValue(inputStream, new TypeReference<List<AddOnServiceMataVo>>(){});
              
             for (AddOnServiceMataVo addOnServiceMataVo : addOnServiceMataList) {
-        		for (AccessRole accessRole : addOnServiceMataVo.getAccessRoles()) {
-        			if (userAccessRole.equals(accessRole.getName()) && addOnServiceMataVo.isEnable()) {
+        		for (ClusterRole clusterRole : addOnServiceMataVo.getClusterRoles()) {
+        			if (userClusterRole.equals(clusterRole.getRole()) && addOnServiceMataVo.isEnable()) {
         				AddOnServiceMataVoList.add(this.getAddOnServiceMetaDataSub(addOnServiceMataVo));        
         			}
         		}

@@ -55,7 +55,7 @@
 		<div class="Panel service-panel">
 			<div class="Panel-content">
 				<div style="float: left;word-break:break-all;font-size: 14px;" id="divInfoMsg"></div>
-				<div class="config-wrap" th:if="${session.userInfo.accessRole=='cluster-admin'}" >
+				<div class="config-wrap" th:if="${session.userInfo.clusterRole=='cluster-admin'}" >
 					<button class="btn-ico btn-refresh" id="restartService" title="재시작">재시작 </button>
 					<button class="Button btn-ico__typeb btn-trash" id="deleteService" title="삭제">삭제</button>
 				</div>

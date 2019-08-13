@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
+import com.skcc.cloudz.zdb.api.iam.domain.vo.ClusterRole;
 import com.skcc.cloudz.zdb.api.iam.domain.vo.ZcpUserVo;
 import com.skcc.cloudz.zdb.common.domain.vo.CommonVo;
 
@@ -21,11 +22,14 @@ public class OpenIdConnectUserDetailsVo extends CommonVo implements UserDetails 
     private String username;
     private String email;
     private String firstName;
-    private String accessRole;
+    private String clusterRole;
+    private String namespacedRole;
     private List<String> namespaces;
     private String defaultNamespace;
     private int usedNamespace;
     private OAuth2AccessToken token;
+    private Boolean enabled;
+    private Boolean zdbAdmin;
     
     public OpenIdConnectUserDetailsVo() {}
 
@@ -41,8 +45,11 @@ public class OpenIdConnectUserDetailsVo extends CommonVo implements UserDetails 
             this.namespaces = zcpUserVo.getNamespaces();
             this.defaultNamespace = zcpUserVo.getDefaultNamespace();
             this.usedNamespace = zcpUserVo.getUsedNamespace();
-            //this.accessRole = zcpUserVo.getClusterRole() != null ? zcpUserVo.getClusterRole().getName() : AccessRole.NONE.getName();
-            this.accessRole = AccessRole.CLUSTER_ADMIN.getName();
+            this.clusterRole = zcpUserVo.getClusterRole() != null ? zcpUserVo.getClusterRole().getRole() : ClusterRole.NONE.getRole();
+            this.namespacedRole = zcpUserVo.getNamespacedRole() != null ? zcpUserVo.getNamespacedRole().getRole() : ClusterRole.NONE.getRole();
+            
+            this.enabled = zcpUserVo.getEnabled();
+            this.zdbAdmin = zcpUserVo.getZdbAdmin();
         }
     }
     
@@ -105,12 +112,12 @@ public class OpenIdConnectUserDetailsVo extends CommonVo implements UserDetails 
         this.firstName = firstName;
     }
 
-    public String getAccessRole() {
-        return accessRole;
+    public String getClusterRole() {
+        return clusterRole;
     }
 
-    public void setAccessRole(String accessRole) {
-        this.accessRole = accessRole;
+    public void setClusterRole(String clusterRole) {
+        this.clusterRole = clusterRole;
     }
 
     public List<String> getNamespaces() {
@@ -148,6 +155,23 @@ public class OpenIdConnectUserDetailsVo extends CommonVo implements UserDetails 
     public void setUsername(String username) {
         this.username = username;
     }
+    
+    public Boolean getEnabled() {
+		return enabled;
+	}
+    
+    public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+    
+    public Boolean getZdbAdmin() {
+		return zdbAdmin;
+	}
+    
+    public void setZdbAdmin(Boolean zdbAdmin) {
+		this.zdbAdmin = zdbAdmin;
+	}
+    
     
 }
 
