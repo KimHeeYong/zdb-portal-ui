@@ -1016,4 +1016,18 @@ public class ZdbApiController {
 		
 		return mav;
 	}	
+	
+	@RequestMapping(value = "abortBackup", method = RequestMethod.PUT)	
+	public ModelAndView abortBackup(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		System.out.println("abortBackup=="+param.get("txId"));
+		
+		ZdbRestDTO result = null;
+		result = zdbApiService.abortBackup(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
 }

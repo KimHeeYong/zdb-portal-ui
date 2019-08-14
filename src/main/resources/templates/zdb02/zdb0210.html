@@ -553,8 +553,9 @@
 						<button class="Button btn hide" id="removeBackupDisk">백업디스크 제거</button>
 					</div>
 					<button class="Button btn ml1" id="deleteBackup">삭제</button>
+					<button class="Button btn ml1" id="abortedBackup">백업 수행 중지</button>
 					<button class="Button btn ml1" id="updateBackup">지금 백업하기</button>
-					<button class="Button btn ml1" id="searchBackup">조회</button>
+					<button class="Button btn ml1" id="searchBackup">조회</button>	
 				</div>	          	
           	</div>
            	<div class="info-list__select mt10 hide" data-show-service-type="mariadb">
@@ -2403,6 +2404,22 @@
 			        }
 			    });
 			});
+			$('button#abortedBackup').on('click',function(){
+				let guid = gCommon.getUid();
+				gCommon.credentialConfirm({
+			        data:{credential:$("#credential").val(),msg:'백업을 중지하시려면',okBtnMsg:'중지'},
+			        callback : function(res){
+						$a.ajax({
+							url:'/zdbapi/abortBackup',
+							method:'put',
+							data:$.extend({},gParam,{txId:guid}),
+							success:function(res){
+								console.log(res);
+							}
+						});	
+			        }
+			    });
+			});		
 			$('button#addBackupDisk').on('click',function(){
 				/*backupdisk-test*/
 				let vPodName = gService.podName ;  

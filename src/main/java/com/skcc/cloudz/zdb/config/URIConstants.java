@@ -198,4 +198,6 @@ public class URIConstants {
 	
 	public static final String URI_PUT_WORKERPOOL_NODE = "/api/v1/nodes/{node}/workerpool/{workerpool}";
 	
+	public static final String URI_ABORT_BACKUP = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/abortBackup/{txId}";
+	
 }

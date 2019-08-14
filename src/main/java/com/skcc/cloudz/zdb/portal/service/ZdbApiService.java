@@ -1016,4 +1016,14 @@ public class ZdbApiService{
 		zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_PUT_WORKERPOOL_NODE, HttpMethod.PUT,entity,ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
 	}	
+	
+	public ZdbRestDTO abortBackup(Map<String, String> param) {
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+		
+		
+		System.out.println("abortBackup=service="+param.get("txId"));
+		
+		ZdbRestDTO zdbRestDTO = connector.exchange(demonServer + URIConstants.URI_ABORT_BACKUP, HttpMethod.POST,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
 }
