@@ -87,13 +87,6 @@ public class IamRestClient {
 
     public String getAccessToken(String userId, String password) throws KeyCloakException {
 		try {
-			HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-	        httpRequestFactory.setConnectionRequestTimeout(1000);
-	        httpRequestFactory.setConnectTimeout(1000);
-	        httpRequestFactory.setReadTimeout(1000);
-			
-			RestTemplate restTemplate = new RestTemplate(httpRequestFactory);
-			
 			MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
 			body.add("username", userId);
 			body.add("password", password);
