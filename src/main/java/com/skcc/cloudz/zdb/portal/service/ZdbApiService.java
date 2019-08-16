@@ -26,7 +26,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.skcc.cloudz.zdb.api.iam.domain.vo.ApiResponseVo;
+import com.skcc.cloudz.zdb.api.iam.service.impl.IamRestClient;
 import com.skcc.cloudz.zdb.common.component.ZdbRestConnector;
+import com.skcc.cloudz.zdb.common.exception.KeyCloakException;
 import com.skcc.cloudz.zdb.common.security.service.SecurityService;
 import com.skcc.cloudz.zdb.common.util.StringUtil;
 import com.skcc.cloudz.zdb.config.CommonConstants;
@@ -65,6 +67,8 @@ public class ZdbApiService{
 	@Value("${props.iam.baseUrl}") String iamBaseUrl;
     @Autowired SecurityService securityService;
     @Autowired ZdbRestConnector connector;
+    @Autowired IamRestClient iamRestClient;
+
     
 	public List<Namespace> getNamespaces(Map<String,String> param) {
 		List<Namespace> list = Collections.emptyList();
@@ -1020,10 +1024,22 @@ public class ZdbApiService{
 	public ZdbRestDTO abortBackup(Map<String, String> param) {
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
 		
-		
-		System.out.println("abortBackup=service="+param.get("txId"));
-		
 		ZdbRestDTO zdbRestDTO = connector.exchange(demonServer + URIConstants.URI_ABORT_BACKUP, HttpMethod.POST,entity,ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
+	}
+	
+	public String getAccessToken(Map<String, String> param) {
+
+		String result = "";
+		
+		try {
+			result = iamRestClient.getAccessToken(param.get("userId"),param.get("password"));
+			
+		} catch (KeyCloakException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
+		return result;
 	}
 }

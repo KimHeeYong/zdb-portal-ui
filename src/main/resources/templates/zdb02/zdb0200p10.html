@@ -2,11 +2,13 @@
 	<div class="popup-mcontents">
 		<div class="popup-cont">
 			<form id="passwordPopForm" name="passwordPopForm">
+			<input class="Textinput" type="hidden" id="decodePassword" name="decodePassword"></input> 
+			<input class="Textinput" type="hidden" id="confirm" name="confirm"></input>			
 			<div> 
 				<div id="divMsg"></div>
 				<div> 관리자 비밀번호</div>
 				<input class="Textinput" type="password" id="password" name="password"></input> 
-				<p data-for="password" class="warn-text"></p>
+				<p data-for="confirm" class="warn-text"></p>
 			</div>
 			</form>
 		<!--button-->
@@ -26,21 +28,36 @@ $a.page(function() {
     	form.find('#divMsg').html(param.msg||'');
     	var okBtn = $('.popup-btn__wrap').find('#btnOk'); 
     	okBtn.html(param.okBtnMsg||'확인');
+   	
     	form.validator({
 		    elements :{ 
-		        'password': {rule:{required:true,equalTo:param.password}}
+		        'confirm': {rule:{required:true,equalTo:"true"}}
 		    },
 		    message:{
 		    	'equalTo': "비밀번호가 일치하지 않습니다."
 		    }
 		});	
+    	
     	okBtn.on('click',function(){
-    		if(!form.validate()){
-				return;
-			};
-			$a.close('Y');
+    		var encodeStr = $("#password").val() ;
+
+			$a.ajax({
+				url: '/zdbapi/getAccessToken',
+				data:{userId:param.userId ,password:encodeStr},
+				success: function(res){
+				confirmStr = res.result ;
+					$('#confirm').val(confirmStr);
+					if(form.validate()){
+						$a.close('Y');					
+					}else{
+						return;
+					}
+				}
+			});
     	});
     	
+    	
+    	/* popup Close  */
     	$('.popClose').on('click',function(){
     		$a.close();
     	});

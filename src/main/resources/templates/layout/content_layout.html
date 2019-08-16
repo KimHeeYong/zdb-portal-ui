@@ -46,6 +46,7 @@
 	<script type="text/javascript" th:inline="javascript">
 		/*<![CDATA[*/
 		var gUserId = [[${session.userInfo.userId}]];
+		var gUserName = [[${session.userInfo.username}]];		
 		var gIsAdmin = ([[${session.userInfo.clusterRole}]]) == 'cluster-admin';
 		/*]]>*/
 	</script>

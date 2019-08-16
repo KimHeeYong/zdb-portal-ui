@@ -140,7 +140,12 @@
         	        //{ key: 'nodeRoles', title: 'Roles', width: '100px', align: 'center', render: function(value){ return value || '-'; } },
         	        /* workerPool cloumn  형식을 editable select box 로 변경  (2019-07-31) */
         	        { key: 'workerPool', title: 'WorkerPool', width: '100px', align: 'center' ,render:function(value,data){return value;},
-        	        	editable :{type:'select', rule:function(value,data){return sWorkerPool; }}},
+						allowEdit:function(value,data){
+							return gIsAdmin == true;
+						},
+        	        	editable :{type:'select', rule:function(value,data){
+        	        		return sWorkerPool;
+        	        	}}},
         	        { key: 'cpu', title: 'Cpu', width: '70px', align: 'center' },
         	        { key: 'memory', title: 'Memory', width: '80px', align: 'center' },
         	        { key: 'cpuRequests', title: ' ', width: '40px', align: 'right' },
@@ -165,10 +170,10 @@
 	        		let mapping = evObj.mapping;
 	        		
 	        		if(data._state.editing !== false && mapping.key === "workerPool") {
-	        			gCommon.adminPwConfirm({
-					        data:{password:'4567'},
-					        callback : function(res){
-								console.log(res);
+	        			fn_getAdminPwConfirm(data).done(function(result){
+	        				console.log(result);
+							// confirm popup 결과 값에 따라 변경하도록 한다. 
+							if(result == "Y"){
 								var param = {node:data.nodeName,workerpool:evObj.value};
 								console.log(param);
 								$a.ajax({
@@ -176,18 +181,20 @@
 									method:'PUT',
 									data:param,
 									success: function(res){
-										console.log(res);
+
 										gCommon.alert("설정이 변경되었습니다.");
 										getNodeList();
 									}
-								})
-					        }
-					    });
+								})										
+							}
+						})
 	        			
-						setTimeout(function(){
-							evObj.$grid.alopexGrid('cellEdit', value, {_index: {id: data._index.id}}, 'workerPool');
-						},100)
+	    				setTimeout(function(){
+	    					evObj.$grid.alopexGrid('cellEdit', value, {_index: {id: data._index.id}}, 'workerPool');
+	    				},100)
 	        		}
+	        		
+	        		
         	});
         	let gridNamespace = $('#gridNamespace').alopexGrid({
         		renderMapping : renderBar,
@@ -229,6 +236,7 @@
         			url:'/zdbapi/nodesInfo',
         			success:function(res){
         				let list = res.nodeList;
+
         				gridNode.alopexGrid('dataSet',list);
         	        	gridNode.alopexGrid('setFilter', 'roleFilter', function(data){
         					return data.nodeRoles == 'zdb';
@@ -266,10 +274,31 @@
     			});
         	}
         	
-/*         	
-        	gCommon.confirm('Migration 작업수행을 하시 겠습니까?',function(){
+			
+			function fn_getAdminPwConfirm(data){
+				let deferred = $.Deferred();
+				let re = {};
+				console.log("gUserName===="+gUserName);
+/*     			
+    			
+	 */			
 
-			}); */
+				gCommon.adminPwConfirm({
+			        data:{userId:gUserName },
+			        callback : function(res){
+			        	if(res == null){
+			        		re = res || {};
+							re.isExists = false;
+							deferred.resolve(re);
+			        	}else{
+			        		re = res;
+							re.isExists = true;
+							deferred.resolve(re);				        		
+			        	}
+			        }
+			    }); 
+				return deferred.promise();
+			}
         }
     });
 </script>

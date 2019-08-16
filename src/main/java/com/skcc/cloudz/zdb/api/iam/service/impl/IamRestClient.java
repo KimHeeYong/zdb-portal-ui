@@ -100,7 +100,6 @@ public class IamRestClient {
 
 			// For print IO, change log-level(DEBUG) of RestTemplate or org.spring package.  
 			ResponseEntity<HashMap> res = restTemplate.exchange(accessTokenUri, HttpMethod.POST, entity, HashMap.class, realm);
-			//logger.debug("Success to get access_token.", res);
 			return Objects.toString(res.getBody().get("access_token"));
 		} catch (HttpStatusCodeException e) {
 			if(HttpStatus.valueOf(e.getRawStatusCode()) == HttpStatus.UNAUTHORIZED) {

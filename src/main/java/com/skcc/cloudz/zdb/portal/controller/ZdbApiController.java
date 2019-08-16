@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,6 +19,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.skcc.cloudz.zdb.api.iam.service.IamApiService;
+import com.skcc.cloudz.zdb.api.iam.service.impl.IamRestClient;
+import com.skcc.cloudz.zdb.common.exception.KeyCloakException;
 import com.skcc.cloudz.zdb.common.exception.ZdbPortalException;
 import com.skcc.cloudz.zdb.common.util.RequestUtil;
 import com.skcc.cloudz.zdb.config.CommonConstants;
@@ -1022,12 +1026,26 @@ public class ZdbApiController {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
-		System.out.println("abortBackup=="+param.get("txId"));
-		
 		ZdbRestDTO result = null;
 		result = zdbApiService.abortBackup(param);
 		mav.addObject(CommonConstants.RESULT,result);
 		
+		return mav;
+	}
+
+	@RequestMapping(value = "getAccessToken", method = RequestMethod.GET)
+	public ModelAndView getAccessToken(HttpServletRequest request){
+		
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		String token = zdbApiService.getAccessToken(param);
+		String result = "false"; 
+		if(token.length() > 0 ) {
+			result = "true";
+		}
+		
+		mav.addObject(CommonConstants.RESULT,result);
 		return mav;
 	}
 }
