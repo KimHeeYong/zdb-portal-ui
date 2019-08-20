@@ -56,6 +56,8 @@ zdb:
     version: 10.3.16, 10.2.21, 10.2.14
   redis: 
     version: 4.0.9
+
+cluster: pog-dev
     
 props:
   appName: zdb-portal-local
@@ -89,7 +91,9 @@ zdb:
     version: 10.3.16, 10.2.21, 10.2.14
   redis: 
     version: 4.0.9
-  
+
+cluster: cbt
+
 props:
   appName: zdb-portal-local
   keycloak:
@@ -136,6 +140,8 @@ management:
      enabled: false   
 zdb-api-server:
   url: ${api.server}
+
+cluster: ${cluster}
 
 zdb:
   mariadb:
