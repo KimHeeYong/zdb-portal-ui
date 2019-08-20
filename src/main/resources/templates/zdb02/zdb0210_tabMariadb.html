@@ -107,7 +107,7 @@
 									<th>Connection errors </th>
 									<td data="Connection_errors_max_connections"></td>
 									<th>Connections </th>
-									<td data="Connections"></td>
+									<td data="Total Connections"></td>
 								</tr>
 								<tr>
 									<th>Max connections </th>
@@ -243,7 +243,7 @@ let appMariadb = {
 			ob.addClass('selected');
 			let menuName = $(ob).data('menu');
 			if(gService.status == 'red' && menuName !='myCnf'){
-				gCommon.alert('서비스가 작동중이지 않을땐 myCnf설정만 가능합니다.');
+				gCommon.alert('서비스가 동작중이지 않아 사용할 수 없습니다.');
 				return;
 			}
 			appMariadb.initMenu(menuName);
