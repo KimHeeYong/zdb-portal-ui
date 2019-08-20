@@ -2542,7 +2542,7 @@
 					}},
 					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat,render:function(value,data){
 						let  re = data.fromLsn +' ~ '+data.toLsn ; 
-				  		if(data.type == "DUMP" || data.status == "ABORTED"){
+				  		if(data.type == "DUMP" || data.status == "ABORTED"|| data.status == "DOING"){
 				  			re = ' - ' ;
 				  		}
 						return re;
