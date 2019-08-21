@@ -201,7 +201,7 @@ var gCommon = $a.page(function(){
 					};
 					gNamespaceList = namespaceList.slice();
 					if(opt.incAdminAll){//admin일 경우에만 전체 보이도록 
-						if(gIsAdmin){
+						if(gIsClusterAdmin){
 							namespaceList.push({
 								id:G_NAMESPACE_ALL,
 								text:'전체'

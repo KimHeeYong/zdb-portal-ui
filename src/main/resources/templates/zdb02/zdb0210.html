@@ -1465,7 +1465,7 @@
 							return 'Last Transition Time : '+dLT;
 						}
 					}},
-					{ title:'Action',key:'restart',width:'60px', align: 'center',hidden:(!gIsAdmin),render: function( value, data, render, mapping,cell){
+					{ title:'Action',key:'restart',width:'60px', align: 'center',hidden:(!gIsClusterAdmin),render: function( value, data, render, mapping,cell){
 						return getGridContextButton();
 					}},
 					//{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){

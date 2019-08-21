@@ -98,8 +98,7 @@
     ],
     "clusterRoles": [
       "cluster-admin",
-      "admin",
-      "member"
+      "admin"
     ],
     "enable": true
   },
@@ -112,8 +111,7 @@
     "target": "self",
     "clusterRoles": [
       "cluster-admin",
-      "admin",
-      "member"
+      "admin"
     ],
     "enable": true
   },

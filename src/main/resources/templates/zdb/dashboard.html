@@ -141,7 +141,7 @@
         	        /* workerPool cloumn  형식을 editable select box 로 변경  (2019-07-31) */
         	        { key: 'workerPool', title: 'WorkerPool', width: '100px', align: 'center' ,render:function(value,data){return value;},
 						allowEdit:function(value,data){
-							return gIsAdmin == true;
+							return gIsClusterAdmin == true;
 						},
         	        	editable :{type:'select', rule:function(value,data){
         	        		return sWorkerPool;

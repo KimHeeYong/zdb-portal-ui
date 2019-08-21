@@ -47,7 +47,8 @@
 		/*<![CDATA[*/
 		var gUserId = [[${session.userInfo.userId}]];
 		var gUserName = [[${session.userInfo.username}]];		
-		var gIsAdmin = ([[${session.userInfo.clusterRole}]]) == 'cluster-admin';
+		var gIsClusterAdmin = ([[${session.userInfo.clusterRole}]]) == 'cluster-admin';
+		var gIsZdbAdmin = [[${session.userInfo.zdbAdmin}]];
 		/*]]>*/
 	</script>
 	
