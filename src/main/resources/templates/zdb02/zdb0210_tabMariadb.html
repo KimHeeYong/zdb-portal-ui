@@ -83,7 +83,9 @@
 							</table>
 						</div> -->
 						<div data-menu="connection" class="accor-contents__wrap" >
-							<h3 class="form-title2">클라이언트 커넥션</h3>
+							<h3 class="form-title2">클라이언트 커넥션
+								<button class="Button btn fr" id="btnReloadConnection" style="margin-bottom: 3px;">새로고침</button>
+							</h3>							
 							<table class="Table Form-type" > 
 								<colgroup>
 									<col width="300px"></col>
@@ -106,8 +108,8 @@
 									<td data="Threads_cached"></td>
 									<th>Connection errors </th>
 									<td data="Connection_errors_max_connections"></td>
-									<th>Connections </th>
-									<td data="Total Connections"></td>
+									<th>Total Connections </th>
+									<td data="Connections"></td>
 								</tr>
 								<tr>
 									<th>Max connections </th>
@@ -121,7 +123,9 @@
 							<div id="gridConnection" class="mt30"></div>
 						</div>
 						<div data-menu="userRole" class="hide"  style=" min-width: 950px; ">
-							<h3 class="form-title2">사용자 및 권한 관리</h3>
+							<h3 class="form-title2">사용자 및 권한 관리
+								<button class="Button btn fr" id="btnReloadUserRole" style="margin-bottom: 3px;">새로고침</button>
+							</h3>
 							<div class="mt20">
 							<div class="fl" style="width:330px;">
 								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
@@ -178,21 +182,27 @@
 							</div>
 						</div>
 						<div data-menu="statusVariables" class="hide">
-							<h3 class="form-title2" >상태 변수</h3>
-							<div class="search-wrap tr fi mt20" style="width:800px">
+							<h3 class="form-title2" >상태 변수
+								<button class="Button btn fr" id="btnReloadStatusVariables" style="margin-bottom: 3px;">새로고침</button>
+							</h3>
+							<div class="search-wrap tr fi mt20">
 								<input id="txtStatusVariablesFilter" name="txtStatusVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
 							</div>
 							<div id="gridStatusVariables"></div>
 						</div>
 						<div data-menu="systemVariables" class="hide">
-							<h3 class="form-title2" >시스템 변수</h3>						
+							<h3 class="form-title2" >시스템 변수
+								<button class="Button btn fr" id="btnReloadSystemVariables" style="margin-bottom: 3px;">새로고침</button>
+							</h3>						
 							<div class="search-wrap tr fi mt20"  style="width:800px" >
 								<input id="txtSystemVariablesFilter" name="txtSystemVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
 							</div>
 							<div id="gridSystemVariables"></div>
 						</div>
 						<div data-menu="myCnf" class="hide">
-							<h3 class="form-title2">환경설정</h3>
+							<h3 class="form-title2">환경설정
+								<button class="Button btn fr" id="btnReloadMyCnf" style="margin-bottom: 3px;">새로고침</button>
+							</h3>
 							<div class="btn-wrap">
 								<div class="btn-right">
 									<div class="Divselect" id="selCategory" name="selCategory">
@@ -247,6 +257,28 @@ let appMariadb = {
 				return;
 			}
 			appMariadb.initMenu(menuName);
+		})
+
+		// 각 메뉴별 새로고침 버튼 추가 (2019-08-21)
+		$('#btnReloadConnection').on('click',function(){
+			appMariadb.getProcesses();
+			appMariadb.getDatabaseConnection();
+		})
+		
+		$('#btnReloadUserRole').on('click',function(){
+			appMariadb.getUserRoleList();
+		})
+		
+		$('#btnReloadStatusVariables').on('click',function(){
+			appMariadb.getStatusVariables();
+		})
+		
+		$('#btnReloadSystemVariables').on('click',function(){
+			appMariadb.getSystemVariables();
+		})
+		
+		$('#btnReloadMyCnf').on('click',function(){
+			appMariadb.getMyCnfList();
 		})
 		appMariadb.getDatabaseVariables();
 		if(gService.status != 'red'){
@@ -641,13 +673,13 @@ let appMariadb = {
 		/* 사용자 및 권한관리 끝 */
 		
 		this.gridStatusVariables = $('#gridStatusVariables').alopexGrid({
-			height:580,
-			width:800,			
+			height:450,
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
 				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key : 'value', title : '값', width : '200px', align : 'left',excludeFitWidth:false}	
+				{ key : 'value', title : '값', width : '200px', align : 'right',excludeFitWidth:true},
+				{ key:''}
 			]
 		});			
 		appMariadb.tabMariadb.find('[data-menu=statusVariables] input[name=txtStatusVariablesFilter]').on('input propertychange',function(){
@@ -655,13 +687,13 @@ let appMariadb = {
 		});
 		
 		this.gridSystemVariables = $('#gridSystemVariables').alopexGrid({
-			height:580,
-			width:800,
+			height:450,
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
 				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key : 'value', title : '값', width : '200px', align : 'left',excludeFitWidth:false }
+				{ key : 'value', title : '값', width : '200px', align : 'left',excludeFitWidth:true },
+				{ key:''}
 			]
 		});				
 		appMariadb.tabMariadb.find('[data-menu=systemVariables] input[name=txtSystemVariablesFilter]').on('input propertychange',function(){
@@ -713,7 +745,7 @@ let appMariadb = {
 				,parentIdKey : 'category' //자신의 상위(parent) 노드를 지시하는 ID가 저장된 키값
 				,expandedKey : 'expandedCategory'
 			},			
-			height:580,
+			height:450,
 			message: { nodata: gMessage.gridNodata },
 			autoColumnIndex : true,
 			columnMapping : [
@@ -1050,6 +1082,11 @@ let appMariadb = {
 				data:$.extend({},gParam,{podName:gService.podName}),
 				success:function(res){
 					let list = res.processes;
+					// 데이터 sort 추가 (2019-08-21)
+					list.sort(function(a,b){
+						return a.Id < b.Id?-1 : a.Id > b.Id?1 : 0 ;
+					});
+					
 					appMariadb.gridConnection.alopexGrid('dataSet',list);
 				}
 			});
