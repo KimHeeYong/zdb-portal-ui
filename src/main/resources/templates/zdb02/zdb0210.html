@@ -599,9 +599,39 @@
 						</div>
 					</div>
 					<div class="info-list__select">
+					<!-- 20190822 -->
+						<div class="Divselect" style="width: 250px" id="type" name="type">
+							<select>
+								<option value="-">전 체</option>
+								<option value="BACKUP">	Backup	</option>
+								<option value="BACKUPSCHEDULE">	Backup Management	</option>
+								<option value="BACKUPDISK">	Backup Storage	</option>
+								<option value="WORKERPOOL">	Cluster Admin(Worker Pool)	</option>
+								<option value="AUTOFAILOVER">	DB Failover Config	</option>
+								<option value="LOG">	DB Log	</option>
+								<option value="NETWORK">	DB Network Access	</option>
+								<option value="CONFIG">	DBA Action(config)	</option>
+								<option value="DATABASE">	DBA Action(Database)	</option>
+								<option value="PROCESS">	DBA Action(Process)	</option>
+								<option value="USER">	DBA Action(User)	</option>
+								<option value="GLOBALCONFIG">	Global Config	</option>
+								<option value="RESTORE">	Recovery	</option>
+								<option value="SCALE">	Scaling	</option>
+								<option value="CHANGEOVER">	Service Availability	</option>
+								<option value="SERVICE">	Service Life Cycle	</option>
+								<option value="CREADENTIAL">	Service Management	</option>
+								<option value="PVC">	Storage	</option>
+								<option value="TAG">	Tag	</option>
+							</select>
+							<span></span>
+						</div>
 						<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요."/><button class="Button btn-search" id="searchEvent">검색</button>
 					</div>
            		</div>
+	           	<div class="info-list__select mt10 hide" data-show-service-type="mariadb">
+	           		<input class="Checkbox" type="checkbox" id="backupEventExceptYn" name="backupEventExceptYn" />백업 이벤트 포함
+					<!-- button class="Button btn-search" id="searchBackup">검색</button-->
+	           	</div>           		
            		</form>
            	<!-- grid -->
             <div id="gridEvent" class="grid grid-line__wrap dash"></div>
@@ -2863,6 +2893,12 @@
 				param.startTime = moment($('#eventStartDate').val()+$('#eventStartTime').getData().date.replace(/(AM|PM)/,''),'YYYY-MM-DDHH : mm').format('YYYY-MM-DD HH:mm:ss');
 				param.endTime = moment($('#eventEndDate').val()+$('#eventEndTime').getData().date.replace(/(AM|PM)/,'')+':59','YYYY-MM-DDHH : mm:ss').format('YYYY-MM-DD HH:mm:ss');
 				param.keyword = param.keyword||'-';
+				//backupEventExceptYn
+				if($('#backupEventExceptYn').is(':checked') == true){
+					param.backupEventExceptYn = "N" ;
+				}else{
+					param.backupEventExceptYn = "Y";
+				}
 				
 				$a.ajax({
 					url: '/zdbapi/getOperationEvents',
@@ -2875,6 +2911,10 @@
 				});				
 			};			
 			$('#searchEvent').on('click',function(){
+				fn_getEventInfo();
+			});
+
+			$('#backupEventExceptYn').on('change',function(e){
 				fn_getEventInfo();
 			});
 			$('input[name=keyword]').pressEnter(function(evt){

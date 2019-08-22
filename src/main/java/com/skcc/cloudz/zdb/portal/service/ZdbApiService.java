@@ -404,6 +404,7 @@ public class ZdbApiService{
 
 	public List<RequestEvent> getOperationEvents(Map<String, String> param) {
 		List<RequestEvent> list = Collections.emptyList();
+		
 		ZdbRestDTO zdbRestDTO = connector.getForObject(apiServer + URIConstants.URI_GET_OPERATION_EVENTS,ZdbRestDTO.class,param);
 		
 		if(zdbRestDTO!=null) {
