@@ -967,6 +967,11 @@
 	var gTagList = [];
 	var gServiceScale = {};//scaleUp value
 	var gConfigData = null;
+	var gEventType = { "SERVICE":"Service Life Cycle","PVC":"Storage","CHANGEOVER":"Service Availability","PROCESS":"DBA Action(Process)"
+				,"DATABASE":"DBA Action(Database)","NETWORK":"DB Network Access","AUTOFAILOVER":"DB Failover Config","BACKUPDISK":"Backup Storage"
+				,"BACKUP":"Backup","BACKUPSCHEDULE":"Backup Management","RESTORE":"Recovery","USER":"DBA Action(User)","TAG":"Tag","SCALE":"Scaling"
+				,"WORKERPOOL":"Cluster Admin(Worker Pool)","LOG":"DB Log","GLOBALCONFIG":"Global Config","CONFIG":"DBA Action(config)"
+				,"CREADENTIAL":"Service Management"};
 	$a.page(function() {
 		this.init = function() {
 			$('[data-show-service-type*='+gParam.serviceType+']').show();
@@ -2873,6 +2878,14 @@
 					{ title:'일시', key : 'endTime' , width: '170px', align: 'left',render:function(value){
 						return cloudUtil.dtFormat(value);
 					},excludeFitWidth:true},
+					{ title:'범주', key : 'type' , width: '170px', align: 'left',render:function(value){
+						var result = "" ;
+					
+ 						for(var iType in gEventType){
+							if(iType ==  value) result =  gEventType[iType] ;
+						} 
+						return result;
+					},excludeFitWidth:true},					
 					{ title:'이벤트', key : 'operation' , width: '180px', align: 'left'},
 					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',inlineStyle: {'padding-left':'10px','padding-right':'10px'},tooltip:false,render: {type: "evtMsgTooltip"}},
 					{ title:'UserName', key : 'userId' , width: '250px', align: 'left'}
@@ -2905,7 +2918,7 @@
 				param = $.extend({},gParam,param);
 				param.startTime = moment($('#eventStartDate').val()+$('#eventStartTime').getData().date.replace(/(AM|PM)/,''),'YYYY-MM-DDHH : mm').format('YYYY-MM-DD HH:mm:ss');
 				param.endTime = moment($('#eventEndDate').val()+$('#eventEndTime').getData().date.replace(/(AM|PM)/,'')+':59','YYYY-MM-DDHH : mm:ss').format('YYYY-MM-DD HH:mm:ss');
-				param.keyword = param.keyword||'-';
+				param.kbackupEventExceptYnord||'-';
 				//backupEventExceptYn
 				if($('#backupEventExceptYn').is(':checked') == true){
 					param.backupEventExceptYn = "N" ;
