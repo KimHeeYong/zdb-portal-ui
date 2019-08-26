@@ -1239,7 +1239,7 @@
 						}
 					},
 					{
-						title: 'Pod Log',
+						title: 'Error Log',
 						processor: function(data,$cell,grid){
 							if(data.condition && data.condition.status == 'True'){
 								window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podName="+data.name);
@@ -1248,7 +1248,20 @@
 							}
 						},
 						use: function(data,$cell,grid){
-							return $cell.data('alopexgrid-key')=="log" && data.isPod;	
+							return ($cell.data('alopexgrid-key')=="log" && data.isPod) && data.serviceType == 'mariadb';	
+						}
+					},
+					{
+						title: 'Server Log',
+						processor: function(data,$cell,grid){
+							if(data.condition && data.condition.status == 'True'){
+								window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podName="+data.name);
+							}else{
+								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
+							}
+						},
+						use: function(data,$cell,grid){
+							return ($cell.data('alopexgrid-key')=="log" && data.isPod) && data.serviceType == 'redis';	
 						}
 					},
 					{
