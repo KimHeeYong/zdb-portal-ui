@@ -62,7 +62,12 @@
 			showLog();
 			
 			function showLog(){
-				var title = gParam.namespace+" > "+ gParam.serviceName +" > "+ gParam.podName + " pod log";
+				var title = "";
+				if(gParam.podName.indexOf('mariadb') >= 0) {
+					title = gParam.namespace+" > "+ gParam.serviceName +" > "+ gParam.podName + " error log";
+				} else {
+					title = gParam.namespace+" > "+ gParam.serviceName +" > "+ gParam.podName + " server log";
+				}
 				$('title,#title').html(title);
 				$('#title').append('<button class="btn-ico btn-refresh" id="popLogRefresh" alt="새로고침" style="margin-right:15px;float:right;"></button>');
 				$('#log').html('');
