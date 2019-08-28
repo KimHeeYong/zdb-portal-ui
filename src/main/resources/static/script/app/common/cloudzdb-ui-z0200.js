@@ -107,7 +107,7 @@ function gfn_getServiceTemplate(ob){
 			+'				</dd>                                                                        '
 			+'			</dl>                                                                            '
 			+'			<div class="service-btn__wrap">                                                  ';
-			if(ob.status == 'gray'){
+			if(gIsZdbAdmin && ob.status == 'gray'){
 				template = template 
 				+'              <button class="btn-ico btn-del__typeb proc_serviceDelete" key="'+guid+'" title="삭제">삭제</button>         '
 				+'				<button class="btn-ico btn-refresh proc_serviceRestart" key="'+guid+'" title="재시작">재시작</button>                '

@@ -55,7 +55,7 @@
 		<div class="Panel service-panel">
 			<div class="Panel-content">
 				<div style="float: left;word-break:break-all;font-size: 14px;" id="divInfoMsg"></div>
-				<div class="config-wrap" th:if="${session.userInfo.clusterRole=='cluster-admin'}" >
+				<div class="config-wrap" th:if="${session.userInfo.zdbAdmin}" >
 					<button class="btn-ico btn-refresh" id="restartService" title="재시작">재시작 </button>
 					<button class="Button btn-ico__typeb btn-trash" id="deleteService" title="삭제">삭제</button>
 				</div>
@@ -90,15 +90,15 @@
 	<div class="Tabs db-tabs" id="zdbServiceTabs">
 		<ul>
 			<li data-content="#tabService">서비스 정보</li>
-			<li data-content="#tabScale">스케일</li>
+			<li data-content="#tabScale" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}">스케일</li>
 			<li data-content="#tabMonitor">모니터링</li>
-			<li data-content="#tabBackup">백업</li>
+			<li data-content="#tabBackup" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}">백업</li>
 			<li data-content="#tabEvent">이벤트</li>
-			<li data-content="#tabUser">사용자</li>
-			<li data-content="#tabDatabase">Database</li>
-			<li data-content="#tabSystem">환경설정</li>
-			<li data-content="#tabLog">로그</li>
-			<li data-content="#tabProcess">프로세스</li>
+<!-- 			<li data-content="#tabUser">사용자</li> -->
+			<li data-content="#tabDatabase" th:if="${#request.getParameter('serviceType')=='mariadb'}" >Database</li>
+ 			<li data-content="#tabSystem" th:if="${#request.getParameter('serviceType')!='mariadb'}" >환경설정</li>
+			<li data-content="#tabLog" th:if="${#request.getParameter('serviceType')=='mariadb'}" >로그</li>
+<!-- 			<li data-content="#tabProcess">프로세스</li> -->
  			<li data-content="#tabMariadb" th:if="${#request.getParameter('serviceType')=='mariadb'}">관리</li> 
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
@@ -121,9 +121,9 @@
 									<td>
 										<input id="credential" name="credential" class="Textinput" type="password" autocomplete="off"/>
 										<span class="input-pw"></span>
-										<button class="Button line-btn" id="togglePwd">보기</button>
-										<button class="Button line-btn" id="credentialCopy">복사</button>
-										<button class="Button line-btn" id="credentialUpdate">변경</button>
+										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="togglePwd">보기</button>
+										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="credentialCopy">복사</button>
+										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="credentialUpdate">변경</button>
 										<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
 									</td>	
 								</tr>
@@ -132,7 +132,7 @@
 									<td data="port" th:if="${#request.getParameter('serviceType')} == 'redis'"> </td>
 									<td th:if="${#request.getParameter('serviceType')} != 'redis'">
 										<input type="text" class="Textinput" name="port" id="port">
-										<button class="Button line-btn" id="portUpdate">변경</button>
+										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="portUpdate">변경</button>
 										<p data-for="port" class="warn-text"></p>
 									</td>
 								</tr>
@@ -200,7 +200,7 @@
 						               		<input type="text" class="Textinput" name="publicmasterConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                         
 						               	</div>	
-						               	<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete" title="Public Network 삭제">삭제</button>
+						               	<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.zdbAdmin}"  title="Public Network 삭제">삭제</button>
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                                                                                         
 				                </tr>
@@ -223,7 +223,7 @@
 					               	</td>                  
 				                </tr>
 			                </tbody>
-			                <tbody class="publicConnectionInfoNone publicNetworkTbody hide">
+			                <tbody class="publicConnectionInfoNone publicNetworkTbody hide" th:if="${session.userInfo.zdbAdmin}" >
 								<tr>                                                                                                 
 					               	<th>Public Network</th>                                                                       
 					               	<td>       
@@ -285,7 +285,7 @@
 					
 		</div>
 		<!--스케일 PageID: ZDB-02-20R -->
-		<div id="tabScale">
+		<div id="tabScale"  style="display:none;">
 			<!-- accordion wrap-->
 			<ul>
 				<li>
@@ -366,7 +366,7 @@
 		</div>
 		
 		<!--모니터링 PageID: ZDB-02-40R -->
-		<div id="tabMonitor">
+		<div id="tabMonitor"  style="display:none;">
 			<ul>
 				<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
 					<div align="right">
@@ -461,7 +461,7 @@
 				</li>
 			</ul>
 		</div>
-		<div id="tabBackup">
+		<div id="tabBackup"  style="display:none;">
 			<h3 class="form-title">백업</h3>
            	<!-- tab contents info detail-->
          	<form name="backupForm" method="post">
@@ -567,7 +567,7 @@
             <div id="gridBackup" class="grid grid-line__wrap dash"></div>
             <div class="Tooltip" id="backupTooltip" data-position="bottom"></div>
 		</div>
-		<div id="tabEvent">
+		<div id="tabEvent"  style="display:none;">
 			<h3 class="form-title">이벤트</h3>
            		<form name="eventForm" method="post">
            		<div class="ctn-info__wrap">
@@ -637,7 +637,7 @@
             <div id="gridEvent" class="grid grid-line__wrap dash"></div>
             <div class="Tooltip" id="evtTooltip" data-position="bottom|left"></div>
 		</div>
-		<div id="tabUser">
+		<div id="tabUser" style="display:none;">
 			<h3 class="form-title">사용자 목록 및 권한</h3>
 			<ul class="ml5">
 				<li> ※ 전체 Database에 관한 권한입니다.  </li>
@@ -655,7 +655,7 @@
    				<div id="gridUser" class="grid grid-line__wrap"></div>
    			</div>
 		</div>
-		<div id="tabDatabase">		
+		<div id="tabDatabase" style="display:none;">		
 			<h3 class="form-title">Database 목록</h3>
 			<div class="tabs-contents">
 				<div style="width: 500px;">
@@ -671,7 +671,7 @@
 				</div>
 			</div>		
 		</div>		
-		<div id="tabSystem">
+		<div id="tabSystem" style="display:none;" >
 			<form name="dbConfig" method="post">
 			<ul>
 				<li th:if="${#request.getParameter('serviceType')=='redis'}">
@@ -920,7 +920,7 @@
 			</ul>
 			</form>
 		</div>
-		<div id="tabLog">
+		<div id="tabLog" style="display:none;">
 			<h3 class="form-title">로그</h3>
 			<div class="tabs-contents">
 				<div class="mt10">
@@ -949,7 +949,7 @@
 			</div>
 		</div>		
 		
-		<div id="tabProcess">
+		<div id="tabProcess" style="display:none;" >
 			<h3 class="form-title">프로세스</h3>
 			<div class="tabs-contents">
 				<div id="gridProcess"></div>
@@ -1513,7 +1513,7 @@
 							return 'Last Transition Time : '+dLT;
 						}
 					}},
-					{ title:'Action',key:'restart',width:'60px', align: 'center',hidden:(!gIsClusterAdmin),render: function( value, data, render, mapping,cell){
+					{ title:'Action',key:'restart',width:'60px', align: 'center',hidden:(!gIsClusterAdmin&&!gIsZdbAdmin),render: function( value, data, render, mapping,cell){
 						return getGridContextButton();
 					}},
 					//{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
@@ -1967,7 +1967,7 @@
 				   (gParam.serviceType == cServiceType.redis && gService.deployments.length > 0)){
 					bFailoverEnable = true;
 				}
-				if(bFailoverEnable == true){
+				if(bFailoverEnable == true && (gIsClusterAdmin || gIsZdbAdmin)){
 					//auto_failover 는 현재 mariadb만 제공
 					if(gParam.serviceType == cServiceType.mariadb && gConfigData.auto_failover_enabled=='true'){
 						if(gService.failoverEnabled == 'running'){

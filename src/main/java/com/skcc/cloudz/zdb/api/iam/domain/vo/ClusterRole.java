@@ -9,7 +9,8 @@ public enum ClusterRole {
 	MEMBER("member"),
 	ADMIN("admin"), 
 	CLUSTER_ADMIN("cluster-admin"),
-
+	ZDB_ADMIN("zdb-admin"),
+	ZDB_USER("zdb-user"),	
 	@Deprecated
 	DEPLOY_MANAGER("deploy-manager"),
 	CICD_MANAGER("cicd-manager"),
@@ -49,6 +50,7 @@ public enum ClusterRole {
 	private static final ClusterRole[] CLUSTER_ROLES = {CLUSTER_ADMIN, MEMBER};
 	private static final ClusterRole[] NAMESPACE_ROLES = {ADMIN, CICD_MANAGER, DEVELOPER};
 	private static final ClusterRole[] METRIC_ROLES = {CLUSTER_ADMIN, MEMBER, ADMIN, CICD_MANAGER, DEVELOPER, NONE};
+	private static final ClusterRole[] ZDB_ROLES = {CLUSTER_ADMIN, ZDB_ADMIN , ZDB_USER};
 
 	public static ClusterRole[] getClusterGroup() {
 		return CLUSTER_ROLES;
@@ -60,5 +62,9 @@ public enum ClusterRole {
 
 	public static ClusterRole[] getMetricGroup() {
 		return METRIC_ROLES;
+	}
+	
+	public static ClusterRole[] getZdbGroup() {
+		return ZDB_ROLES;
 	}
 }
