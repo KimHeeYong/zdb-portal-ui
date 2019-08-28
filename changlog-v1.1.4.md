@@ -9,8 +9,5 @@ $ k -n zdb-system edit deploy zdb-portal-ui-deployment
 ## 추가 ##
 ---------------------------------------------
         - name: cluster
-          valueFrom:
-            configMapKeyRef:
-              key: cluster
-              name: zdb-portal-server-config 
+          value: <<화면에 표시할 클러스터 이름>> 
 ---------------------------------------------
