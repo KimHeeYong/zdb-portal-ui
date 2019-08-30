@@ -49,7 +49,7 @@ zdb-api-server:
   url: http://127.0.0.1:8080
 
 zdb-demon-server:
-  url: http://agent.zdb-dev.jp-tok.containers.mybluemix.net
+  url: http://127.0.0.1:8090
   
 zdb:
   mariadb:
