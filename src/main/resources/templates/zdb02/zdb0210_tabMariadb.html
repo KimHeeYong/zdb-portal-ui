@@ -1086,7 +1086,7 @@ let appMariadb = {
 					let list = res.processes;
 					// 데이터 sort 추가 (2019-08-21)
 					list.sort(function(a,b){
-						return a.Id < b.Id?-1 : a.Id > b.Id?1 : 0 ;
+						return parseInt(a.Id) < parseInt(b.Id)?-1 : parseInt(a.Id) > parseInt(b.Id)?1 : 0 ;
 					});
 					
 					appMariadb.gridConnection.alopexGrid('dataSet',list);
