@@ -35,6 +35,8 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     private AddOnServiceMataComponent addOnServiceMataComponent;
     
+    private String userClusterRole = "";
+    
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         if (modelAndView == null || !modelAndView.hasView()) {
@@ -46,18 +48,19 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
             log.debug("requestURI : {}", requestURI);    
             log.debug("getAddOnServiceActivePathInfo : {}", this.getAddOnServiceActivePathInfo(requestURI));
         }
-        
+       
         List<AddOnServiceMataVo> resultList = new ArrayList<AddOnServiceMataVo>();
         if (addOnServiceMataComponent.getAddOnServiceMetaVoList() == null) {
+       	
             resultList = this.getAddOnServiceMetaData();
-            
-            addOnServiceMataComponent.setUserId(securityService.getUserDetails().getUserId());
+
+            addOnServiceMataComponent.setUserId(securityService.getUserDetails().getUserId());  
             addOnServiceMataComponent.setAddOnServiceMetaVoList(resultList);
         } else {
             resultList = addOnServiceMataComponent.getAddOnServiceMetaVoList();
         }
-        
-        modelAndView.addObject("addOnServiceMataData", resultList);
+
+        modelAndView.addObject("addOnServiceMataData", resultList);   
         modelAndView.addObject("activePathInfo", this.getAddOnServiceActivePathInfo(requestURI));
     }
     
@@ -66,8 +69,15 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
         ObjectMapper mapper = new ObjectMapper();
         
         try {
-            String userClusterRole = securityService.getUserDetails().getClusterRole();
-            log.debug("userClusterRole : {}", userClusterRole);
+            userClusterRole = securityService.getUserDetails().getClusterRole();
+            
+            Boolean bZdbAdmin =  securityService.getUserDetails().getZdbAdmin(); 
+            if(!userClusterRole.equals("cluster-admin") && bZdbAdmin  ){
+            	userClusterRole = "zdb-admin";
+            }else if(!userClusterRole.equals("cluster-admin") && !bZdbAdmin  ){
+            	userClusterRole = "zdb-user";
+            }
+            
             InputStream inputStream = AddOnServiceMetaDataInterceptor.class.getClassLoader().getResourceAsStream("addOnServiceMetaData.json");
             if (inputStream == null) {
                 throw new Exception();
@@ -97,11 +107,24 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
     public AddOnServiceMataVo getAddOnServiceMetaDataSub(AddOnServiceMataVo addOnServiceMataVo) {
         if (addOnServiceMataVo.getSub() == null) return addOnServiceMataVo;
         
+        System.out.println("userClusterRole:"+userClusterRole);
+        
         List<AddOnServiceMataSubVo> addOnServiceMataSubVoList = new ArrayList<AddOnServiceMataSubVo>();
+        int idx= 0; 
         for (AddOnServiceMataSubVo addOnServiceMataSubVo : addOnServiceMataVo.getSub()) {
-            if (addOnServiceMataSubVo.isEnable()) {
-                addOnServiceMataSubVoList.add(addOnServiceMataSubVo);
-            }
+        	idx++;
+        	System.out.println(idx+":"+addOnServiceMataSubVo.getClusterRoles());
+        	if(addOnServiceMataSubVo.getClusterRoles() != null) {
+        		for (ClusterRole clusterRole : addOnServiceMataSubVo.getClusterRoles()) {
+                	if (userClusterRole.equals(clusterRole.getRole()) && addOnServiceMataSubVo.isEnable()) {
+                        addOnServiceMataSubVoList.add(addOnServiceMataSubVo);
+                    }
+        		}
+        	}else {
+            	if (addOnServiceMataSubVo.isEnable()) {
+                    addOnServiceMataSubVoList.add(addOnServiceMataSubVo);
+                }
+        	}
         }
         
         addOnServiceMataVo.setSub(addOnServiceMataSubVoList);

@@ -31,7 +31,7 @@
 				<ul>
 					<li>
 						<div class="accor-contents__wrap">
-							<table class="Table Form-type" style="border-top-width: 0px; border-bottom-width: 0px;">
+							<table class="Table Form-type" id="clusterAdminTable" name="clusterAdminTable" style="display:none;border-top-width: 0px; border-bottom-width: 0px;">
 								<colgroup>
 									<col style="width: 230px;">
 									<col>
@@ -145,6 +145,12 @@
 										  	   id : gSelectedNamespace
 										  });
 				});
+				
+				if(!gIsClusterAdmin){
+					$('#clusterAdminTable').hide();
+				}else{
+					$('#clusterAdminTable').show();
+				}
 				
 				gForm.find('div.onoff-wrap > button').click(function(e){
 					let fsList = [];

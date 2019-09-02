@@ -129,9 +129,9 @@
 							<div class="mt20">
 							<div class="fl" style="width:330px;">
 								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
-									<button class="Button btn sm" id="btnAddUser">추가</button>
-									<button class="Button btn sm" id="btnDeleteUser">삭제</button>
-									<button class="Button btn sm" id="btnDeletePrivileges">권한 회수</button>
+									<button class="Button btn sm" th:if="${session.userInfo.zdbAdmin}" id="btnAddUser">추가</button>
+									<button class="Button btn sm" th:if="${session.userInfo.zdbAdmin}" id="btnDeleteUser">삭제</button>
+									<button class="Button btn sm" th:if="${session.userInfo.zdbAdmin}" id="btnDeletePrivileges">권한 회수</button>
 								</div>
 								<div id="gridUser" class="mt30"></div>
 							</div>
@@ -176,7 +176,7 @@
 								</div>
 								</form>
 								<div class="fr mt10" style="margin-bottom: 3px;margin-right:30px;">
-									<button class="Button btn sm" id="btnSavePrivileges">적용</button>
+									<button class="Button btn sm" th:if="${session.userInfo.zdbAdmin}"  id="btnSavePrivileges">적용</button>
 								</div>																 	
 							 </div>
 							</div>
