@@ -95,7 +95,7 @@
 			<li data-content="#tabBackup" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}">백업</li>
 			<li data-content="#tabEvent">이벤트</li>
 <!-- 			<li data-content="#tabUser">사용자</li> -->
-			<li data-content="#tabDatabase" th:if="${#request.getParameter('serviceType')=='mariadb'}" >Database</li>
+<!-- 			<li data-content="#tabDatabase" th:if="${#request.getParameter('serviceType')=='mariadb'}" >Database</li> -->
  			<li data-content="#tabSystem" th:if="${#request.getParameter('serviceType')!='mariadb'}" >환경설정</li>
 			<li data-content="#tabLog" th:if="${#request.getParameter('serviceType')=='mariadb'}" >로그</li>
 <!-- 			<li data-content="#tabProcess">프로세스</li> -->
@@ -655,7 +655,7 @@
    				<div id="gridUser" class="grid grid-line__wrap"></div>
    			</div>
 		</div>
-		<div id="tabDatabase" style="display:none;">		
+<!-- 		<div id="tabDatabase" style="display:none;">		
 			<h3 class="form-title">Database 목록</h3>
 			<div class="tabs-contents">
 				<div style="width: 500px;">
@@ -670,7 +670,7 @@
 					<div id="gridDatabase" class="grid grid-line__wrap"></div>
 				</div>
 			</div>		
-		</div>		
+		</div>	 -->	
 		<div id="tabSystem" style="display:none;" >
 			<form name="dbConfig" method="post">
 			<ul>
@@ -3119,7 +3119,7 @@
 			};
 			/*tabUser end 사용자*/
 			/*tabDatabase start Database*/
-			let tabDatabase = $('#tabDatabase');
+/* 			let tabDatabase = $('#tabDatabase');
 			let gridDatabase = $('#gridDatabase').alopexGrid({
 				autoColumnIndex: true,
 				autoResize:true,
@@ -3244,7 +3244,7 @@
 						});	
 					};						
 				})
-			};
+			}; */
 			/*tabDatabase end*/						
 			/*tabSystem start 환경설정 */
 			var dbConfigForm = $('form[name=dbConfig]');

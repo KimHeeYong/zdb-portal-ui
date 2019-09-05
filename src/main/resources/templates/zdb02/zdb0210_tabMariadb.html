@@ -1,5 +1,5 @@
 <div id="tabMariadb">
-	<div class="Tabs">
+	<div class="Tabs">  
 		<div>
 			<div class="lay-item__box mt30">
 				<div style="width:180px;" class="dtc" id="divMariaMenu">
@@ -7,6 +7,7 @@
 <!-- 						<li data-menu="databaseStatus">서버상태</li> -->	  
 					    <li class="selected"  data-menu="connection">클라이언트 커넥션</li>
 						<li data-menu="userRole">사용자 및 권한관리</li>
+						<li data-menu="database">Database</li>								
 						<li data-menu="statusVariables">상태 변수</li>
 						<li data-menu="systemVariables">시스템 변수</li>
 						<li data-menu="myCnf">환경설정</li>
@@ -216,6 +217,20 @@
 							</div>								
 							<div id="gridMyCnf"></div>
 						</div>
+						<div data-menu="database" class="hide"  style=" min-width: 950px; ">
+							<h3 class="form-title2">Database 목록
+								<button class="Button btn fr" id="btnReloadDatabase" style="margin-bottom: 3px;">새로고침</button>
+							</h3>
+							<div class="mt20">
+							<div class="fl" style="width:330px;">
+								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
+									<button class="Button btn sm" th:if="${session.userInfo.zdbAdmin}" id="btnAddDatabase">추가</button>
+									<button class="Button btn sm" th:if="${session.userInfo.zdbAdmin}" id="btnDeleteDatabase">삭제</button>
+									<button class="Button btn sm" th:if="${session.userInfo.zdbAdmin}" id="btnSaveDatabase">저장</button>
+								</div>
+								<div id="gridDatabase" class="mt30"></div>
+							</div>													
+						</div>						
 					</div>
 				</div>
 			</div>		
@@ -673,6 +688,102 @@ let appMariadb = {
 		
 		/* 사용자 및 권한관리 끝 */
 		
+		/* database 시작  */
+		let tabDatabase = appMariadb.mariaContent.find('[data-menu=database]');
+		this.gridDatabase = appMariadb.mariaContent.find('#gridDatabase').alopexGrid({
+		
+			autoColumnIndex: true,
+			autoResize:true,
+			rowInlineEdit:true,
+			rowSelectOption:{
+				clickSelect : true,
+				singleSelect : true
+			},
+			cellSelectable:true,
+			restoreFocusOnInvalidInlineEdit :true,
+			leaveDeleted:true,
+			width:320,			
+			height: 400,
+			columnMapping : [  
+				{ title:'state',key:'state',width:'0px',editable:false,hidden:false,render:function(value,data){
+					if (data._state.added){data.state = 'A'}
+					else if (data._state.deleted){data.state='D'}
+					else if (data._state.edited){data.state='E'}
+					else {data.state=''}
+					return data.state;
+				}},
+				{ title:'NAME', key : 'name' , width: '320px', align: 'left' ,editable:true	,allowEdit:function(value,data){
+					return data._state.added == true;
+				},editable: function(value, data) {
+					return '<div><input type="text" class="alopexgrid-default-renderer" maxlength="15" value="'+value+'"/></div>'; 
+				},editedValue: function(cell) {
+					return $(cell).find('input').val();
+				},valid : function(value, data) {
+					if(value=='') {
+						return false;
+					}
+					return true;
+				}}
+			], message: { nodata: gMessage.gridNodata }
+		}).on('cellEditInvalid ', function(e){
+			setTimeout(function(evt){
+				let evObj = AlopexGrid.parseEvent(e);
+				let opt = evObj.data;
+				let mapping = evObj.mapping;
+				let col = mapping.columnIndex;
+				let invalidValue = evObj.value;
+				
+				if(opt._state.deleted == true){
+					return;
+				}
+				if(col == 1){
+					alert('DATABASE명을 입력하세요');
+				}
+				appMariadb.gridDatabase.alopexGrid('focusCell', opt);
+				setTimeout(function(){
+					appMariadb.gridDatabase.alopexGrid('rowSelect', opt, true)
+					appMariadb.gridDatabase.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+				},100)
+			},100)
+		}).on('dataChanged',function(e){
+			let isEnalbed = AlopexGrid.trimData(appMariadb.gridDatabase.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
+			tabDatabase.find('#btnSaveDatabase').setEnabled(isEnalbed);
+		});
+		tabDatabase.find('#btnAddDatabase').on('click', function(e){
+			appMariadb.gridDatabase.alopexGrid('endRowInlineEdit');
+			let dt = appMariadb.gridDatabase.alopexGrid('dataGet');
+			
+			if(dt[0]._state.added == true && dt[0]._state.editing != false){ return; } 
+			let opt = {_index :{row:0,column:1,data:0,target:0}};
+			appMariadb.gridDatabase.alopexGrid('dataAdd', {}, opt);
+			appMariadb.gridDatabase.alopexGrid('startRowInlineEdit',opt);
+			setTimeout(function(){
+				appMariadb.gridDatabase.alopexGrid('rowSelect', opt, true)
+				appMariadb.gridDatabase.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
+			},100)
+		});
+		tabDatabase.find('#btnDeleteDatabase').on('click',function(e){
+			appMariadb.gridDatabase.alopexGrid('endRowInlineEdit');
+			let dg = appMariadb.gridDatabase.alopexGrid( 'dataGet' , {_state:{selected:true}});
+			if(dg.length == 0){
+				gCommon.alert('선택된 행이 없습니다.');return;
+			};
+			let dt = dg[0];
+			if(false){
+				gCommon.alert('삭제 할 수 없습니다.');return;
+			}
+			let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
+			appMariadb.gridDatabase.alopexGrid(d,{_state: {selected:true}}); 
+		});
+		tabDatabase.find('#btnReloadDatabase').on('click',function(e){
+			appMariadb.getDatabases(); 
+		});
+		tabDatabase.find('#btnSaveDatabase').on('click',function(e){
+			appMariadb.saveDatabase();
+		});
+		
+		/* database 끝  */	
+		
 		this.gridStatusVariables = $('#gridStatusVariables').alopexGrid({
 			height:450,
 			message: { nodata: gMessage.gridNodata },
@@ -1015,6 +1126,9 @@ let appMariadb = {
 					//appMariadb.getUserPrivileges();
 					appMariadb.getUserRoleList();
 					break;
+				case 'database':
+					appMariadb.getDatabase();
+					break;							
 				case 'statusVariables':
 					appMariadb.getStatusVariables();
 					break;
@@ -1724,7 +1838,41 @@ let appMariadb = {
 				}							
 			}
 			return re;
-		} 
+		},getDatabase : function(){
+			$a.ajax({
+				url: '/zdbapi/getDatabases',
+				method:'get',
+				data: gParam,
+				success: function(res){
+					let bl = ['information_schema','mysql','performance_schema'];
+					let list = res.databases||[];
+					let filterList = list.filter(function(ob){
+						return bl.indexOf(ob.name)==-1
+					});
+					appMariadb.gridDatabase.alopexGrid('dataSet',filterList);
+				}
+			});		
+		},saveDatabase : function(){
+			
+			appMariadb.gridDatabase.alopexGrid('endRowInlineEdit');
+			gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+				let data = AlopexGrid.trimData(appMariadb.gridDatabase.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+				if(data.length > 0){
+					for(let i in data){
+						let d = $.extend(data[i],gParam);
+						d.databaseName = d.name;
+					};
+					$a.ajax({
+						url: '/zdbapi/saveDatabase',
+						method:'put',
+						data: {data:JSON.stringify(data)},
+						success: function(res){
+							appMariadb.getDatabase();
+						}
+					});	
+				};						
+			})
+		}
 	}
 /*
 $a.page(function() {
