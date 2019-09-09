@@ -282,6 +282,10 @@ public class ZdbApiController {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
+		//서비스 삭제 전 알림 서비스 off 작업 추가 (2019-09-09) 
+		ZdbRestDTO ruleResult = zdbApiService.updateAlertRule(param);
+		//--------------------------------------------------------------------
+		
 		ZdbRestDTO result = zdbApiService.deleteServiceInstance(param);
 		mav.addObject(CommonConstants.RESULT,result);
 		
@@ -783,6 +787,7 @@ public class ZdbApiController {
 	public ModelAndView updateAlertRule(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+
 		ZdbRestDTO result = zdbApiService.updateAlertRule(param);
 		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;

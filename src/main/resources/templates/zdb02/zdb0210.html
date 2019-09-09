@@ -1021,18 +1021,23 @@
 			$('#backServices').on('click',function(){
 				gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
 			});			
+
 			$('#deleteService').on('click',function(){
-				gCommon.credentialConfirm({
+ 				gCommon.credentialConfirm({
 			        data:{credential:$("#credential").val(),msg:'서비스를 삭제하시려면',okBtnMsg:'삭제'},
 			        callback : function(res){
+			        	let data = $.extend({},gParam);
+			        	let alertRules = [];
+			        	data.alertRules = JSON.stringify(alertRules);
+			        	
 						$a.ajax({
 							url: '/zdbapi/deleteServiceInstance',
-							data:gParam,
+							data:data,
 							success: function(res){
 								gCommon.alert('삭제 요청이 완료 되었습니다.');
 								gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
 							}
-						})
+						}) 
 			        }
 			    });
 			});
