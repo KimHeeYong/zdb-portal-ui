@@ -43,39 +43,39 @@ management:
 
 ---
 spring:
-  profiles: local
+  profiles: aks
 
 zdb-api-server:
   url: http://127.0.0.1:8080
 
 zdb-demon-server:
-  url: http://127.0.0.1:8090
-  
+  url: http://agent.zdb-dev.jp-tok.containers.mybluemix.net
+
 zdb:
   mariadb:
     version: 10.3.16, 10.2.21, 10.2.14
   redis: 
     version: 4.0.9
 
-cluster: pog-dev
-    
+cluster: zcp-three
+
 props:
   appName: zdb-portal-local
   keycloak:
     zcp:
       clientId: account
       clientSecret: 71ad1e42-d239-4a7d-99f9-e1e50ad7ca93
-      accessTokenUri: https://pog-dev-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
-      userAuthorizationUri: https://pog-dev-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
-      redirectUri: ${HOME_URL:http://localhost:8181}/login
+      accessTokenUri: https:/zcp-three-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
+      userAuthorizationUri: https://zcp-three-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
+      redirectUri: http://localhost:8181/login
   iam:
-    baseUrl: https://pog-dev-internal-iam.cloudzcp.io:443
+    baseUrl: https://zcp-three-internal-iam.cloudzcp.io
 
 cloudzcp:
-  url: https://pog-dev-console.cloudzcp.io
+  url: https://zcp-three-console.cloudzcp.io
 grafana:
-  url: https://pog-dev-zdb-monitoring.cloudzcp.io
-
+  url: https://zcp-three-zdb-monitoring.cloudzcp.io
+  
 ---
 spring:
   profiles: cbt
@@ -110,8 +110,6 @@ cloudzcp:
   url: https://cbt-console.cloudzcp.io
 grafana:
   url: https://cbt-zdb-monitoring.cloudzcp.io
-  
-
 ---
 spring:
   profiles: prod
