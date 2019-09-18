@@ -715,10 +715,7 @@ public class ZdbApiController {
 		List<ZdbRestDTO> dto = new ArrayList<>();
 		if(list.size() > 0) {
 			for(Map<String,String> u : list) {
-				switch(u.get("state")) {
-				case "E":
-					dto.add(zdbApiService.updateSchedule(u)); break;
-				}
+				dto.add(zdbApiService.updateSchedule(u)); break;
 			}
 		}
 		mav.addObject(CommonConstants.RESULT,dto);
