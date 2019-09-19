@@ -25,7 +25,7 @@
 			<!-- grid -->
 			<div class="btn-wrap" style="margin-bottom:">
 				<div class="btn-right">
-					<button class="Button btn bg-red" id="btnSaveSchedule">저장</button>
+					<button class="Button btn bg-red" id="btnSaveSchedule" style="display:none;">저장</button>
 				</div>
 			</div>			
 			<div class="grid-line__wrap mt5">
@@ -134,9 +134,11 @@
 									opt._state.edited = true;
 								}
 							});
-							return re;
+							//return re;
+							//임시수정 (v1.2.1)
+							return fn_getUseYnTemp(value);
 						} },
-						{ title:'보관기간<br>(일)', key : 'storePeriod' , width: '80px', excludeFitWidth:true, align: 'center', inlineStyle: {padding: '0'} ,render:function(value,data){
+						{ title:'보관기간<br>(일)', key : 'storePeriod' , width: '80px', excludeFitWidth:true, align: 'center', inlineStyle: {padding: '8'} ,render:function(value,data){
 							
 							if(cloudUtil.isEmpty(value)) {
 								value = 7 ;
@@ -172,7 +174,9 @@
 								}
 							});	
 
-							return re;
+							//return re;
+							//임시수정 (v1.2.1)
+							return value;
 
 						}},
 						{ title:'ICOS 사용량', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
@@ -184,7 +188,7 @@
 							return re;
 						}},
 						{ title:'백업주기', key : 'backupExecType' , width: '100px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
-						{ title:'백업시간', key : 'startTime' , width: '110px',excludeFitWidth:true, align: 'center', inlineStyle: {padding: '0'} ,render:function(value){
+						{ title:'백업시간', key : 'startTime' , width: '110px',excludeFitWidth:true, align: 'center', inlineStyle: {padding: '8'} ,render:function(value){
 							if(cloudUtil.isEmpty(value)) {
 								value = '01:00' ;
 							}	
@@ -249,7 +253,9 @@
 								
 								}
 							});
-							return re;
+							//return re;
+							//임시수정 (v1.2.1)
+							return value;
 						}},
 						{ title:'백업용량', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
 							//return value == '0'?'-': value;
