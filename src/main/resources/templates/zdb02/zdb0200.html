@@ -329,7 +329,8 @@
 									
 									let t = {
 											//cpu : cloudUtil.parseInt(c.limits.cpu.amount) +  cloudUtil.parseInt(x.limits.cpu.amount) +'m', //재수정-Container Resource만 표시(2019-08-06)
-											cpu : cloudUtil.parseInt(c.limits.cpu.amount)+'m',
+											//cpu : cloudUtil.parseInt(c.limits.cpu.amount)+'m', // cpu 1core 이상시 단위 m 출력 삭제 (2019-09-19)
+											cpu: cloudUtil.nvlString(c.limits.cpu.amount),
 											cpuRequest : c.requests.cpu.amount,
 											cpuLimit:c.limits.cpu.amount,
 											//memory : cloudUtil.parseInt(c.limits.memory.amount) +  cloudUtil.parseInt(x.limits.memory.amount) +'Mi', //재수정-Container Resource만 표시(2019-08-06)
