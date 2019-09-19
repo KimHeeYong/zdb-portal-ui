@@ -25,7 +25,7 @@
 			<!-- grid -->
 			<div class="btn-wrap" style="margin-bottom:">
 				<div class="btn-right">
-					<button class="Button btn bg-red" id="btnSaveSchedule" style="visibility:hidden">저장</button>
+					<button class="Button btn bg-red" id="btnSaveSchedule">저장</button>
 				</div>
 			</div>			
 			<div class="grid-line__wrap mt5">
@@ -261,18 +261,19 @@
 						}},
 						{ title:'백업주기', key : 'incrementPeriod' ,headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'}, width: '100px', align: 'center',
 							render:function(value,data){
-								let re = value;
+
+								
 /* 								if(data.incrementYn == 'N'){
 									re = '-';
 								}; */
-								return re;
-							},
+								return value;
+/* 							},
 							allowEdit:function(value,data){
 								return data.incrementYn == 'Y';
 							},
 							editable:{
 							type:'select',
-							rule:[{value:'0',text:'미사용'},{value:'1',text:'1시간'},{value:'2',text:'2시간'},{value:'6',text:'6시간'},{value:'12',text:'12시간'}]
+							rule:[{value:'0',text:'미사용'},{value:'1',text:'1시간'},{value:'2',text:'2시간'},{value:'6',text:'6시간'},{value:'12',text:'12시간'}] */
 						}},
 
 						{ title:'백업용량', key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
@@ -346,9 +347,7 @@
 						data:{namespace:gSelectedNamespace},
 						success: function(res){
 							let list = res.scheduleInfoList;
-							
-							console.log(res);
-							
+						
 							if(list){
 								list = list.map(function(ob){
 									return $.extend({},ob,{incrementPeriod:(''+ob.incrementPeriod)});
@@ -371,21 +370,32 @@
 					gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
 						//let data = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
 						let data = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{_state: {edited:true}},{_state: {added:true}},{_state: {deleted:true}}));					
-						console.log(data);
-						
-						if(data.length > 0){
+						 if(data.length > 0){
 							for(let i in data){
 								let d = $.extend(data[i],gParam);
+								let re = 0;
+								let subVal = d.incrementPeriod.substr(0,2);   
+								if(subVal == '12'){
+									re = 12;
+								}else if(subVal == '1'){
+									re = 1;
+								}else if(subVal == '2'){
+									re = 2;
+								}else if(subVal == '6'){
+									re = 6;
+								}
+								d.incrementPeriod = re ;
 							};
-							$a.ajax({
+							
+ 							$a.ajax({
 								url: '/zdbapi/saveBackupSchedule',
 								method:'put',
 								data: {data:JSON.stringify(data)},
 								success: function(res){
 									fn_getScheduleInfoList();
 								}
-							});	
-						};					
+							});	 
+						};			 		
 					})
 				};				
 			}
