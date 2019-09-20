@@ -1671,7 +1671,7 @@ let appMariadb = {
 					o = ds[String(key).replaceAll('-','_')];
 					if(!o) {
 						o = [];
-						console.log(mc.category +" / "+ key);
+						//console.log(mc.category +" / "+ key);
 						o.name = mc.name;
 						o.alias = mc.name;
 						o.category = mc.category;
@@ -1706,14 +1706,14 @@ let appMariadb = {
 				//variableType == 'BOOLEAN' : value check
  				if(variableType && variableType == 'BOOLEAN'){
 				 	//defaultValue check
-					if(mc.defaultValue && (mc.defaultValue = 'ON' || mc.defaultValue == 'OFF') ){
-						mc.defaultValue = 'ON'?'1':'0';
-					}else if(o.defaultValue && (o.defaultValue = 'ON' || o.defaultValue == 'OFF')){
-						mc.defaultValue = 'ON'?'1':'0';
+					if(mc.defaultValue && (mc.defaultValue == 'ON' || mc.defaultValue == 'OFF') ){
+						mc.defaultValue = (mc.defaultValue == 'ON'?'1':'0');
+					}else if(o.defaultValue && (o.defaultValue == 'ON' || o.defaultValue == 'OFF')){
+						mc.defaultValue = (mc.defaultValue == 'ON'?'1':'0');
 					}
 					// value check 					
 					if(mc.value  && (mc.value == '1' || mc.value == '0')){
-						mc.value = '1'?'ON':'OFF';
+						mc.value = (mc.value == '1'?'ON':'OFF');
 					}
 				}
 				

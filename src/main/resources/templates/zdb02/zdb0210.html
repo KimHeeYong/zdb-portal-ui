@@ -1747,7 +1747,7 @@
 							var dl = gService.diskUsageOfPodMap;
 							
 							
-							console.log(cl);console.log(ml);console.log(cl);console.log(gService);
+							//console.log(cl);console.log(ml);console.log(cl);console.log(gService);
 							
 							if(cl && cl[ob.name]){
 								var cpuUsage = cl[ob.name];
@@ -2553,7 +2553,7 @@
 					{   title: '로그',
 						processor:function(data,$cell,grid){
 							
-							console.log('로그');	
+							//console.log('로그');	
 							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
 						},
 						use: function(data,$cell,grid){
@@ -2785,7 +2785,7 @@
 				param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
 				param.incrementYn = backupForm.find('#incrementPeriod select').val() == '0' ? 'N' : 'Y';
 		
-				console.log(param);
+				//console.log(param);
 				
 				$a.ajax({
 					url: '/zdbapi/updateSchedule',
@@ -2936,7 +2936,7 @@
 					data:param,
 					success: function(res){
 						var list = res.operationEvents;
-						console.log(list);
+						//console.log(list);
 						$('#gridEvent').alopexGrid('dataSet',list);
 					}
 				});				
