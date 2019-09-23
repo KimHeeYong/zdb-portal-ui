@@ -25,7 +25,7 @@
 			<!-- grid -->
 			<div class="btn-wrap" style="margin-bottom:">
 				<div class="btn-right">
-					<button class="Button btn bg-red" id="btnSaveSchedule">저장</button>
+					<button class="Button btn bg-red" id="btnSaveSchedule" style="display:none;">저장</button>
 				</div>
 			</div>			
 			<div class="grid-line__wrap mt5">
@@ -52,10 +52,11 @@
 					height: 635,
 					autoResize:true,
 					rowInlineEdit:true,
-					rowSelectOption:{
-						clickSelect : true,
-						singleSelect : true
-					},
+ 					rowSelectOption:{
+						clickSelect : true
+						,singleSelect : true
+						,allowSingleUnselect: false
+					}, 
 					cellSelectable:true,
 					restoreFocusOnInvalidInlineEdit :true,
 					leaveDeleted:true,
@@ -117,33 +118,66 @@
 							return re;
 						}},
 						{ title:'백업설정', key : 'useYn' , width: '70px', align: 'center',render:function(value,data){
-							let re = fn_getUseYnTemp(value);
-							return re;
-						},editable:function(value,data){
 							let re = fn_getUseYnTemp(value).on('click','button.Button',function(e){
-								let t = $(this);
-								let isValueY = t.data('value') == 'Y';
-								let vr = isValueY ? 'off' : 'on';
-								let vrYn = isValueY ? 'N' : 'Y'; 
-								t.removeClass('btn-off').removeClass('btn-on').addClass('btn-'+vr).text(vr.toUpperCase()).data('value',vrYn);
+								
+								let evObj = AlopexGrid.parseEvent(e);
+								let opt = evObj.data;
+								let mapping = evObj.mapping;
+								
+								if(mapping.key == 'useYn'){
+									let t = $(this);
+									let isValueY = t.data('value') == 'Y';
+									let vr = isValueY ? 'off' : 'on';
+									let vrYn = isValueY ? 'N' : 'Y'; 
+									t.removeClass('btn-off').removeClass('btn-on').addClass('btn-'+vr).text(vr.toUpperCase()).data('value',vrYn);
+									opt.useYn = vrYn ;
+									opt._state.edited = true;
+								}
 							});
-							return re;
-						},editedValue:function(cell){
-							return $(cell).find('button').data('value');
-						}},
-						{ title:'보관기간', key : 'storePeriod' , width: '70px', align: 'center',editable:function(value,data){
-							let re = $('<input data-keyfilter="0-9" class="alopexgrid-default-renderer" type="text" name="storePeriod" value="'+value+'" style="text-align:center;" maxlength="2">');
-							return re;
-						},valid : function(value, data) {
+							//return re;
+							//임시수정 (v1.2.1)
+							return fn_getUseYnTemp(value);
+						} },
+						{ title:'보관기간<br>(일)', key : 'storePeriod' , width: '80px', excludeFitWidth:true, align: 'center', inlineStyle: {padding: '8'} ,render:function(value,data){
+							
 							if(cloudUtil.isEmpty(value)) {
-								return false;
+								value = 7 ;
 							}
-							let v = cloudUtil.parseInt(value);
-							data.storePeriod = v;
-							if(v < 0 || v > 60){
-								return false;
-							}
-							return true;
+						
+							/* 2019-09-17 수정 부분 */
+							let temp = '<div class="Spinner" data-min="0" data-max="60" data-step="1" style="border:0px;height:100%;width:75px;" >' ;
+						    temp += '<input value="'+value+'" style="width:60px;text-align:center;">';
+							temp += '<a class="Up" style="border:0px;"></a><a class="Down" style="border:0px;"></a></div>';
+
+							let re = $(temp).on('click','a' , function(e){
+								let evObj = AlopexGrid.parseEvent(e);
+								let opt = evObj.data;
+								let mapping = evObj.mapping;
+								
+								if(mapping.key == 'storePeriod'){
+									let aName = evObj.$cell.context.className ;
+									let result = Number(value)  ;
+									if(aName != "Up"){
+										if(result > 1){
+											result = result - 1 ;
+										}
+									}else{
+										if(result < 60){
+											result = result + 1;
+										}	
+									}
+									opt.storePeriod  = result;
+									let t = $(this).parent().find('input');
+									t.val(result);
+									value = result;
+									opt._state.edited = true;
+								}
+							});	
+
+							//return re;
+							//임시수정 (v1.2.1)
+							return value;
+
 						}},
 						{ title:'ICOS 사용량', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
 							let re = value;
@@ -154,14 +188,74 @@
 							return re;
 						}},
 						{ title:'백업주기', key : 'backupExecType' , width: '100px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
-						{ title:'백업시간', key : 'startTime' , width: '100px', align: 'center',editable:function(value,data){
-							let re = $('<input type="text" name="startTime" value="'+value+'" class="alopexgrid-default-renderer" style="text-align:center;">');
-							$a.maskedinput(re[0],'00:00');
-							return re;
-						},editedValue:function(cell){
-							return $(cell).find('input').val();
-						},valid : function(value, data) {
-							return moment(value,'HH:mm').isValid();
+						{ title:'백업시간', key : 'startTime' , width: '110px',excludeFitWidth:true, align: 'center', inlineStyle: {padding: '8'} ,render:function(value){
+							if(cloudUtil.isEmpty(value)) {
+								value = '01:00' ;
+							}	
+							
+							let spStartTime = value.split(':');
+							let atime = spStartTime[0];
+							let aMinute = spStartTime[1];
+							
+							//editable:function(value,data){
+							/* 2019-09-17 수정 부분 */
+							let temp = '<div style="border:0px;height:100%;width:55px;"><div class="Spinner" style="border:0px;height:100%;width:55px;" ><input class="data-hour" value="'+atime+'" style="width:35px;"><a class="Up" name="tUp" style="border:0px;" ></a><a class="Down" name="tDown" style="border:0px;" ></a></div>' ;
+							temp += '<div class="Spinner" style="border:0px;height:100%;width:55px;" ><span data-seperator>:</span><input class="data-minute" value="'+aMinute+'" style="width:35px;">';
+							temp += '<a class="Up" name="mUp" style="border:0px;" ></a><a class="Down" name="mDown" style="border:0px;" ></a></div></div>';							
+
+							let re = $(temp).on('click','a' , function(e){
+								let evObj = AlopexGrid.parseEvent(e);
+								let opt = evObj.data;
+								let mapping = evObj.mapping;
+								let t = $(this).parent().find('input');
+								if(mapping.key == 'startTime'){
+									let aName = evObj.$cell.context.name ;
+									let result = 0  ;
+									
+									let rStartTime = opt.startTime.split(':');
+									let rTime = rStartTime[0];
+									let rMin = rStartTime[1];
+
+									if(aName == "tUp"){
+										result = cloudUtil.parseInt(rTime);
+										if(result < 25){
+											result = result + 1;
+										}
+										rTime = moment(result,'H').format('HH');
+										t.val(rTime);
+									}else if(aName == "tDown"){
+										result = cloudUtil.parseInt(rTime);
+										if(result > 0){
+											result = result - 1;
+										}
+										rTime = moment(result,'H').format('HH');
+										t.val(rTime);
+									}else if(aName == "mUp"){
+										result = cloudUtil.parseInt(rMin);
+										
+										if(result < 59){
+											result = result + 1;
+										}
+										rMin = moment(result,'m').format('mm');
+										t.val(rMin);
+									}else if(aName == "mDown"){
+										result = cloudUtil.parseInt(rMin);
+										
+										if(result > 0){
+											result = result - 1;
+										}
+										rMin = moment(result,'m').format('mm');
+										t.val(rMin);
+									}
+									value = rTime+":"+rMin;
+									opt.startTime  = value;
+									opt._state.edited = true;
+								
+								}
+							});
+							//return re;
+							//임시수정 (v1.2.1)
+							return value;
 						}},
 						{ title:'백업용량', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
 							//return value == '0'?'-': value;
@@ -173,18 +267,19 @@
 						}},
 						{ title:'백업주기', key : 'incrementPeriod' ,headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'}, width: '100px', align: 'center',
 							render:function(value,data){
-								let re = value;
+
+								
 /* 								if(data.incrementYn == 'N'){
 									re = '-';
 								}; */
-								return re;
-							},
+								return value;
+/* 							},
 							allowEdit:function(value,data){
 								return data.incrementYn == 'Y';
 							},
 							editable:{
 							type:'select',
-							rule:[{value:'0',text:'미사용'},{value:'1',text:'1시간'},{value:'2',text:'2시간'},{value:'6',text:'6시간'},{value:'12',text:'12시간'}]
+							rule:[{value:'0',text:'미사용'},{value:'1',text:'1시간'},{value:'2',text:'2시간'},{value:'6',text:'6시간'},{value:'12',text:'12시간'}] */
 						}},
 
 						{ title:'백업용량', key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
@@ -217,11 +312,12 @@
 						if(opt._state.deleted == true){
 							return;
 						}
-						if(mapping.key == 'storePeriod'){
+/* 						if(mapping.key == 'storePeriod'){
 							alert('보관기간은 0~60 사이로 입력하세요');
-						}else if(mapping.key == 'startTime'){
+						}else  */
+/* 						if(mapping.key == 'startTime'){
 							alert('시:분 형식으로 입력하세요')
-						}
+						} */
 						gridSchedule.alopexGrid('focusCell', opt);
 						setTimeout(function(){
 							gridSchedule.alopexGrid('rowSelect', opt, true)
@@ -229,16 +325,15 @@
 						},100)
 					},100)
 				}).on('dataChanged',function(e){
-					//let isEnalbed = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
-					let isEnalbed = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{_state: {edited:true}},{_state: {added:true}},{_state: {deleted:true}})).length > 0;					
-					
-					
+					let isEnalbed = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{_state: {edited:true}},{_state: {added:true}},{_state: {deleted:true}})).length > 0;
 					$('#btnSaveSchedule').setEnabled(isEnalbed);
 				});			
+				
 				function fn_getUseYnTemp(value){
 					let v = value == 'Y'? 'on':'off';
 					return $('<div class="onoff-wrap"><button class="Button btn-'+v+'" data-value="'+value+'">'+v.toUpperCase()+'</button></div>');
 				}
+				
 				
 				let renderValue = function(value,data){
 					let re = '';
@@ -258,9 +353,7 @@
 						data:{namespace:gSelectedNamespace},
 						success: function(res){
 							let list = res.scheduleInfoList;
-							
-							console.log(res);
-							
+						
 							if(list){
 								list = list.map(function(ob){
 									return $.extend({},ob,{incrementPeriod:(''+ob.incrementPeriod)});
@@ -281,20 +374,34 @@
 				function fn_saveSchedule(){
 					gridSchedule.alopexGrid('endRowInlineEdit');
 					gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
-						let data = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
-						if(data.length > 0){
+						//let data = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+						let data = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{_state: {edited:true}},{_state: {added:true}},{_state: {deleted:true}}));					
+						 if(data.length > 0){
 							for(let i in data){
 								let d = $.extend(data[i],gParam);
+								let re = 0;
+								let subVal = d.incrementPeriod.substr(0,2);   
+								if(subVal == '12'){
+									re = 12;
+								}else if(subVal == '1'){
+									re = 1;
+								}else if(subVal == '2'){
+									re = 2;
+								}else if(subVal == '6'){
+									re = 6;
+								}
+								d.incrementPeriod = re ;
 							};
-							$a.ajax({
+							
+ 							$a.ajax({
 								url: '/zdbapi/saveBackupSchedule',
 								method:'put',
 								data: {data:JSON.stringify(data)},
 								success: function(res){
 									fn_getScheduleInfoList();
 								}
-							});	
-						};						
+							});	 
+						};			 		
 					})
 				};				
 			}
