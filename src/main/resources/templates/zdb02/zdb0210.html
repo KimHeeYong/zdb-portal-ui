@@ -2014,7 +2014,7 @@
 					/* api 통해 오는 데이터 중 기가단위로 변경되어 오는 데이터가 있음
 					   128 이하의 데이터 일 경우1024를 곱하는 로직 추가 (2019-09-23)*/
 					var vScaleMemory =  cloudUtil.parseInt(gServiceScale.memoryVal);
-					if(vScaleMemory < 128){
+					if(vScaleMemory < 129){
 						vScaleMemory = vScaleMemory * 1024;
 					}
 					$('#tabScale').find('input[name="scaleMemory"]').val(vScaleMemory);
@@ -2324,7 +2324,7 @@
 			$('form[name=scaleForm]').validator({
 			    elements :{ 
 			        'scaleCpu': {rule:{required:true,min:100,max:20000}},
-			        'scaleMemory': {rule:{required:true,min:128,max:32000}}
+			        'scaleMemory': {rule:{required:true,min:129,max:32000}}
 			    }
 			});	
 			//스케일 리소스선택or사용자입력
