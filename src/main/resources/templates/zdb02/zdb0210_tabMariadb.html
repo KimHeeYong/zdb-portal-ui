@@ -736,9 +736,9 @@ let appMariadb = {
 				if(opt._state.deleted == true){
 					return;
 				}
-				if(col == 1){
-					alert('DATABASE명을 입력하세요');
-				}
+ 				if(col == 1){
+ 					gCommon.alert('DATABASE명을 입력하세요');
+				} 
 				appMariadb.gridDatabase.alopexGrid('focusCell', opt);
 				setTimeout(function(){
 					appMariadb.gridDatabase.alopexGrid('rowSelect', opt, true)
@@ -776,7 +776,7 @@ let appMariadb = {
 			appMariadb.gridDatabase.alopexGrid(d,{_state: {selected:true}}); 
 		});
 		tabDatabase.find('#btnReloadDatabase').on('click',function(e){
-			appMariadb.getDatabases(); 
+			appMariadb.getDatabase(); 
 		});
 		tabDatabase.find('#btnSaveDatabase').on('click',function(e){
 			appMariadb.saveDatabase();
@@ -1853,15 +1853,17 @@ let appMariadb = {
 				}
 			});		
 		},saveDatabase : function(){
-			
 			appMariadb.gridDatabase.alopexGrid('endRowInlineEdit');
-			gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
-				let data = AlopexGrid.trimData(appMariadb.gridDatabase.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
-				if(data.length > 0){
-					for(let i in data){
-						let d = $.extend(data[i],gParam);
-						d.databaseName = d.name;
-					};
+			let data = AlopexGrid.trimData(appMariadb.gridDatabase.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+			if(data.length > 0){
+				for(let i in data){
+					let d = $.extend(data[i],gParam);
+					d.databaseName = d.name;
+					if(cloudUtil.isEmpty(d.name)){
+						return;
+					}
+				}
+				gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
 					$a.ajax({
 						url: '/zdbapi/saveDatabase',
 						method:'put',
@@ -1870,8 +1872,9 @@ let appMariadb = {
 							appMariadb.getDatabase();
 						}
 					});	
-				};						
-			})
+									
+				});
+			}
 		}
 	}
 /*
