@@ -194,13 +194,14 @@
 										</div>
         						   		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="publicmasterConnectionString" readonly="readonly"></input>     
-						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                          
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button> 
+											<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.zdbAdmin}"  title="Public Network 삭제">삭제</button>						               		                         
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">                                                                   
 						               		<input type="text" class="Textinput" name="publicmasterConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                         
 						               	</div>	
-						               	<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.zdbAdmin}"  title="Public Network 삭제">삭제</button>
+						               	
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                                                                                         
 				                </tr>
@@ -897,7 +898,7 @@
 							</div>
 						</div>
 			            <div class="btn-wrap__right">
-				        	<button class="Button btn bg-red" id="saveVariables">적용하기</button>
+				        	<button class="Button btn bg-red" id="saveVariables" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >적용하기</button>
 				        </div>
 					</div>
 				</li>
@@ -913,7 +914,7 @@
 							<tbody> </tbody>
 						</table>
 			            <div class="btn-wrap__right">
-				        	<button class="Button btn bg-red" id="saveVariables">적용하기</button>
+				        	<button class="Button btn bg-red" id="saveVariables" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >적용하기</button>
 				        </div>						
 					</div>
 				</li>
@@ -2009,7 +2010,16 @@
 				if($('#zdbServiceTabs').getCurrentTabContent()!= '#tabScale'){
 					fn_setSlider('memory',gServiceScale.memoryVal);
 					$('#tabScale').find('input[name="scaleCpu"]').val(gServiceScale.cpuVal);
-					$('#tabScale').find('input[name="scaleMemory"]').val(gServiceScale.memoryVal);
+					
+					/* api 통해 오는 데이터 중 기가단위로 변경되어 오는 데이터가 있음
+					   128 이하의 데이터 일 경우1024를 곱하는 로직 추가 (2019-09-23)*/
+					var vScaleMemory =  cloudUtil.parseInt(gServiceScale.memoryVal);
+					if(vScaleMemory < 128){
+						vScaleMemory = vScaleMemory * 1024;
+					}
+					$('#tabScale').find('input[name="scaleMemory"]').val(vScaleMemory);
+					
+					
 					$('#clusterSlaveCount').val(gService.clusterSlaveCount);
 					//todo temp
 					var isCustom = gSliderConstants[gParam.serviceType].cpu.value.indexOf(gServiceScale.cpuVal) < 0

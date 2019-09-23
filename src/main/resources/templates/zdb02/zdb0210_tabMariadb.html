@@ -212,7 +212,7 @@
 										</select>
 										<span></span>
 									</div>
-									<button class="Button btn bg-red" id="btnSaveMyCnf" style="margin-bottom: 3px;">저장</button>
+									<button class="Button btn bg-red" id="btnSaveMyCnf" style="margin-bottom: 3px;" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >저장</button>
 								</div>
 							</div>								
 							<div id="gridMyCnf"></div>
@@ -1113,6 +1113,13 @@ let appMariadb = {
 			appMariadb.getMyCnfList();
 			//0806
 		});
+		
+		/* 사용자 권한일 경우 gridMyCnf의 수정 옵션을 false로 변경한다.  */
+		if(!gIsClusterAdmin && !gIsZdbAdmin ){
+			$('#gridMyCnf').alopexGrid('updateOption',	{
+				rowInlineEdit: false
+			});
+		}
 		
 
 		},initMenu : function(menuName){
