@@ -3,50 +3,13 @@ info:
     name: zdb-portal-ui
     version: 1.2.1
     description: ZDB PORTAL UI
----
-spring:
-  profiles:
-    active: local
-  thymeleaf:
-     encoding: UTF-8
-  devtools:
-    livereload:
-      enabled : true     
-      
-server:
-  port: 8181
-  tomcat:
-    uri-encoding: UTF-8
-    protocol_header: x-forwarded-proto  
-  servlet:
-    session:
-      timeout: 3600
-  error:
-    whitelabel:
-      enabled: false
-        
-management:
-  endpoints:
-    enabled-by-default: true
-    web:
-      exposure:
-        include: health,prometheus
-  endpoint:
-    health:
-      show-details: always
-    env:
-     enabled: false    
-           
-  metrics:
-    enable:
-      jvm: true
 
 ---
 spring:
-  profiles: aks
+  profiles: native
 
 zdb-api-server:
-  url: http://127.0.0.1:8080
+  url: http://localhost:8080
 
 zdb-demon-server:
   url: http://agent.zdb-dev.jp-tok.containers.mybluemix.net
@@ -57,7 +20,7 @@ zdb:
   redis: 
     version: 4.0.9
 
-cluster: zcp-three
+cluster: native
 
 props:
   appName: zdb-portal-local
@@ -65,51 +28,17 @@ props:
     zcp:
       clientId: account
       clientSecret: 71ad1e42-d239-4a7d-99f9-e1e50ad7ca93
-      accessTokenUri: https:/zcp-three-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
-      userAuthorizationUri: https://zcp-three-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
+      accessTokenUri: https:/iam.native.skcloud.io/auth/realms/zcp/protocol/openid-connect/token
+      userAuthorizationUri: https://iam.native.skcloud.io/auth/realms/zcp/protocol/openid-connect/auth
       redirectUri: http://localhost:8181/login
   iam:
-    baseUrl: https://zcp-three-internal-iam.cloudzcp.io
+    baseUrl: https://internal-iam.native.skcloud.io
 
 cloudzcp:
-  url: https://zcp-three-console.cloudzcp.io
+  url: https://console.native.skcloud.io
 grafana:
-  url: https://zcp-three-zdb-monitoring.cloudzcp.io
+  url: https://zdb-monitoring.native.skcloud.io
   
----
-spring:
-  profiles: cbt
-
-zdb-api-server:
-  url: http://127.0.0.1:8080
-
-zdb-demon-server:
-  url: http://agent.zdb-dev.jp-tok.containers.mybluemix.net
-
-zdb:
-  mariadb:
-    version: 10.3.16, 10.2.21, 10.2.14
-  redis: 
-    version: 4.0.9
-
-cluster: cbt
-
-props:
-  appName: zdb-portal-local
-  keycloak:
-    zcp:
-      clientId: account
-      clientSecret: 71ad1e42-d239-4a7d-99f9-e1e50ad7ca93
-      accessTokenUri: https://cbt-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/token
-      userAuthorizationUri: https://cbt-iam.cloudzcp.io/auth/realms/zcp/protocol/openid-connect/auth
-      redirectUri: ${HOME_URL:http://localhost:8181}/login
-  iam:
-    baseUrl: https://cbt-internal-iam.cloudzcp.io:443
-
-cloudzcp:
-  url: https://cbt-console.cloudzcp.io
-grafana:
-  url: https://cbt-zdb-monitoring.cloudzcp.io
 ---
 spring:
   profiles: prod
