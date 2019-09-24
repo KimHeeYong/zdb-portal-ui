@@ -25,7 +25,7 @@
 			<!-- grid -->
 			<div class="btn-wrap" style="margin-bottom:">
 				<div class="btn-right">
-					<button class="Button btn bg-red" id="btnSaveSchedule" style="display:none;">저장</button>
+					<button class="Button btn bg-red" id="btnSaveSchedule">저장</button>
 				</div>
 			</div>			
 			<div class="grid-line__wrap mt5">
@@ -134,11 +134,9 @@
 									opt._state.edited = true;
 								}
 							});
-							//return re;
-							//임시수정 (v1.2.1)
-							return fn_getUseYnTemp(value);
+							return re;
 						} },
-						{ title:'보관기간<br>(일)', key : 'storePeriod' , width: '80px', excludeFitWidth:true, align: 'center', inlineStyle: {padding: '8'} ,render:function(value,data){
+						{ title:'보관기간<br>(일)', key : 'storePeriod' , width: '80px', excludeFitWidth:true, align: 'center', inlineStyle: {padding: '0'} ,render:function(value,data){
 							
 							if(cloudUtil.isEmpty(value)) {
 								value = 7 ;
@@ -162,7 +160,7 @@
 											result = result - 1 ;
 										}
 									}else{
-										if(result < 60){
+										if(result < 8){
 											result = result + 1;
 										}	
 									}
@@ -174,9 +172,7 @@
 								}
 							});	
 
-							//return re;
-							//임시수정 (v1.2.1)
-							return value;
+							return re;
 
 						}},
 						{ title:'ICOS 사용량', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
@@ -188,7 +184,7 @@
 							return re;
 						}},
 						{ title:'백업주기', key : 'backupExecType' , width: '100px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
-						{ title:'백업시간', key : 'startTime' , width: '110px',excludeFitWidth:true, align: 'center', inlineStyle: {padding: '8'} ,render:function(value){
+						{ title:'백업시간', key : 'startTime' , width: '110px',excludeFitWidth:true, align: 'center', inlineStyle: {padding: '0'} ,render:function(value){
 							if(cloudUtil.isEmpty(value)) {
 								value = '01:00' ;
 							}	
@@ -253,9 +249,7 @@
 								
 								}
 							});
-							//return re;
-							//임시수정 (v1.2.1)
-							return value;
+							return re;
 						}},
 						{ title:'백업용량', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
 							//return value == '0'?'-': value;
@@ -353,7 +347,9 @@
 						data:{namespace:gSelectedNamespace},
 						success: function(res){
 							let list = res.scheduleInfoList;
-						
+							
+							//console.log(res);
+							
 							if(list){
 								list = list.map(function(ob){
 									return $.extend({},ob,{incrementPeriod:(''+ob.incrementPeriod)});
@@ -392,12 +388,23 @@
 								}
 								d.incrementPeriod = re ;
 							};
+							//console.log(data);
 							
  							$a.ajax({
 								url: '/zdbapi/saveBackupSchedule',
 								method:'put',
 								data: {data:JSON.stringify(data)},
 								success: function(res){
+									console.log(res);
+									/* server 에서 verifyParameters 를 통해 데이터를 체크 하는데 보관기간(storePeriod)은 무조건 7일까지만 되는걸로 처리함
+										=>>>>   if(schedule.getStorePeriod() < 1 || schedule.getStorePeriod() > 8) {
+													result = false;
+													sb.append("보관기간은 최대 7일 까지만 선택이 가능합니다.(입력값 : "+schedule.getStorePeriod() + ")");
+												  }
+										로 처리 되어있어 조건부터 바꿔야 함.
+										ui에서 7까지만 입력 받도록 변경 하는것이 가장 깔끔함 . 
+										서버단에서 처리 한다면 조건을 더 붙이던가 변경이 필요할 듯
+									*/
 									fn_getScheduleInfoList();
 								}
 							});	 

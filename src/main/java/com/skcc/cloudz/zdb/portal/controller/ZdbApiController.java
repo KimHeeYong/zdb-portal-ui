@@ -215,9 +215,11 @@ public class ZdbApiController {
 		
 		Result result = zdbApiService.updateDBVariables(param);
 		if(CommonConstants.SERVICE_TYPE_MARIA.equals(param.get(CommonConstants.SERVICE_TYPE))) {
-			mav.addObject(CommonConstants.DB_CONFIGURATIONS ,result.getMariaDBConfig());	
+			// mav.addObject(CommonConstants.DB_CONFIGURATIONS ,result.getMariaDBConfig());	
+			mav.addObject(CommonConstants.DB_CONFIGURATIONS ,result);
 		}else if(CommonConstants.SERVICE_TYPE_REDIS.equals(param.get(CommonConstants.SERVICE_TYPE))) {
-			mav.addObject(CommonConstants.DB_CONFIGURATIONS ,result.getRedisConfig());	
+			// mav.addObject(CommonConstants.DB_CONFIGURATIONS ,result.getRedisConfig());	
+			mav.addObject(CommonConstants.DB_CONFIGURATIONS ,result);				
 		};
 		
 		return mav;

@@ -55,7 +55,7 @@
 		<div class="Panel service-panel">
 			<div class="Panel-content">
 				<div style="float: left;word-break:break-all;font-size: 14px;" id="divInfoMsg"></div>
-				<div class="config-wrap" th:if="${session.userInfo.zdbAdmin}" >
+				<div class="config-wrap" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >
 					<button class="btn-ico btn-refresh" id="restartService" title="재시작">재시작 </button>
 					<button class="Button btn-ico__typeb btn-trash" id="deleteService" title="삭제">삭제</button>
 				</div>
@@ -121,9 +121,9 @@
 									<td>
 										<input id="credential" name="credential" class="Textinput" type="password" autocomplete="off"/>
 										<span class="input-pw"></span>
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="togglePwd">보기</button>
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="credentialCopy">복사</button>
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="credentialUpdate">변경</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="togglePwd">보기</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialCopy">복사</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialUpdate">변경</button>
 										<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
 									</td>	
 								</tr>
@@ -132,7 +132,7 @@
 									<td data="port" th:if="${#request.getParameter('serviceType')} == 'redis'"> </td>
 									<td th:if="${#request.getParameter('serviceType')} != 'redis'">
 										<input type="text" class="Textinput" name="port" id="port">
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="portUpdate">변경</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="portUpdate">변경</button>
 										<p data-for="port" class="warn-text"></p>
 									</td>
 								</tr>
@@ -195,7 +195,7 @@
         						   		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="publicmasterConnectionString" readonly="readonly"></input>     
 						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button> 
-											<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.zdbAdmin}"  title="Public Network 삭제">삭제</button>						               		                         
+											<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"  title="Public Network 삭제">삭제</button>						               		                         
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">                                                                   
 						               		<input type="text" class="Textinput" name="publicmasterConnectionLine" readonly="readonly"></input>     
@@ -224,7 +224,7 @@
 					               	</td>                  
 				                </tr>
 			                </tbody>
-			                <tbody class="publicConnectionInfoNone publicNetworkTbody hide" th:if="${session.userInfo.zdbAdmin}" >
+			                <tbody class="publicConnectionInfoNone publicNetworkTbody hide" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >
 								<tr>                                                                                                 
 					               	<th>Public Network</th>                                                                       
 					               	<td>       
