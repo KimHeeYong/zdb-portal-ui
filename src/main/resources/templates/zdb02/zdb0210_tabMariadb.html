@@ -426,70 +426,32 @@ let appMariadb = {
 				}}
 			], message: { nodata: gMessage.gridNodata }
 		}).on('click','.bodycell',function(e){
-			
 			let evObj = AlopexGrid.parseEvent(e); //선택된 ROW 데이터 
-			if(evObj.data._state.selected == false) gridUser.alopexGrid('rowSelect', {_index:{row:sIdx}}, true); 
-			
-			if(sIdx != evObj.data._index.row){  // click 된 row를 체크하여 다른 row일 경우에만 처리
-				
-				let dt = gridUser.alopexGrid('dataGet'); // gridUser 의 모든 data를 가지고 온다. 
-				let vEdited = false;
-				let vAdded = false;
+			/* 선택된 사용자의 변경 사항 체크 로직 변경 (2019-09-25) */
+			if(sIdx != evObj.data._index.row){
+				let fData = gridUser.alopexGrid('dataGet', {_index:{row:sIdx}})[0]; 
 				let msg = '변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?' ;
-				let mIdx = 0;
-	
-				for(let m in dt){
-					let data = dt[m];
-					if(data._state.edited == true){
-						vEdited = true;
-						mIdx = m;
-					}
-					if(data._state.added == true) vAdded = true; 
-				}
-			
-				if(!vEdited) mIdx = sIdx ;
-				
-				// 1. 변경된 권한 정보가 있는지 체크 한다. 
-				appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').each(function(){
-
-					let ob = $(this);
-					let obVal = ob.is(':checked')?'Y':'N';
-					let obName = ob.attr('name');
-					
-					for(let mapName in userPriMap){
-						
-						if(mapName == obName && obVal != userPriMap[mapName]){
-							vEdited = true ;
-						}
-					}
-				});
-
-				
-				if(vEdited == true){ // 수정 상태의 데이터가 있을 경우 처리 
-					gCommon.confirm(msg,function(yn){
-						if(vAdded == true){
-							appMariadb.gridUser.alopexGrid('dataDelete',dt[0]);
-							appMariadb.gridUser.alopexGrid('rowSelect',{_index:{row:0}},true);
+				if(fData._state.edited || fData._state.added){
+					gCommon.confirmYn(msg,function(yn){
+						if(yn == "N"){
+							// confirm 에서 반환한 값이 N 일때는 원래 ROW 를 그대로 선택만 해준다.			
+							gridUser.alopexGrid('rowSelect', {_index:{row:sIdx}}, true);
 						}else{
-							appMariadb.gridUser.alopexGrid('updateOption', {defaultState: {}});
-							appMariadb.gridUser.alopexGrid('dataRestore');									
-							appMariadb.gridUser.alopexGrid('rowSelect',evObj.data,true);
+							// confirm 에서 반환한 값이 Y일때 원래 ROW 의 데이터 값을 원래대로 돌려놓고 권한 정보를 조회해온다. 
+							if(fData._state.added){
+								appMariadb.gridUser.alopexGrid('dataDelete',fData);
+							}else if(fData._state.edited){
+								appMariadb.gridUser.alopexGrid('updateOption', {defaultState: {}});
+								appMariadb.gridUser.alopexGrid('dataRestore');									
+							}
+							sIdx = evObj.data._index.row;
+							appMariadb.getUserPrivileges();
 						}
-						sIdx = evObj.data._index.row; // 기 선택 되었던 ROW index setting
-						appMariadb.getUserPrivileges();
-					}); 
-
+					});
 				}else{
-					sIdx = evObj.data._index.row; 
-					appMariadb.getUserPrivileges();
+					sIdx = evObj.data._index.row;
+					appMariadb.getUserPrivileges(); 
 				}
-				
-				setTimeout(function(){   // gCommon.confirm 처리시 시간적인 차이가 필요 함 
-					if(vEdited == true){
-						gridUser.alopexGrid('rowSelect', {_index:{row:mIdx}}, true);
-						sIdx = mIdx;
-					}
-				},100)
 			}
 		}).on('focusout',function(e){
 			let r = e.relatedTarget;
@@ -497,7 +459,7 @@ let appMariadb = {
 				gridUser.alopexGrid('endRowInlineEdit');
 			}
 		});
-		this.gridUserSchema = $('#gridUserSchema').alopexGrid({
+		let gridUserSchema = this.gridUserSchema = appMariadb.mariaContent.find('#gridUserSchema').alopexGrid({		
 			autoColumnIndex: true,
 			autoResize:true,
 			rowInlineEdit:true,
@@ -530,60 +492,45 @@ let appMariadb = {
 				appMariadb.setUserPrivilegesUi();
 			} */
 		}).on('click','.bodycell',function(e){
-			
 			let evObj = AlopexGrid.parseEvent(e); //선택된 ROW 데이터 
-			
-			if(evObj.data._state.selected == false) gridUserSchema.alopexGrid('rowSelect', {_index:{row:scIdx}}, true); 
-			
-			if(scIdx != evObj.data._index.row){  // click 된 row를 체크하여 다른 row일 경우에만 처리
-				
-				let dt = gridUser.alopexGrid('dataGet'); // gridUser 의 모든 data를 가지고 온다. 
-				let vEdited = false;
-				let vAdded = false;
+			/* 선택된 스키마의 변경 사항 체크 로직 변경 (2019-09-25) */
+			if(scIdx != evObj.data._index.row){
+				let fData = gridUserSchema.alopexGrid('dataGet', {_index:{row:scIdx}})[0]; 
 				let msg = '변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?' ;
-	
-				for(let m in dt){
-					let data = dt[m];
-					if(data._state.edited == true) vEdited = true;
-					if(data._state.added == true) vAdded = true; 
-				}
-			
+				let vEdited = false;
+
 				// 1. 변경된 권한 정보가 있는지 체크 한다. 
 				appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').each(function(){
-
 					let ob = $(this);
 					let obVal = ob.is(':checked')?'Y':'N';
 					let obName = ob.attr('name');
 					
-					for(let mapName in userPriMap){
-						if(mapName == obName && obVal != userPriMap[mapName]) vEdited = true ;
+					if(cloudUtil.isEmpty(userPriMap)){
+						if(obVal == "Y"){
+							vEdited = true ;
+						}
+					}else{
+						for(let mapName in userPriMap){
+							if(mapName == obName && obVal != userPriMap[mapName]){
+								vEdited = true ;
+							}
+						}
 					}
 				});
-
-				
-				if(vEdited == true){ // 수정 상태의 데이터가 있을 경우 처리 
-					gCommon.confirm(msg,function(yn){
-						if(vAdded == true){
-							appMariadb.gridUser.alopexGrid('dataDelete',dt[0]);
+				// 수정건이 있을 경우 처리 
+				if(vEdited){
+					gCommon.confirmYn(msg,function(yn){
+						if(yn == "N"){
+							gridUserSchema.alopexGrid('rowSelect', {_index:{row:scIdx}}, true);
 						}else{
-							appMariadb.gridUser.alopexGrid('updateOption', {defaultState: {}});
-							appMariadb.gridUser.alopexGrid('dataRestore');	
+							scIdx = evObj.data._index.row;
+							appMariadb.getUserPrivileges();
 						}
-						appMariadb.gridUserSchema.alopexGrid('rowSelect',evObj.data,true);
-						scIdx = evObj.data._index.row; // 기 선택 되었던 ROW index setting
-						appMariadb.getUserPrivileges();
-					}); 
-
+					});
 				}else{
-					scIdx = evObj.data._index.row; 
+					scIdx = evObj.data._index.row;
 					appMariadb.getUserPrivileges();
 				}
-				
- 				setTimeout(function(){   // gCommon.confirm 처리시 시간적인 차이가 필요 함 
-					if(vEdited == true){
-						appMariadb.gridUserSchema.alopexGrid('rowSelect', {_index:{row:scIdx}}, true);
-					}
-				},100) 
 			}
 		});
 		/* 사용자및 권한 관리 - 사용자 추가 버튼  */
@@ -1386,6 +1333,7 @@ let appMariadb = {
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
 							appMariadb.mariaContent.find('form[name=formUserRole]').zdbui_setContents(privilegesMap);
 						}else{
+							userPriMap = list[0];
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
 						}
 					}	
