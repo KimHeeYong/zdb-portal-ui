@@ -378,6 +378,26 @@ var gCommon = $a.page(function(){
 	    });
 	    isConfirmPopExists = true;
 	};
+	this.confirmYn = function(message,callback,opt){
+		if(isConfirmPopExists)return;
+		gPopData = {};
+		opt = opt||{};
+		gPopData.message = message;
+		gPopData.okBtnMsg = opt.okBtnMsg; 
+		gPopData.noBtnMsg = opt.noBtnMsg; 
+	    $a.popup({
+	        url: "/zdbcom/confirm",
+	        iframe: false,
+	        width: 500,
+	        height: 300,
+	        title : '',
+	        callback : function(res){
+	        	callback(res);
+	        	isConfirmPopExists = false;
+	        }
+	    });
+	    isConfirmPopExists = true;
+	};	
 	this.credentialConfirm = function(option){
 		let defOpt = {
 		        url: "/zdb02/zdb0200p03",

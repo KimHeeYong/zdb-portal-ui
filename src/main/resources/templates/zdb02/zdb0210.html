@@ -55,7 +55,7 @@
 		<div class="Panel service-panel">
 			<div class="Panel-content">
 				<div style="float: left;word-break:break-all;font-size: 14px;" id="divInfoMsg"></div>
-				<div class="config-wrap" th:if="${session.userInfo.zdbAdmin}" >
+				<div class="config-wrap" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >
 					<button class="btn-ico btn-refresh" id="restartService" title="재시작">재시작 </button>
 					<button class="Button btn-ico__typeb btn-trash" id="deleteService" title="삭제">삭제</button>
 				</div>
@@ -95,7 +95,7 @@
 			<li data-content="#tabBackup" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}">백업</li>
 			<li data-content="#tabEvent">이벤트</li>
 <!-- 			<li data-content="#tabUser">사용자</li> -->
-			<li data-content="#tabDatabase" th:if="${#request.getParameter('serviceType')=='mariadb'}" >Database</li>
+<!-- 			<li data-content="#tabDatabase" th:if="${#request.getParameter('serviceType')=='mariadb'}" >Database</li> -->
  			<li data-content="#tabSystem" th:if="${#request.getParameter('serviceType')!='mariadb'}" >환경설정</li>
 			<li data-content="#tabLog" th:if="${#request.getParameter('serviceType')=='mariadb'}" >로그</li>
 <!-- 			<li data-content="#tabProcess">프로세스</li> -->
@@ -121,9 +121,9 @@
 									<td>
 										<input id="credential" name="credential" class="Textinput" type="password" autocomplete="off"/>
 										<span class="input-pw"></span>
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="togglePwd">보기</button>
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="credentialCopy">복사</button>
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="credentialUpdate">변경</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="togglePwd">보기</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialCopy">복사</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialUpdate">변경</button>
 										<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
 									</td>	
 								</tr>
@@ -132,7 +132,7 @@
 									<td data="port" th:if="${#request.getParameter('serviceType')} == 'redis'"> </td>
 									<td th:if="${#request.getParameter('serviceType')} != 'redis'">
 										<input type="text" class="Textinput" name="port" id="port">
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="portUpdate">변경</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="portUpdate">변경</button>
 										<p data-for="port" class="warn-text"></p>
 									</td>
 								</tr>
@@ -194,13 +194,14 @@
 										</div>
         						   		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="publicmasterConnectionString" readonly="readonly"></input>     
-						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                          
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button> 
+											<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"  title="Public Network 삭제">삭제</button>						               		                         
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">                                                                   
 						               		<input type="text" class="Textinput" name="publicmasterConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                         
 						               	</div>	
-						               	<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.zdbAdmin}"  title="Public Network 삭제">삭제</button>
+						               	
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                                                                                         
 				                </tr>
@@ -223,7 +224,7 @@
 					               	</td>                  
 				                </tr>
 			                </tbody>
-			                <tbody class="publicConnectionInfoNone publicNetworkTbody hide" th:if="${session.userInfo.zdbAdmin}" >
+			                <tbody class="publicConnectionInfoNone publicNetworkTbody hide" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >
 								<tr>                                                                                                 
 					               	<th>Public Network</th>                                                                       
 					               	<td>       
@@ -655,7 +656,7 @@
    				<div id="gridUser" class="grid grid-line__wrap"></div>
    			</div>
 		</div>
-		<div id="tabDatabase" style="display:none;">		
+<!-- 		<div id="tabDatabase" style="display:none;">		
 			<h3 class="form-title">Database 목록</h3>
 			<div class="tabs-contents">
 				<div style="width: 500px;">
@@ -670,7 +671,7 @@
 					<div id="gridDatabase" class="grid grid-line__wrap"></div>
 				</div>
 			</div>		
-		</div>		
+		</div>	 -->	
 		<div id="tabSystem" style="display:none;" >
 			<form name="dbConfig" method="post">
 			<ul>
@@ -897,7 +898,7 @@
 							</div>
 						</div>
 			            <div class="btn-wrap__right">
-				        	<button class="Button btn bg-red" id="saveVariables">적용하기</button>
+				        	<button class="Button btn bg-red" id="saveVariables" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >적용하기</button>
 				        </div>
 					</div>
 				</li>
@@ -913,7 +914,7 @@
 							<tbody> </tbody>
 						</table>
 			            <div class="btn-wrap__right">
-				        	<button class="Button btn bg-red" id="saveVariables">적용하기</button>
+				        	<button class="Button btn bg-red" id="saveVariables" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >적용하기</button>
 				        </div>						
 					</div>
 				</li>
@@ -1021,18 +1022,23 @@
 			$('#backServices').on('click',function(){
 				gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
 			});			
+
 			$('#deleteService').on('click',function(){
-				gCommon.credentialConfirm({
+ 				gCommon.credentialConfirm({
 			        data:{credential:$("#credential").val(),msg:'서비스를 삭제하시려면',okBtnMsg:'삭제'},
 			        callback : function(res){
+			        	let data = $.extend({},gParam);
+			        	let alertRules = [];
+			        	data.alertRules = JSON.stringify(alertRules);
+			        	
 						$a.ajax({
 							url: '/zdbapi/deleteServiceInstance',
-							data:gParam,
+							data:data,
 							success: function(res){
 								gCommon.alert('삭제 요청이 완료 되었습니다.');
 								gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
 							}
-						})
+						}) 
 			        }
 			    });
 			});
@@ -1742,7 +1748,7 @@
 							var dl = gService.diskUsageOfPodMap;
 							
 							
-							console.log(cl);console.log(ml);console.log(cl);console.log(gService);
+							//console.log(cl);console.log(ml);console.log(cl);console.log(gService);
 							
 							if(cl && cl[ob.name]){
 								var cpuUsage = cl[ob.name];
@@ -2004,7 +2010,16 @@
 				if($('#zdbServiceTabs').getCurrentTabContent()!= '#tabScale'){
 					fn_setSlider('memory',gServiceScale.memoryVal);
 					$('#tabScale').find('input[name="scaleCpu"]').val(gServiceScale.cpuVal);
-					$('#tabScale').find('input[name="scaleMemory"]').val(gServiceScale.memoryVal);
+					
+					/* api 통해 오는 데이터 중 기가단위로 변경되어 오는 데이터가 있음
+					   128 이하의 데이터 일 경우1024를 곱하는 로직 추가 (2019-09-23)*/
+					var vScaleMemory =  cloudUtil.parseInt(gServiceScale.memoryVal);
+					if(vScaleMemory < 129){
+						vScaleMemory = vScaleMemory * 1024;
+					}
+					$('#tabScale').find('input[name="scaleMemory"]').val(vScaleMemory);
+					
+					
 					$('#clusterSlaveCount').val(gService.clusterSlaveCount);
 					//todo temp
 					var isCustom = gSliderConstants[gParam.serviceType].cpu.value.indexOf(gServiceScale.cpuVal) < 0
@@ -2309,7 +2324,7 @@
 			$('form[name=scaleForm]').validator({
 			    elements :{ 
 			        'scaleCpu': {rule:{required:true,min:100,max:20000}},
-			        'scaleMemory': {rule:{required:true,min:128,max:32000}}
+			        'scaleMemory': {rule:{required:true,min:129,max:32000}}
 			    }
 			});	
 			//스케일 리소스선택or사용자입력
@@ -2548,7 +2563,7 @@
 					{   title: '로그',
 						processor:function(data,$cell,grid){
 							
-							console.log('로그');	
+							//console.log('로그');	
 							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
 						},
 						use: function(data,$cell,grid){
@@ -2780,7 +2795,7 @@
 				param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
 				param.incrementYn = backupForm.find('#incrementPeriod select').val() == '0' ? 'N' : 'Y';
 		
-				console.log(param);
+				//console.log(param);
 				
 				$a.ajax({
 					url: '/zdbapi/updateSchedule',
@@ -2931,7 +2946,7 @@
 					data:param,
 					success: function(res){
 						var list = res.operationEvents;
-						console.log(list);
+						//console.log(list);
 						$('#gridEvent').alopexGrid('dataSet',list);
 					}
 				});				
@@ -3119,7 +3134,7 @@
 			};
 			/*tabUser end 사용자*/
 			/*tabDatabase start Database*/
-			let tabDatabase = $('#tabDatabase');
+/* 			let tabDatabase = $('#tabDatabase');
 			let gridDatabase = $('#gridDatabase').alopexGrid({
 				autoColumnIndex: true,
 				autoResize:true,
@@ -3244,7 +3259,7 @@
 						});	
 					};						
 				})
-			};
+			}; */
 			/*tabDatabase end*/						
 			/*tabSystem start 환경설정 */
 			var dbConfigForm = $('form[name=dbConfig]');

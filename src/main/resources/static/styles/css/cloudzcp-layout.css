@@ -221,7 +221,7 @@ body.login {background: #ffffff}
 .cp-container {
 	display: table;
 	width: 100%;
-	height: calc(100% - 60px);
+	/* height: calc(100% - 60px); */
 }
 /*---------------------------------------
 	button css

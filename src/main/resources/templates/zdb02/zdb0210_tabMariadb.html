@@ -1,5 +1,5 @@
 <div id="tabMariadb">
-	<div class="Tabs">
+	<div class="Tabs">  
 		<div>
 			<div class="lay-item__box mt30">
 				<div style="width:180px;" class="dtc" id="divMariaMenu">
@@ -7,6 +7,7 @@
 <!-- 						<li data-menu="databaseStatus">서버상태</li> -->	  
 					    <li class="selected"  data-menu="connection">클라이언트 커넥션</li>
 						<li data-menu="userRole">사용자 및 권한관리</li>
+						<li data-menu="database">Database</li>								
 						<li data-menu="statusVariables">상태 변수</li>
 						<li data-menu="systemVariables">시스템 변수</li>
 						<li data-menu="myCnf">환경설정</li>
@@ -129,9 +130,9 @@
 							<div class="mt20">
 							<div class="fl" style="width:330px;">
 								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
-									<button class="Button btn sm" th:if="${session.userInfo.zdbAdmin}" id="btnAddUser">추가</button>
-									<button class="Button btn sm" th:if="${session.userInfo.zdbAdmin}" id="btnDeleteUser">삭제</button>
-									<button class="Button btn sm" th:if="${session.userInfo.zdbAdmin}" id="btnDeletePrivileges">권한 회수</button>
+									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnAddUser">추가</button>
+									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnDeleteUser">삭제</button>
+									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnDeletePrivileges">권한 회수</button>
 								</div>
 								<div id="gridUser" class="mt30"></div>
 							</div>
@@ -176,7 +177,7 @@
 								</div>
 								</form>
 								<div class="fr mt10" style="margin-bottom: 3px;margin-right:30px;">
-									<button class="Button btn sm" th:if="${session.userInfo.zdbAdmin}"  id="btnSavePrivileges">적용</button>
+									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"  id="btnSavePrivileges">적용</button>
 								</div>																 	
 							 </div>
 							</div>
@@ -194,7 +195,7 @@
 							<h3 class="form-title2" >시스템 변수
 								<button class="Button btn fr" id="btnReloadSystemVariables" style="margin-bottom: 3px;">새로고침</button>
 							</h3>						
-							<div class="search-wrap tr fi mt20"  style="width:800px" >
+							<div class="search-wrap tr fi mt20" >
 								<input id="txtSystemVariablesFilter" name="txtSystemVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
 							</div>
 							<div id="gridSystemVariables"></div>
@@ -211,11 +212,25 @@
 										</select>
 										<span></span>
 									</div>
-									<button class="Button btn bg-red" id="btnSaveMyCnf" style="margin-bottom: 3px;">저장</button>
+									<button class="Button btn bg-red" id="btnSaveMyCnf" style="margin-bottom: 3px;" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >저장</button>
 								</div>
 							</div>								
 							<div id="gridMyCnf"></div>
 						</div>
+						<div data-menu="database" class="hide"  style=" min-width: 950px; ">
+							<h3 class="form-title2">Database 목록
+								<button class="Button btn fr" id="btnReloadDatabase" style="margin-bottom: 3px;">새로고침</button>
+							</h3>
+							<div class="mt20">
+							<div class="fl" style="width:330px;">
+								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
+									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnAddDatabase">추가</button>
+									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnDeleteDatabase">삭제</button>
+									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnSaveDatabase">저장</button>
+								</div>
+								<div id="gridDatabase" class="mt30"></div>
+							</div>													
+						</div>						
 					</div>
 				</div>
 			</div>		
@@ -411,70 +426,32 @@ let appMariadb = {
 				}}
 			], message: { nodata: gMessage.gridNodata }
 		}).on('click','.bodycell',function(e){
-			
 			let evObj = AlopexGrid.parseEvent(e); //선택된 ROW 데이터 
-			if(evObj.data._state.selected == false) gridUser.alopexGrid('rowSelect', {_index:{row:sIdx}}, true); 
-			
-			if(sIdx != evObj.data._index.row){  // click 된 row를 체크하여 다른 row일 경우에만 처리
-				
-				let dt = gridUser.alopexGrid('dataGet'); // gridUser 의 모든 data를 가지고 온다. 
-				let vEdited = false;
-				let vAdded = false;
+			/* 선택된 사용자의 변경 사항 체크 로직 변경 (2019-09-25) */
+			if(sIdx != evObj.data._index.row){
+				let fData = gridUser.alopexGrid('dataGet', {_index:{row:sIdx}})[0]; 
 				let msg = '변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?' ;
-				let mIdx = 0;
-	
-				for(let m in dt){
-					let data = dt[m];
-					if(data._state.edited == true){
-						vEdited = true;
-						mIdx = m;
-					}
-					if(data._state.added == true) vAdded = true; 
-				}
-			
-				if(!vEdited) mIdx = sIdx ;
-				
-				// 1. 변경된 권한 정보가 있는지 체크 한다. 
-				appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').each(function(){
-
-					let ob = $(this);
-					let obVal = ob.is(':checked')?'Y':'N';
-					let obName = ob.attr('name');
-					
-					for(let mapName in userPriMap){
-						
-						if(mapName == obName && obVal != userPriMap[mapName]){
-							vEdited = true ;
-						}
-					}
-				});
-
-				
-				if(vEdited == true){ // 수정 상태의 데이터가 있을 경우 처리 
-					gCommon.confirm(msg,function(yn){
-						if(vAdded == true){
-							appMariadb.gridUser.alopexGrid('dataDelete',dt[0]);
-							appMariadb.gridUser.alopexGrid('rowSelect',{_index:{row:0}},true);
+				if(fData._state.edited || fData._state.added){
+					gCommon.confirmYn(msg,function(yn){
+						if(yn == "N"){
+							// confirm 에서 반환한 값이 N 일때는 원래 ROW 를 그대로 선택만 해준다.			
+							gridUser.alopexGrid('rowSelect', {_index:{row:sIdx}}, true);
 						}else{
-							appMariadb.gridUser.alopexGrid('updateOption', {defaultState: {}});
-							appMariadb.gridUser.alopexGrid('dataRestore');									
-							appMariadb.gridUser.alopexGrid('rowSelect',evObj.data,true);
+							// confirm 에서 반환한 값이 Y일때 원래 ROW 의 데이터 값을 원래대로 돌려놓고 권한 정보를 조회해온다. 
+							if(fData._state.added){
+								appMariadb.gridUser.alopexGrid('dataDelete',fData);
+							}else if(fData._state.edited){
+								appMariadb.gridUser.alopexGrid('updateOption', {defaultState: {}});
+								appMariadb.gridUser.alopexGrid('dataRestore');									
+							}
+							sIdx = evObj.data._index.row;
+							appMariadb.getUserPrivileges();
 						}
-						sIdx = evObj.data._index.row; // 기 선택 되었던 ROW index setting
-						appMariadb.getUserPrivileges();
-					}); 
-
+					});
 				}else{
-					sIdx = evObj.data._index.row; 
-					appMariadb.getUserPrivileges();
+					sIdx = evObj.data._index.row;
+					appMariadb.getUserPrivileges(); 
 				}
-				
-				setTimeout(function(){   // gCommon.confirm 처리시 시간적인 차이가 필요 함 
-					if(vEdited == true){
-						gridUser.alopexGrid('rowSelect', {_index:{row:mIdx}}, true);
-						sIdx = mIdx;
-					}
-				},100)
 			}
 		}).on('focusout',function(e){
 			let r = e.relatedTarget;
@@ -482,7 +459,7 @@ let appMariadb = {
 				gridUser.alopexGrid('endRowInlineEdit');
 			}
 		});
-		this.gridUserSchema = $('#gridUserSchema').alopexGrid({
+		let gridUserSchema = this.gridUserSchema = appMariadb.mariaContent.find('#gridUserSchema').alopexGrid({		
 			autoColumnIndex: true,
 			autoResize:true,
 			rowInlineEdit:true,
@@ -515,60 +492,45 @@ let appMariadb = {
 				appMariadb.setUserPrivilegesUi();
 			} */
 		}).on('click','.bodycell',function(e){
-			
 			let evObj = AlopexGrid.parseEvent(e); //선택된 ROW 데이터 
-			
-			if(evObj.data._state.selected == false) gridUserSchema.alopexGrid('rowSelect', {_index:{row:scIdx}}, true); 
-			
-			if(scIdx != evObj.data._index.row){  // click 된 row를 체크하여 다른 row일 경우에만 처리
-				
-				let dt = gridUser.alopexGrid('dataGet'); // gridUser 의 모든 data를 가지고 온다. 
-				let vEdited = false;
-				let vAdded = false;
+			/* 선택된 스키마의 변경 사항 체크 로직 변경 (2019-09-25) */
+			if(scIdx != evObj.data._index.row){
+				let fData = gridUserSchema.alopexGrid('dataGet', {_index:{row:scIdx}})[0]; 
 				let msg = '변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?' ;
-	
-				for(let m in dt){
-					let data = dt[m];
-					if(data._state.edited == true) vEdited = true;
-					if(data._state.added == true) vAdded = true; 
-				}
-			
+				let vEdited = false;
+
 				// 1. 변경된 권한 정보가 있는지 체크 한다. 
 				appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').each(function(){
-
 					let ob = $(this);
 					let obVal = ob.is(':checked')?'Y':'N';
 					let obName = ob.attr('name');
 					
-					for(let mapName in userPriMap){
-						if(mapName == obName && obVal != userPriMap[mapName]) vEdited = true ;
+					if(cloudUtil.isEmpty(userPriMap)){
+						if(obVal == "Y"){
+							vEdited = true ;
+						}
+					}else{
+						for(let mapName in userPriMap){
+							if(mapName == obName && obVal != userPriMap[mapName]){
+								vEdited = true ;
+							}
+						}
 					}
 				});
-
-				
-				if(vEdited == true){ // 수정 상태의 데이터가 있을 경우 처리 
-					gCommon.confirm(msg,function(yn){
-						if(vAdded == true){
-							appMariadb.gridUser.alopexGrid('dataDelete',dt[0]);
+				// 수정건이 있을 경우 처리 
+				if(vEdited){
+					gCommon.confirmYn(msg,function(yn){
+						if(yn == "N"){
+							gridUserSchema.alopexGrid('rowSelect', {_index:{row:scIdx}}, true);
 						}else{
-							appMariadb.gridUser.alopexGrid('updateOption', {defaultState: {}});
-							appMariadb.gridUser.alopexGrid('dataRestore');	
+							scIdx = evObj.data._index.row;
+							appMariadb.getUserPrivileges();
 						}
-						appMariadb.gridUserSchema.alopexGrid('rowSelect',evObj.data,true);
-						scIdx = evObj.data._index.row; // 기 선택 되었던 ROW index setting
-						appMariadb.getUserPrivileges();
-					}); 
-
+					});
 				}else{
-					scIdx = evObj.data._index.row; 
+					scIdx = evObj.data._index.row;
 					appMariadb.getUserPrivileges();
 				}
-				
- 				setTimeout(function(){   // gCommon.confirm 처리시 시간적인 차이가 필요 함 
-					if(vEdited == true){
-						appMariadb.gridUserSchema.alopexGrid('rowSelect', {_index:{row:scIdx}}, true);
-					}
-				},100) 
 			}
 		});
 		/* 사용자및 권한 관리 - 사용자 추가 버튼  */
@@ -672,6 +634,102 @@ let appMariadb = {
 		});
 		
 		/* 사용자 및 권한관리 끝 */
+		
+		/* database 시작  */
+		let tabDatabase = appMariadb.mariaContent.find('[data-menu=database]');
+		this.gridDatabase = appMariadb.mariaContent.find('#gridDatabase').alopexGrid({
+		
+			autoColumnIndex: true,
+			autoResize:true,
+			rowInlineEdit:true,
+			rowSelectOption:{
+				clickSelect : true,
+				singleSelect : true
+			},
+			cellSelectable:true,
+			restoreFocusOnInvalidInlineEdit :true,
+			leaveDeleted:true,
+			width:320,			
+			height: 400,
+			columnMapping : [  
+				{ title:'state',key:'state',width:'0px',editable:false,hidden:false,render:function(value,data){
+					if (data._state.added){data.state = 'A'}
+					else if (data._state.deleted){data.state='D'}
+					else if (data._state.edited){data.state='E'}
+					else {data.state=''}
+					return data.state;
+				}},
+				{ title:'NAME', key : 'name' , width: '320px', align: 'left' ,editable:true	,allowEdit:function(value,data){
+					return data._state.added == true;
+				},editable: function(value, data) {
+					return '<div><input type="text" class="alopexgrid-default-renderer" maxlength="15" value="'+value+'"/></div>'; 
+				},editedValue: function(cell) {
+					return $(cell).find('input').val();
+				},valid : function(value, data) {
+					if(value=='') {
+						return false;
+					}
+					return true;
+				}}
+			], message: { nodata: gMessage.gridNodata }
+		}).on('cellEditInvalid ', function(e){
+			setTimeout(function(evt){
+				let evObj = AlopexGrid.parseEvent(e);
+				let opt = evObj.data;
+				let mapping = evObj.mapping;
+				let col = mapping.columnIndex;
+				let invalidValue = evObj.value;
+				
+				if(opt._state.deleted == true){
+					return;
+				}
+ 				if(col == 1){
+ 					gCommon.alert('DATABASE명을 입력하세요');
+				} 
+				appMariadb.gridDatabase.alopexGrid('focusCell', opt);
+				setTimeout(function(){
+					appMariadb.gridDatabase.alopexGrid('rowSelect', opt, true)
+					appMariadb.gridDatabase.find('.bodycell[data-alopexgrid-rowindex='+(opt._index.row)+'][data-alopexgrid-columnindex='+(opt._index.column)+'] input').focus();
+				},100)
+			},100)
+		}).on('dataChanged',function(e){
+			let isEnalbed = AlopexGrid.trimData(appMariadb.gridDatabase.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'})).length > 0;
+			tabDatabase.find('#btnSaveDatabase').setEnabled(isEnalbed);
+		});
+		tabDatabase.find('#btnAddDatabase').on('click', function(e){
+			appMariadb.gridDatabase.alopexGrid('endRowInlineEdit');
+			let dt = appMariadb.gridDatabase.alopexGrid('dataGet');
+			
+			if(dt[0]._state.added == true && dt[0]._state.editing != false){ return; } 
+			let opt = {_index :{row:0,column:1,data:0,target:0}};
+			appMariadb.gridDatabase.alopexGrid('dataAdd', {}, opt);
+			appMariadb.gridDatabase.alopexGrid('startRowInlineEdit',opt);
+			setTimeout(function(){
+				appMariadb.gridDatabase.alopexGrid('rowSelect', opt, true)
+				appMariadb.gridDatabase.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus();
+			},100)
+		});
+		tabDatabase.find('#btnDeleteDatabase').on('click',function(e){
+			appMariadb.gridDatabase.alopexGrid('endRowInlineEdit');
+			let dg = appMariadb.gridDatabase.alopexGrid( 'dataGet' , {_state:{selected:true}});
+			if(dg.length == 0){
+				gCommon.alert('선택된 행이 없습니다.');return;
+			};
+			let dt = dg[0];
+			if(false){
+				gCommon.alert('삭제 할 수 없습니다.');return;
+			}
+			let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
+			appMariadb.gridDatabase.alopexGrid(d,{_state: {selected:true}}); 
+		});
+		tabDatabase.find('#btnReloadDatabase').on('click',function(e){
+			appMariadb.getDatabase(); 
+		});
+		tabDatabase.find('#btnSaveDatabase').on('click',function(e){
+			appMariadb.saveDatabase();
+		});
+		
+		/* database 끝  */	
 		
 		this.gridStatusVariables = $('#gridStatusVariables').alopexGrid({
 			height:450,
@@ -1003,6 +1061,13 @@ let appMariadb = {
 			//0806
 		});
 		
+		/* 사용자 권한일 경우 gridMyCnf의 수정 옵션을 false로 변경한다.  */
+		if(!gIsClusterAdmin && !gIsZdbAdmin ){
+			$('#gridMyCnf').alopexGrid('updateOption',	{
+				rowInlineEdit: false
+			});
+		}
+		
 
 		},initMenu : function(menuName){
 			appMariadb.mariaContent.find('[data-menu]').hide().filter('[data-menu='+menuName+']').show();
@@ -1015,6 +1080,9 @@ let appMariadb = {
 					//appMariadb.getUserPrivileges();
 					appMariadb.getUserRoleList();
 					break;
+				case 'database':
+					appMariadb.getDatabase();
+					break;							
 				case 'statusVariables':
 					appMariadb.getStatusVariables();
 					break;
@@ -1265,6 +1333,7 @@ let appMariadb = {
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
 							appMariadb.mariaContent.find('form[name=formUserRole]').zdbui_setContents(privilegesMap);
 						}else{
+							userPriMap = list[0];
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
 						}
 					}	
@@ -1557,7 +1626,7 @@ let appMariadb = {
 					o = ds[String(key).replaceAll('-','_')];
 					if(!o) {
 						o = [];
-						console.log(mc.category +" / "+ key);
+						//console.log(mc.category +" / "+ key);
 						o.name = mc.name;
 						o.alias = mc.name;
 						o.category = mc.category;
@@ -1592,14 +1661,14 @@ let appMariadb = {
 				//variableType == 'BOOLEAN' : value check
  				if(variableType && variableType == 'BOOLEAN'){
 				 	//defaultValue check
-					if(mc.defaultValue && (mc.defaultValue = 'ON' || mc.defaultValue == 'OFF') ){
-						mc.defaultValue = 'ON'?'1':'0';
-					}else if(o.defaultValue && (o.defaultValue = 'ON' || o.defaultValue == 'OFF')){
-						mc.defaultValue = 'ON'?'1':'0';
+					if(mc.defaultValue && (mc.defaultValue == 'ON' || mc.defaultValue == 'OFF') ){
+						mc.defaultValue = (mc.defaultValue == 'ON'?'1':'0');
+					}else if(o.defaultValue && (o.defaultValue == 'ON' || o.defaultValue == 'OFF')){
+						mc.defaultValue = (mc.defaultValue == 'ON'?'1':'0');
 					}
 					// value check 					
 					if(mc.value  && (mc.value == '1' || mc.value == '0')){
-						mc.value = '1'?'ON':'OFF';
+						mc.value = (mc.value == '1'?'ON':'OFF');
 					}
 				}
 				
@@ -1724,7 +1793,44 @@ let appMariadb = {
 				}							
 			}
 			return re;
-		} 
+		},getDatabase : function(){
+			$a.ajax({
+				url: '/zdbapi/getDatabases',
+				method:'get',
+				data: gParam,
+				success: function(res){
+					let bl = ['information_schema','mysql','performance_schema'];
+					let list = res.databases||[];
+					let filterList = list.filter(function(ob){
+						return bl.indexOf(ob.name)==-1
+					});
+					appMariadb.gridDatabase.alopexGrid('dataSet',filterList);
+				}
+			});		
+		},saveDatabase : function(){
+			appMariadb.gridDatabase.alopexGrid('endRowInlineEdit');
+			let data = AlopexGrid.trimData(appMariadb.gridDatabase.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
+			if(data.length > 0){
+				for(let i in data){
+					let d = $.extend(data[i],gParam);
+					d.databaseName = d.name;
+					if(cloudUtil.isEmpty(d.name)){
+						return;
+					}
+				}
+				gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+					$a.ajax({
+						url: '/zdbapi/saveDatabase',
+						method:'put',
+						data: {data:JSON.stringify(data)},
+						success: function(res){
+							appMariadb.getDatabase();
+						}
+					});	
+									
+				});
+			}
+		}
 	}
 /*
 $a.page(function() {
