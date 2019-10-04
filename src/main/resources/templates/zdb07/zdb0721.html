@@ -30,7 +30,7 @@
 			<!-- add rule table-->
 			<form name="ruleForm" onsubmit="return false;">
 				<fieldset>
-					<table class="Table Form-type topline">
+					<table class="Table Form-type topline" style="border-collapse: unset;" >
 						<colgroup>
 							<col style="width: 100px;" />
 							<col style="width: 150px;" />
@@ -146,7 +146,7 @@
 									<p class="warn-text" data-for="Connections-value2"></p>									
 								</td>
 							</tr>
-							<tr>
+							<tr th:if="${#request.getParameter('serviceType')} == 'mariadb'" >
 								<th>SlowQuery</th>
 								<td>
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="SlowQueries-useYn" value="Y"/>사용 </label> 
@@ -167,7 +167,7 @@
 									<p class="warn-text" data-for="SlowQueries-value2"></p>									
 								</td>
 							</tr>
-							<tr>
+							<tr th:if="${#request.getParameter('serviceType')} == 'mariadb'" >
 								<th rowspan="2">Replication</th>
 								<th>Status</th>
 								<td>
@@ -180,7 +180,7 @@
 									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationStatus-priority" value="P1" />Critical </label>
 								</td>
 							</tr>
-							<tr>
+							<tr th:if="${#request.getParameter('serviceType')} == 'mariadb'">
 								<th>Delay</th>
 								<td>
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationDelay-useYn" value="Y"/>사용 </label> 
@@ -200,7 +200,8 @@
 									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="ReplicationDelay-value2" id="ReplicationDelay-value2" />
 									<p class="warn-text" data-for="ReplicationDelay-value2"></p>									
 								</td>
-							</tr>							
+							</tr>
+							<tr></tr>							
 						</tbody>
 					</table>
 				</fieldset>
@@ -223,6 +224,8 @@
 		$a.page(function() {
 			this.init = function() {
 				let isUpdate = !cloudUtil.isEmpty(gParam.alert);
+				
+				console.log(gParam.alert);
 				
 				Validator.addMethod('ifRequire', function(element, value, ob) {
 					let b = true;
