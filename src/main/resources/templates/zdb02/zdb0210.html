@@ -268,7 +268,7 @@
 											<b>※ 실행조건 : 5초 주기 5회 실패시</b><br>
 	                                        <b>※ 최초 설정 변경시 서비스가 재시작 됩니다.</b>
 										</div>                                       
-									</td> 									
+									</td> 								
 								</tr>
 							</tbody>
 						</table>										
@@ -2127,7 +2127,21 @@
 			
 				let param = $.extend({},gParam,{enable:isEnable == 'Y'});
 				let msg = "Auto Failover 기능을 적용합니다.<br>처음적용시 서비스가 재시작 됩니다." ;
-				gCommon.confirm(msg,function(yn){
+				let aStatefulSets = gService.statefulSets ;
+
+				for(let a in aStatefulSets){
+					let aStatefulSet = aStatefulSets[a] ; 
+					let aLabels = aStatefulSet.metadata.labels ;
+					if(aLabels.component == "master"){
+						if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "true"  ){
+							msg = "Auto Failover 기능을 해제합니다." ;
+						}else if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "false"  ){	
+							msg = "Auto Failover 기능을 적용합니다." ;
+						} 
+					}
+				}
+			
+ 				gCommon.confirm(msg,function(yn){
 					gCommon.credentialConfirm({
 				        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:'변경'},
 				        callback : function(res){
