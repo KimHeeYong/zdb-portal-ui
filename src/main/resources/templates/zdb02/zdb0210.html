@@ -2128,13 +2128,14 @@
 				let param = $.extend({},gParam,{enable:isEnable == 'Y'});
 				let msg = "Auto Failover 기능을 적용합니다.<br>처음적용시 서비스가 재시작 됩니다." ;
 				let aStatefulSets = gService.statefulSets ;
-
+				let btnMsg = "적용";  // 버튼 텍스트 변수 추가 (2019-10-08)
 				for(let a in aStatefulSets){
 					let aStatefulSet = aStatefulSets[a] ; 
 					let aLabels = aStatefulSet.metadata.labels ;
 					if(aLabels.component == "master"){
 						if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "true"  ){
 							msg = "Auto Failover 기능을 해제합니다." ;
+							btnMsg = "해제";
 						}else if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "false"  ){	
 							msg = "Auto Failover 기능을 적용합니다." ;
 						} 
@@ -2143,7 +2144,7 @@
 			
  				gCommon.confirm(msg,function(yn){
 					gCommon.credentialConfirm({
-				        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:'변경'},
+				        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:btnMsg},
 				        callback : function(res){
 							$a.ajax({
 								url: '/zdbapi/updateAutoFailoverEnable',
