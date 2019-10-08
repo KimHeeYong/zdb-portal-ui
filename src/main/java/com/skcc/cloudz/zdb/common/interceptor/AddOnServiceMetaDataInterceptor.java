@@ -107,13 +107,13 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
     public AddOnServiceMataVo getAddOnServiceMetaDataSub(AddOnServiceMataVo addOnServiceMataVo) {
         if (addOnServiceMataVo.getSub() == null) return addOnServiceMataVo;
         
-        System.out.println("userClusterRole:"+userClusterRole);
+        //System.out.println("userClusterRole:"+userClusterRole);
         
         List<AddOnServiceMataSubVo> addOnServiceMataSubVoList = new ArrayList<AddOnServiceMataSubVo>();
         int idx= 0; 
         for (AddOnServiceMataSubVo addOnServiceMataSubVo : addOnServiceMataVo.getSub()) {
         	idx++;
-        	System.out.println(idx+":"+addOnServiceMataSubVo.getClusterRoles());
+        	//System.out.println(idx+":"+addOnServiceMataSubVo.getClusterRoles());
         	if(addOnServiceMataSubVo.getClusterRoles() != null) {
         		for (ClusterRole clusterRole : addOnServiceMataSubVo.getClusterRoles()) {
                 	if (userClusterRole.equals(clusterRole.getRole()) && addOnServiceMataSubVo.isEnable()) {
