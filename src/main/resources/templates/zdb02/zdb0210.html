@@ -195,13 +195,12 @@
         						   		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="publicmasterConnectionString" readonly="readonly"></input>     
 						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button> 
-											<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"  title="Public Network 삭제">삭제</button>						               		                         
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">                                                                   
 						               		<input type="text" class="Textinput" name="publicmasterConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                         
 						               	</div>	
-						               	
+						               	<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"  title="Public Network 삭제">삭제</button>
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                                                                                         
 				                </tr>
