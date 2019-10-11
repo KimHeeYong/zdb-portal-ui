@@ -114,9 +114,13 @@
 									<div class="Divselect" data-disabled="true">
 										<select name="CPUUsage-condition" id="CPUUsage-condition">
 											<option value="&gt;">&gt;</option>
-										</select> <span></span>
+										</select><span></span>
 									</div>
-									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="CPUUsage-value2" id="CPUUsage-value2" />
+									<div style="position: relative; display: inline-block;">
+										<input class="Textinput" type="text" style="width: 120px; display: block; padding-right: 30px; min-width: 50px; top:2px;" maxlength="3" name="CPUUsage-value2" id="CPUUsage-value2" data-keyfilter-rule="digits"/>
+										<span style="position: absolute; top: 0; right: 0; display: block; width: 30px; height: 100%; text-align: center; line-height: 30px; top:2px;" >%</span>	
+									</div>
+									<span>(Default:80%)</span>									
 									<p class="warn-text" data-for="CPUUsage-value2"></p>									
 								</td>
 							</tr>
@@ -141,8 +145,12 @@
 											<option value="&gt;">&gt;</option>
 										</select> <span></span>
 									</div>
-									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="MemoryUsage-value2" id="MemoryUsage-value2" />
-									<p class="warn-text" data-for="MemoryUsage-value2"></p>									
+									<div style="position: relative; display: inline-block;">
+										<input class="Textinput" type="text" style="width: 120px; display: block; padding-right: 30px; min-width: 50px; top:2px;" maxlength="3" name="MemoryUsage-value2" id="MemoryUsage-value2" data-keyfilter-rule="digits" />
+										<span style="position: absolute; top: 0; right: 0; display: block; width: 30px; height: 100%; text-align: center; line-height: 30px; top:2px; " >%</span>	
+									</div>
+									<span>(Default:95%)</span>									
+									<p class="warn-text" data-for="MemoryUsage-value2"></p>											
 								</td>
 							</tr>
 							<tr>
@@ -166,7 +174,11 @@
 											<option value="&gt;">&gt;</option>
 										</select> <span></span>
 									</div>
-									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="Connections-value2" id="Connections-value2" />
+									<div style="position: relative; display: inline-block;">
+										<input class="Textinput" type="text" style="width: 120px; display: block; padding-right: 30px; min-width: 50px; top:2px;" maxlength="3" name="Connections-value2" id="Connections-value2" data-keyfilter-rule="digits"/>
+										<span style="position: absolute; top: 0; right: 0; display: block; width: 30px; height: 100%; text-align: center; line-height: 30px; top:2px;" >%</span>	
+									</div>
+									<span>(Default:80%)</span>										
 									<p class="warn-text" data-for="Connections-value2"></p>									
 								</td>
 							</tr>
@@ -193,7 +205,8 @@
 											<option value="&gt;">&gt;</option>
 										</select> <span></span>
 									</div>
-									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="SlowQueries-value2" id="SlowQueries-value2" />
+									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="SlowQueries-value2" id="SlowQueries-value2" data-keyfilter-rule="decimal" />									
+									<span>(Default:0.1)</span>		
 									<p class="warn-text" data-for="SlowQueries-value2"></p>									
 								</td>
 							</tr>
@@ -235,7 +248,11 @@
 											<option value="&gt;">&gt;</option>
 										</select> <span></span>
 									</div>
-									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="ReplicationDelay-value2" id="ReplicationDelay-value2" />
+									<div style="position: relative; display: inline-block;">
+										<input class="Textinput" type="text" style="width: 120px; display: block; padding-right: 35px; min-width: 50px; top:2px;" maxlength="3" name="ReplicationDelay-value2" id="ReplicationDelay-value2" data-keyfilter-rule="digits" />
+										<span style="position: absolute; top: 0; right: 0; display: block; width: 35px; height: 100%; text-align: center; line-height: 30px; top:2px;" >s(초)</span>	
+									</div>
+									<span>(Default:0 s)</span>											
 									<p class="warn-text" data-for="ReplicationDelay-value2"></p>									
 								</td>
 							</tr>
