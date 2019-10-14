@@ -47,8 +47,9 @@
 	           <h2 class="title">Redis</h2>
 			</div>			
 			<div class="grid-line__wrap">
-				<div id="gridRuleRedis"></div>
-			</div>			
+				<div id="gridRuleRedis" style="border-bottom: 1px solid #cccccc ;"></div>
+			</div>	
+			<div class="top-area"></div>		
 		</div>
 	</div>
 	
@@ -88,6 +89,7 @@
 						{ key : 'namespace', title : '네임스페이스', width : '100px', align : 'left'},
 						{ key : 'serviceName', title : '서비스이름', width : '150px', align : 'left'},
 						{ key : 'serviceType', title : '서비스타입', width : '100px',hidden:true, align : 'left'},
+						{ key : 'clusterEnabled', title : '이중화여부', width : '70px', align : 'center',render:useCol},						
 						{ key : 'PodHealthCheck', title : 'Pod', width : '70px', align : 'center', render:useCol},
 						{ key : 'ContainerHealthCheck', title : 'Container', width : '70px', align : 'center', render:useCol},
 						{ key : 'DBHealthCheck', title : 'DB', width : '70px', align : 'center', render:useCol},
@@ -124,12 +126,16 @@
 						{ key : 'namespace', title : '네임스페이스', width : '100px', align : 'left'},
 						{ key : 'serviceName', title : '서비스이름', width : '150px', align : 'left'},
 						{ key : 'serviceType', title : '서비스타입', width : '100px',hidden:true, align : 'left'},
+						{ key : 'clusterEnabled', title : '이중화여부', width : '70px', align : 'center',render:useCol},							
 						{ key : 'PodHealthCheck', title : 'Pod', width : '70px', align : 'center', render:useCol},
 						{ key : 'ContainerHealthCheck', title : 'Container', width : '70px', align : 'center', render:useCol},
 						{ key : 'DBHealthCheck', title : 'DB', width : '70px', align : 'center', render:useCol},
 						{ key : 'CPUUsage', title : 'CPU', width : '70px', align : 'center', render:useCol},
 						{ key : 'MemoryUsage', title : 'Memory', width : '70px', align : 'center', render:useCol},
 						{ key : 'Connections', title : 'Connections', width : '80px', align : 'center', render:useCol},
+						{ key : 'SlowQueries', title : 'SlowQuery', width : '70px', align : 'center',hidden:true, render:useCol},
+						{ key : 'ReplicationStatus', title : 'Status', width : '70px', align : 'center',hidden:true, render:useCol},
+						{ key : 'ReplicationDelay', title : 'Delay', width : '70px', align : 'center', hidden:true,render:useCol},
 						{ key : 'update', title : '', width : '50px', align : 'center',render:function(value,data){
 							return $('<button class="Button sm">설정</button>').on('click',function(){
 								gCommon.movePage('/zdb07/zdb0721',{namespace:data.namespace,serviceName:data.serviceName,serviceType:data.serviceType})
@@ -154,8 +160,6 @@
 					data:{namespace:namespace},
 					success:function(res){
 						
-						console.log(res.alertRules);
-						
 						let ruleList = 	res.alertRules ;
 						if(ruleList != null ){  // Null 일 경우 length 처리에 문제가 생김 수정 (2019-07-15)
 							for(let i = 0;i < ruleList.length;i++){
@@ -176,7 +180,8 @@
 							l.push(o);
 						}
 						gServiceList = l;
-						gridRule.alopexGrid('dataSet',gServiceList);
+						console.log(gServiceList);
+					//	gridRule.alopexGrid('dataSet',gServiceList);
 						filterServices();
 					}
 				});
@@ -188,7 +193,7 @@
 				let searchText = $('#txtRuleKeyword').val();
 				let mariaDbList = gServiceList;
 				let redisList = gServiceList;
-
+				
 				//	gServiceList 를 mariadb 와 redis 로 나누어 grid 출력하도록 변경 (2019-10-04)			
 				mariaDbList = gServiceList.filter(function(ob){
 					return (gSelectedNamespace == G_NAMESPACE_ALL || gSelectedNamespace == ob.namespace ) && ob.serviceType == 'mariadb';
