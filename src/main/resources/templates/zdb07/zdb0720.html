@@ -105,9 +105,15 @@
 							});
 						}},
 						{ key : 'def', title : '', width : '80px', align : 'center',render:function(value,data){
-							return $('<button class="Button sm">기본값설정</button>').on('click',function(){
-								updateDefaultAlertRule(data);
-							});
+							if(data.PodHealthCheck && data.ContainerHealthCheck && data.DBHealthCheck && data.CPUUsage && data.MemoryUsage && data.Connections && data.SlowQueries && data.ReplicationStatus && data.ReplicationDelay){
+								return $('<button class="Button sm">전체 해제</button>').on('click',function(){
+									updateAlertRule(data);
+								});
+							}else{
+								return $('<button class="Button sm">기본값설정</button>').on('click',function(){
+									updateDefaultAlertRule(data);
+								});
+							}
 						}}
 					],headerGroup: [
 						{fromIndex:'PodHealthCheck', toIndex:'ReplicationDelay', title:'규칙'},
@@ -142,9 +148,15 @@
 							});
 						}},
 						{ key : 'def', title : '', width : '80px', align : 'center',render:function(value,data){
-							return $('<button class="Button sm">기본값설정</button>').on('click',function(){
-								updateDefaultAlertRule(data);
-							});
+							if(data.PodHealthCheck && data.ContainerHealthCheck && data.DBHealthCheck && data.CPUUsage && data.MemoryUsage && data.Connections){
+								return $('<button class="Button sm">전체 해제</button>').on('click',function(){
+									updateAlertRule(data);
+								});
+							}else{
+								return $('<button class="Button sm">기본값설정</button>').on('click',function(){
+									updateDefaultAlertRule(data);
+								});
+							}
 						}}
 					],headerGroup: [
 						{fromIndex:'PodHealthCheck', toIndex:'Connections', title:'규칙'},
@@ -159,8 +171,9 @@
 					url:'/zdbapi/getAlertRules',
 					data:{namespace:namespace},
 					success:function(res){
-						
+						gRules = [];
 						let ruleList = 	res.alertRules ;
+									
 						if(ruleList != null ){  // Null 일 경우 length 처리에 문제가 생김 수정 (2019-07-15)
 							for(let i = 0;i < ruleList.length;i++){
 								let o = ruleList[i];
@@ -171,6 +184,7 @@
 								gRules[o.serviceName][n] = o.value;
 							}
 						}
+
 						let l = [];
 						for(let i = 0;i < gServiceList.length;i++){
 							let o = gServiceList[i];
@@ -179,9 +193,10 @@
 							}
 							l.push(o);
 						}
+
+						
 						gServiceList = l;
-						console.log(gServiceList);
-					//	gridRule.alopexGrid('dataSet',gServiceList);
+						//gridRule.alopexGrid('dataSet',gServiceList);
 						filterServices();
 					}
 				});
@@ -191,6 +206,7 @@
 			}
 			function filterServices(){
 				let searchText = $('#txtRuleKeyword').val();
+				
 				let mariaDbList = gServiceList;
 				let redisList = gServiceList;
 				
@@ -212,6 +228,7 @@
 						return ob.serviceName.toLowerCase().indexOf(searchText.toLowerCase()) > -1 ;
 					});					
 				}
+				
 				gridRule.alopexGrid('dataSet',mariaDbList);
 				gridRule.alopexGrid('dataSort', [
 					{"sortingColumn": 'namespace', "sortingDirection": "asc"},
@@ -229,6 +246,7 @@
 					url:'/zdbapi/getAllServices',
 					async:false,
 					success:function(res){
+						gServiceList=[];
 						gServiceList = res.serviceoverviews;
 						filterServices();
 					}
@@ -241,11 +259,28 @@
 						method:'put',
 						data:data,
 						success:function(res){
+							getAllServices();							
 							getAlertRules();
 						}
 					})
 				});
 			}
+			function updateAlertRule(data){
+				let alertRules = [];
+				data.alertRules = JSON.stringify(alertRules);
+				
+ 				gCommon.confirm('전체 해제 처리 하시겠습니까?',function(){
+					$a.ajax({
+						url:'/zdbapi/updateAlertRule',
+						method:'put',
+						data:data,
+						success:function(res){
+							getAllServices();
+							getAlertRules();
+						}
+					})
+				});
+			}			
 		};
 	});
 	</script>
