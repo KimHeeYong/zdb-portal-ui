@@ -89,7 +89,24 @@
 						{ key : 'namespace', title : '네임스페이스', width : '100px', align : 'left'},
 						{ key : 'serviceName', title : '서비스이름', width : '150px', align : 'left'},
 						{ key : 'serviceType', title : '서비스타입', width : '100px',hidden:true, align : 'left'},
-						{ key : 'clusterEnabled', title : '이중화여부', width : '70px', align : 'center',render:useCol},						
+						{ key : 'clusterEnabled', title : '이중화여부', width : '70px', align : 'center',render:useCol},	
+						{ key : 'def', title : '기본값 설정', width : '80px', align : 'center',render:function(value,data){
+							
+							let vDefaultYn = 'N' ;
+							
+							if(data.PodHealthCheck && data.ContainerHealthCheck && data.DBHealthCheck && data.CPUUsage && data.MemoryUsage && data.Connections && data.SlowQueries && data.ReplicationStatus && data.ReplicationDelay){
+								vDefaultYn = 'Y' ;
+							}
+							
+							let re = fn_getUseYnTemp(vDefaultYn).on('click','button.Button',function(e){
+								if(vDefaultYn == 'Y'){
+									updateAlertRule(data);
+								}else{
+									updateDefaultAlertRule(data);
+								}			
+							});
+							return re;
+						}},
 						{ key : 'PodHealthCheck', title : 'Pod', width : '70px', align : 'center', render:useCol},
 						{ key : 'ContainerHealthCheck', title : 'Container', width : '70px', align : 'center', render:useCol},
 						{ key : 'DBHealthCheck', title : 'DB', width : '70px', align : 'center', render:useCol},
@@ -103,17 +120,6 @@
 							return $('<button class="Button sm">설정</button>').on('click',function(){
 								gCommon.movePage('/zdb07/zdb0721',{namespace:data.namespace,serviceName:data.serviceName,serviceType:data.serviceType})
 							});
-						}},
-						{ key : 'def', title : '', width : '80px', align : 'center',render:function(value,data){
-							if(data.PodHealthCheck && data.ContainerHealthCheck && data.DBHealthCheck && data.CPUUsage && data.MemoryUsage && data.Connections && data.SlowQueries && data.ReplicationStatus && data.ReplicationDelay){
-								return $('<button class="Button sm">전체 해제</button>').on('click',function(){
-									updateAlertRule(data);
-								});
-							}else{
-								return $('<button class="Button sm">기본값설정</button>').on('click',function(){
-									updateDefaultAlertRule(data);
-								});
-							}
 						}}
 					],headerGroup: [
 						{fromIndex:'PodHealthCheck', toIndex:'ReplicationDelay', title:'규칙'},
@@ -132,7 +138,24 @@
 						{ key : 'namespace', title : '네임스페이스', width : '100px', align : 'left'},
 						{ key : 'serviceName', title : '서비스이름', width : '150px', align : 'left'},
 						{ key : 'serviceType', title : '서비스타입', width : '100px',hidden:true, align : 'left'},
-						{ key : 'clusterEnabled', title : '이중화여부', width : '70px', align : 'center',render:useCol},							
+						{ key : 'clusterEnabled', title : '이중화여부', width : '70px', align : 'center',render:useCol},
+						{ key : 'def', title : '기본값 설정', width : '80px', align : 'center',render:function(value,data){
+							
+							let vDefaultYn = 'N' ;
+							
+							if(data.PodHealthCheck && data.ContainerHealthCheck && data.DBHealthCheck && data.CPUUsage && data.MemoryUsage && data.Connections){
+								vDefaultYn = 'Y' ;
+							}
+							
+							let re = fn_getUseYnTemp(vDefaultYn).on('click','button.Button',function(e){
+								if(vDefaultYn == 'Y'){
+									updateAlertRule(data);
+								}else{
+									updateDefaultAlertRule(data);
+								}			
+							});
+							return re;
+						}},						
 						{ key : 'PodHealthCheck', title : 'Pod', width : '70px', align : 'center', render:useCol},
 						{ key : 'ContainerHealthCheck', title : 'Container', width : '70px', align : 'center', render:useCol},
 						{ key : 'DBHealthCheck', title : 'DB', width : '70px', align : 'center', render:useCol},
@@ -146,17 +169,6 @@
 							return $('<button class="Button sm">설정</button>').on('click',function(){
 								gCommon.movePage('/zdb07/zdb0721',{namespace:data.namespace,serviceName:data.serviceName,serviceType:data.serviceType})
 							});
-						}},
-						{ key : 'def', title : '', width : '80px', align : 'center',render:function(value,data){
-							if(data.PodHealthCheck && data.ContainerHealthCheck && data.DBHealthCheck && data.CPUUsage && data.MemoryUsage && data.Connections){
-								return $('<button class="Button sm">전체 해제</button>').on('click',function(){
-									updateAlertRule(data);
-								});
-							}else{
-								return $('<button class="Button sm">기본값설정</button>').on('click',function(){
-									updateDefaultAlertRule(data);
-								});
-							}
 						}}
 					],headerGroup: [
 						{fromIndex:'PodHealthCheck', toIndex:'Connections', title:'규칙'},
@@ -193,14 +205,18 @@
 							}
 							l.push(o);
 						}
-
 						
 						gServiceList = l;
-						//gridRule.alopexGrid('dataSet',gServiceList);
 						filterServices();
 					}
 				});
 			}
+			
+			function fn_getUseYnTemp(value){
+				let v = value == 'Y'? 'on':'off';
+				return $('<div class="onoff-wrap" style="margin:auto"><button class="Button btn-'+v+'" data-value="'+value+'">'+v.toUpperCase()+'</button></div>');
+			}
+			
 			function goRuleDetailPage(data){
 				gCommon.movePage('/zdb07/zdb0721',{namespace:data.namespace,alert:data.alert});
 			}
@@ -253,7 +269,8 @@
 				});
 			}
 			function updateDefaultAlertRule(data){
-				gCommon.confirm('기본 알람 규칙으로 설정 하시겠습니까?',function(){
+				gCommon.confirm('기본 알람 규칙으로 설정 하시겠습니까?</br> (임계치의 수정은 설정에서 가능합니다.)',function(){
+					//(임계치의 수정은 설정에서 가능합니다.)
 					$a.ajax({
 						url:'/zdbapi/updateDefaultAlertRule',
 						method:'put',
