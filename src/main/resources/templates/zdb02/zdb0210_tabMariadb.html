@@ -762,7 +762,7 @@ let appMariadb = {
 			autoColumnIndex : true,
 			columnMapping : [
 				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key : 'value', title : '값', width : '200px', align : 'left',excludeFitWidth:true },
+				{ key : 'value', title : '값', width : '500px', align : 'left',excludeFitWidth:true },
 				{ key:''}
 			]
 		});				
@@ -978,7 +978,7 @@ let appMariadb = {
 						d = dbv[data.category][String(data.name).replaceAll('_','-')]||{};
 					}
 					
-					if(d.name == "innodb_undo_tablespaces")return;
+					if(d.name == "innodb_undo_tablespaces")	return; // 최초 설치 후 변경할 수 없는 환경 변수  (변경하게되면 Mariadb 시작 실패) : 확인 (2019-10-15)
 					
 					if(d && d.editable == true){
 						let enumValueList = d.enumValueList|| ''; 

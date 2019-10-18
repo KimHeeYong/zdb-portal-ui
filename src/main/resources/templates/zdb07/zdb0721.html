@@ -367,8 +367,9 @@
 		    			alertRules.push(d);
 		    		});
 		    		data.alertRules = JSON.stringify(alertRules);
+
 		    		
-					gCommon.confirm('저장 하시겠습니까?',function(){
+ 					gCommon.confirm('저장 하시겠습니까?',function(){
 						$a.ajax({
 			    			url : '/zdbapi/updateAlertRule',
 			    			method : 'put',
@@ -380,7 +381,7 @@
 		    					}
 		    				}
 			    		});				
-					});
+					}); 
 				}
 
 				function fn_setEnabled(){
