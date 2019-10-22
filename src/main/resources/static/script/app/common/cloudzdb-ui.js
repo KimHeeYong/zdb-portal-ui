@@ -385,13 +385,27 @@ var gCommon = $a.page(function(){
 		gPopData.message = message;
 		gPopData.okBtnMsg = opt.okBtnMsg; 
 		gPopData.noBtnMsg = opt.noBtnMsg; 
+
+		let vWidth = 500 ;
+		let vHeight = 300 ;
+		
+		if(opt.vWidth != null && opt.vWidth != '' ){
+			vWidth =  opt.vWidth ;
+		}
+		
+		if(opt.vHeight != null && opt.vHeight != '' ){
+			vHeight =  opt.vHeight ;
+		}
+		
+		
 	    $a.popup({
 	        url: "/zdbcom/confirm",
 	        iframe: false,
-	        width: 500,
-	        height: 300,
+	        width: vWidth,
+	        height: vHeight,
 	        title : '',
 	        callback : function(res){
+	        	alert(res);
 	        	callback(res);
 	        	isConfirmPopExists = false;
 	        }

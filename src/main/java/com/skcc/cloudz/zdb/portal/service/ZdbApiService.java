@@ -1029,6 +1029,15 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 	
+	public ZdbRestDTO setPurgeBinlog(Map<String, String> param) {
+		ZdbRestDTO zdbRestDTO = null;
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+
+		zdbRestDTO = connector.exchange(demonServer + URIConstants.URI_GET_PURGE_BINLOG, HttpMethod.GET,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}
+	
+	
 	public String getAccessToken(Map<String, String> param) {
 
 		String result = "";

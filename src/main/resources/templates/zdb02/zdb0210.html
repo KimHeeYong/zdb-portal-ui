@@ -548,6 +548,10 @@
 			</div>          	
           	<div class="mt10" style="height:40px;">
 				<div class="info-list__select fr">
+					<div class="fl hide" id="divClusterEnabled" style="margin-right:4px;" th:if="${session.userInfo.clusterRole=='cluster-admin'}">	
+						<button class="Button btn ml1"id="purgeBinlog">Binlog 정리</button>
+					</div>
+					
 					<div class="fl" id="divAddBackup" style="margin-right:4px;">	
 						<button class="Button btn hide" id="addBackupDisk">백업디스크 추가</button>
 						<button class="Button btn hide" id="removeBackupDisk">백업디스크 제거</button>
@@ -967,11 +971,15 @@
 	var gTagList = [];
 	var gServiceScale = {};//scaleUp value
 	var gConfigData = null;
+	var gFirstTime = '';
 	var gEventType = { "SERVICE":"Service Life Cycle","PVC":"Storage","CHANGEOVER":"Service Availability","PROCESS":"DBA Action(Process)"
 				,"DATABASE":"DBA Action(Database)","NETWORK":"DB Network Access","AUTOFAILOVER":"DB Failover Config","BACKUPDISK":"Backup Storage"
 				,"BACKUP":"Backup","BACKUPSCHEDULE":"Backup Management","RESTORE":"Recovery","USER":"DBA Action(User)","TAG":"Tag","SCALE":"Scaling"
 				,"WORKERPOOL":"Cluster Admin(Worker Pool)","LOG":"DB Log","GLOBALCONFIG":"Global Config","CONFIG":"DBA Action(config)"
 				,"CREADENTIAL":"Service Management"};
+	var gBackupChkBoxArr = ["ACCEPTED","DATA_BACKUP_DOING","DATA_BACKUP_COMPLETE","DATA_BACKUP_FAILED","DATA_ARCHIVE_DOING","DATA_ARCHIVE_COMPLETE","DATA_ARCHIVE_FAILED","DATA_UPLOAD_DOING","DATA_UPLOAD_COMPLETE","DATA_UPLOAD_FAILED","ABORTED","FAILED"]; 
+	var gBackupLogArr = ["ACCEPTED","DATA_BACKUP_DOING","DATA_BACKUP_FAILED","ABORTED","FAILED"]; 
+	
 	$a.page(function() {
 		this.init = function() {
 			$('[data-show-service-type*='+gParam.serviceType+']').show();
@@ -2047,6 +2055,10 @@
 						$("#gridBackup").alopexGrid('hideCol', 'ondisk');
 					}
 				}
+				// Cluster Enabled 값에 따라 버튼 노출 여부 결정 로직 추가 - Binlog 정리 , 복원하기 버튼 (2019-10-18)
+				if(gService.clusterEnabled){
+					$('#divClusterEnabled').show();
+				}
 			}
 			//서비스 display
 			function fn_displayService(){
@@ -2497,6 +2509,25 @@
 			        }
 			    });
 			});		
+			// Binlog 정리 버튼 추가 2019-10-18
+			$('button#purgeBinlog').on('click',function(){
+				let popMsg = ' Binlog 정리를 통해서 서버의 디스크 용량을 줄일 수 있습니다. </br>';
+				popMsg += ' 정리된 Binlog는 Object Storage에 압축하여 저장됩니다. </br>';
+				popMsg += ' 현재 사용하는 Binlog는 정리대상에 포함되지 않습니다.</br>';
+				gCommon.confirmYn(popMsg,function(yn){
+					if(yn == "Y"){
+						// Binlog 정리 버튼 API 호출 로직 추가 2019-10-21
+					 	$a.ajax({
+							url: '/zdbapi/setPurgeBinlog',
+							method:'PUT',
+							data:gParam,
+							success: function(res){
+								gCommon.alert(res.result.message);
+							}
+						}); 		
+					}			
+				},{okBtnMsg:'Binlog 정리' , vWidth : 600 , vHeight:350 });
+			});
 			$('button#addBackupDisk').on('click',function(){
 				/*backupdisk-test*/
 				let vPodName = gService.podName ;  
@@ -2519,7 +2550,7 @@
 				        	}
 				        }
 				    });
-			})			
+			});	
 			$('button#removeBackupDisk').on('click',function(){
 				
 				gCommon.credentialConfirm({
@@ -2550,6 +2581,18 @@
 				enableContextMenu:true,
 				autoColumnIndex: true,
 				autoResize:true,
+				rowOption:{
+					allowSelect: function(data){
+						let re = true;
+						for(let v in gBackupChkBoxArr){
+							let arrVal = gBackupChkBoxArr[v];
+							if(data.status == arrVal ){
+								re =  false;
+							}							
+						}
+						return re ; 		
+					}
+				},				
 				contextMenu : [
 					{   title: '결과',
 						processor:function(data,$cell,grid){
@@ -2576,7 +2619,6 @@
 					},
 					{   title: '로그',
 						processor:function(data,$cell,grid){
-							
 							//console.log('로그');	
 							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
 						},
@@ -2663,7 +2705,14 @@
 						return re;
 					},tooltip:null},
 					{ title:'Log', key : 'log' , width: '60px',width:'70px',excludeFitWidth:true, align: 'center',tooltip:false ,render:function(value,data,render,mapping){
-						return getGridContextButton();
+						let re = getGridContextButton();
+						for(let v in gBackupLogArr){
+							let arrVal = gBackupLogArr[v];
+							if(data.status == arrVal ){
+								re = '' ;
+							}							
+						}
+						return re ;
 					}}
 				],
 				footer: {
@@ -2827,6 +2876,11 @@
 					data:gParam,
 					success: function(res){
 						var list = res.backupList;
+						gFirstTime = '';
+						for(let l in list){
+							let data = list[l] ;
+							if(data.status == "OK") gFirstTime = data.completeDatetime ;
+						}
 						
 						if(gParam.serviceType != cServiceType.redis){
 							$("#gridBackup").alopexGrid('showCol', 4);
