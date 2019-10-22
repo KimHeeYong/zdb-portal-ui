@@ -55,7 +55,7 @@
 		<div class="Panel service-panel">
 			<div class="Panel-content">
 				<div style="float: left;word-break:break-all;font-size: 14px;" id="divInfoMsg"></div>
-				<div class="config-wrap" th:if="${session.userInfo.zdbAdmin}" >
+				<div class="config-wrap" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >
 					<button class="btn-ico btn-refresh" id="restartService" title="재시작">재시작 </button>
 					<button class="Button btn-ico__typeb btn-trash" id="deleteService" title="삭제">삭제</button>
 				</div>
@@ -121,9 +121,9 @@
 									<td>
 										<input id="credential" name="credential" class="Textinput" type="password" autocomplete="off"/>
 										<span class="input-pw"></span>
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="togglePwd">보기</button>
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="credentialCopy">복사</button>
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="credentialUpdate">변경</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="togglePwd">보기</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialCopy">복사</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialUpdate">변경</button>
 										<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
 									</td>	
 								</tr>
@@ -132,7 +132,7 @@
 									<td data="port" th:if="${#request.getParameter('serviceType')} == 'redis'"> </td>
 									<td th:if="${#request.getParameter('serviceType')} != 'redis'">
 										<input type="text" class="Textinput" name="port" id="port">
-										<button class="Button line-btn" th:if="${session.userInfo.zdbAdmin}" id="portUpdate">변경</button>
+										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="portUpdate">변경</button>
 										<p data-for="port" class="warn-text"></p>
 									</td>
 								</tr>
@@ -194,13 +194,13 @@
 										</div>
         						   		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="publicmasterConnectionString" readonly="readonly"></input>     
-						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                          
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button> 
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">                                                                   
 						               		<input type="text" class="Textinput" name="publicmasterConnectionLine" readonly="readonly"></input>     
 						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                         
 						               	</div>	
-						               	<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.zdbAdmin}"  title="Public Network 삭제">삭제</button>
+						               	<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"  title="Public Network 삭제">삭제</button>
 					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
 					               	</td>                                                                                         
 				                </tr>
@@ -223,7 +223,7 @@
 					               	</td>                  
 				                </tr>
 			                </tbody>
-			                <tbody class="publicConnectionInfoNone publicNetworkTbody hide" th:if="${session.userInfo.zdbAdmin}" >
+			                <tbody class="publicConnectionInfoNone publicNetworkTbody hide" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >
 								<tr>                                                                                                 
 					               	<th>Public Network</th>                                                                       
 					               	<td>       
@@ -267,7 +267,7 @@
 											<b>※ 실행조건 : 5초 주기 5회 실패시</b><br>
 	                                        <b>※ 최초 설정 변경시 서비스가 재시작 됩니다.</b>
 										</div>                                       
-									</td> 									
+									</td> 								
 								</tr>
 							</tbody>
 						</table>										
@@ -897,7 +897,7 @@
 							</div>
 						</div>
 			            <div class="btn-wrap__right">
-				        	<button class="Button btn bg-red" id="saveVariables">적용하기</button>
+				        	<button class="Button btn bg-red" id="saveVariables" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >적용하기</button>
 				        </div>
 					</div>
 				</li>
@@ -913,7 +913,7 @@
 							<tbody> </tbody>
 						</table>
 			            <div class="btn-wrap__right">
-				        	<button class="Button btn bg-red" id="saveVariables">적용하기</button>
+				        	<button class="Button btn bg-red" id="saveVariables" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >적용하기</button>
 				        </div>						
 					</div>
 				</li>
@@ -2009,7 +2009,16 @@
 				if($('#zdbServiceTabs').getCurrentTabContent()!= '#tabScale'){
 					fn_setSlider('memory',gServiceScale.memoryVal);
 					$('#tabScale').find('input[name="scaleCpu"]').val(gServiceScale.cpuVal);
-					$('#tabScale').find('input[name="scaleMemory"]').val(gServiceScale.memoryVal);
+					
+					/* api 통해 오는 데이터 중 기가단위로 변경되어 오는 데이터가 있음
+					   128 이하의 데이터 일 경우1024를 곱하는 로직 추가 (2019-09-23)*/
+					var vScaleMemory =  cloudUtil.parseInt(gServiceScale.memoryVal);
+					if(vScaleMemory < 129){
+						vScaleMemory = vScaleMemory * 1024;
+					}
+					$('#tabScale').find('input[name="scaleMemory"]').val(vScaleMemory);
+					
+					
 					$('#clusterSlaveCount').val(gService.clusterSlaveCount);
 					//todo temp
 					var isCustom = gSliderConstants[gParam.serviceType].cpu.value.indexOf(gServiceScale.cpuVal) < 0
@@ -2117,9 +2126,24 @@
 			
 				let param = $.extend({},gParam,{enable:isEnable == 'Y'});
 				let msg = "Auto Failover 기능을 적용합니다.<br>처음적용시 서비스가 재시작 됩니다." ;
-				gCommon.confirm(msg,function(yn){
+				let aStatefulSets = gService.statefulSets ;
+				let btnMsg = "적용";  // 버튼 텍스트 변수 추가 (2019-10-08)
+				for(let a in aStatefulSets){
+					let aStatefulSet = aStatefulSets[a] ; 
+					let aLabels = aStatefulSet.metadata.labels ;
+					if(aLabels.component == "master"){
+						if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "true"  ){
+							msg = "Auto Failover 기능을 해제합니다." ;
+							btnMsg = "해제";
+						}else if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "false"  ){	
+							msg = "Auto Failover 기능을 적용합니다." ;
+						} 
+					}
+				}
+			
+ 				gCommon.confirm(msg,function(yn){
 					gCommon.credentialConfirm({
-				        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:'변경'},
+				        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:btnMsg},
 				        callback : function(res){
 							$a.ajax({
 								url: '/zdbapi/updateAutoFailoverEnable',
@@ -2314,7 +2338,7 @@
 			$('form[name=scaleForm]').validator({
 			    elements :{ 
 			        'scaleCpu': {rule:{required:true,min:100,max:20000}},
-			        'scaleMemory': {rule:{required:true,min:128,max:32000}}
+			        'scaleMemory': {rule:{required:true,min:129,max:32000}}
 			    }
 			});	
 			//스케일 리소스선택or사용자입력

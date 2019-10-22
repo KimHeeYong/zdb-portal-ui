@@ -30,7 +30,7 @@
 			<!-- add rule table-->
 			<form name="ruleForm" onsubmit="return false;">
 				<fieldset>
-					<table class="Table Form-type topline">
+					<table class="Table Form-type topline" style="border-collapse: unset;" >
 						<colgroup>
 							<col style="width: 100px;" />
 							<col style="width: 150px;" />
@@ -47,7 +47,12 @@
 							</tr>
 							<tr>
 								<th rowspan="3">Health</th>
-								<th>Pod</th>
+								<th>
+									Pod<span class="ico_title" id="podTooltip"></span></strong>
+									<div class="Tooltip" data-base="#podTooltip" data-position="right" data-animation="fade">
+										Pod의 동작 상태를 확인하여 동작하지 않을 시 알람이 발생합니다.												
+									</div>
+								</th>
 								<td>
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="PodHealthCheck-useYn" value="Y"/>사용 </label> 
 									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="PodHealthCheck-useYn" value="N" checked="checked"/>미사용 </label> 
@@ -59,7 +64,11 @@
 								</td>
 							</tr>
 							<tr>
-								<th>Container</th>
+								<th>Container<span class="ico_title" id="containerTooltip"></span></strong>
+									<div class="Tooltip" data-base="#containerTooltip" data-position="right" data-animation="fade">
+										Container의 동작 상태를 점검하여 Container 중단시 알람이 발생합니다.						
+									</div>
+								</th>
 								<td>
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="ContainerHealthCheck-useYn" value="Y"/>사용 </label> 
 									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ContainerHealthCheck-useYn" value="N" checked="checked"/>미사용 </label> 
@@ -71,7 +80,11 @@
 								</td>
 							</tr>
 							<tr>
-								<th>Db</th>
+								<th>DB<span class="ico_title" id="dbTooltip"></span></strong>									
+									<div class="Tooltip" data-base="#dbTooltip" data-position="right" data-animation="fade">
+										DB의 동작 상태를 확인하여 DB 중단시 알람이 발생합니다.						
+									</div>
+								</th>
 								<td>
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="DBHealthCheck-useYn" value="Y"/>사용 </label> 
 									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="DBHealthCheck-useYn" value="N" checked="checked" />미사용 </label> 
@@ -84,7 +97,10 @@
 							</tr>
 							<tr>
 								<th rowspan="4">사용량</th>
-								<th>CPU</th>
+								<th>CPU<span class="ico_title" id="cpuTooltip"></span></strong>
+									<div class="Tooltip" data-base="#cpuTooltip" data-position="right" data-animation="fade">
+										CPU 사용률(현재 CPU 사용량 / 전체 CPU 용량)이 설정한 임계치를 초과하면 알람이 발생합니다.						
+									</div></th>
 								<td>
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="CPUUsage-useYn" value="Y"/>사용 </label> 
 									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="CPUUsage-useYn" value="N" checked="checked" />미사용 </label> 
@@ -98,14 +114,22 @@
 									<div class="Divselect" data-disabled="true">
 										<select name="CPUUsage-condition" id="CPUUsage-condition">
 											<option value="&gt;">&gt;</option>
-										</select> <span></span>
+										</select><span></span>
 									</div>
-									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="CPUUsage-value2" id="CPUUsage-value2" />
+									<div style="position: relative; display: inline-block;">
+										<input class="Textinput" type="text" style="width: 120px; display: block; padding-right: 30px; min-width: 50px; top:2px;" maxlength="3" name="CPUUsage-value2" id="CPUUsage-value2" data-keyfilter-rule="digits"/>
+										<span style="position: absolute; top: 0; right: 0; display: block; width: 30px; height: 100%; text-align: center; line-height: 30px; top:2px;" >%</span>	
+									</div>
+									<span>(Default:80%)</span>									
 									<p class="warn-text" data-for="CPUUsage-value2"></p>									
 								</td>
 							</tr>
 							<tr>
-								<th>Memory</th>
+								<th>Memory<span class="ico_title" id="memoryTooltip"></span></strong>
+									<div class="Tooltip" data-base="#memoryTooltip" data-position="right" data-animation="fade">
+										Memory 사용률(현재 Memory 사용량 / 전체 Memory 용량)이 설정한 임계치를 초과하면 알람이 발생합니다.						
+									</div>
+								</th>
 								<td>
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="MemoryUsage-useYn" value="Y"/>사용 </label> 
 									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="MemoryUsage-useYn" value="N" checked="checked"/>미사용 </label> 
@@ -121,12 +145,20 @@
 											<option value="&gt;">&gt;</option>
 										</select> <span></span>
 									</div>
-									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="MemoryUsage-value2" id="MemoryUsage-value2" />
-									<p class="warn-text" data-for="MemoryUsage-value2"></p>									
+									<div style="position: relative; display: inline-block;">
+										<input class="Textinput" type="text" style="width: 120px; display: block; padding-right: 30px; min-width: 50px; top:2px;" maxlength="3" name="MemoryUsage-value2" id="MemoryUsage-value2" data-keyfilter-rule="digits" />
+										<span style="position: absolute; top: 0; right: 0; display: block; width: 30px; height: 100%; text-align: center; line-height: 30px; top:2px; " >%</span>	
+									</div>
+									<span>(Default:95%)</span>									
+									<p class="warn-text" data-for="MemoryUsage-value2"></p>											
 								</td>
 							</tr>
 							<tr>
-								<th>Connections</th>
+								<th>Connections<span class="ico_title" id="connectionTooltip"></span></strong>
+									<div class="Tooltip" data-base="#connectionTooltip" data-position="right" data-animation="fade">
+										Connection 사용률(현재 Connection 수 / 전체 Connection 수)이 설정한 임계치를 초과하면 알람이 발생합니다.
+									</div>
+								</th>
 								<td>
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="Connections-useYn" value="Y"/>사용 </label> 
 									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="Connections-useYn" value="N" checked="checked"/>미사용 </label> 
@@ -142,12 +174,22 @@
 											<option value="&gt;">&gt;</option>
 										</select> <span></span>
 									</div>
-									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="Connections-value2" id="Connections-value2" />
+									<div style="position: relative; display: inline-block;">
+										<input class="Textinput" type="text" style="width: 120px; display: block; padding-right: 30px; min-width: 50px; top:2px;" maxlength="3" name="Connections-value2" id="Connections-value2" data-keyfilter-rule="digits"/>
+										<span style="position: absolute; top: 0; right: 0; display: block; width: 30px; height: 100%; text-align: center; line-height: 30px; top:2px;" >%</span>	
+									</div>
+									<span>(Default:80%)</span>										
 									<p class="warn-text" data-for="Connections-value2"></p>									
 								</td>
 							</tr>
-							<tr>
-								<th>SlowQuery</th>
+							<tr th:if="${#request.getParameter('serviceType')} == 'mariadb'" >
+								<th>SlowQuery<span class="ico_title" id="slowQueryTooltip"></span></strong>
+									<div class="Tooltip" data-base="#slowQueryTooltip" data-position="right" data-animation="fade">
+										기준시간(2분) 동안 발생한 Slow Query의 수가 설정한 임계치를 초과하면 알람이 발생합니다.
+										<br>임계치 설정은 임의의 Slow Query의 수 / 100 으로 입력하여야 합니다.
+										<br>예) "10회" → 10 / 100 = 0.1 입력			
+									</div>
+								</th>
 								<td>
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="SlowQueries-useYn" value="Y"/>사용 </label> 
 									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="SlowQueries-useYn" value="N" checked="checked"/>미사용 </label> 
@@ -163,13 +205,18 @@
 											<option value="&gt;">&gt;</option>
 										</select> <span></span>
 									</div>
-									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="SlowQueries-value2" id="SlowQueries-value2" />
+									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="SlowQueries-value2" id="SlowQueries-value2" data-keyfilter-rule="decimal" />									
+									<span>(Default:0.1)</span>		
 									<p class="warn-text" data-for="SlowQueries-value2"></p>									
 								</td>
 							</tr>
-							<tr>
+							<tr th:if="${#request.getParameter('serviceType')} == 'mariadb'" >
 								<th rowspan="2">Replication</th>
-								<th>Status</th>
+								<th>Status<span class="ico_title" id="statusTooltip"></span></strong>
+									<div class="Tooltip" data-base="#statusTooltip" data-position="right" data-animation="fade">
+										이중화된 경우 Slave의 Master 복제 상태를 확인하여 정상적으로 수행되지 않을 시 알람이 발생합니다.						
+									</div>
+								</th>
 								<td>
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationStatus-useYn" value="Y"/>사용 </label> 
 									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationStatus-useYn" value="N" checked="checked"/>미사용 </label> 
@@ -180,8 +227,12 @@
 									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationStatus-priority" value="P1" />Critical </label>
 								</td>
 							</tr>
-							<tr>
-								<th>Delay</th>
+							<tr th:if="${#request.getParameter('serviceType')} == 'mariadb'">
+								<th>Delay<span class="ico_title" id="delayTooltip"></span></strong>
+									<div class="Tooltip" data-base="#delayTooltip" data-position="right" data-animation="fade">
+										이중화된 경우 Slave의 Master 복제 중 지연 발생 시 알람이 발생합니다.						
+									</div>
+								</th>
 								<td>
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationDelay-useYn" value="Y"/>사용 </label> 
 									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationDelay-useYn" value="N" checked="checked"/>미사용 </label> 
@@ -197,10 +248,15 @@
 											<option value="&gt;">&gt;</option>
 										</select> <span></span>
 									</div>
-									<input class="Textinput" type="text" style="width: 120px; min-width: 50px;" maxlength="3" name="ReplicationDelay-value2" id="ReplicationDelay-value2" />
+									<div style="position: relative; display: inline-block;">
+										<input class="Textinput" type="text" style="width: 120px; display: block; padding-right: 35px; min-width: 50px; top:2px;" maxlength="3" name="ReplicationDelay-value2" id="ReplicationDelay-value2" data-keyfilter-rule="digits" />
+										<span style="position: absolute; top: 0; right: 0; display: block; width: 35px; height: 100%; text-align: center; line-height: 30px; top:2px;" >s(초)</span>	
+									</div>
+									<span>(Default:0 s)</span>											
 									<p class="warn-text" data-for="ReplicationDelay-value2"></p>									
 								</td>
-							</tr>							
+							</tr>
+							<tr></tr>							
 						</tbody>
 					</table>
 				</fieldset>
@@ -223,6 +279,8 @@
 		$a.page(function() {
 			this.init = function() {
 				let isUpdate = !cloudUtil.isEmpty(gParam.alert);
+				
+				console.log(gParam.alert);
 				
 				Validator.addMethod('ifRequire', function(element, value, ob) {
 					let b = true;
@@ -309,8 +367,9 @@
 		    			alertRules.push(d);
 		    		});
 		    		data.alertRules = JSON.stringify(alertRules);
+
 		    		
-					gCommon.confirm('저장 하시겠습니까?',function(){
+ 					gCommon.confirm('저장 하시겠습니까?',function(){
 						$a.ajax({
 			    			url : '/zdbapi/updateAlertRule',
 			    			method : 'put',
@@ -322,7 +381,7 @@
 		    					}
 		    				}
 			    		});				
-					});
+					}); 
 				}
 
 				function fn_setEnabled(){

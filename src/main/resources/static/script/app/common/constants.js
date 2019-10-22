@@ -43,7 +43,7 @@ const gSliderConstants = {
 		},
 		disk : {
 			range : _gSliderConstantsCommonRange,
-			value : [0,20,40,80,100,250,500,1000],
+			value : [0,1,20,40,80,100,250,500,1000],
 			unit : 'Gi',
 			getValue : _gSliderConstantsCommonGetValue,
 			getIndex : _gSliderConstantsCommonGetIndex
@@ -66,7 +66,7 @@ const gSliderConstants = {
 		},
 		disk : {
 			range : _gSliderConstantsCommonRange,
-			value : [0,20,40,80,100,250,500,1000],
+			value : [0,1,20,40,80,100,250,500,1000],
 			unit : 'Gi',
 			getValue : _gSliderConstantsCommonGetValue,
 			getIndex : _gSliderConstantsCommonGetIndex

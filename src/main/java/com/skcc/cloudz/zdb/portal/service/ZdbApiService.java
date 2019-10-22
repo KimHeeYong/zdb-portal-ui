@@ -62,7 +62,7 @@ import io.fabric8.kubernetes.client.dsl.PodResource;
 @Component
 public class ZdbApiService{
 
-	@Value("${zdb-api-server.url}") String apiServer;
+	static final String apiServer = "http://zdb-portal-server-loadbalancer.zdb-system:8080";
 	@Value("${zdb-demon-server.url}") String demonServer;
 	@Value("${props.iam.baseUrl}") String iamBaseUrl;
     @Autowired SecurityService securityService;
@@ -72,6 +72,7 @@ public class ZdbApiService{
     
 	public List<Namespace> getNamespaces(Map<String,String> param) {
 		List<Namespace> list = Collections.emptyList();
+		System.out.println(">>>>>>"+apiServer + URIConstants.URI_GET_NAMESPACES);
 		ZdbRestDTO zdbRestDTO = connector.exchange(apiServer + URIConstants.URI_GET_NAMESPACES, HttpMethod.GET, null,  ZdbRestDTO.class).getBody();
 		
 		if(zdbRestDTO != null && zdbRestDTO.getResult() != null) {

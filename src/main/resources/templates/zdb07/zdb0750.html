@@ -166,11 +166,27 @@
 					let deferred = $.Deferred();
 					let re = {};					
 					
+					/* 메세지 처리 상태 세분화 (2019-10-07) */
 					let msg = "Auto Failover 기능을 적용합니다.<br>처음적용시 서비스가 재시작 됩니다." ;  // confirm massage 처리 순서 바꿈(2019-07-25)
-					gCommon.confirm(msg,function(yn){
-						/* parameter : namespace , serviceType , serviceName , credetial(popup에서 입력받음)  */
+					let aStatefulSets = data.statefulSets ;
+					let btnMsg = "적용" ; //버튼 텍스트 변수 추가 (2019-10-08)
+					for(let a in aStatefulSets){
+						let aStatefulSet = aStatefulSets[a] ; 
+						let aLabels = aStatefulSet.metadata.labels ;
+						if(aLabels.component == "master"){
+							if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "true"  ){
+								msg = "Auto Failover 기능을 해제합니다." ;
+								btnMsg = "해제";
+							}else if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "false"  ){	
+								msg = "Auto Failover 기능을 적용합니다." ;
+							} 
+						}
+					}
+					
+					/* parameter : namespace , serviceType , serviceName , credetial(popup에서 입력받음)  */
+ 					gCommon.confirm(msg,function(yn){
 						gCommon.credentialApiConfirm({
-					        data:{namespace:data.namespace ,serviceType:data.serviceType ,serviceName:data.serviceName, msg:'설정을 변경하시려면', okBtnMsg:'변경'},
+					        data:{namespace:data.namespace ,serviceType:data.serviceType ,serviceName:data.serviceName, msg:'설정을 변경하시려면', okBtnMsg:btnMsg},
 					        callback : function(res){
 					        	if(res == null){
 					        		re = res || {};
@@ -184,7 +200,8 @@
 					        }
 					    }); 
 					}); 
-					return deferred.promise();
+					
+					return deferred.promise(); 
 				}
 				
 				function fn_getFailoverInfoList(){
@@ -194,14 +211,14 @@
 						url: '/zdbapi/getFailoverList',
 						data:{namespace:gSelectedNamespace},
 						success: function(res){
-
 							// 조회 후 list 객체 생성
 							let list = res.serviceoverviews;
-							
+						
 							//grid 에 데이터셋 생성
 							gridFailover.alopexGrid('dataSet',list);
 							
 							let chkRun = false ;
+							
 							for(let l in list){
 								let failoverEnabled = list[l].failoverEnabled ;
 								if(failoverEnabled == "running")  chkRun = true;
