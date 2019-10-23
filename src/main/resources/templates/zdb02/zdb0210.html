@@ -479,7 +479,6 @@
 					    <a class="Up"></a>
 					    <a class="Down"></a>
 					</div>
-					
 				</div>
 				<div class="mr30 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
@@ -548,7 +547,8 @@
 			</div>          	
           	<div class="mt10" style="height:40px;">
 				<div class="info-list__select fr">
-					<div class="fl hide" id="divClusterEnabled" style="margin-right:4px;" th:if="${session.userInfo.clusterRole=='cluster-admin'}">	
+					<div class="fl hide" id="divClusterEnabled" style="margin-right:4px;" th:if="${session.userInfo.clusterRole=='cluster-admin'}">
+						<button class="Button btn ml1 fl"id="restoreToPoint" style="margin-right:4px;">복원하기</button>					
 						<button class="Button btn ml1"id="purgeBinlog">Binlog 정리</button>
 					</div>
 					
@@ -2509,6 +2509,22 @@
 			        }
 			    });
 			});		
+			//restoreToPoint (복원하기 버튼 추가 2019-10-22)
+			$('button#restoreToPoint').on('click',function(){
+				$a.popup({
+			        data:$.extend({},gParam,{credential:$("#credential").val(),gFirstTime:gFirstTime}),
+			        url: '/zdb02/zdb0200p11',
+			        iframe: false,
+			        width: 600,
+			        height: 320,
+			        title : '',
+			        callback : function(res){
+			        	if(res.result.code=='0'){
+			        		fn_getServiceFirst(); 	        		
+			        	}
+			        }
+			    });
+			});
 			// Binlog 정리 버튼 추가 2019-10-18
 			$('button#purgeBinlog').on('click',function(){
 				let popMsg = ' Binlog 정리를 통해서 서버의 디스크 용량을 줄일 수 있습니다. </br>';

@@ -1037,6 +1037,13 @@ public class ZdbApiService{
 		return zdbRestDTO;
 	}
 	
+	public ZdbRestDTO restoreToPoint(Map<String, String> param) {
+		ZdbRestDTO zdbRestDTO = null;
+		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
+
+		zdbRestDTO = connector.exchange(demonServer + URIConstants.URI_GET_RESTORE_TO_POINT, HttpMethod.GET,entity,ZdbRestDTO.class,param).getBody();
+		return zdbRestDTO;
+	}	
 	
 	public String getAccessToken(Map<String, String> param) {
 

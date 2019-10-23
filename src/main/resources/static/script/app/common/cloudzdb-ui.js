@@ -70,7 +70,7 @@ var gCommon = $a.page(function(){
 			    	if(res.status == 0){
 		    			location.href = location.href;
 			    	}else{
-			    		gCommon.alert('시스템 에러가 발생하였습니다. <br/>')
+			    		gCommon.alert('시스템 에러가 발생하였습니다. <br/>');
 			    	}
 			    },
 			    beforeSend:function(bopt){
@@ -405,7 +405,6 @@ var gCommon = $a.page(function(){
 	        height: vHeight,
 	        title : '',
 	        callback : function(res){
-	        	alert(res);
 	        	callback(res);
 	        	isConfirmPopExists = false;
 	        }

@@ -1063,4 +1063,15 @@ public class ZdbApiController {
 		
 		return mav;
 	}
+	
+	@RequestMapping(value = "restoreToPoint", method = RequestMethod.PUT)
+	public ModelAndView restoreToPoint(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
+		Map<String,String> param = RequestUtil.getMapFromRequest(request);
+		
+		ZdbRestDTO result = zdbApiService.restoreToPoint(param);
+		mav.addObject(CommonConstants.RESULT,result);
+		
+		return mav;
+	}
 }
