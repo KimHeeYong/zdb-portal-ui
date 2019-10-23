@@ -1,0 +1,119 @@
+<div class="popup-wrap">
+	<div>
+		<div class="popup-text">
+			<div>
+				<span style="color:red;" id="pTitleSpan" name="pTitleSpan"></span>		
+			</div>					
+			<form id="backupDiskForm" name="backupDiskForm">
+			<div>
+				<table class="Table Form-type">
+					<colgroup>
+						<col style="width: 130px;"> </col>
+						<col></col>
+					</colgroup>				
+					<tr>
+						<th>복원시점</th>
+						<td>
+							<div class="info-list select-date Daterange" data-selectyear="true" data-selectmonth="true">
+								<div class="Startdate Dateinput">
+								    <input id="restoreTargetDate" name="restoreTargetDate" type="text" readonly="readonly">
+								    <div class="Calendar" id="restoreTargetDate"></div>
+								</div>
+								<div class="Spinner Time" data-locale="en" id="restoreTargetTime" name="restoreTargetTime" data-hours="24H" data-bind="time:date">
+								    <input data-hour>
+								    <span data-seperator>:</span>
+								    <input data-minute>
+								    <input data-ampm>
+								    <a class="Up"></a>
+								    <a class="Down"></a>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>Credential</th>
+						<td>
+							<input class="Textinput" type="password" id="credential" name="credential"></input> 
+							<p data-for="credential" class="warn-text"></p>
+							<span style="font-size:13px;color:blue;" id="msgSpan" name="msgSpan" >Credential은 서비스 정보의 Connection 에서 확인 하실 수 있습니다.</span>									
+						</td>
+					</tr>
+				</table>
+			</div>
+			</form>
+		</div>
+	</div>
+	<!--button-->
+	<div class="popup-btn__wrap" style="width:100%">
+		<button class="Button btn bg-gray ok">저장</button>
+		<button class="Button btn bg-gray no">취소</button>
+	</div>
+	<!--//button-->
+</div>
+<script type="text/javascript">
+$a.page(function() {
+	this.init = function(id,param) {
+    	let form = $('form[name=backupDiskForm]');
+    	let pMsg = "백업 이후에 시간으로 복원만 가능합니다.<br>복원 가용 시간 :"+moment(param.gFirstTime,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss')+"~";
+    	$('#pTitleSpan').html(pMsg);
+    	let d = moment(param.gFirstTime,'YYYYMMDDHHmmss').format('YYYY-MM-DD');
+    	let t = moment(param.gFirstTime,'YYYYMMDDHHmmss').format('HH:mm');
+    	
+    	let paramDt = '';
+    	let validToDt = '';
+    	let validFromDt = moment(param.gFirstTime,'YYYYMMDDHHmmss').format('YYYYMMDDHHmm');
+
+    	$('#restoreTargetDate').val(d);
+    	$('#restoreTargetTime').setData({date : t});
+    
+    	
+    	form.validator({
+		    elements :{ 
+				'credential': {rule:{required:true,equalTo:param.credential},message:{ 'equalTo': "credential이 일치하지 않습니다." }}
+    		}
+		});  
+
+		$('button.ok').click(function(){
+			paramDt = moment($('#restoreTargetDate').val()+$('#restoreTargetTime').getData().date.replace(/(AM|PM)/,''),'YYYY-MM-DDHH24 : mm').format('YYYYMMDDHHmm');
+			validToDt = moment().subtract(1,'hour').format('YYYYMMDDHH')+'59';
+
+	 		
+	 		console.log(paramDt+":"+validToDt+":"+validFromDt);
+			
+			if(cloudUtil.parseInt(paramDt) < cloudUtil.parseInt(validFromDt)){
+				$('#msgSpan').html('기준일 이전일자 입니다.');
+				return ;
+			}else if(cloudUtil.parseInt(paramDt) > cloudUtil.parseInt(validToDt)){
+				$('#msgSpan').html('현재 이후의 시간을 선택 할 수 없습니다.');
+				return ;
+			}else if($('#credential').val() != param.credential ){
+				
+				console.log(param.credential+':'+$('#credential').val());
+				
+				//$('#msgSpan').html('credential이 일치하지 않습니다.');
+				return ;
+			}
+
+	 		
+			gCommon.confirm('복원 하시겠습니까?',function(){
+				let p = $.extend({},gParam,{restoreTargetDate:paramDt})
+				$a.ajax({
+					url:'/zdbapi/restoreToPoint',
+					method:'put',
+					data:p,
+					success:function(res){
+						if(res.result.code == '0'){
+							gCommon.alert('복원요청 되었습니다.');
+							$a.close({result:'Y'});					
+						}
+					}
+				});				
+			}) 
+		}); 
+		$('button.no').click(function(){
+			$a.close('N');
+		});	
+	}
+});
+	
+</script>
