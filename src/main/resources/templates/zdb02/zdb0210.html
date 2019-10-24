@@ -610,6 +610,7 @@
 								<option value="BACKUP">	Backup	</option>
 								<option value="BACKUPSCHEDULE">	Backup Management	</option>
 								<option value="BACKUPDISK">	Backup Storage	</option>
+								<option value="BINLOG">	Binlog Management </option>								
 								<option value="WORKERPOOL">	Cluster Admin(Worker Pool)	</option>
 								<option value="AUTOFAILOVER">	DB Failover Config	</option>
 								<option value="LOG">	DB Log	</option>
@@ -970,13 +971,13 @@
 	var gService = null;
 	var gTagList = [];
 	var gServiceScale = {};//scaleUp value
-	var gConfigData = null;
+	var gConfigData = null; 
 	var gFirstTime = '';
 	var gEventType = { "SERVICE":"Service Life Cycle","PVC":"Storage","CHANGEOVER":"Service Availability","PROCESS":"DBA Action(Process)"
 				,"DATABASE":"DBA Action(Database)","NETWORK":"DB Network Access","AUTOFAILOVER":"DB Failover Config","BACKUPDISK":"Backup Storage"
 				,"BACKUP":"Backup","BACKUPSCHEDULE":"Backup Management","RESTORE":"Recovery","USER":"DBA Action(User)","TAG":"Tag","SCALE":"Scaling"
 				,"WORKERPOOL":"Cluster Admin(Worker Pool)","LOG":"DB Log","GLOBALCONFIG":"Global Config","CONFIG":"DBA Action(config)"
-				,"CREADENTIAL":"Service Management"};
+				,"CREADENTIAL":"Service Management","BINLOG":"Binlog Management"};
 	var gBackupChkBoxArr = ["ACCEPTED","DATA_BACKUP_DOING","DATA_BACKUP_COMPLETE","DATA_BACKUP_FAILED","DATA_ARCHIVE_DOING","DATA_ARCHIVE_COMPLETE","DATA_ARCHIVE_FAILED","DATA_UPLOAD_DOING","DATA_UPLOAD_COMPLETE","DATA_UPLOAD_FAILED","ABORTED","FAILED"]; 
 	var gBackupLogArr = ["ACCEPTED","DATA_BACKUP_DOING","DATA_BACKUP_FAILED","ABORTED","FAILED"]; 
 	
