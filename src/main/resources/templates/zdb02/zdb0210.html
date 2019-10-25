@@ -1043,8 +1043,11 @@
 							url: '/zdbapi/deleteServiceInstance',
 							data:data,
 							success: function(res){
-								gCommon.alert('삭제 요청이 완료 되었습니다.');
-								gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
+								
+								// alert 창의 확인 버튼 클릭 후 페이지 이동하도록 수정 적용 (2019-10-25)
+								gCommon.alert('삭제 요청이 완료 되었습니다.',function(){
+									gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});		
+								});
 							}
 						}) 
 			        }
