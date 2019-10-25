@@ -2626,16 +2626,20 @@
 								success:function(res){
 									let ob = res.backupResult;
 								
-									let r = '<table><colgroup><col class="wd150"></col><col width="*"></col></colgroup>'
+									let r = '<table><colgroup><col class="wd200"></col><col width="*"></col></colgroup>'
 										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '<tr><th class="tl">백업범위(LSN)</th><td class="tl">' + ob.backupScope + '</td></tr>' 
 									 	if(!cloudUtil.isEmpty(ob.fromBackup)) r+='<tr><th class="tl">기준이 되는 백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.archiveFileSize)) r+='<tr><th class="tl">압축파일크기</th><td class="tl">' + ob.archiveFileSize  +'</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.backupTime)) r+='<tr><th class="tl">백업 소요시간</th><td class="tl">' + ob.backupTime  + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.archiveTime)) r+='<tr><th class="tl">압축 소요시간</th><td class="tl">' + ob.archiveTime  + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.uploadTime)) r+='<tr><th class="tl">업로드 소요시간</th><td class="tl">' + ob.uploadTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.binlogBackupTime)) r+='<tr><th class="tl">빈로그 백업 시간</th><td class="tl">' + ob.binlogBackupTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.binlogUploadTime)) r+='<tr><th class="tl">빈로그 백업 업로드 시간</th><td class="tl">' + ob.binlogUploadTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.binlogPurgeTime)) r+='<tr><th class="tl">빈로그 정리 시간</th><td class="tl">' + ob.binlogPurgeTime  + '</td></tr>'
+																				
 										if(ob.status =='DATA_ARCHIVE_FAILED' || ob.status =='DATA_UPLOAD_FAILED' ) r+= '<tr><th class="tl">재수행</th><td class="tc"><button class="btn-ico btn-refresh" onClick="retryBackup(\'' + data.backupId + '\')" title="재수행">재수행 </button></td></tr>';
 										r+= '</table>';  
-									gCommon.backupAlert(r,null,{width:500,height:350});
+									gCommon.backupAlert(r,null,{width:600,height:450});
 								}
 							}); 
 						},
@@ -2774,7 +2778,15 @@
 						if(['FULL','INCR'].indexOf(data.type) > -1){
 							t = '복원';
 						}
-						var re = $('<button class="Button btn-download '+(data.status != 'OK'?'Disabled':'')+'">'+t+'</button>').on('click',function(){
+						let d = '';
+						if(data.status != 'OK' || gService.failoverEnabled !='off'){
+							d = 'Disabled';
+						}
+						
+						var re = $('<button class="Button btn-download '+d+'">'+t+'</button>').on('click',function(){
+							if($(this).hasClass('Disabled')){
+								return;
+							}						
 							fn_downloadBackupFile(data);
 						});
 						return re;
@@ -2934,6 +2946,8 @@
 					url: '/zdbapi/getSchedule',
 					data:param,
 					success: function(res){
+						
+					console.log(res);
 						var isStatusGreen = gService.status == 'green'; 
 						
 						if(isStatusGreen){
@@ -2972,9 +2986,13 @@
 					url: '/zdbapi/updateSchedule',
 					data:param,
 					success: function(res){
-						gCommon.alert('백업 설정이 수정되었습니다.',function(){
-							fn_getBackupScheduleInfo();
-						});
+						if(res.result.code == '0'){
+							gCommon.alert('백업 설정이 수정되었습니다.',function(){
+								fn_getBackupScheduleInfo();
+							});
+						}else{
+							setOnOffButton('useYn',backupStatus);
+						}
 					}
 				});	
 			}
