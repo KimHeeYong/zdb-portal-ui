@@ -200,4 +200,10 @@ public class URIConstants {
 	
 	public static final String URI_ABORT_BACKUP = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/abortBackup/{txId}";
 	
+	public static final String URI_GET_PURGE_BINLOG = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/purgeBinlog";
+	
+	public static final String URI_GET_RESTORE_TO_POINT = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/restoreToPoint/{restoreTargetDate}";
+	
+	public static final String URI_GET_RETRY_BACKUP = "/api/v1/{namespace}/{serviceType}/service/{serviceName}/retryBackup/{backupId}";	
+	
 }

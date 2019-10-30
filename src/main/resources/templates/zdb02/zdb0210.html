@@ -479,7 +479,6 @@
 					    <a class="Up"></a>
 					    <a class="Down"></a>
 					</div>
-					
 				</div>
 				<div class="mr30 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
@@ -548,6 +547,11 @@
 			</div>          	
           	<div class="mt10" style="height:40px;">
 				<div class="info-list__select fr">
+					<div class="fl hide" id="divClusterEnabled" style="margin-right:4px;" th:if="${session.userInfo.clusterRole=='cluster-admin'}">
+						<button class="Button btn ml1 fl"id="restoreToPoint" style="margin-right:4px;">복원하기</button>					
+						<button class="Button btn ml1"id="purgeBinlog">Binlog 정리</button>
+					</div>
+					
 					<div class="fl" id="divAddBackup" style="margin-right:4px;">	
 						<button class="Button btn hide" id="addBackupDisk">백업디스크 추가</button>
 						<button class="Button btn hide" id="removeBackupDisk">백업디스크 제거</button>
@@ -606,6 +610,7 @@
 								<option value="BACKUP">	Backup	</option>
 								<option value="BACKUPSCHEDULE">	Backup Management	</option>
 								<option value="BACKUPDISK">	Backup Storage	</option>
+								<option value="BINLOG">	Binlog Management </option>								
 								<option value="WORKERPOOL">	Cluster Admin(Worker Pool)	</option>
 								<option value="AUTOFAILOVER">	DB Failover Config	</option>
 								<option value="LOG">	DB Log	</option>
@@ -966,12 +971,16 @@
 	var gService = null;
 	var gTagList = [];
 	var gServiceScale = {};//scaleUp value
-	var gConfigData = null;
+	var gConfigData = null; 
+	var gFirstTime = '';
 	var gEventType = { "SERVICE":"Service Life Cycle","PVC":"Storage","CHANGEOVER":"Service Availability","PROCESS":"DBA Action(Process)"
 				,"DATABASE":"DBA Action(Database)","NETWORK":"DB Network Access","AUTOFAILOVER":"DB Failover Config","BACKUPDISK":"Backup Storage"
 				,"BACKUP":"Backup","BACKUPSCHEDULE":"Backup Management","RESTORE":"Recovery","USER":"DBA Action(User)","TAG":"Tag","SCALE":"Scaling"
 				,"WORKERPOOL":"Cluster Admin(Worker Pool)","LOG":"DB Log","GLOBALCONFIG":"Global Config","CONFIG":"DBA Action(config)"
-				,"CREADENTIAL":"Service Management"};
+				,"CREADENTIAL":"Service Management","BINLOG":"Binlog Management"};
+	var gBackupChkBoxArr = ["ACCEPTED","DATA_BACKUP_DOING","DATA_BACKUP_COMPLETE","DATA_BACKUP_FAILED","DATA_ARCHIVE_DOING","DATA_ARCHIVE_COMPLETE","DATA_ARCHIVE_FAILED","DATA_UPLOAD_DOING","DATA_UPLOAD_COMPLETE","DATA_UPLOAD_FAILED","ABORTED","FAILED"]; 
+	var gBackupLogArr = ["ACCEPTED","DATA_BACKUP_DOING","DATA_BACKUP_FAILED","ABORTED","FAILED"]; 
+	
 	$a.page(function() {
 		this.init = function() {
 			$('[data-show-service-type*='+gParam.serviceType+']').show();
@@ -1034,8 +1043,11 @@
 							url: '/zdbapi/deleteServiceInstance',
 							data:data,
 							success: function(res){
-								gCommon.alert('삭제 요청이 완료 되었습니다.');
-								gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});
+								
+								// alert 창의 확인 버튼 클릭 후 페이지 이동하도록 수정 적용 (2019-10-25)
+								gCommon.alert('삭제 요청이 완료 되었습니다.',function(){
+									gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});		
+								});
 							}
 						}) 
 			        }
@@ -2047,6 +2059,10 @@
 						$("#gridBackup").alopexGrid('hideCol', 'ondisk');
 					}
 				}
+				// Cluster Enabled 값에 따라 버튼 노출 여부 결정 로직 추가 - Binlog 정리 , 복원하기 버튼 (2019-10-18)
+				if(gService.clusterEnabled){
+					$('#divClusterEnabled').show();
+				}
 			}
 			//서비스 display
 			function fn_displayService(){
@@ -2497,6 +2513,47 @@
 			        }
 			    });
 			});		
+			//restoreToPoint (복원하기 버튼 추가 2019-10-22)
+			$('button#restoreToPoint').on('click',function(){
+				// failoverEnabled 에 의한 메세지 처리 로직 추가 (2019-10-24)				
+				if(gService.failoverEnabled !='off' ){
+					gCommon.alert('Auto Failover 가 활성화 되어 있는 상태에서 복원하기 기능을 사용할 수 없습니다.<br>Auto Failover 비활성한 이후에 진행해 주시기 바랍니다.',null,{width:800,height:250});
+					return;
+				}
+
+				$a.popup({
+			        data:$.extend({},gParam,{credential:$("#credential").val(),gFirstTime:gFirstTime}),
+			        url: '/zdb02/zdb0200p11',
+			        iframe: false,
+			        width: 600,
+			        height: 320,
+			        title : '',
+			        callback : function(res){
+			        	if(res.result.code=='0'){
+			        		fn_getServiceFirst(); 	        		
+			        	}
+			        }
+			    });
+			});
+			// Binlog 정리 버튼 추가 2019-10-18
+			$('button#purgeBinlog').on('click',function(){
+				let popMsg = ' Binlog 정리를 통해서 서버의 디스크 용량을 줄일 수 있습니다. </br>';
+				popMsg += ' 정리된 Binlog는 Object Storage에 압축하여 저장됩니다. </br>';
+				popMsg += ' 현재 사용하는 Binlog는 정리대상에 포함되지 않습니다.</br>';
+				gCommon.confirmYn(popMsg,function(yn){
+					if(yn == "Y"){
+						// Binlog 정리 버튼 API 호출 로직 추가 2019-10-21
+					 	$a.ajax({
+							url: '/zdbapi/setPurgeBinlog',
+							method:'PUT',
+							data:gParam,
+							success: function(res){
+								gCommon.alert(res.result.message);
+							}
+						}); 		
+					}			
+				},{okBtnMsg:'Binlog 정리' , vWidth : 600 , vHeight:350 });
+			});
 			$('button#addBackupDisk').on('click',function(){
 				/*backupdisk-test*/
 				let vPodName = gService.podName ;  
@@ -2519,7 +2576,7 @@
 				        	}
 				        }
 				    });
-			})			
+			});	
 			$('button#removeBackupDisk').on('click',function(){
 				
 				gCommon.credentialConfirm({
@@ -2550,23 +2607,42 @@
 				enableContextMenu:true,
 				autoColumnIndex: true,
 				autoResize:true,
+				rowOption:{
+					allowSelect: function(data){
+						let re = true;
+						for(let v in gBackupChkBoxArr){
+							let arrVal = gBackupChkBoxArr[v];
+							if(data.status == arrVal ){
+								re =  false;
+							}							
+						}
+						return re ; 		
+					}
+				},				
 				contextMenu : [
 					{   title: '결과',
 						processor:function(data,$cell,grid){
-						$a.ajax({
+						
+							$a.ajax({
 								url:'/zdbapi/getBackupResult',
 								data:{backupId:data.backupId},
 								success:function(res){
 									let ob = res.backupResult;
-									let r = '<table><colgroup><col class="wd150"></col><col width="*"></col></colgroup>'
+								
+									let r = '<table><colgroup><col class="wd200"></col><col width="*"></col></colgroup>'
 										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '<tr><th class="tl">백업범위(LSN)</th><td class="tl">' + ob.backupScope + '</td></tr>' 
 									 	if(!cloudUtil.isEmpty(ob.fromBackup)) r+='<tr><th class="tl">기준이 되는 백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.archiveFileSize)) r+='<tr><th class="tl">압축파일크기</th><td class="tl">' + ob.archiveFileSize  +'</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.backupTime)) r+='<tr><th class="tl">백업 소요시간</th><td class="tl">' + ob.backupTime  + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.archiveTime)) r+='<tr><th class="tl">압축 소요시간</th><td class="tl">' + ob.archiveTime  + '</td></tr>' 
 										if(!cloudUtil.isEmpty(ob.uploadTime)) r+='<tr><th class="tl">업로드 소요시간</th><td class="tl">' + ob.uploadTime  + '</td></tr>' 
-										r+= '</table>';  							
-									gCommon.backupAlert(r,null,{width:500,height:350});
+										if(!cloudUtil.isEmpty(ob.binlogBackupTime)) r+='<tr><th class="tl">빈로그 백업 시간</th><td class="tl">' + ob.binlogBackupTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.binlogUploadTime)) r+='<tr><th class="tl">빈로그 백업 업로드 시간</th><td class="tl">' + ob.binlogUploadTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.binlogPurgeTime)) r+='<tr><th class="tl">빈로그 정리 시간</th><td class="tl">' + ob.binlogPurgeTime  + '</td></tr>'
+																				
+										if(ob.status =='DATA_ARCHIVE_FAILED' || ob.status =='DATA_UPLOAD_FAILED' ) r+= '<tr><th class="tl">재수행</th><td class="tc"><button class="btn-ico btn-refresh" onClick="retryBackup(\'' + data.backupId + '\')" title="재수행">재수행 </button></td></tr>';
+										r+= '</table>';  
+									gCommon.backupAlert(r,null,{width:600,height:450});
 								}
 							}); 
 						},
@@ -2576,7 +2652,6 @@
 					},
 					{   title: '로그',
 						processor:function(data,$cell,grid){
-							
 							//console.log('로그');	
 							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
 						},
@@ -2605,16 +2680,65 @@
 					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat},
 					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat},
 					{ title:'상태', key : 'status' , width: '160px', align: 'center' , tooltip:false , render:function(value,data,render,mapping){
-						let re = "수행중"; 
+						let re = "백업 수행중"; 
+						//2019-10-24
 						if(value ==  "OK"){
-							re = "성공"; 
+							re = "수행완료"; 
 						}else if(value ==  "DOING"){
 							re = "수행중"; 
 						}else if(value ==  "FAILED"){
 							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 실패 <span class="ico_title" style="padding-top:33px;"/></a>' ;
 						}else if(value ==  "ABORTED"){
-							re = "수행중지"; 
+							re = "백업수행중지";
+						}else if(value ==  "ACCEPTED"){
+							re = "백업 수행중"; 
+						}else if(value ==  "DATA_BACKUP_DOING"){
+							re = "백업 수행중"; 
+						}else if(value ==  "DATA_BACKUP_COMPLETE"){
+							if(gService.backupDiskUsed) re = "수행완료"; 
+							else re = "백업 완료"; 
+						}else if(value ==  "DATA_BACKUP_FAILED"){
+							re = "백업실패"; 	
+						}else if(value ==  "DELETED"){
+							re = "백업삭제"; 
+						}else if(value ==  "DATA_ARCHIVE_DOING"){
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re = "압축수행중"; 
+						}else if(value ==  "DATA_ARCHIVE_COMPLETE"){
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re = "압축완료"; 
+						}else if(value ==  "DATA_ARCHIVE_FAILED"){
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re = "압축실패";  	
+						}else if(value ==  "DATA_UPLOAD_DOING"){
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re = "업로드 수행중"; 
+						}else if(value ==  "DATA_UPLOAD_COMPLETE"){
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re = "업로드 완료"; 
+						}else if(value ==  "DATA_UPLOAD_FAILED"){
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re = "업로드 실패"; 
+						}else if(value ==  "BINLOG_BACKUP_DOING" && gService.clusterEnabled){
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;							 
+						}else if(value ==  "BINLOG_BACKUP_COMPLETE"  && gService.clusterEnabled){
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+						}else if(value ==  "BINLOG_BACKUP_FAILED" && gService.clusterEnabled){
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;							 
+						}else if(value ==  "BINLOG_UPLOAD_DOING"  && gService.clusterEnabled){
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+						}else if(value ==  "BINLOG_UPLOAD_COMPLETE" && gService.clusterEnabled){
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;							 
+						}else if(value ==  "BINLOG_UPLOAD_FAILED"  && gService.clusterEnabled){
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+						}else if(value ==  "BINLOG_PURGE_DOING" && gService.clusterEnabled){
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;							 
+						}else if(value ==  "BINLOG_PURGE_COMPLETE"  && gService.clusterEnabled){
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+						}else if(value ==  "BINLOG_PURGE_FAILED" && gService.clusterEnabled){
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;							 
 						}
+						
 						return re
 					}},
 					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat,render:function(value,data){
@@ -2657,13 +2781,28 @@
 						if(['FULL','INCR'].indexOf(data.type) > -1){
 							t = '복원';
 						}
-						var re = $('<button class="Button btn-download '+(data.status != 'OK'?'Disabled':'')+'">'+t+'</button>').on('click',function(){
+						let d = '';
+						if(data.status != 'OK' || gService.failoverEnabled !='off'){
+							d = 'Disabled';
+						}
+						
+						var re = $('<button class="Button btn-download '+d+'">'+t+'</button>').on('click',function(){
+							if($(this).hasClass('Disabled')){
+								return;
+							}						
 							fn_downloadBackupFile(data);
 						});
 						return re;
 					},tooltip:null},
 					{ title:'Log', key : 'log' , width: '60px',width:'70px',excludeFitWidth:true, align: 'center',tooltip:false ,render:function(value,data,render,mapping){
-						return getGridContextButton();
+						let re = getGridContextButton();
+						for(let v in gBackupLogArr){
+							let arrVal = gBackupLogArr[v];
+							if(data.status == arrVal ){
+								re = '' ;
+							}							
+						}
+						return re ;
 					}}
 				],
 				footer: {
@@ -2700,9 +2839,44 @@
 				var $tooltip = $('#backupTooltip');
 
 				if (mapping.key === 'status' ){ // && data.reason != null
+					//2019-10-24	
+					var value = data['status']||'';
 					var val = data['reason']||'';
+						val = val.replaceAll('\n','</br>');
+				
+					if(value ==  "DATA_ARCHIVE_DOING"){
+						val = "압축수행중"; 
+					}else if(value ==  "DATA_ARCHIVE_COMPLETE"){
+						val = "압축완료"; 
+					}else if(value ==  "DATA_ARCHIVE_FAILED"){
+						val = "압축실패";  	
+					}else if(value ==  "DATA_UPLOAD_DOING"){
+						val = "업로드 수행중"; 
+					}else if(value ==  "DATA_UPLOAD_COMPLETE"){
+						val = "업로드 완료"; 
+					}else if(value ==  "DATA_UPLOAD_FAILED"){
+						val = "업로드 실패"; 
+					}else if(value ==  "BINLOG_BACKUP_DOING"){
+						val = " binlog 백업 수행중"; 							 
+					}else if(value ==  "BINLOG_BACKUP_COMPLETE"){
+						val = " binlog 백업수행완료"; 		
+					}else if(value ==  "BINLOG_BACKUP_FAILED"){
+						val = " binlog 백업실패"; 									 
+					}else if(value ==  "BINLOG_UPLOAD_DOING"){
+						val = " binlog 업로드 수행중"; 		
+					}else if(value ==  "BINLOG_UPLOAD_COMPLETE" ){
+						val = " binlog 업로드 완료"; 									 
+					}else if(value ==  "BINLOG_UPLOAD_FAILED"){
+						val = " binlog 업로드 실패"; 		
+					}else if(value ==  "BINLOG_PURGE_DOING"){
+						val = " binlog 정리 수행중"; 									 
+					}else if(value ==  "BINLOG_PURGE_COMPLETE" ){
+						val = " binlog 정리 성공"; 		
+					}else if(value ==  "BINLOG_PURGE_FAILED"){
+						val = " binlog 정리 실패"; 									 
+					}
 					
-					$tooltip.html(val.replaceAll('\n','</br>')); 
+					$tooltip.html(val); 
 					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
 					$tooltip.open();	
 				}else if(mapping.key === 'type'  ) { //&& data.scheduleYn == "N"
@@ -2775,6 +2949,8 @@
 					url: '/zdbapi/getSchedule',
 					data:param,
 					success: function(res){
+						
+					console.log(res);
 						var isStatusGreen = gService.status == 'green'; 
 						
 						if(isStatusGreen){
@@ -2808,16 +2984,18 @@
 				var param = $.extend({},gParam,backupForm.serializeObject());
 				param.startTime = moment($('#startTime').getData().date.replace(/(AM|PM)/,''),'HH : mm').format('HH:mm');
 				param.incrementYn = backupForm.find('#incrementPeriod select').val() == '0' ? 'N' : 'Y';
-		
-				//console.log(param);
-				
+			
 				$a.ajax({
 					url: '/zdbapi/updateSchedule',
 					data:param,
 					success: function(res){
-						gCommon.alert('백업 설정이 수정되었습니다.',function(){
-							fn_getBackupScheduleInfo();
-						});
+						if(res.result.code == '0'){
+							gCommon.alert('백업 설정이 수정되었습니다.',function(){
+								fn_getBackupScheduleInfo();
+							});
+						}else{
+							setOnOffButton('useYn',backupStatus);
+						}
 					}
 				});	
 			}
@@ -2827,6 +3005,17 @@
 					data:gParam,
 					success: function(res){
 						var list = res.backupList;
+						
+						gFirstTime = '';
+						for(let l in list){
+							let data = list[l] ;
+							if(data.status == "OK") gFirstTime = data.completeDatetime ;
+						}
+						
+						if(gFirstTime == '' ){
+							$('#restoreToPoint').addClass('Disabled');	
+							$('#restoreToPoint').prop('disabled',true);
+						}
 						
 						if(gParam.serviceType != cServiceType.redis){
 							$("#gridBackup").alopexGrid('showCol', 4);
@@ -2907,8 +3096,8 @@
 					{ title:'일시', key : 'endTime' , width: '170px', align: 'left',render:function(value){
 						return cloudUtil.dtFormat(value);
 					},excludeFitWidth:true},
-					{ title:'범주', key : 'type' , width: '170px', align: 'left',render:function(value){
-						var result = "" ;
+					{ title:'타입', key : 'type' , width: '170px', align: 'left',render:function(value){
+						var result = value ;
 					
  						for(var iType in gEventType){
 							if(iType ==  value) result =  gEventType[iType] ;
@@ -3558,6 +3747,26 @@
 		}
 		
 		return zero + n;
+	}
+	
+	function retryBackup(backupId) {
+		$a.close('Y');
+	
+		let popMsg = '재수행 하시겠습니까??';
+
+		gCommon.confirmYn(popMsg,function(yn){
+			if(yn == "Y"){
+				// retryBackup 버튼 API 호출 로직 추가 2019-10-24
+			 	$a.ajax({
+					url: '/zdbapi/retryBackup',
+					method:'PUT',
+					data:$.extend({},gParam,{backupId:backupId}),
+					success: function(res){
+						gCommon.alert(res.result.message);
+					}
+				}); 		
+			}			
+		},{okBtnMsg:'재수행' , vWidth : 500 , vHeight:300 }); 
 	}
 
 </script>
