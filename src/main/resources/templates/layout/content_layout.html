@@ -58,10 +58,19 @@
 	<!-- header -->
 	<header class="cp-header">
 		<h1 class="logo"><img src="/styles/images/cloudzlogo.png" alt="CLOUD Z Database"></h1>
+		
 		<!-- utils -->
 		<div class="header-utils">
 			<a class="user" th:text="${session.userInfo.firstName}"></a>
 			<div class="user-menus">
+			    <!-- 임시 다국어 선택 -->
+		<div>
+			<select  onchange="if(this.value) location.href=(this.value);">
+				<option value="">선택</option>
+				<option value="?locale=ko">한국어</option>
+				<option value="?locale=en">English</option>
+			</select>		
+		</div>				
 				<ul class="dropmenu-list">
 					<li class="selected"> <a th:href="${@environment.getProperty('cloudzcp.url')} + |/my/profile|"> 나의 정보<span class="newpop"></span></a></li>
 					<li><a th:href="${@environment.getProperty('cloudzcp.url')} + |/my/pwd|">비밀번호 변경<span class="newpop"></span></a></li>
