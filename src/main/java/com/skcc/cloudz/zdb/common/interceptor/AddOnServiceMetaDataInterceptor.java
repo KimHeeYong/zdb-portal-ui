@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -35,11 +38,14 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     private AddOnServiceMataComponent addOnServiceMataComponent;
     
+    @Autowired
+    private MessageSource messageSource;
+    
     private String userClusterRole = "";
     
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        if (modelAndView == null || !modelAndView.hasView()) {
+    	if (modelAndView == null || !modelAndView.hasView()) {
             return;
         }
         
@@ -50,7 +56,15 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
         }
        
         List<AddOnServiceMataVo> resultList = new ArrayList<AddOnServiceMataVo>();
-        if (addOnServiceMataComponent.getAddOnServiceMetaVoList() == null) {
+        
+        resultList = this.getAddOnServiceMetaData();
+
+        addOnServiceMataComponent.setUserId(securityService.getUserDetails().getUserId());  
+        addOnServiceMataComponent.setAddOnServiceMetaVoList(resultList);
+        
+       	/*      
+ 		//다국어 지원시 메뉴 변경 적용을 위해서 주석처리 (2019-11-01) - 문제점 있을 수 있음 확인 필요 
+    	if (addOnServiceMataComponent.getAddOnServiceMetaVoList() == null) {
        	
             resultList = this.getAddOnServiceMetaData();
 
@@ -58,7 +72,7 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
             addOnServiceMataComponent.setAddOnServiceMetaVoList(resultList);
         } else {
             resultList = addOnServiceMataComponent.getAddOnServiceMetaVoList();
-        }
+        }*/
 
         modelAndView.addObject("addOnServiceMataData", resultList);   
         modelAndView.addObject("activePathInfo", this.getAddOnServiceActivePathInfo(requestURI));
@@ -87,6 +101,13 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
             for (AddOnServiceMataVo addOnServiceMataVo : addOnServiceMataList) {
         		for (ClusterRole clusterRole : addOnServiceMataVo.getClusterRoles()) {
         			if (userClusterRole.equals(clusterRole.getRole()) && addOnServiceMataVo.isEnable()) {
+        				// 다국어 지원 수정 필요 - addOnServiceMataVo.getName(); 으로 이름 (.)으로 split 하여 length 0 보다 크면 메세지 처리(2019-10-31)          				
+        				String pName  = addOnServiceMataVo.getName().toString();
+        				String arrName[] = pName.split("\\.");
+        				if(arrName.length > 0 && "label".equals(arrName[0])) {
+        					pName = messageSource.getMessage(addOnServiceMataVo.getName(), null, LocaleContextHolder.getLocale()) ;
+        				}
+        				addOnServiceMataVo.setName(pName);
         				AddOnServiceMataVoList.add(this.getAddOnServiceMetaDataSub(addOnServiceMataVo));        
         			}
         		}
@@ -107,22 +128,29 @@ public class AddOnServiceMetaDataInterceptor extends HandlerInterceptorAdapter {
     public AddOnServiceMataVo getAddOnServiceMetaDataSub(AddOnServiceMataVo addOnServiceMataVo) {
         if (addOnServiceMataVo.getSub() == null) return addOnServiceMataVo;
         
-        System.out.println("userClusterRole:"+userClusterRole);
-        
         List<AddOnServiceMataSubVo> addOnServiceMataSubVoList = new ArrayList<AddOnServiceMataSubVo>();
         int idx= 0; 
         for (AddOnServiceMataSubVo addOnServiceMataSubVo : addOnServiceMataVo.getSub()) {
+        	
+			// 다국어 지원 수정 필요 - addOnServiceMataVo.getName(); 으로 이름 (.)으로 split 하여 length 0 보다 크면 메세지 처리(2019-10-31)          				
+			String subName  = addOnServiceMataSubVo.getName().toString();
+			String arrSubName[] = subName.split("\\.");
+        	
+			if(arrSubName.length > 0 && "label".equals(arrSubName[0])) {
+				subName = messageSource.getMessage(addOnServiceMataSubVo.getName(), null, LocaleContextHolder.getLocale()) ;
+			}
+			addOnServiceMataSubVo.setName(subName);
+			
         	idx++;
-        	System.out.println(idx+":"+addOnServiceMataSubVo.getClusterRoles());
         	if(addOnServiceMataSubVo.getClusterRoles() != null) {
         		for (ClusterRole clusterRole : addOnServiceMataSubVo.getClusterRoles()) {
                 	if (userClusterRole.equals(clusterRole.getRole()) && addOnServiceMataSubVo.isEnable()) {
-                        addOnServiceMataSubVoList.add(addOnServiceMataSubVo);
+                        addOnServiceMataSubVoList.add(addOnServiceMataSubVo);  
                     }
         		}
         	}else {
             	if (addOnServiceMataSubVo.isEnable()) {
-                    addOnServiceMataSubVoList.add(addOnServiceMataSubVo);
+            		addOnServiceMataSubVoList.add(addOnServiceMataSubVo);
                 }
         	}
         }

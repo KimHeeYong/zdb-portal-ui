@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-	<title>이벤트 목록</title>
+	<title th:text="#{label.zdb0720.title.header}"></title>
 </th:block>
 <th:block layout:fragment="content">
 	<!-- location -->
@@ -15,7 +15,7 @@
 	</div>
 	<div class="contents-box">
 		<div class="top-area">
-           <h2 class="title">이벤트 목록</h2>
+           <h2 th:text="#{label.zdb0720.title.top}"  class="title"></h2>
 		</div>
 		<div class="accor-contents__wrap">
 			<!-- tab contents info detail-->
@@ -46,7 +46,7 @@
 					<div class="info-list__select">
 						<div class="Divselect">
 							<select name="kind">
-								<option value="-">전체</option>
+								<option  th:text="#{label.common.selectbox.total}"  value="-"></option>
 								<option value="StatefulSet">StatefulSet</option>
 								<option value="Service">Service</option>
 								<option value="ReplicaSet">ReplicaSet</option>
@@ -62,8 +62,8 @@
 							</select>
 							<span></span>
 						</div>
-						<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요." />
-						<button class="Button btn-search" id="searchEvent">검색</button>
+						<input name="keyword" class="Textinput srcinput" th:placeholder="#{label.common.search.message}" />
+						<button  th:text="#{label.common.button.search}" class="Button btn-search" id="searchEvent"></button>
 					</div>
 				</div>
 			</form>

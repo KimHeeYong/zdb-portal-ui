@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-	<title>Failover 관리</title>
+	<title th:text="#{label.zdb0750.title.header}"></title>
 </th:block>
 <th:block layout:fragment="page_js">
 	<script src="/script/app/common/cloudzdb-ui-z0200.js?v=20190523"></script>
@@ -18,7 +18,7 @@
 	</div>
 	<div class="contents-box">
 		<div class="top-area">
-           <h2 class="title">Failover 관리</h2>
+           <h2 th:text="#{label.zdb0750.title.top}" class="title"></h2>
 		</div>
 		<div class="accor-contents__wrap">
 			<!-- tab contents info detail-->
@@ -68,14 +68,14 @@
 					restoreFocusOnInvalidInlineEdit :true,
 					leaveDeleted:true,
 					columnMapping : [  
-						{ title:'서비스이름', key : 'serviceName' , width: '250px',excludeFitWidth:true, align: 'left',render:function(value,data){
+						{ title:'[[#{label.zdb0750.grid.service.name}]]', key : 'serviceName' , width: '250px',excludeFitWidth:true, align: 'left',render:function(value,data){
 							var re = $('<a href="#" title="'+value+'">'+value+'</a>').html(value).on('click',function(){
 								fn_setSelected2010Tab('tabService');
 								gCommon.movePage('/zdb02/zdb0210',{namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName});
 							});
 							return re;
 						}},
-						{ title:'서비스종류', key : 'serviceType' , width: '100px', align: 'center',render:function(value){
+						{ title:'[[#{label.zdb0750.grid.service.type}]]', key : 'serviceType' , width: '100px', align: 'center',render:function(value){
 							let img = {
 									mariadb:'<img src="/styles/images/mariadb16.png" width="16px">',
 									redis:'<img src="/styles/images/redis16.jpg" width="16px">'
@@ -83,7 +83,7 @@
 							let re = img[value]; 
 							if(re) return re;	
 						}},
-						{ title:'Autofailover 설정', key : 'failoverEnabled' , width: '150px', align: 'center',render:function(value,data){
+						{ title:'[[#{label.zdb0750.grid.autofail.setting}]]', key : 'failoverEnabled' , width: '150px', align: 'center',render:function(value,data){
 							let re = '';
 							
 							let switVal = value == 'true'?'on':'off';
@@ -131,14 +131,14 @@
 							}
 							return re;
 						}},
-						{ title:'Failover 상태', key : 'serviceFailOverStatus' , width: '150px', align: 'center', render:function(value){
+						{ title:'[[#{label.zdb0750.grid.failover.status}]]', key : 'serviceFailOverStatus' , width: '150px', align: 'center', render:function(value){
 							let re = 'Nomal';
 							if(value == 'MasterToSlave'){
 								re = "Failover"; 
 							}
 							return re;
 						}},
-						{ title:'Failover시간', key : 'serviceFailOverTime' , width: '250px',excludeFitWidth:true, align: 'center',render:function(value,data){
+						{ title:'[[#{label.zdb0750.grid.failover.time}]]', key : 'serviceFailOverTime' , width: '250px',excludeFitWidth:true, align: 'center',render:function(value,data){
 							let re = value;								
 							return re;
 						}}		
@@ -167,39 +167,42 @@
 					let re = {};					
 					
 					/* 메세지 처리 상태 세분화 (2019-10-07) */
-					let msg = "Auto Failover 기능을 적용합니다.<br>처음적용시 서비스가 재시작 됩니다." ;  // confirm massage 처리 순서 바꿈(2019-07-25)
+					let msg = "[[#{label.zdb0750.msg.first}]]" ;  // confirm massage 처리 순서 바꿈(2019-07-25)
+					console.log(msg);
 					let aStatefulSets = data.statefulSets ;
-					let btnMsg = "적용" ; //버튼 텍스트 변수 추가 (2019-10-08)
+					let btnMsg = "[[#{label.zdb0750.grid.button.apply}]]" ; //버튼 텍스트 변수 추가 (2019-10-08)
 					for(let a in aStatefulSets){
 						let aStatefulSet = aStatefulSets[a] ; 
 						let aLabels = aStatefulSet.metadata.labels ;
 						if(aLabels.component == "master"){
 							if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "true"  ){
-								msg = "Auto Failover 기능을 해제합니다." ;
-								btnMsg = "해제";
+								msg = "[[#{label.zdb0750.msg.clear}]]" ;
+								btnMsg = "[[#{label.zdb0750.grid.button.clear}]]";
 							}else if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "false"  ){	
-								msg = "Auto Failover 기능을 적용합니다." ;
+								msg = "[[#{label.zdb0750.msg.apply}]]" ;
 							} 
 						}
 					}
 					
 					/* parameter : namespace , serviceType , serviceName , credetial(popup에서 입력받음)  */
- 					gCommon.confirm(msg,function(yn){
-						gCommon.credentialApiConfirm({
-					        data:{namespace:data.namespace ,serviceType:data.serviceType ,serviceName:data.serviceName, msg:'설정을 변경하시려면', okBtnMsg:btnMsg},
-					        callback : function(res){
-					        	if(res == null){
-					        		re = res || {};
-									re.isExists = false;
-									deferred.resolve(re);
-					        	}else{
-					        		re = res;
-									re.isExists = true;
-									deferred.resolve(re);				        		
-					        	}
-					        }
-					    }); 
-					}); 
+ 					gCommon.confirmYn(msg,function(yn){
+ 						if(yn == "Y"){
+							gCommon.credentialApiConfirm({
+						        data:{namespace:data.namespace ,serviceType:data.serviceType ,serviceName:data.serviceName, msg:'설정을 변경하시려면', okBtnMsg:btnMsg},
+						        callback : function(res){
+						        	if(res == null){
+						        		re = res || {};
+										re.isExists = false;
+										deferred.resolve(re);
+						        	}else{
+						        		re = res;
+										re.isExists = true;
+										deferred.resolve(re);				        		
+						        	}
+						        }
+						    });
+ 						}
+					},{ vWidth : 550 , vHeight:300 }); 
 					
 					return deferred.promise(); 
 				}

@@ -36,6 +36,21 @@
 	<script type="text/javascript">
 	$a.page(function() {
 		this.init = function() {
+			$('#gSelchgLocale').on('change',function(){
+
+				var indexLocation  = location.href ; 
+				if(indexLocation.indexOf('locale') != -1){
+					indexLocation = indexLocation.substring(0 , indexLocation.length - 2)+this.value;
+				}else{
+					if(indexLocation.indexOf('?') != -1){
+						indexLocation = indexLocation+"&locale="+this.value;
+					}else{
+						indexLocation = indexLocation+"?locale="+this.value;
+					}
+				}
+				location.href= indexLocation;
+			});
+			
 			$('#logout').on('click',function(){
 				gCommon.setSelectedNamespace('');
 				location.href='/logout';
@@ -65,10 +80,10 @@
 			<div class="user-menus">
 			    <!-- 임시 다국어 선택 -->
 		<div>
-			<select  onchange="if(this.value) location.href=(this.value);">
+			<select name="gSelchgLocale" id="gSelchgLocale" >
 				<option value="">선택</option>
-				<option value="?locale=ko">한국어</option>
-				<option value="?locale=en">English</option>
+				<option value="ko">한국어</option>
+				<option value="en">English</option>
 			</select>		
 		</div>				
 				<ul class="dropmenu-list">

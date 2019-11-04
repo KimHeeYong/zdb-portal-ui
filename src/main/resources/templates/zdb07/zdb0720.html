@@ -2,7 +2,7 @@
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" 
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-	<title>규칙 목록</title>
+	<title th:text="#{label.zdb0720.title.header}"></title>
 </th:block>
 <th:block layout:fragment="page_css">
 </th:block>
@@ -21,11 +21,11 @@
 		<!-- rule info area-->
 		<div id="tabRules">
 			<div class="top-area">
-				<h2 th:text="#{label.notice.title}" class="title"   >  </h2>
+				<h2 th:text="#{label.zdb0720.title.top}" class="title" >  </h2>
 				<div class="tag-wrap">
-					<span class="tag">알림 발생을 위한 규칙을 관리합니다.</span>
+					<span th:text="#{label.zdb0720.tag.top}" class="tag"></span>
 					<div class="search-wrap ">
-						<input class="Textinput srcinput" name="txtRuleKeyword" id="txtRuleKeyword" placeholder="검색어를 입력하세요." />		
+						<input class="Textinput srcinput" name="txtRuleKeyword" id="txtRuleKeyword"  th:placeholder="#{label.common.search.message}" />		
 					</div>	 			
 				</div>
 				
@@ -86,11 +86,11 @@
 				enableDefaultContextMenu : false,
 				autoColumnIndex : true,
 				columnMapping : [
-						{ key : 'namespace', title : '네임스페이스', width : '100px', align : 'left'},
-						{ key : 'serviceName', title : '서비스이름', width : '150px', align : 'left'},
-						{ key : 'serviceType', title : '서비스타입', width : '100px',hidden:true, align : 'left'},
-						{ key : 'clusterEnabled', title : '이중화여부', width : '70px', align : 'center',render:useCol},	
-						{ key : 'def', title : '기본값 설정', width : '80px', align : 'center',render:function(value,data){
+						{ key : 'namespace', title :  '[[#{label.zdb0720.grid.namesapce}]]', width : '100px', align : 'left'},
+						{ key : 'serviceName', title : '[[#{label.zdb0720.grid.service.name}]]', width : '150px', align : 'left'},
+						{ key : 'serviceType', title : '[[#{label.zdb0720.grid.service.type}]]', width : '100px',hidden:true, align : 'left'},
+						{ key : 'clusterEnabled', title : '[[#{label.zdb0720.grid.duplexing.status}]]', width : '70px', align : 'center',render:useCol},	
+						{ key : 'def', title : '[[#{label.zdb0720.grid.default.settings}]]', width : '80px', align : 'center',render:function(value,data){
 							
 							let vDefaultYn = 'N' ;
 							
@@ -107,25 +107,25 @@
 							});
 							return re;
 						}},
-						{ key : 'PodHealthCheck', title : 'Pod', width : '70px', align : 'center', render:useCol},
-						{ key : 'ContainerHealthCheck', title : 'Container', width : '70px', align : 'center', render:useCol},
-						{ key : 'DBHealthCheck', title : 'DB', width : '70px', align : 'center', render:useCol},
-						{ key : 'CPUUsage', title : 'CPU', width : '70px', align : 'center', render:useCol},
-						{ key : 'MemoryUsage', title : 'Memory', width : '70px', align : 'center', render:useCol},
-						{ key : 'Connections', title : 'Connections', width : '80px', align : 'center', render:useCol},
-						{ key : 'SlowQueries', title : 'SlowQuery', width : '70px', align : 'center', render:useCol},
-						{ key : 'ReplicationStatus', title : 'Status', width : '70px', align : 'center', render:useCol},
-						{ key : 'ReplicationDelay', title : 'Delay', width : '70px', align : 'center', render:useCol},
+						{ key : 'PodHealthCheck', title : '[[#{label.zdb0720.grid.pod}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'ContainerHealthCheck', title :  '[[#{label.zdb0720.grid.container}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'DBHealthCheck', title : '[[#{label.zdb0720.grid.db}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'CPUUsage', title : '[[#{label.zdb0720.grid.cpu}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'MemoryUsage', title : '[[#{label.zdb0720.grid.memory}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'Connections', title : '[[#{label.zdb0720.grid.connections}]]', width : '80px', align : 'center', render:useCol},
+						{ key : 'SlowQueries', title : '[[#{label.zdb0720.grid.slowquery}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'ReplicationStatus', title : '[[#{label.zdb0720.grid.status}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'ReplicationDelay', title : '[[#{label.zdb0720.grid.delay}]]', width : '70px', align : 'center', render:useCol},
 						{ key : 'update', title : '', width : '50px', align : 'center',render:function(value,data){
-							return $('<button class="Button sm">설정</button>').on('click',function(){
+							return $('<button class="Button sm">[[#{label.common.button.setting}]]</button>').on('click',function(){
 								gCommon.movePage('/zdb07/zdb0721',{namespace:data.namespace,serviceName:data.serviceName,serviceType:data.serviceType})
 							});
 						}}
 					],headerGroup: [
-						{fromIndex:'PodHealthCheck', toIndex:'ReplicationDelay', title:'규칙'},
-						{fromIndex:'PodHealthCheck', toIndex:'DBHealthCheck', title:'Health'},
-						{fromIndex:'CPUUsage', toIndex:'SlowQueries', title:'사용량'},
-						{fromIndex:'ReplicationStatus', toIndex:'ReplicationDelay', title:'Replication'},
+						{fromIndex:'PodHealthCheck', toIndex:'ReplicationDelay', title:'[[#{label.zdb0720.grid.rule}]]'},
+						{fromIndex:'PodHealthCheck', toIndex:'DBHealthCheck', title:'[[#{label.zdb0720.grid.health}]]'},
+						{fromIndex:'CPUUsage', toIndex:'SlowQueries', title:'[[#{label.zdb0720.grid.usage}]]'},
+						{fromIndex:'ReplicationStatus', toIndex:'ReplicationDelay', title:'[[#{label.zdb0720.grid.replication}]]'},
 						{fromIndex:'update', toIndex:'def', title:''}
 					]
 				});
@@ -135,11 +135,11 @@
 				enableDefaultContextMenu : false,
 				autoColumnIndex : true,
 				columnMapping : [
-						{ key : 'namespace', title : '네임스페이스', width : '100px', align : 'left'},
-						{ key : 'serviceName', title : '서비스이름', width : '150px', align : 'left'},
-						{ key : 'serviceType', title : '서비스타입', width : '100px',hidden:true, align : 'left'},
-						{ key : 'clusterEnabled', title : '이중화여부', width : '70px', align : 'center',render:useCol},
-						{ key : 'def', title : '기본값 설정', width : '80px', align : 'center',render:function(value,data){
+						{ key : 'namespace', title :'[[#{label.zdb0720.grid.namesapce}]]', width : '100px', align : 'left'},
+						{ key : 'serviceName', title : '[[#{label.zdb0720.grid.service.name}]]', width : '150px', align : 'left'},
+						{ key : 'serviceType', title : '[[#{label.zdb0720.grid.service.type}]]', width : '100px',hidden:true, align : 'left'},
+						{ key : 'clusterEnabled', title : '[[#{label.zdb0720.grid.duplexing.status}]]', width : '70px', align : 'center',render:useCol},
+						{ key : 'def', title : '[[#{label.zdb0720.grid.default.settings}]]', width : '80px', align : 'center',render:function(value,data){
 							
 							let vDefaultYn = 'N' ;
 							
@@ -156,24 +156,24 @@
 							});
 							return re;
 						}},						
-						{ key : 'PodHealthCheck', title : 'Pod', width : '70px', align : 'center', render:useCol},
-						{ key : 'ContainerHealthCheck', title : 'Container', width : '70px', align : 'center', render:useCol},
-						{ key : 'DBHealthCheck', title : 'DB', width : '70px', align : 'center', render:useCol},
-						{ key : 'CPUUsage', title : 'CPU', width : '70px', align : 'center', render:useCol},
-						{ key : 'MemoryUsage', title : 'Memory', width : '70px', align : 'center', render:useCol},
-						{ key : 'Connections', title : 'Connections', width : '80px', align : 'center', render:useCol},
-						{ key : 'SlowQueries', title : 'SlowQuery', width : '70px', align : 'center',hidden:true, render:useCol},
-						{ key : 'ReplicationStatus', title : 'Status', width : '70px', align : 'center',hidden:true, render:useCol},
-						{ key : 'ReplicationDelay', title : 'Delay', width : '70px', align : 'center', hidden:true,render:useCol},
+						{ key : 'PodHealthCheck', title : '[[#{label.zdb0720.grid.pod}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'ContainerHealthCheck', title : '[[#{label.zdb0720.grid.container}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'DBHealthCheck', title : '[[#{label.zdb0720.grid.db}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'CPUUsage', title : '[[#{label.zdb0720.grid.cpu}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'MemoryUsage', title :  '[[#{label.zdb0720.grid.memory}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'Connections', title : '[[#{label.zdb0720.grid.connections}]]', width : '80px', align : 'center', render:useCol},
+						{ key : 'SlowQueries', title : '[[#{label.zdb0720.grid.slowquery}]]', width : '70px', align : 'center',hidden:true, render:useCol},
+						{ key : 'ReplicationStatus', title : '[[#{label.zdb0720.grid.status}]]', width : '70px', align : 'center',hidden:true, render:useCol},
+						{ key : 'ReplicationDelay', title : '[[#{label.zdb0720.grid.delay}]]', width : '70px', align : 'center', hidden:true,render:useCol},
 						{ key : 'update', title : '', width : '50px', align : 'center',render:function(value,data){
-							return $('<button class="Button sm">설정</button>').on('click',function(){
+							return $('<button class="Button sm">[[#{label.common.button.setting}]]</button>').on('click',function(){
 								gCommon.movePage('/zdb07/zdb0721',{namespace:data.namespace,serviceName:data.serviceName,serviceType:data.serviceType})
 							});
 						}}
 					],headerGroup: [
-						{fromIndex:'PodHealthCheck', toIndex:'Connections', title:'규칙'},
-						{fromIndex:'PodHealthCheck', toIndex:'DBHealthCheck', title:'Health'},
-						{fromIndex:'CPUUsage', toIndex:'Connections', title:'사용량'},
+						{fromIndex:'PodHealthCheck', toIndex:'Connections', title:'[[#{label.zdb0720.grid.rule}]]'},
+						{fromIndex:'PodHealthCheck', toIndex:'DBHealthCheck', title:'[[#{label.zdb0720.grid.health}]]'},
+						{fromIndex:'CPUUsage', toIndex:'Connections', title:'[[#{label.zdb0720.grid.usage}]]'},
 						{fromIndex:'update', toIndex:'def', title:''}
 					]
 				});			

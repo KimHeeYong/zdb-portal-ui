@@ -204,13 +204,13 @@ var gCommon = $a.page(function(){
 						if(gIsClusterAdmin){
 							namespaceList.push({
 								id:G_NAMESPACE_ALL,
-								text:'전체'
+								text:"전체"
 							});
 						}
 					} else if(opt.incAll){
 						namespaceList.push({
 							id:G_NAMESPACE_ALL,
-							text:'전체'
+							text:"전체"
 						});
 					}
 				};

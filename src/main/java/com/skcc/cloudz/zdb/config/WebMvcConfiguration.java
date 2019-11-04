@@ -35,7 +35,7 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter implements WebM
     public LocaleResolver localeResolver() {
     	CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver();
     	cookieLocaleResolver.setDefaultLocale(Locale.KOREAN);
-    	cookieLocaleResolver.setCookieName("APPLICATION_LOCALE");
+    	cookieLocaleResolver.setCookieName("Accept-Language");
     	
     	return cookieLocaleResolver;
     }
@@ -52,14 +52,13 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter implements WebM
     public void addInterceptors(InterceptorRegistry registry) {
     	String[] pageUrlPattern = {"/zdb*/**"};
     	String[] ajaxAndComPattern = {"/zdbapi/**","/zdbcom/**"};
+        registry.addInterceptor(localeChangeInterceptor());    	
         registry.addInterceptor(addOnServiceMetaDataInterceptor())        	
 		    .addPathPatterns(pageUrlPattern)
 		    .excludePathPatterns(ajaxAndComPattern);
         registry.addInterceptor(addSessionUserDataInterceptor())
         	.addPathPatterns(pageUrlPattern)
         	.excludePathPatterns(ajaxAndComPattern);
-        registry.addInterceptor(localeChangeInterceptor());
-        
     }
     
     @Override

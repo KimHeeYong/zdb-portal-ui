@@ -474,7 +474,7 @@
 					</div>									
 				</div>	           	
 				<div class="mr30 wd300 fl info-list"><span class="config-title">보관기간:</span> 
-					<div class="Spinner" data-min="0" data-max="60" data-step="1" id="storePeriodSpinner">
+					<div class="Spinner" data-min="0" data-max="7" data-step="1" id="storePeriodSpinner">
 					    <input id="storePeriod" name="storePeriod" value="1" style="width:40px;text-align:left;">일&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					    <a class="Up"></a>
 					    <a class="Down"></a>
@@ -498,10 +498,8 @@
 						</div>
 					</div>
 				</div>
-          	</div>	
-			<div class="ctn-info__wrap" style="border-top:0px;">
 				<div class="mr30 wd300 fl info-list">
-					<span class="config-title">전체 백업 시간:</span>
+					<!-- <span class="config-title">전체 백업 시간:</span> -->
 					<div class="Spinner Time" data-locale="en" id="startTime" data-hours="24H" data-bind="time:date">
 					    <input data-hour>
 					    <span data-seperator>:</span>
@@ -510,7 +508,10 @@
 					    <a class="Up"></a>
 					    <a class="Down"></a>
 					</div>
-				</div>
+				</div>				
+          	</div>	
+			<div class="ctn-info__wrap" style="border-top:0px;">
+				
 				<div class="mr30 wd300 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
 						<span class="config-title">증분 백업:</span>

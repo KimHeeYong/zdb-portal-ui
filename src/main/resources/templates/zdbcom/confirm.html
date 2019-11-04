@@ -14,7 +14,12 @@
 <script type="text/javascript">
 $a.page(function() {
 	this.init = function(id,param) {
-		$('#message').html(gPopData.message);
+		let msg = gPopData.message ;
+		let repMsg = msg.replaceAll("\n","<br>");
+		
+		$('#message').html(repMsg);
+		
+		//$('#message').html(gPopData.message);
 		if(gPopData.okBtnMsg){
 			$('button.Button.btn.bg-gray.ok').html(gPopData.okBtnMsg);
 		}

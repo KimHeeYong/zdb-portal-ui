@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-    <title></title>
+    <title th:text="#{label.zdb0760.title.header}" ></title>
 </th:block>
 <th:block layout:fragment="content">
 	<!-- location : name space combo box  Start -->
@@ -15,9 +15,9 @@
 	<div class="contents-box">
 		<!-- Top Title Area Start -->
 		<div class="top-area">
-           	<h2 class="title">DB 복제</h2>
+           	<h2 th:text="#{label.zdb0760.title.top}" class="title"></h2>
 			<div class="tag-wrap">
-				<span class="tag">사용중인 MariaDB 서비스의 백업본으로 다른 MariaDB 서비스에 복제합니다.</span>
+				<span th:text="#{label.zdb0760.tag.top}" class="tag"></span>
 			</div>           
 		</div>	
 		<!-- Top Title Area End -->
@@ -90,7 +90,7 @@
 				<!-- Table area End   -->				
 				<!-- Bottom button Area Start -->
 	            <div class="btn-wrap__right">
-		        	<button class="Button btn bg-red" id="saveVariables" name="saveVariables">적용하기</button>
+		        	<button th:text="#{label.zdb0760.button.apply}" class="Button btn bg-red" id="saveVariables" name="saveVariables"></button>
 		        </div>	
 		     	<!-- Bottom button Area End -->
 			</div>

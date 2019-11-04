@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -30,6 +33,9 @@ public class ZdbRestConnector extends RestTemplate{
 	
 	@Autowired
 	SecurityService securityService;
+	@Autowired
+	HttpServletRequest request ;
+	
 	
 	@Override
 	public <T> ResponseEntity<T> exchange(String url, HttpMethod method, @Nullable HttpEntity<?> requestEntity, Class<T> responseType, Map<String, ?> uriVariables) {
@@ -49,7 +55,7 @@ public class ZdbRestConnector extends RestTemplate{
 		
 		HttpEntity<?> newRequestEntity = new HttpEntity<>(tempBody,tempHeaders);
 		ResponseEntity<T> result = null;
-		try {
+		try {			
 			result = super.exchange(url, method, newRequestEntity, responseType, uriVariables);
 		} catch (HttpStatusCodeException e) {
 			ZdbRestDTO resultMap = new Gson().fromJson(e.getResponseBodyAsString(), ZdbRestDTO.class);
@@ -103,6 +109,8 @@ public class ZdbRestConnector extends RestTemplate{
 
 	private void addHeaderSession(HttpHeaders headers) {
 		OpenIdConnectUserDetailsVo userInfo = securityService.getUserDetails();
+		HttpSession session = request.getSession();
+		
 		if(headers != null) {
 			headers.set("userId", userInfo.getUserId());
 			headers.set("userName", userInfo.getUsername());
@@ -113,6 +121,11 @@ public class ZdbRestConnector extends RestTemplate{
 			headers.set("defaultNamespace", userInfo.getDefaultNamespace());
 			headers.set("enabled", userInfo.getEnabled() == null ? "false" : userInfo.getEnabled()+"");
 			headers.set("zdbAdmin", userInfo.getZdbAdmin() == null ? "false" : userInfo.getZdbAdmin()+"");
+			// Session Locale 값 적용 (2019-10-31)
+			// server쪽 한국어 코드는 kr을 사용해서 header로 보낼때는 kr로 보내야 함
+			String locale = (String) session.getAttribute("Accept-Language") ;
+			if("ko".equals(locale)) locale = "kr"  ;
+			headers.set("Accept-Language",locale);
 		}
 	}
 }

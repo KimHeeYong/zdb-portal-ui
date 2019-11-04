@@ -14,34 +14,34 @@
 	</div>
 	<div class="contents-box">
 		<div class="top-area">
-           <h2 th:text="#{label.storage.title}" class="title"   >  </h2>
+           <h2 th:text="#{label.zdb0740.title.top}" class="title" ></h2>
 		</div>	
 		<form name="storageForm" method="post">
 			<div class="ctn-info__wrap">
 				<div>
 					<div class="info-list mr30">
-						<span class="info-cnt__title">앱</span> 
+						<span th:text="#{label.zdb0740.search.app}" class="info-cnt__title wd150"></span> 
 						<div class="Divselect" id="app" name="app">
 							<select>
-								<option value="">전체</option>
+								<option th:text="#{label.common.selectbox.total}" value=""></option>
 							</select>
 							<span></span>
 						</div>
 					</div>
 					<div class="info-list mr30">				
-						<span class="info-cnt__title">빌링타입</span>
+						<span th:text="#{label.zdb0740.search.billing.type}" class="info-cnt__title wd150"></span>
 						<div class="Divselect" id="billingType" name="billingType">
 							<select>
-								<option value="">전체</option>
+								<option th:text="#{label.common.selectbox.total}"  value=""></option>
 							</select>
 							<span></span>
 						</div>
 					</div>
 					<div class="info-list mr30">	
-						<span class="info-cnt__title">상태</span>			
+						<span th:text="#{label.zdb0740.search.status}" class="info-cnt__title wd150"></span>			
 						<div class="Divselect" id="phase" name="phase">
 							<select>
-								<option value="">전체</option>
+								<option th:text="#{label.common.selectbox.total}"  value=""></option>
 								<option value="Bound">Bound</option>
 								<option value="Pending">Pending</option>
 								<option value="DELETED">DELETED</option>
@@ -50,10 +50,10 @@
 						</div>
 					</div>	
 					<div class="info-list mr30">
-						<span class="info-cnt__title">스토리지타입</span>
+						<span th:text="#{label.zdb0740.search.storage.type}" class="info-cnt__title wd150"></span>
 						<div class="Divselect wd250" id="storageClassName" name="storageClassName" >
 							<select>
-								<option value="">전체</option>
+								<option th:text="#{label.common.selectbox.total}"  value=""></option>
 								<option value="ibmc-block-bronze">ibmc-block-bronze</option>
 								<option value="ibmc-block-silver">ibmc-block-silver</option>
 								<option value="ibmc-block-retain-silver">ibmc-block-retain-silver</option>
@@ -70,7 +70,7 @@
 				<div class="crboth">&nbsp;</div>
 				<div>
 					<div class="info-list mr30">
-						<span class="info-cnt__title">생성일시</span>
+						<span th:text="#{label.zdb0740.search.creation.date}" class="info-cnt__title wd150"></span>
 						<div class="Daterange" data-default-date="false" data-placeholder="false" data-selectyear="true" data-selectmonth="true">
 							<div class="Startdate Dateinput">
 							    <input id="stDate" name="stDate" type="text" readonly="readonly">
@@ -83,11 +83,11 @@
 						</div>						
 					</div>	
 					<div class="info-list mr30">
-						<span class="info-cnt__title">검색어</span>
-						<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요." />						
+						<span th:text="#{label.zdb0740.search.search.word}" class="info-cnt__title wd150"></span>
+						<input name="keyword" class="Textinput srcinput" th:placeholder="#{label.common.search.message}" />						
 					</div>	
 					<div class="info-list__select">
-						<button class="Button btn-search" id="searchEvent">검색</button>
+						<button th:text="#{label.common.button.search}"  class="Button btn-search" id="searchEvent"></button>
 					</div>
 				</div>					
 			</div>
@@ -116,19 +116,19 @@
 					autoColumnIndex: true,
 					height: 605,
 					columnMapping : [  
-						{ title:'네임스페이스', key : 'namespace' , width: '100px', align: 'left'},
-						{ title:'서비스명', key : 'release' , width: '110px', align: 'left'},
-						{ title:'스토리지명', key : 'name' , width: '250px', align: 'left'},
-						{ title:'용량', key : 'storagSize' , width: '60px', align: 'center'},
-						{ title:'앱', key : 'app' , width: '70px', align: 'center'},
-						{ title:'스토리지 타입', key : 'storageClassName' , width: '120px', align: 'left'},
-						{ title:'빌링타입', key : 'billingType' , width: '60px', align: 'center'},
-						{ title:'상태', key : 'phase' , width: '80px', align: 'center'},
-						{ title:'액세스모드', key : 'accessModes' , width: '130px', align: 'center'},
-						{ title:'역할', key : 'component' , width: '60px', align: 'center'},
-						{ title:'생성일시', key : 'creationTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
-						{ title:'업데이트일시', key : 'updateTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
-						{ title:'볼륨명', key : 'volumeName' , width: '400px', align: 'left'}
+						{ title:'[[#{label.zdb0740.gird.namesapce}]]', key : 'namespace' , width: '100px', align: 'left'},
+						{ title:'[[#{label.zdb0740.gird.service.name}]]', key : 'release' , width: '110px', align: 'left'},
+						{ title:'[[#{label.zdb0740.gird.storage.name}]]', key : 'name' , width: '250px', align: 'left'},
+						{ title:'[[#{label.zdb0740.gird.storage.size}]]', key : 'storagSize' , width: '60px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.app}]]', key : 'app' , width: '70px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.strorage.type}]]', key : 'storageClassName' , width: '120px', align: 'left'},
+						{ title:'[[#{label.zdb0740.gird.billing.type}]]', key : 'billingType' , width: '60px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.status}]]', key : 'phase' , width: '80px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.access.modes}]]', key : 'accessModes' , width: '130px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.component}]]', key : 'component' , width: '60px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.creation.date}]]', key : 'creationTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
+						{ title:'[[#{label.zdb0740.gird.update.date}]]', key : 'updateTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
+						{ title:'[[#{label.zdb0740.gird.volume.name}]]', key : 'volumeName' , width: '400px', align: 'left'}
 					],
 					message: {
 						nodata: gMessage.gridNodata

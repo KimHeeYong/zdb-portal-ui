@@ -2,7 +2,7 @@
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" 
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-	<title>규칙관리</title>
+	<title th:text="#{label.zdb0721.title.header}"></title>
 </th:block>
 <th:block layout:fragment="page_css">
 </th:block>
@@ -22,9 +22,9 @@
 		<div id="tabDatabase">
 			<!-- rule info area-->
 			<div class="top-area">
-				<h2 class="title">규칙 설정</h2>
+				<h2 th:text="#{label.zdb0721.title.top}" class="title"></h2>
 				<div class="tag-wrap">
-					<span class="tag">알람 발생을 위한 규칙을 설정합니다.</span>
+					<span th:text="#{label.zdb0721.tag.top}" class="tag"></span>
 				</div>
 			</div>
 			<!-- add rule table-->
@@ -41,74 +41,73 @@
 						<tbody>
 							<tr>
 								<th colspan="2"></th>
-								<th class="tcenter">사용여부</th>
-								<th class="tcenter">심각도</th>
-								<th class="tcenter">임계치</th>
+								<th th:text="#{label.zdb0721.table.usage.status}" class="tcenter"></th>
+								<th th:text="#{label.zdb0721.table.severity}" class="tcenter"></th>
+								<th th:text="#{label.zdb0721.table.threshold.range}" class="tcenter"></th>
 							</tr>
 							<tr>
-								<th rowspan="3">Health</th>
-								<th>
-									Pod<span class="ico_title" id="podTooltip"></span></strong>
-									<div class="Tooltip" data-base="#podTooltip" data-position="right" data-animation="fade">
-										Pod의 동작 상태를 확인하여 동작하지 않을 시 알람이 발생합니다.												
+								<th th:text="#{label.zdb0721.table.health}" rowspan="3"></th>
+								<th><span th:text="#{label.zdb0721.table.pod}"></span>
+									<span class="ico_title" id="podTooltip"></span>
+									<div th:text="#{label.zdb0721.tooltip.pod}" class="Tooltip" data-base="#podTooltip" data-position="right" data-animation="fade">
 									</div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="PodHealthCheck-useYn" value="Y"/>사용 </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="PodHealthCheck-useYn" value="N" checked="checked"/>미사용 </label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="PodHealthCheck-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="PodHealthCheck-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
 								</td>
 								<td colspan="2">	
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="PodHealthCheck-priority" value="P4" checked="checked" />Low </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="PodHealthCheck-priority" value="P3"/>Warning </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="PodHealthCheck-priority" value="P1" />Critical </label>
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="PodHealthCheck-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="PodHealthCheck-priority" value="P3"/><span th:text="#{label.zdb0721.table.warning}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="PodHealthCheck-priority" value="P1" /><span th:text="#{label.zdb0721.table.critical}"></span></label>
 								</td>
 							</tr>
 							<tr>
-								<th>Container<span class="ico_title" id="containerTooltip"></span></strong>
-									<div class="Tooltip" data-base="#containerTooltip" data-position="right" data-animation="fade">
-										Container의 동작 상태를 점검하여 Container 중단시 알람이 발생합니다.						
+								<th><span th:text="#{label.zdb0721.table.container}"></span>
+									<span class="ico_title" id="containerTooltip"></span>
+									<div th:text="#{label.zdb0721.tooltip.container}" class="Tooltip" data-base="#containerTooltip" data-position="right" data-animation="fade">
 									</div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="ContainerHealthCheck-useYn" value="Y"/>사용 </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ContainerHealthCheck-useYn" value="N" checked="checked"/>미사용 </label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="ContainerHealthCheck-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ContainerHealthCheck-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
 								</td>
 								<td colspan="2">	
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="ContainerHealthCheck-priority" value="P4" checked="checked" />Low </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ContainerHealthCheck-priority" value="P3"/>Warning </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ContainerHealthCheck-priority" value="P1" />Critical </label>
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="ContainerHealthCheck-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label>
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ContainerHealthCheck-priority" value="P3"/><span th:text="#{label.zdb0721.table.warning}"></span></label>  
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ContainerHealthCheck-priority" value="P1" /><span th:text="#{label.zdb0721.table.critical}"></span></label>
 								</td>
 							</tr>
 							<tr>
-								<th>DB<span class="ico_title" id="dbTooltip"></span></strong>									
-									<div class="Tooltip" data-base="#dbTooltip" data-position="right" data-animation="fade">
-										DB의 동작 상태를 확인하여 DB 중단시 알람이 발생합니다.						
+								<th><span th:text="#{label.zdb0721.table.db}"></span>
+									<span class="ico_title" id="dbTooltip"></span>									
+									<div th:text="#{label.zdb0721.tooltip.db}" class="Tooltip" data-base="#dbTooltip" data-position="right" data-animation="fade">
 									</div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="DBHealthCheck-useYn" value="Y"/>사용 </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="DBHealthCheck-useYn" value="N" checked="checked" />미사용 </label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="DBHealthCheck-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label>
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="DBHealthCheck-useYn" value="N" checked="checked" /><span th:text="#{label.zdb0721.table.unused}"></span></label> 
 								</td>
 								<td colspan="2">	
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="DBHealthCheck-priority" value="P4" checked="checked" />Low </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="DBHealthCheck-priority" value="P3"/>Warning </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="DBHealthCheck-priority" value="P1" />Critical </label>
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="DBHealthCheck-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="DBHealthCheck-priority" value="P3"/><span th:text="#{label.zdb0721.table.warning}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="DBHealthCheck-priority" value="P1" /><span th:text="#{label.zdb0721.table.critical}"></span></label>
 								</td>
 							</tr>
 							<tr>
-								<th rowspan="4">사용량</th>
-								<th>CPU<span class="ico_title" id="cpuTooltip"></span></strong>
-									<div class="Tooltip" data-base="#cpuTooltip" data-position="right" data-animation="fade">
-										CPU 사용률(현재 CPU 사용량 / 전체 CPU 용량)이 설정한 임계치를 초과하면 알람이 발생합니다.						
-									</div></th>
+								<th th:text="#{label.zdb0721.table.usage}" rowspan="4"></th>
+								<th><span th:text="#{label.zdb0721.table.cpu}"></span>
+									<span class="ico_title" id="cpuTooltip"></span>
+									<div th:text="#{label.zdb0721.tooltip.cpu}" class="Tooltip" data-base="#cpuTooltip" data-position="right" data-animation="fade"></div>
+								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="CPUUsage-useYn" value="Y"/>사용 </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="CPUUsage-useYn" value="N" checked="checked" />미사용 </label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="CPUUsage-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="CPUUsage-useYn" value="N" checked="checked" /><span th:text="#{label.zdb0721.table.unused}"></span></label> 
 								</td>
 								<td>	
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="CPUUsage-priority" value="P4" checked="checked" />Low </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="CPUUsage-priority" value="P3"/>Warning </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="CPUUsage-priority" value="P1" />Critical </label>
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="CPUUsage-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="CPUUsage-priority" value="P3"/><span th:text="#{label.zdb0721.table.warning}"></span></label>
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="CPUUsage-priority" value="P1" /><span th:text="#{label.zdb0721.table.critical}"></span></label>
 								</td>
 								<td>
 									<div class="Divselect" data-disabled="true">
@@ -125,19 +124,18 @@
 								</td>
 							</tr>
 							<tr>
-								<th>Memory<span class="ico_title" id="memoryTooltip"></span></strong>
-									<div class="Tooltip" data-base="#memoryTooltip" data-position="right" data-animation="fade">
-										Memory 사용률(현재 Memory 사용량 / 전체 Memory 용량)이 설정한 임계치를 초과하면 알람이 발생합니다.						
-									</div>
+								<th><span th:text="#{label.zdb0721.table.memory}"></span>
+									<span class="ico_title" id="memoryTooltip"></span>
+									<div th:text="#{label.zdb0721.tooltip.memory}" class="Tooltip" data-base="#memoryTooltip" data-position="right" data-animation="fade"></div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="MemoryUsage-useYn" value="Y"/>사용 </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="MemoryUsage-useYn" value="N" checked="checked"/>미사용 </label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="MemoryUsage-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label>
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="MemoryUsage-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
 								</td>
 								<td>	
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="MemoryUsage-priority" value="P4" checked="checked"/>Low </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="MemoryUsage-priority" value="P3"/>Warning </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="MemoryUsage-priority" value="P1"/>Critical </label>
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="MemoryUsage-priority" value="P4" checked="checked"/><span th:text="#{label.zdb0721.table.low}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="MemoryUsage-priority" value="P3"/><span th:text="#{label.zdb0721.table.warning}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="MemoryUsage-priority" value="P1"/><span th:text="#{label.zdb0721.table.critical}"></span></label>
 								</td>
 								<td>
 									<div class="Divselect" data-disabled="true">
@@ -154,19 +152,18 @@
 								</td>
 							</tr>
 							<tr>
-								<th>Connections<span class="ico_title" id="connectionTooltip"></span></strong>
-									<div class="Tooltip" data-base="#connectionTooltip" data-position="right" data-animation="fade">
-										Connection 사용률(현재 Connection 수 / 전체 Connection 수)이 설정한 임계치를 초과하면 알람이 발생합니다.
-									</div>
+								<th><span th:text="#{label.zdb0721.table.connections}"></span>
+									<span class="ico_title" id="connectionTooltip"></span>
+									<div th:text="#{label.zdb0721.tooltip.connections}" class="Tooltip" data-base="#connectionTooltip" data-position="right" data-animation="fade"></div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="Connections-useYn" value="Y"/>사용 </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="Connections-useYn" value="N" checked="checked"/>미사용 </label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="Connections-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="Connections-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label>
 								</td>
 								<td>	
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="Connections-priority" value="P4" checked="checked" />Low </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="Connections-priority" value="P3"/>Warning </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="Connections-priority" value="P1" />Critical </label>
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="Connections-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="Connections-priority" value="P3"/><span th:text="#{label.zdb0721.table.warning}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="Connections-priority" value="P1" /><span th:text="#{label.zdb0721.table.critical}"></span></label>
 								</td>
 								<td>
 									<div class="Divselect" data-disabled="true">
@@ -183,21 +180,18 @@
 								</td>
 							</tr>
 							<tr th:if="${#request.getParameter('serviceType')} == 'mariadb'" >
-								<th>SlowQuery<span class="ico_title" id="slowQueryTooltip"></span></strong>
-									<div class="Tooltip" data-base="#slowQueryTooltip" data-position="right" data-animation="fade">
-										기준시간(2분) 동안 발생한 Slow Query의 수가 설정한 임계치를 초과하면 알람이 발생합니다.
-										<br>임계치 설정은 임의의 Slow Query의 수 / 100 으로 입력하여야 합니다.
-										<br>예) "10회" → 10 / 100 = 0.1 입력			
-									</div>
+								<th><span th:text="#{label.zdb0721.table.slowquery}"></span>
+									<span class="ico_title" id="slowQueryTooltip"></span>
+									<div th:utext="#{label.zdb0721.tooltip.slowquery}" class="Tooltip" data-base="#slowQueryTooltip" data-position="right" data-animation="fade"></div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="SlowQueries-useYn" value="Y"/>사용 </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="SlowQueries-useYn" value="N" checked="checked"/>미사용 </label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="SlowQueries-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="SlowQueries-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
 								</td>
 								<td>	
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="SlowQueries-priority" value="P4" checked="checked" />Low </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="SlowQueries-priority" value="P3"/>Warning </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="SlowQueries-priority" value="P1" />Critical </label>
+									<label class="ImageRadio"><input class="Radio" type="radio" name="SlowQueries-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="SlowQueries-priority" value="P3"/><span th:text="#{label.zdb0721.table.warning}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="SlowQueries-priority" value="P1" /><span th:text="#{label.zdb0721.table.critical}"></span></label>
 								</td>
 								<td>
 									<div class="Divselect" data-disabled="true">
@@ -211,36 +205,36 @@
 								</td>
 							</tr>
 							<tr th:if="${#request.getParameter('serviceType')} == 'mariadb'" >
-								<th rowspan="2">Replication</th>
-								<th>Status<span class="ico_title" id="statusTooltip"></span></strong>
-									<div class="Tooltip" data-base="#statusTooltip" data-position="right" data-animation="fade">
-										이중화된 경우 Slave의 Master 복제 상태를 확인하여 정상적으로 수행되지 않을 시 알람이 발생합니다.						
-									</div>
+								<th th:text="#{label.zdb0721.table.replication}" rowspan="2"></th>
+								<th>
+									<span th:text="#{label.zdb0721.table.status}"></span>
+									<span class="ico_title" id="statusTooltip"></span>
+									<div th:utext="#{label.zdb0721.tooltip.status}" class="Tooltip" data-base="#statusTooltip" data-position="right" data-animation="fade"></div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationStatus-useYn" value="Y"/>사용 </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationStatus-useYn" value="N" checked="checked"/>미사용 </label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationStatus-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationStatus-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
 								</td>
 								<td colspan="2">	
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationStatus-priority" value="P4" checked="checked" />Low </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationStatus-priority" value="P3"/>Warning </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationStatus-priority" value="P1" />Critical </label>
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationStatus-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationStatus-priority" value="P3"/><span th:text="#{label.zdb0721.table.warning}"></span></label>
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationStatus-priority" value="P1" /><span th:text="#{label.zdb0721.table.critical}"></span></label>
 								</td>
 							</tr>
 							<tr th:if="${#request.getParameter('serviceType')} == 'mariadb'">
-								<th>Delay<span class="ico_title" id="delayTooltip"></span></strong>
-									<div class="Tooltip" data-base="#delayTooltip" data-position="right" data-animation="fade">
-										이중화된 경우 Slave의 Master 복제 중 지연 발생 시 알람이 발생합니다.						
-									</div>
+								<th>Delay
+									<span th:text="#{label.zdb0721.table.delay}"></span>								
+									<span class="ico_title" id="delayTooltip"></span></strong>
+									<div th:utext="#{label.zdb0721.tooltip.delay}" class="Tooltip" data-base="#delayTooltip" data-position="right" data-animation="fade"></div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationDelay-useYn" value="Y"/>사용 </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationDelay-useYn" value="N" checked="checked"/>미사용 </label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationDelay-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationDelay-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
 								</td>
 								<td>	
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationDelay-priority" value="P4" checked="checked" />Low </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationDelay-priority" value="P3"/>Warning </label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationDelay-priority" value="P1" />Critical </label>
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationDelay-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationDelay-priority" value="P3"/><span th:text="#{label.zdb0721.table.warning}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationDelay-priority" value="P1" /><span th:text="#{label.zdb0721.table.critical}"></span></label>
 								</td>
 								<td>
 									<div class="Divselect" data-disabled="true">
@@ -250,7 +244,7 @@
 									</div>
 									<div style="position: relative; display: inline-block;">
 										<input class="Textinput" type="text" style="width: 120px; display: block; padding-right: 35px; min-width: 50px; top:2px;" maxlength="3" name="ReplicationDelay-value2" id="ReplicationDelay-value2" data-keyfilter-rule="digits" />
-										<span style="position: absolute; top: 0; right: 0; display: block; width: 35px; height: 100%; text-align: center; line-height: 30px; top:2px;" >s(초)</span>	
+										<span th:text="#{label.zdb0721.inputbox.sec}" style="position: absolute; top: 0; right: 0; display: block; width: 35px; height: 100%; text-align: center; line-height: 30px; top:2px;" ></span>	
 									</div>
 									<span>(Default:0 s)</span>											
 									<p class="warn-text" data-for="ReplicationDelay-value2"></p>									
@@ -262,10 +256,10 @@
 				</fieldset>
 				<div class="btn-wrap">
 					<div class="btn-left">
-						<button class="Button btn" id="btnRuleCancel">목록으로</button>
+						<button th:text="#{label.common.button.list}" class="Button btn" id="btnRuleCancel"></button>
 					</div>
 					<div class="btn-right">
-						<button class="Button btn bg-red" id="btnRuleSave">확인</button>
+						<button th:text="#{label.common.button.confirm}" class="Button btn bg-red" id="btnRuleSave"></button>
 					</div>
 				</div>				
 			</form>
@@ -279,8 +273,6 @@
 		$a.page(function() {
 			this.init = function() {
 				let isUpdate = !cloudUtil.isEmpty(gParam.alert);
-				
-				console.log(gParam.alert);
 				
 				Validator.addMethod('ifRequire', function(element, value, ob) {
 					let b = true;

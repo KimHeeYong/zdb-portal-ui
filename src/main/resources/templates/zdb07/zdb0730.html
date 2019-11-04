@@ -136,7 +136,7 @@
 							});
 							return re;
 						} },
-						{ title:'보관기간<br>(일)', key : 'storePeriod' , width: '80px', excludeFitWidth:true, align: 'center', inlineStyle: {padding: '0'} ,render:function(value,data){
+						{ title:'[[#{label.zdb0730.grid.storage.period}]]', key : 'storePeriod' , width: '200px', excludeFitWidth:false, align: 'center', inlineStyle: {padding: '0'} ,render:function(value,data){
 							
 							if(cloudUtil.isEmpty(value)) {
 								value = 7 ;
@@ -255,7 +255,7 @@
 							//return value == '0'?'-': value;
 							return value;
 						}},
-						{ title:'소요시간', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
+						{ title:'[[#{label.zdb0730.grid.full.backup.execution.time}]]', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
 							//return cloudUtil.parseInt(value)== 0 ?'-':value;
 							return value;
 						}},
@@ -280,7 +280,7 @@
 							//return value == '0'?'-': value;
 							return value;
 						}},
-						{ title:'소요시간', key : 'incrExecutionTime' , width: '70px', align: 'center', render:function(value){
+						{ title:'[[#{label.zdb0730.grid.incr.backup.execution.time}]]', key : 'incrExecutionTime' , width: '130px', align: 'center', render:function(value){
 							//return cloudUtil.parseInt(value)== 0 ?'-':value;
 							return value;
 						}}
@@ -292,8 +292,8 @@
 						sortingColumn: "serviceName",
 						sortingDirection: 'asc'
 					},headerGroup: [
-						{fromIndex:"backupExecType", toIndex:"fullExecutionTime", headerStyleclass: 'border-left' , title:"전체백업"},
-						{fromIndex:"incrementPeriod", toIndex:"incrExecutionTime", headerStyleclass: 'border-left'  , title:"증분백업"}
+						{fromIndex:"backupExecType", toIndex:"fullExecutionTime", headerStyleclass: 'border-left' , title:'[[#{label.zdb0730.grid.header.full.backup}]]'},
+						{fromIndex:"incrementPeriod", toIndex:"incrExecutionTime", headerStyleclass: 'border-left'  , title:'[[#{label.zdb0730.grid.header.incr.backup}]]'}
 					],
 				}).on('cellEditInvalid ', function(e){
 					setTimeout(function(evt){
