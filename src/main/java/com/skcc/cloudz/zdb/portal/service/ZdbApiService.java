@@ -9,8 +9,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -68,6 +72,8 @@ public class ZdbApiService{
     @Autowired SecurityService securityService;
     @Autowired ZdbRestConnector connector;
     @Autowired IamRestClient iamRestClient;
+    // locale 설정용 추가 
+	@Autowired HttpServletRequest request ;
 
     
 	public List<Namespace> getNamespaces(Map<String,String> param) {
@@ -164,6 +170,10 @@ public class ZdbApiService{
 			mediaTypeList.add(MediaType.APPLICATION_JSON);
 			headers.setAccept(mediaTypeList);
 			headers.set("Content-Type", "application/json-patch+json");
+			HttpSession session = request.getSession();
+			String locale = (String) session.getAttribute("Accept-Language") ;
+			if("ko".equals(locale)) locale = "kr"  ;
+			headers.set("Accept-Language",locale);
 			
 			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 			

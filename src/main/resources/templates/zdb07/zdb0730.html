@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-	<title>백업 스케줄링 목록</title>
+	<title th:text="#{label.zdb0730.title.header}"></title>
 </th:block>
 <th:block layout:fragment="page_js">
 	<script src="/script/app/common/cloudzdb-ui-z0200.js?v=20190523"></script>
@@ -18,14 +18,14 @@
 	</div>
 	<div class="contents-box">
 		<div class="top-area">
-           <h2 class="title">백업 스케줄링 목록</h2>
+           <h2 th:text="#{label.zdb0730.title.top}" class="title"></h2>
 		</div>
 		<div class="accor-contents__wrap">
 			<!-- tab contents info detail-->
 			<!-- grid -->
 			<div class="btn-wrap" style="margin-bottom:">
 				<div class="btn-right">
-					<button class="Button btn bg-red" id="btnSaveSchedule">저장</button>
+					<button th:text="#{label.common.button.save}"  class="Button btn bg-red" id="btnSaveSchedule"></button>
 				</div>
 			</div>			
 			<div class="grid-line__wrap mt5">
@@ -61,14 +61,14 @@
 					restoreFocusOnInvalidInlineEdit :true,
 					leaveDeleted:true,
 					columnMapping : [  
-						{ title:'state',key:'state',width:'50px',editable:false,hidden:true,align:'center',excludeFitWidth:true,render:function(value,data){
+						{ title:'[[#{label.zdb0730.grid.state}]]',key:'state',width:'50px',editable:false,hidden:true,align:'center',excludeFitWidth:true,render:function(value,data){
 							if (data._state.added){data.state = 'A'}
 							else if (data._state.deleted){data.state='D'}
 							else if (data._state.edited){data.state='E'}
 							else {data.state=''}
 							return data.state;
 						}},						
-						{ title:'상태', key : '' , width: '50x',excludeFitWidth:true, align: 'center',render:function(value,data){
+						{ title:'[[#{label.zdb0730.grid.status}]]', key : '' , width: '50x',excludeFitWidth:true, align: 'center',render:function(value,data){
 
 							//'backupStatus'
 							let status = '';
@@ -94,7 +94,7 @@
 							return re;
 							
 						}},
-						{ title:'서비스이름', key : 'serviceName' , width: '250px',excludeFitWidth:true, align: 'left',render:function(value,data){
+						{ title:'[[#{label.zdb0730.grid.service.name}]]', key : 'serviceName' , width: '250px',excludeFitWidth:true, align: 'left',render:function(value,data){
 							var re = $('<a href="#" title="'+value+'">'+value+'</a>').html(value).on('click',function(){
 								fn_setSelected2010Tab('tabBackup');
 								gCommon.movePage('/zdb02/zdb0210',{namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName});
@@ -103,7 +103,7 @@
 							return re;
 							
 						}},
-						{ title:'서비스종류', key : 'serviceType' , width: '100px', align: 'center',render:function(value){
+						{ title:'[[#{label.zdb0730.grid.service.type}]]', key : 'serviceType' , width: '100px', align: 'center',render:function(value){
 							let img = {
 									mariadb:'<img src="/styles/images/mariadb16.png" width="16px">',
 									redis:'<img src="/styles/images/redis16.jpg" width="16px">'
@@ -111,13 +111,13 @@
 							let re = img[value]; 
 							if(re) return re;	
 						}},
-						{ title:'백업디스크', key : 'backupDiskInfo' , width: '100px', align: 'center',render:function(value){
+						{ title:'[[#{label.zdb0730.grid.backup.disk}]]', key : 'backupDiskInfo' , width: '100px', align: 'center',render:function(value){
 							let re = value;
 /* 							if(value == 'Y')re='사용';
 							if(value == 'N')re='미사용'; */
 							return re;
 						}},
-						{ title:'백업설정', key : 'useYn' , width: '70px', align: 'center',render:function(value,data){
+						{ title:'[[#{label.zdb0730.grid.backup.yn}]]', key : 'useYn' , width: '70px', align: 'center',render:function(value,data){
 							let re = fn_getUseYnTemp(value).on('click','button.Button',function(e){
 								
 								let evObj = AlopexGrid.parseEvent(e);
@@ -175,7 +175,7 @@
 							return re;
 
 						}},
-						{ title:'ICOS 사용량', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
+						{ title:'[[#{label.zdb0730.grid.icosdisk.usage}]]', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
 							let re = value;
 						/* 	if(!cloudUtil.isEmpty(value) && !isNaN(value)){
 								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
@@ -183,8 +183,8 @@
 							} */
 							return re;
 						}},
-						{ title:'백업주기', key : 'backupExecType' , width: '100px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
-						{ title:'백업시간', key : 'startTime' , width: '110px',excludeFitWidth:true, align: 'center', inlineStyle: {padding: '0'} ,render:function(value){
+						{ title:'[[#{label.zdb0730.grid.full.backup.cycle}]]', key : 'backupExecType' , width: '100px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
+						{ title:'[[#{label.zdb0730.grid.full.backup.start.time}]]', key : 'startTime' , width: '110px',excludeFitWidth:true, align: 'center', inlineStyle: {padding: '0'} ,render:function(value){
 							if(cloudUtil.isEmpty(value)) {
 								value = '01:00' ;
 							}	
@@ -251,7 +251,7 @@
 							});
 							return re;
 						}},
-						{ title:'백업용량', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
+						{ title:'[[#{label.zdb0730.grid.full.backup.file.size}]]', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
 							//return value == '0'?'-': value;
 							return value;
 						}},
@@ -259,7 +259,7 @@
 							//return cloudUtil.parseInt(value)== 0 ?'-':value;
 							return value;
 						}},
-						{ title:'백업주기', key : 'incrementPeriod' ,headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'}, width: '100px', align: 'center',
+						{ title:'[[#{label.zdb0730.grid.incr.backup.cycle}]]', key : 'incrementPeriod' ,headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'}, width: '100px', align: 'center',
 							render:function(value,data){
 
 								
@@ -276,7 +276,7 @@
 							rule:[{value:'0',text:'미사용'},{value:'1',text:'1시간'},{value:'2',text:'2시간'},{value:'6',text:'6시간'},{value:'12',text:'12시간'}] */
 						}},
 
-						{ title:'백업용량', key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
+						{ title:'[[#{label.zdb0730.grid.incr.backup.file.size}]]', key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
 							//return value == '0'?'-': value;
 							return value;
 						}},
