@@ -44,5 +44,9 @@ public class CommonConstants {
 	public static final String EXCEPTION_URL_STATUS_500 = "/exception/500";
 	
 	public static final String NAMESPACE_ALL_MARK = "-";
+	
+	public static final String ACCEPT_LANGUAGE = "Accept-Language";
+	
+	public static final String ACCEPT_LANGUAGE_CAMEL = "acceptLanguage";
 
 }

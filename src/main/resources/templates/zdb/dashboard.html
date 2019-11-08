@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-	<title></title>
+	<title th:text="#{label.dashboard.title.header}"></title>
 </th:block>
 <th:block layout:fragment="content">
 	<!-- location -->
@@ -9,11 +9,11 @@
 		<div class="prj-list"></div>
 	</div>
 	<div class="contents-box">
-		<h2 class="title">Node 목록</h2>
+		<h2 th:text="#{label.dashboard.title.node}" class="title"></h2>
 		<div class="grid-line__wrap mt10">
 			<div id="gridNode"></div>
 		</div>
-		<h2 class="title mt10">Namespace 목록</h2>
+		<h2 th:text="#{label.dashboard.title.namespace}" class="title mt10"></h2>
 		<div class="grid-line__wrap mt10">
 			<div id="gridNamespace"></div>
 		</div>	
@@ -124,7 +124,7 @@
         	        sortingDirection: 'desc'
         	    },
         	    defaultColumnMapping : { sorting: true, resizing : true },
-        	    message: { nodata: 'Nodes 데이터가 없습니다.' },
+        	    message: { nodata: '[[#{label.dashboard.msg.nodata.node}]]' },
         	    autoColumnIndex: true,
         	    cellInlineEdit : true,        	    
         	    cellSelectable : true,        	    
@@ -181,8 +181,7 @@
 									method:'PUT',
 									data:param,
 									success: function(res){
-
-										gCommon.alert("설정이 변경되었습니다.");
+										gCommon.alert("[[#{label.dashboard.msg.setting.change}]]");
 										getNodeList();
 									}
 								})										
@@ -200,7 +199,7 @@
         		renderMapping : renderBar,
         		height:300,
                 defaultColumnMapping : { sorting:true, resizing : true },
-                message: { nodata: 'Namespace 데이터가 없습니다.' },
+                message: { nodata: '[[#{label.dashboard.msg.nodata.namespace}]]' },
         	    autoColumnIndex: true,
         		columnMapping : [
         			{ align : 'center', key : 'name', title : 'Namespace', width : '100px'}, 
@@ -220,9 +219,9 @@
         	        	return value + "/" + data.hardMemoryLimits;
         	        }},
         	        { key: 'memoryLimitsPercentage', title: 'Memory Limits', width: '130px', align: 'center', sorting: false, render: { type: 'memory_limit_bar' },excludeFitWidth:true },
-        			{ align : 'center', key : 'userCount', title : '사용자', width : '50px' }, 
-        			{ align : 'center', key : 'status', title : '상태', width : '50px' }, 
-        			{ align : 'center', key : 'creationDate', title : '생성일시', width : '100px',
+        			{ align : 'center', key : 'userCount', title :'[[#{label.dashboard.grid.user.count}]]'.replaceAll('\n','<br>'), width : '50px' }, 
+        			{ align : 'center', key : 'status', title : '[[#{label.dashboard.grid.status}]]'.replaceAll('\n','<br>'), width : '50px' }, 
+        			{ align : 'center', key : 'creationDate', title : '[[#{label.dashboard.grid.creation.date}]]'.replaceAll('\n','<br>'), width : '100px',
         				render : function(value, data, render, mapping){
         					if(value){
     							return moment(cloudUtil.parseInt(value)).format('YYYY-MM-DD HH:mm:ss');
@@ -278,10 +277,6 @@
 			function fn_getAdminPwConfirm(data){
 				let deferred = $.Deferred();
 				let re = {};
-				console.log("gUserName===="+gUserName);
-/*     			
-    			
-	 */			
 
 				gCommon.adminPwConfirm({
 			        data:{userId:gUserName },

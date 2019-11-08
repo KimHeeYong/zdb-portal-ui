@@ -39,7 +39,7 @@
 			$('#gSelchgLocale').on('change',function(){
 
 				var indexLocation  = location.href ; 
-				if(indexLocation.indexOf('locale') != -1){
+				if(indexLocation.indexOf('&locale=') != -1 || indexLocation.indexOf('?locale=') != -1){
 					indexLocation = indexLocation.substring(0 , indexLocation.length - 2)+this.value;
 				}else{
 					if(indexLocation.indexOf('?') != -1){
@@ -64,6 +64,7 @@
 		var gUserName = [[${session.userInfo.username}]];		
 		var gIsClusterAdmin = ([[${session.userInfo.clusterRole}]]) == 'cluster-admin';
 		var gIsZdbAdmin = [[${session.userInfo.zdbAdmin}]];
+
 		/*]]>*/
 	</script>
 	
@@ -73,25 +74,26 @@
 	<!-- header -->
 	<header class="cp-header">
 		<h1 class="logo"><img src="/styles/images/cloudzlogo.png" alt="CLOUD Z Database"></h1>
-		
 		<!-- utils -->
 		<div class="header-utils">
 			<a class="user" th:text="${session.userInfo.firstName}"></a>
 			<div class="user-menus">
 			    <!-- 임시 다국어 선택 -->
-		<div>
-			<select name="gSelchgLocale" id="gSelchgLocale" >
-				<option value="">선택</option>
-				<option value="ko">한국어</option>
-				<option value="en">English</option>
-			</select>		
-		</div>				
 				<ul class="dropmenu-list">
-					<li class="selected"> <a th:href="${@environment.getProperty('cloudzcp.url')} + |/my/profile|"> 나의 정보<span class="newpop"></span></a></li>
-					<li><a th:href="${@environment.getProperty('cloudzcp.url')} + |/my/pwd|">비밀번호 변경<span class="newpop"></span></a></li>
-					<li><a th:href="${@environment.getProperty('cloudzcp.url')} + |/|">CloudZ CP<span class="newpop"></span></a></li>
-					<li th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true }" ><a href="/zdb06/zdb0600">기본값 설정</a></li>
-					<li id="logout">로그아웃</li>
+					<li class="selected"> <a th:href="${@environment.getProperty('cloudzcp.url')} + |/my/profile|"><span th:text="#{label.common.dropmenu.my.profile}" ></span><span class="newpop"></span></a></li>
+					<li><a th:href="${@environment.getProperty('cloudzcp.url')} + |/my/pwd|"><span th:text="#{label.common.dropmenu.my.pwd}" ></span><span class="newpop"></span></a></li>
+					<li><a th:href="${@environment.getProperty('cloudzcp.url')} + |/|"><span th:text="#{label.common.dropmenu.my.zcp}" ></span><span class="newpop"></span></a></li>
+					<li th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true }" ><a href="/zdb06/zdb0600"><span th:text="#{label.common.dropmenu.my.default.settings}" ></span></a></li>
+					<li>				
+						<div>
+							<select name="gSelchgLocale" id="gSelchgLocale" style="height: 23px;width:170px;border:none;font-size:15px;color:#666666;font-family:'NotoKrR';">
+								<option th:text="#{label.common.button.select.locale}" value=""></option>
+								<option th:text="#{label.common.button.select.korean}" value="ko"></option>
+								<option th:text="#{label.common.button.select.english}" value="en"></option>
+							</select>				
+						</div>	
+					</li>
+					<li id="logout"><span th:text="#{label.common.dropmenu.my.logout}" ></span></li>
 				</ul>
 			</div>
 		</div>

@@ -38,7 +38,7 @@
 			let gParam = {namespace:'zdb-test',serviceType:'mariadb',serviceName:'zdb-test-accc'}; 
 			let gService = {podName:'zdb-test-change-port-mariadb-master-0'};
 			let gridProcess = $('#gridProcess').alopexGrid({
-				message: { nodata: gMessage.gridNodata },
+				message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' },
 				autoColumnIndex : true,
 				columnMapping : [
 						{ key : 'Id', title : 'Id', width : '50px', align : 'center', sorting : 'number'},

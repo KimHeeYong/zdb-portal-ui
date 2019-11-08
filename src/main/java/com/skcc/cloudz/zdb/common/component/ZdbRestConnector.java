@@ -1,5 +1,7 @@
 package com.skcc.cloudz.zdb.common.component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -26,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.Gson;
 import com.skcc.cloudz.zdb.common.security.service.SecurityService;
 import com.skcc.cloudz.zdb.common.security.vo.OpenIdConnectUserDetailsVo;
+import com.skcc.cloudz.zdb.config.CommonConstants;
 import com.skcc.cloudz.zdb.portal.domain.dto.ZdbRestDTO;
 
 @Component
@@ -110,6 +114,22 @@ public class ZdbRestConnector extends RestTemplate{
 	private void addHeaderSession(HttpHeaders headers) {
 		OpenIdConnectUserDetailsVo userInfo = securityService.getUserDetails();
 		HttpSession session = request.getSession();
+		//session 에서 가져올 경우 시간차가 발생하는 현상이 있어서 cookie값을 가져오는 것으로 변경 (2019-11-08)
+		Cookie[] cookies = request.getCookies();
+		String locale = "ko";
+		
+		if(cookies != null) {
+			for(Cookie cookie : cookies) {
+				if("Accept-Language".equals(cookie.getName())) {
+					try {
+						locale = URLDecoder.decode(cookie.getValue(),"UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 		
 		if(headers != null) {
 			headers.set("userId", userInfo.getUserId());
@@ -123,8 +143,11 @@ public class ZdbRestConnector extends RestTemplate{
 			headers.set("zdbAdmin", userInfo.getZdbAdmin() == null ? "false" : userInfo.getZdbAdmin()+"");
 			// Session Locale 값 적용 (2019-10-31)
 			// server쪽 한국어 코드는 kr을 사용해서 header로 보낼때는 kr로 보내야 함
-			String locale = (String) session.getAttribute("Accept-Language") ;
+			//String locale = (String) session.getAttribute("acceptLanguage") ;
 			if("ko".equals(locale)) locale = "kr"  ;
+			//if("ko".equals(locale)) locale = "ko_KR"  ;
+			//else if("en".equals(locale)) locale = "en_US"  ; 
+
 			headers.set("Accept-Language",locale);
 		}
 	}

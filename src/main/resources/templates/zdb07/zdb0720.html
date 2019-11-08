@@ -82,15 +82,15 @@
 			}
 			let gridRule = $('#gridRule').alopexGrid({
 				filteringHeader : false,
-				message: { nodata: gMessage.gridNodata },
+				message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' },
 				enableDefaultContextMenu : false,
 				autoColumnIndex : true,
 				columnMapping : [
 						{ key : 'namespace', title :  '[[#{label.zdb0720.grid.namesapce}]]', width : '100px', align : 'left'},
 						{ key : 'serviceName', title : '[[#{label.zdb0720.grid.service.name}]]', width : '150px', align : 'left'},
 						{ key : 'serviceType', title : '[[#{label.zdb0720.grid.service.type}]]', width : '100px',hidden:true, align : 'left'},
-						{ key : 'clusterEnabled', title : '[[#{label.zdb0720.grid.duplexing.status}]]', width : '70px', align : 'center',render:useCol},	
-						{ key : 'def', title : '[[#{label.zdb0720.grid.default.settings}]]', width : '80px', align : 'center',render:function(value,data){
+						{ key : 'clusterEnabled', title : '[[#{label.zdb0720.grid.duplexing.status}]]'.replaceAll('\n','<br>'), width : '80px', align : 'center',render:useCol},	
+						{ key : 'def', title : '[[#{label.zdb0720.grid.default.settings}]]'.replaceAll('\n','<br>') , width : '80px', align : 'center',render:function(value,data){
 							
 							let vDefaultYn = 'N' ;
 							
@@ -108,12 +108,12 @@
 							return re;
 						}},
 						{ key : 'PodHealthCheck', title : '[[#{label.zdb0720.grid.pod}]]', width : '70px', align : 'center', render:useCol},
-						{ key : 'ContainerHealthCheck', title :  '[[#{label.zdb0720.grid.container}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'ContainerHealthCheck', title :  '[[#{label.zdb0720.grid.container}]]', width : '80px', align : 'center', render:useCol},
 						{ key : 'DBHealthCheck', title : '[[#{label.zdb0720.grid.db}]]', width : '70px', align : 'center', render:useCol},
 						{ key : 'CPUUsage', title : '[[#{label.zdb0720.grid.cpu}]]', width : '70px', align : 'center', render:useCol},
 						{ key : 'MemoryUsage', title : '[[#{label.zdb0720.grid.memory}]]', width : '70px', align : 'center', render:useCol},
-						{ key : 'Connections', title : '[[#{label.zdb0720.grid.connections}]]', width : '80px', align : 'center', render:useCol},
-						{ key : 'SlowQueries', title : '[[#{label.zdb0720.grid.slowquery}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'Connections', title : '[[#{label.zdb0720.grid.connections}]]', width : '90px', align : 'center', render:useCol},
+						{ key : 'SlowQueries', title : '[[#{label.zdb0720.grid.slowquery}]]', width : '90px', align : 'center', render:useCol},
 						{ key : 'ReplicationStatus', title : '[[#{label.zdb0720.grid.status}]]', width : '70px', align : 'center', render:useCol},
 						{ key : 'ReplicationDelay', title : '[[#{label.zdb0720.grid.delay}]]', width : '70px', align : 'center', render:useCol},
 						{ key : 'update', title : '', width : '50px', align : 'center',render:function(value,data){
@@ -131,15 +131,15 @@
 				});
 			let gridRuleRedis = $('#gridRuleRedis').alopexGrid({
 				filteringHeader : false,
-				message: { nodata: gMessage.gridNodata },
+				message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' },
 				enableDefaultContextMenu : false,
 				autoColumnIndex : true,
 				columnMapping : [
 						{ key : 'namespace', title :'[[#{label.zdb0720.grid.namesapce}]]', width : '100px', align : 'left'},
 						{ key : 'serviceName', title : '[[#{label.zdb0720.grid.service.name}]]', width : '150px', align : 'left'},
 						{ key : 'serviceType', title : '[[#{label.zdb0720.grid.service.type}]]', width : '100px',hidden:true, align : 'left'},
-						{ key : 'clusterEnabled', title : '[[#{label.zdb0720.grid.duplexing.status}]]', width : '70px', align : 'center',render:useCol},
-						{ key : 'def', title : '[[#{label.zdb0720.grid.default.settings}]]', width : '80px', align : 'center',render:function(value,data){
+						{ key : 'clusterEnabled', title : '[[#{label.zdb0720.grid.duplexing.status}]]'.replaceAll('\n','<br>'), width : '80px', align : 'center',render:useCol},
+						{ key : 'def', title : '[[#{label.zdb0720.grid.default.settings}]]'.replaceAll('\n','<br>') , width : '80px', align : 'center',render:function(value,data){
 							
 							let vDefaultYn = 'N' ;
 							
@@ -157,12 +157,12 @@
 							return re;
 						}},						
 						{ key : 'PodHealthCheck', title : '[[#{label.zdb0720.grid.pod}]]', width : '70px', align : 'center', render:useCol},
-						{ key : 'ContainerHealthCheck', title : '[[#{label.zdb0720.grid.container}]]', width : '70px', align : 'center', render:useCol},
+						{ key : 'ContainerHealthCheck', title : '[[#{label.zdb0720.grid.container}]]', width : '80px', align : 'center', render:useCol},
 						{ key : 'DBHealthCheck', title : '[[#{label.zdb0720.grid.db}]]', width : '70px', align : 'center', render:useCol},
 						{ key : 'CPUUsage', title : '[[#{label.zdb0720.grid.cpu}]]', width : '70px', align : 'center', render:useCol},
 						{ key : 'MemoryUsage', title :  '[[#{label.zdb0720.grid.memory}]]', width : '70px', align : 'center', render:useCol},
-						{ key : 'Connections', title : '[[#{label.zdb0720.grid.connections}]]', width : '80px', align : 'center', render:useCol},
-						{ key : 'SlowQueries', title : '[[#{label.zdb0720.grid.slowquery}]]', width : '70px', align : 'center',hidden:true, render:useCol},
+						{ key : 'Connections', title : '[[#{label.zdb0720.grid.connections}]]', width : '90px', align : 'center', render:useCol},
+						{ key : 'SlowQueries', title : '[[#{label.zdb0720.grid.slowquery}]]', width : '90px', align : 'center',hidden:true, render:useCol},
 						{ key : 'ReplicationStatus', title : '[[#{label.zdb0720.grid.status}]]', width : '70px', align : 'center',hidden:true, render:useCol},
 						{ key : 'ReplicationDelay', title : '[[#{label.zdb0720.grid.delay}]]', width : '70px', align : 'center', hidden:true,render:useCol},
 						{ key : 'update', title : '', width : '50px', align : 'center',render:function(value,data){

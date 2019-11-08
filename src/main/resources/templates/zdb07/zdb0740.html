@@ -115,23 +115,24 @@
 				let gridStorage = $('#gridStorage').alopexGrid({
 					autoColumnIndex: true,
 					height: 605,
+					headerRowHeight: 60,
 					columnMapping : [  
-						{ title:'[[#{label.zdb0740.gird.namesapce}]]', key : 'namespace' , width: '100px', align: 'left'},
-						{ title:'[[#{label.zdb0740.gird.service.name}]]', key : 'release' , width: '110px', align: 'left'},
-						{ title:'[[#{label.zdb0740.gird.storage.name}]]', key : 'name' , width: '250px', align: 'left'},
-						{ title:'[[#{label.zdb0740.gird.storage.size}]]', key : 'storagSize' , width: '60px', align: 'center'},
-						{ title:'[[#{label.zdb0740.gird.app}]]', key : 'app' , width: '70px', align: 'center'},
-						{ title:'[[#{label.zdb0740.gird.strorage.type}]]', key : 'storageClassName' , width: '120px', align: 'left'},
-						{ title:'[[#{label.zdb0740.gird.billing.type}]]', key : 'billingType' , width: '60px', align: 'center'},
-						{ title:'[[#{label.zdb0740.gird.status}]]', key : 'phase' , width: '80px', align: 'center'},
-						{ title:'[[#{label.zdb0740.gird.access.modes}]]', key : 'accessModes' , width: '130px', align: 'center'},
-						{ title:'[[#{label.zdb0740.gird.component}]]', key : 'component' , width: '60px', align: 'center'},
-						{ title:'[[#{label.zdb0740.gird.creation.date}]]', key : 'creationTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
-						{ title:'[[#{label.zdb0740.gird.update.date}]]', key : 'updateTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
-						{ title:'[[#{label.zdb0740.gird.volume.name}]]', key : 'volumeName' , width: '400px', align: 'left'}
+						{ title:'[[#{label.zdb0740.gird.namesapce}]]'.replaceAll('\n','<br>'), key : 'namespace' , width: '100px', align: 'left'},
+						{ title:'[[#{label.zdb0740.gird.service.name}]]'.replaceAll('\n','<br>'), key : 'release' , width: '110px', align: 'left'},
+						{ title:'[[#{label.zdb0740.gird.storage.name}]]'.replaceAll('\n','<br>'), key : 'name' , width: '250px', align: 'left'},
+						{ title:'[[#{label.zdb0740.gird.storage.size}]]'.replaceAll('\n','<br>'), key : 'storagSize' , width: '70px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.app}]]'.replaceAll('\n','<br>'), key : 'app' , width: '70px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.strorage.type}]]'.replaceAll('\n','<br>'), key : 'storageClassName' , width: '120px', align: 'left'},
+						{ title:'[[#{label.zdb0740.gird.billing.type}]]'.replaceAll('\n','<br>'), key : 'billingType' , width: '60px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.status}]]'.replaceAll('\n','<br>'), key : 'phase' , width: '80px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.access.modes}]]'.replaceAll('\n','<br>'), key : 'accessModes' , width: '130px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.component}]]'.replaceAll('\n','<br>'), key : 'component' , width: '60px', align: 'center'},
+						{ title:'[[#{label.zdb0740.gird.creation.date}]]'.replaceAll('\n','<br>'), key : 'creationTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
+						{ title:'[[#{label.zdb0740.gird.update.date}]]'.replaceAll('\n','<br>'), key : 'updateTimestamp' , width: '150px', align: 'center',render:cloudUtil.dtFormat},
+						{ title:'[[#{label.zdb0740.gird.volume.name}]]'.replaceAll('\n','<br>'), key : 'volumeName' , width: '400px', align: 'left'}
 					],
 					message: {
-						nodata: gMessage.gridNodata
+						nodata: '[[#{label.common.msg.validator.grid.nodata}]]'
 					}
 				});
 				getStorageData();

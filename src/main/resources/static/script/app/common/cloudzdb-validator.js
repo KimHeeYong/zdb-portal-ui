@@ -17,6 +17,7 @@ var gValid = {
 }; 
 $a.page(function() {
 	this.init = function(){
+		//console.log(gIsLocale);
 		Validator.addMethod('checkRule', function(element, value, param) {
 		    var pattern = param;
 		    return pattern.test(value);

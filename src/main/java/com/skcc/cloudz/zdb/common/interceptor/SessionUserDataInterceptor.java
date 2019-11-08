@@ -1,6 +1,7 @@
 package com.skcc.cloudz.zdb.common.interceptor;
 
 import java.net.URLDecoder;
+import java.util.Locale;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -27,31 +28,35 @@ public class SessionUserDataInterceptor extends HandlerInterceptorAdapter{
     @Autowired
     private ZdbApiService apiService;
     
+    
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 		HttpSession session = request.getSession();
 		Cookie[] cookies = request.getCookies();
 		String locale = "ko";
+		
 		if(cookies != null) {
 			for(Cookie cookie : cookies) {
 				if("Accept-Language".equals(cookie.getName())) {
 					locale = URLDecoder.decode(cookie.getValue(),"UTF-8");
 				}
 			}
-		}		
-		//if(session.getAttribute(CommonConstants.USER_INFO)== null) {
+		}
+		
+		session.setAttribute(CommonConstants.ACCEPT_LANGUAGE_CAMEL, locale);
+		session.setAttribute(CommonConstants.ACCEPT_LANGUAGE, locale);
+		
+		if(session.getAttribute(CommonConstants.USER_INFO)== null) {
 			OpenIdConnectUserDetailsVo userInfo = securityService.getUserDetails();
 			if(userInfo != null) {
-				session.setAttribute(CommonConstants.USER_INFO, userInfo);
-				session.setAttribute("Accept-Language", locale);
-				
+				session.setAttribute(CommonConstants.USER_INFO, userInfo);				
 				try {
 					updateUserNamespaces();
 				} catch(Exception e) {
 					//do nothing.
 				}
 			}
-		//};
+		};
 	}
 	
 	public void updateUserNamespaces() {

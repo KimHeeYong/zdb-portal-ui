@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-    <title>서비스 생성</title>
+    <title th:text="#{label.zdb0110.title.header}"></title>
 </th:block>
 <th:block layout:fragment="content">
 <!-- location -->
@@ -15,25 +15,25 @@
 	<div class="contents-box">
 		<!-- service top area-->
 		<div class="top-area">
-             <h2 class="title">서비스 생성하기</h2>
+             <h2 th:text="#{label.zdb0110.title.top}"  class="title"></h2>
              <div class="tag-wrap">
-             	<span class="tag">다음의 서비스 생성단계에 따라서 설정해 주세요.</span>
+             	<span th:text="#{label.zdb0110.tag.top}" class="tag"></span>
              </div>
 		</div>
 		<div class="make-service">
-			<a href="#" class="new-service">새로 만들기</a>
+			<a href="#" th:text="#{label.zdb0110.top.new.service}" class="new-service"></a>
 			<ul class="service-step">
 				<li>
 					<span class="makestep-num active">01</span>
-					<p class="step-txt">서비스 종류 선택</p>
+					<p th:text="#{label.zdb0110.top.service.type}" class="step-txt"></p>
 				</li>
 				<li>
 					<span class="makestep-num">02</span>
-					<p class="step-txt">서비스 설정</p>
+					<p th:text="#{label.zdb0110.top.service.setting}" class="step-txt"></p>
 				</li>
 				<li>
 					<span class="makestep-num">03</span>
-					<p class="step-txt">확인</p>
+					<p th:text="#{label.zdb0110.top.confirm}" class="step-txt"></p>
 				</li>
 			</ul>
 		</div>
@@ -68,8 +68,8 @@
 		</div>
 		<!-- button wrap-->
 		<div class="btn-wrap__center">
-        	<button class="Button btn lg" id="btnCancle">취소</button>
-        	<button class="Button btn lg bg-red" id="btnSelect">선택하기</button>
+        	<button th:text="#{label.common.button.cancel}" class="Button btn lg" id="btnCancel"></button>
+        	<button th:text="#{label.common.button.select}" class="Button btn lg bg-red" id="btnSelect"></button>
         </div>
    </div>  
 <script type="text/javascript">   
@@ -91,17 +91,20 @@
 				var serviceType = $(this).data().serviceType;
 				$('#serviceType').val(serviceType);
 			});
-			$('#btnCancle').on('click',function(){
+			$('#btnCancel').on('click',function(){
 				$('#serviceType').val('');
+				$('div.serviceType').removeClass('selected');
 			});
 			$('#btnSelect').on('click',function(){
 				var namespace = $('#namespaces').val(); 
 				var serviceType = $('#serviceType').val();
 				if(serviceType == ''){
-					gCommon.alert('서비스 타입을 선택하세요');
+					//gCommon.alert('서비스 타입을 선택하세요');
+					gCommon.alert('[[#{label.zdb0110.msg.select.service.type}]]');
 					return;
 				}else if(namespace == ''){
-					gCommon.alert('namespace를 선택하세요.');
+					//gCommon.alert('namespace를 선택하세요.');
+					gCommon.alert('[[#{label.zdb0110.msg.select.namespace}]]');
 					return;
 				}
 				gCommon.movePage('/zdb01/zdb0111?pageId=zdb',{

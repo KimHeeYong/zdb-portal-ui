@@ -61,14 +61,15 @@
 					restoreFocusOnInvalidInlineEdit :true,
 					leaveDeleted:true,
 					columnMapping : [  
-						{ title:'[[#{label.zdb0730.grid.state}]]',key:'state',width:'50px',editable:false,hidden:true,align:'center',excludeFitWidth:true,render:function(value,data){
+						{ title:'[[#{label.zdb0730.grid.state}]]',key:'state',width:'50px',editable:false,hidden:true,align:'center',excludeFitWidth:true
+							,render:function(value,data){
 							if (data._state.added){data.state = 'A'}
 							else if (data._state.deleted){data.state='D'}
 							else if (data._state.edited){data.state='E'}
 							else {data.state=''}
 							return data.state;
 						}},						
-						{ title:'[[#{label.zdb0730.grid.status}]]', key : '' , width: '50x',excludeFitWidth:true, align: 'center',render:function(value,data){
+						{ title:'[[#{label.zdb0730.grid.status}]]'.replaceAll('\n','<br>') , key : '' , width: '70x',excludeFitWidth:true, align: 'center',render:function(value,data){
 
 							//'backupStatus'
 							let status = '';
@@ -94,7 +95,7 @@
 							return re;
 							
 						}},
-						{ title:'[[#{label.zdb0730.grid.service.name}]]', key : 'serviceName' , width: '250px',excludeFitWidth:true, align: 'left',render:function(value,data){
+						{ title:'[[#{label.zdb0730.grid.service.name}]]'.replaceAll('\n','<br>'), key : 'serviceName' , width: '250px',excludeFitWidth:true, align: 'left',render:function(value,data){
 							var re = $('<a href="#" title="'+value+'">'+value+'</a>').html(value).on('click',function(){
 								fn_setSelected2010Tab('tabBackup');
 								gCommon.movePage('/zdb02/zdb0210',{namespace:data.namespace,serviceType:data.serviceType,serviceName:data.serviceName});
@@ -103,7 +104,7 @@
 							return re;
 							
 						}},
-						{ title:'[[#{label.zdb0730.grid.service.type}]]', key : 'serviceType' , width: '100px', align: 'center',render:function(value){
+						{ title:'[[#{label.zdb0730.grid.service.type}]]'.replaceAll('\n','<br>'), key : 'serviceType' , width: '100px', align: 'center',render:function(value){
 							let img = {
 									mariadb:'<img src="/styles/images/mariadb16.png" width="16px">',
 									redis:'<img src="/styles/images/redis16.jpg" width="16px">'
@@ -111,13 +112,13 @@
 							let re = img[value]; 
 							if(re) return re;	
 						}},
-						{ title:'[[#{label.zdb0730.grid.backup.disk}]]', key : 'backupDiskInfo' , width: '100px', align: 'center',render:function(value){
+						{ title:'[[#{label.zdb0730.grid.backup.disk}]]'.replaceAll('\n','<br>'), key : 'backupDiskInfo' , width: '100px', align: 'center',render:function(value){
 							let re = value;
 /* 							if(value == 'Y')re='사용';
 							if(value == 'N')re='미사용'; */
 							return re;
 						}},
-						{ title:'[[#{label.zdb0730.grid.backup.yn}]]', key : 'useYn' , width: '70px', align: 'center',render:function(value,data){
+						{ title:'[[#{label.zdb0730.grid.backup.yn}]]'.replaceAll('\n','<br>'), key : 'useYn' , width: '70px', align: 'center',render:function(value,data){
 							let re = fn_getUseYnTemp(value).on('click','button.Button',function(e){
 								
 								let evObj = AlopexGrid.parseEvent(e);
@@ -136,7 +137,7 @@
 							});
 							return re;
 						} },
-						{ title:'[[#{label.zdb0730.grid.storage.period}]]', key : 'storePeriod' , width: '200px', excludeFitWidth:false, align: 'center', inlineStyle: {padding: '0'} ,render:function(value,data){
+						{title:'[[#{label.zdb0730.grid.storage.period}]]'.replaceAll('\n','<br>'), key : 'storePeriod' , width: '200px', excludeFitWidth:false, align: 'center', inlineStyle: {padding: '0'} ,render:function(value,data){
 							
 							if(cloudUtil.isEmpty(value)) {
 								value = 7 ;
@@ -175,7 +176,7 @@
 							return re;
 
 						}},
-						{ title:'[[#{label.zdb0730.grid.icosdisk.usage}]]', key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
+						{ title:'[[#{label.zdb0730.grid.icosdisk.usage}]]'.replaceAll('\n','<br>'), key : 'icosDiskUsage' , width: '150px', align: 'center', render:function(value){
 							let re = value;
 						/* 	if(!cloudUtil.isEmpty(value) && !isNaN(value)){
 								BigNumber.config({ FORMAT: { groupSeparator: ',', groupSize: 3 } });
@@ -183,8 +184,8 @@
 							} */
 							return re;
 						}},
-						{ title:'[[#{label.zdb0730.grid.full.backup.cycle}]]', key : 'backupExecType' , width: '100px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
-						{ title:'[[#{label.zdb0730.grid.full.backup.start.time}]]', key : 'startTime' , width: '110px',excludeFitWidth:true, align: 'center', inlineStyle: {padding: '0'} ,render:function(value){
+						{ title:'[[#{label.zdb0730.grid.full.backup.cycle}]]'.replaceAll('\n','<br>'), key : 'backupExecType' , width: '100px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
+						{ title:'[[#{label.zdb0730.grid.full.backup.start.time}]]'.replaceAll('\n','<br>'), key : 'startTime' , width: '110px',excludeFitWidth:true, align: 'center', inlineStyle: {padding: '0'} ,render:function(value){
 							if(cloudUtil.isEmpty(value)) {
 								value = '01:00' ;
 							}	
@@ -251,15 +252,15 @@
 							});
 							return re;
 						}},
-						{ title:'[[#{label.zdb0730.grid.full.backup.file.size}]]', key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
+						{ title:'[[#{label.zdb0730.grid.full.backup.file.size}]]'.replaceAll('\n','<br>'), key : 'fullFileSize' , width: '120px', align: 'center',render:function(value){
 							//return value == '0'?'-': value;
 							return value;
 						}},
-						{ title:'[[#{label.zdb0730.grid.full.backup.execution.time}]]', key : 'fullExecutionTime' , width: '70px', align: 'center', render:function(value){
+						{ title:'[[#{label.zdb0730.grid.full.backup.execution.time}]]'.replaceAll('\n','<br>'), key : 'fullExecutionTime' , width: '130px', align: 'center', render:function(value){
 							//return cloudUtil.parseInt(value)== 0 ?'-':value;
 							return value;
 						}},
-						{ title:'[[#{label.zdb0730.grid.incr.backup.cycle}]]', key : 'incrementPeriod' ,headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'}, width: '100px', align: 'center',
+						{ title:'[[#{label.zdb0730.grid.incr.backup.cycle}]]'.replaceAll('\n','<br>'), key : 'incrementPeriod' ,headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'}, width: '100px', align: 'center',
 							render:function(value,data){
 
 								
@@ -276,17 +277,17 @@
 							rule:[{value:'0',text:'미사용'},{value:'1',text:'1시간'},{value:'2',text:'2시간'},{value:'6',text:'6시간'},{value:'12',text:'12시간'}] */
 						}},
 
-						{ title:'[[#{label.zdb0730.grid.incr.backup.file.size}]]', key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
+						{ title:'[[#{label.zdb0730.grid.incr.backup.file.size}]]'.replaceAll('\n','<br>'), key : 'incrFileSize' , width: '120px', align: 'center',render:function(value){
 							//return value == '0'?'-': value;
 							return value;
 						}},
-						{ title:'[[#{label.zdb0730.grid.incr.backup.execution.time}]]', key : 'incrExecutionTime' , width: '130px', align: 'center', render:function(value){
+						{ title:'[[#{label.zdb0730.grid.incr.backup.execution.time}]]'.replaceAll('\n','<br>'), key : 'incrExecutionTime' , width: '130px', align: 'center', render:function(value){
 							//return cloudUtil.parseInt(value)== 0 ?'-':value;
 							return value;
 						}}
 					],
 					message: {
-						nodata: gMessage.gridNodata
+						nodata: '[[#{label.common.msg.validator.grid.nodata}]]'
 					},
 					defaultSorting:{
 						sortingColumn: "serviceName",

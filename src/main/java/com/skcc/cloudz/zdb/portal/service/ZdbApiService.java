@@ -1,5 +1,7 @@
 package com.skcc.cloudz.zdb.portal.service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -170,8 +173,25 @@ public class ZdbApiService{
 			mediaTypeList.add(MediaType.APPLICATION_JSON);
 			headers.setAccept(mediaTypeList);
 			headers.set("Content-Type", "application/json-patch+json");
-			HttpSession session = request.getSession();
-			String locale = (String) session.getAttribute("Accept-Language") ;
+			//HttpSession session = request.getSession();
+			//String locale = (String) session.getAttribute("Accept-Language") ;
+			//session 에서 가져올 경우 시간차가 발생하는 현상이 있어서 cookie값을 가져오는 것으로 변경 (2019-11-08)
+			Cookie[] cookies = request.getCookies();
+			String locale = "ko";
+			
+			if(cookies != null) {
+				for(Cookie cookie : cookies) {
+					if("Accept-Language".equals(cookie.getName())) {
+						try {
+							locale = URLDecoder.decode(cookie.getValue(),"UTF-8");
+						} catch (UnsupportedEncodingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			
 			if("ko".equals(locale)) locale = "kr"  ;
 			headers.set("Accept-Language",locale);
 			
@@ -1050,7 +1070,7 @@ public class ZdbApiService{
 	public ZdbRestDTO restoreToPoint(Map<String, String> param) {
 		ZdbRestDTO zdbRestDTO = null;
 		HttpEntity<Map<String,String>> entity = new HttpEntity<>(param);
-
+		
 		zdbRestDTO = connector.exchange(demonServer + URIConstants.URI_GET_RESTORE_TO_POINT, HttpMethod.GET,entity,ZdbRestDTO.class,param).getBody();
 		return zdbRestDTO;
 	}	

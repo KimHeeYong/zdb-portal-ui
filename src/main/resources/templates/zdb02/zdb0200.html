@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-    <title>서비스 목록</title>
+    <title th:text="#{label.zdb0200.title.header}" ></title>
 </th:block>
 <th:block layout:fragment="page_js">
 	<script type="text/javascript" th:inline="javascript">
@@ -26,14 +26,14 @@
 </div>
 <div class="contents-box">
 <div class="top-area">
-	<h2 class="title">서비스목록</h2>
+	<h2 th:text="#{label.zdb0200.title.top}" class="title"></h2>
 	<div class="tag-wrap" id="tagArea">
-		<span class="tag">태그:</span>
-		<span class="Label Default" data-id="all">모든태그</span>
+		<span th:text="#{label.zdb0200.tag.top}" class="tag"></span>
+		<span th:text="#{label.zdb0200.tag.all}" class="Label Default" data-id="all"></span>
 	</div>
 </div>
 <div class="search-wrap">
-	<input class="Textinput srcinput" placeholder="검색어를 입력하세요." id="txtServiceFilter">
+	<input class="Textinput srcinput" th:placeholder="#{label.common.search.message}"  id="txtServiceFilter">
 </div>	
 <div id="divRequest" style="width:900px;">
 </div> 
@@ -284,7 +284,7 @@
 					}}					
 				],
 				message: {
-					nodata: gMessage.gridNodata
+					nodata: '[[#{label.common.msg.validator.grid.nodata}]]'
 				}
 			})
 			divServiceListGrid.on('toggleTreeNode',function(e){

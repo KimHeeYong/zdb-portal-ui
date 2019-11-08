@@ -2,7 +2,7 @@
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" 
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-	<title>환경설정</title>
+	<title th:text="#{label.zdb0600.title.header}"></title>
 </th:block>
 <th:block layout:fragment="page_css">
 </th:block>
@@ -20,9 +20,9 @@
 	<div class="contents-box">
 		<!-- Top Area -->
 		<div class="top-area">
-			<h2 class="title">기본값 설정</h2>
+			<h2 th:text="#{label.zdb0600.title.top}" class="title"></h2>
 			<div class="tag-wrap">
-				<span class="tag">DB Instance 생성 시 적용할 기본값을 설정합니다.</span>
+				<span th:text="#{label.zdb0600.tag.top}" class="tag"></span>
 			</div>
 		</div>
 		<!-- Detail Area -->
@@ -33,15 +33,15 @@
 						<div class="accor-contents__wrap">
 							<table class="Table Form-type" id="clusterAdminTable" name="clusterAdminTable" style="display:none;border-top-width: 0px; border-bottom-width: 0px;">
 								<colgroup>
-									<col style="width: 230px;">
+									<col style="width:250px;">
 									<col>
 								</colgroup>
 								<tbody>
 									<tr>
-										<th><b>공통</b></th>
+										<th style="font-size:20px;"><b><span th:text="#{label.zdb0600.table.common}"></span></b></th>
 									</tr>
 									<tr>
-										<th>Resource 가용량 체크</th>
+										<th th:text="#{label.zdb0600.table.free.resource.check}"></th>
 										<td>
 											<div class="onoff-wrap">
 												<button class="Button btn-on" data-target="free_resource_check">ON</button>
@@ -55,7 +55,7 @@
 										</td>
 									</tr>
 									<tr>
-										<th>Public 접근 설정 UI</th>
+										<th th:text="#{label.zdb0600.table.public.network.settings}"></th>
 										<td>
 											<div class="onoff-wrap" >
 												<button class="Button btn-on" data-target="public_network_enabled">ON</button>
@@ -72,27 +72,27 @@
 							</table>
 							<table class="Table Form-type" style="border-top-width: 0px;">
 								<colgroup>
-									<col style="width: 230px;">
+									<col style="width: 250px;">
 									<col>
 								</colgroup>
 								<tbody>
 									<tr>
-										<th><b>MariaDB</b></th>
+										<th style="font-size:20px;"><b><span th:text="#{label.zdb0600.table.mariadb}" ></span></b></th>
 									</tr>
 									<tr>
-										<th>Backup 보관 기간</th>
+										<th th:text="#{label.zdb0600.table.backup.duration}"></th>
 										<td>
-											<div class="info-list" style="margin-right: 0px;">
+											<div class="info-list" style="margin-right: 10px;">
 												<div class="Spinner NumberSpinner" data-min="0" data-max="60" data-step="1" data-target="backup_duration">
-													<input name="backup_duration" value="1" style="width: 80px;"> 
-													<a class="Up"></a> <a class="Down"></a>
+													<input name="backup_duration" value="1" style="width: 60px;"> 
+													<a class="Up" style="right:1px;"></a> <a class="Down"  style="right:1px;"></a>
 												</div>
 											</div> 
-											<span class="info-list">일</span>
+											<span th:text="#{label.zdb0600.table.day}" class="info-list"></span>
 										</td>
 									</tr>
 									<tr>
-										<th>Backup 시간</th>
+										<th th:text="#{label.zdb0600.table.backup.time}"></th>
 										<td>
 											<div class="info-list">
 												<div class="Spinner Time" data-locale="en" id="backup_time" data-hours="24H" data-bind="time:date">
@@ -103,7 +103,7 @@
 										</td>
 									</tr>
 									<tr><!-- dwtemp todo -->
-										<th>Auto Failover 설정 UI</th>
+										<th th:text="#{label.zdb0600.table.auto.failover.settings}"></th>
 										<td>
 											<div class="onoff-wrap">
 												<button class="Button btn-on" data-target="auto_failover_enabled">ON</button>
@@ -126,7 +126,7 @@
 		<!-- button wrap-->
 		<div class="btn-wrap">
 			<div class="btn-right">
-				<button class="Button btn lg bg-red" id="btnSave">저장</button>
+				<button th:text="#{label.common.button.save}" class="Button btn lg bg-red" id="btnSave"></button>
 			</div>
 		</div>
 	</div>
@@ -168,7 +168,7 @@
 									fsList = res.result||[];
 								}
 								if(fsList.length > 0){
-									gCommon.alert('Failover 설정된 서비스가 있습니다.<br/><div style="color:#808080;height: 130px;overflow: auto;">'+fsList.join('  , ')+'</div>',null,{height:'300'});
+									gCommon.alert('[[#{label.zdb0600.msg.alert.failover}]]'+'<br/><div style="color:#808080;height: 130px;overflow: auto;">'+fsList.join('  , ')+'</div>',null,{height:'300'});
 								}else{
 									fn_setOnOff(target,''+$(this).hasClass('btn-off'));
 								}
@@ -202,7 +202,7 @@
 				}
 				
 				function fn_saveConfigData(){
-					gCommon.confirm('저장 하시겠습니까?',function(res){
+					gCommon.confirm('[[#{label.zdb0600.msg.alert.save}]]',function(res){
 						if(gConfigData.isExists){
 							url = '/zdbapi/updateZDBConfigs';
 						}else{

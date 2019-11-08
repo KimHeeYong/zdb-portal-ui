@@ -2829,7 +2829,7 @@
 						}}
 					]},
 				message: {
-					nodata: gMessage.gridNodata
+					nodata: '[[#{label.common.msg.validator.grid.nodata}]]'
 				}
 			}).on('mouseover', '.bodycell .TooltipEvt',function(e){
 				// grid backup 상태(status) 컬럼 실패시 tooltip추가 (2019-07-10)
@@ -3110,7 +3110,7 @@
 					{ title:'UserName', key : 'userId' , width: '250px', align: 'left'}
 				],
 				message: {
-					nodata: gMessage.gridNodata
+					nodata: '[[#{label.common.msg.validator.grid.nodata}]]'
 				}
 			}).on('mouseover', '.bodycell .TooltipEvt',function(e){
 				var evObj = AlopexGrid.parseEvent(e);
@@ -3235,7 +3235,7 @@
 					{ title:'TRIGGER', key : 'trigger' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
 					{ title:'GRANT', key : 'grant' , width: '90px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck},
 					{ title:'CREATE USER', key : 'createUser' , width: '130px', align: 'center',editable:editTypeYn,render:renderCheckbox,allowEdit:allowEditCheck}
-				], message: { nodata: gMessage.gridNodata }
+				], message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' }
 			}).on('cellEditInvalid ', function(e){
 					setTimeout(function(evt){
 						var evObj = AlopexGrid.parseEvent(e);
@@ -3371,7 +3371,7 @@
 						}
 						return true;
 					}}
-				], message: { nodata: gMessage.gridNodata }
+				], message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' }
 			}).on('cellEditInvalid ', function(e){
 				setTimeout(function(evt){
 					let evObj = AlopexGrid.parseEvent(e);
@@ -3499,7 +3499,7 @@
 						url: '/zdbapi/updateDBVariables',
 						data:param,
 						success: function(res){
-							gCommon.alert(gMessage.saveSuccess,function(){
+							gCommon.alert('[[#{label.common.msg.validator.save.success}]]',function(){
 								$('#zdbServiceTabs').setTabByContent('#tabService');
 							});
 						},
@@ -3665,7 +3665,7 @@
 						return re;
 					}
 				},				
-				message: { nodata: gMessage.gridNodata },
+				message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' },
 				autoColumnIndex : true,
 				columnMapping : [
 						{ key : 'Id', title : '프로세스ID', width : '70px', align : 'center'},
