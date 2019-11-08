@@ -81,8 +81,9 @@ function gfn_getReadyCondition(pod){
 }
 
 //서비스 템플릿
-function gfn_getServiceTemplate(ob){    
+function gfn_getServiceTemplate(ob,msg){    
 	var guid = gCommon.getUid();
+	console.log(msg);
 	var template = '' 
 			+'	<div class="Panel service-panel">                                                        '
 			+'		<div class="Panel-content" link id="'+guid+'">'
@@ -97,23 +98,23 @@ function gfn_getServiceTemplate(ob){
 			+'				<dd>                                                                         '
 			+'					<div class="tag-wrap">                                                   '
 			+'						{{tags}}                                                             '
-			+'					<button class="Label add-label tagAdd hide" key="'+guid+'">추가</button>					 '
+			+'					<button class="Label add-label tagAdd hide" key="'+guid+'">'+msg['add']+'</button>					 '
 			+'					<span class="add-label__input hide"><input class="Textinput tagAddInput"  key="'+guid+'" ></input></span>'
 			+'					</div>                                                                   '
 			+'				</dd>                                                                        '
 			+'				<dd class="time-info">                                                       '
-			+'					<strong>구동시간 </strong> :                                                '
+			+'					<strong>'+msg['elapsedTime']+' </strong> :                                                '
 			+'					<span>{{elapsedTime}}</span>                                                '
 			+'				</dd>                                                                        '
 			+'			</dl>                                                                            '
 			+'			<div class="service-btn__wrap">                                                  ';
 			if(gIsZdbAdmin && ob.status == 'gray'){
 				template = template 
-				+'              <button class="btn-ico btn-del__typeb proc_serviceDelete" key="'+guid+'" title="삭제">삭제</button>         '
-				+'				<button class="btn-ico btn-refresh proc_serviceRestart" key="'+guid+'" title="재시작">재시작</button>                '
+				+'              <button class="btn-ico btn-del__typeb proc_serviceDelete" key="'+guid+'" title="'+msg['del']+'">'+msg['del']+'</button>         '
+				+'				<button class="btn-ico btn-refresh proc_serviceRestart" key="'+guid+'" title="'+msg['restart']+'">'+msg['restart']+'</button>                '
 			}
 			template = template 
-			+'				<button class="btn-ico btn-viewdetail viewMonitor" key="'+guid+'" title="모니터링">모니터보기</button>             '
+			+'				<button class="btn-ico btn-viewdetail viewMonitor" key="'+guid+'" title="'+msg['monitoring']+'">'+msg['monitor']+'</button>             '
 			+'			</div>                                                                           '
 			+'		</div>                                                                               '
 			+'	</div> 		                                                                             ';

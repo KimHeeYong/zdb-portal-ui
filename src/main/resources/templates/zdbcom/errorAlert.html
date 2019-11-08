@@ -1,0 +1,29 @@
+<div class="popup-wrap" id="divAlertPop">
+	<div class="popup-alert">
+		<div class="popup-text">
+			<div id="message">
+			 <span th:text="#{label.common.msg.alert.error.ticket.first}"></span>	<br/> 
+			 <span th:text="#{label.common.msg.alert.error.ticket.second}"></span>	
+		     <a th:text="#{label.common.msg.alert.error.ticket}" href="https://support.cloudz.co.kr/support/tickets/new" target="_blank"></a>
+		     <span th:text="#{label.common.msg.alert.error.ticket.third}"> </span><br/>
+		     <span th:text="#{label.common.msg.alert.error.ticket.fourth}"> </span>
+			</div>
+		</div>
+	</div>
+	<!--button-->
+	<div class="popup-btn__wrap" style="width:100%">
+		<button class="Button btn bg-gray ok">확인</button>
+	</div>
+	<!--//button-->
+</div>
+<script type="text/javascript">
+$a.page(function() {
+	this.init = function() {
+		//$('#divAlertPop #message').html(gPopData.message);
+		$('#divAlertPop button.ok').click(function(){
+			$a.close('Y');
+		});
+	}
+});
+	
+</script>

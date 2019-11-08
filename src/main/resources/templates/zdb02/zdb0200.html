@@ -43,14 +43,14 @@
 	<!-- namespace sorting-->
 	<div class="namespace-sort">
 		<div class="sort-button" id="divServiceListBtns">
-			<button class="Button btn-ico__typeb btn-cardview Checked" id="btnServiceListCard" data-list-type="card">카드형으로 보기</button>
-			<button class="Button btn-ico__typeb btn-listview" id="btnServiceListGrid" data-list-type="grid">목록형으로 보기</button>
+			<button th:text="#{label.zdb0200.sort.button.card}"  class="Button btn-ico__typeb btn-cardview Checked" id="btnServiceListCard" data-list-type="card"></button>
+			<button th:text="#{label.zdb0200.sort.button.grid}"  class="Button btn-ico__typeb btn-listview" id="btnServiceListGrid" data-list-type="grid"></button>
 		</div>
 		<ul class="sort-list">
-			<li data-sort-name="serviceName" class="asc">이름</li>
-			<li data-sort-name="serviceType">서비스종류</li>
-			<li data-sort-name="lastTransitionTime">구동시간</li>
-			<li data-sort-name="status">상태</li>
+			<li th:text="#{label.zdb0200.sort.service.name}"  data-sort-name="serviceName" class="asc"></li>
+			<li th:text="#{label.zdb0200.sort.service.type}"  data-sort-name="serviceType"></li>
+			<li th:text="#{label.zdb0200.sort.last.transition.time}"  data-sort-name="lastTransitionTime"></li>
+			<li th:text="#{label.zdb0200.sort.status}"  data-sort-name="status"></li>
 		</ul>
 	</div>
 	<div id="divServiceList">
@@ -60,8 +60,8 @@
 		<div data-list-type="grid" class="hide">
 			<div class="btn-wrap">
 				<div class="btn-right">
-					<button class="Button btn sm" id="btnExpandAll" style="margin-bottom: 3px;">전체펼침</button>
-					<button class="Button btn sm" id="btnCollapseAll" style="margin-bottom: 3px;">전체접힘</button>
+					<button th:text="#{label.zdb0200.grid.unfold}" class="Button btn sm" id="btnExpandAll" style="margin-bottom: 3px;"></button>
+					<button th:text="#{label.zdb0200.grid.fold}" class="Button btn sm" id="btnCollapseAll" style="margin-bottom: 3px;"></button>
 				</div>
 			</div>	
 			<div id="divServiceListGrid">
@@ -97,6 +97,13 @@
 	var gTagList = [];
 	var gSelectedListType = 'card'; 
 	var gExpandServiceList = [];
+	var gMsg = {elapsedTime:'[[#{label.zdb0200.card.elapsed.time}]]'
+		,add:'[[#{label.zdb0200.card.add}]]'
+		,del:'[[#{label.zdb0200.card.delete}]]'
+		,restart:'[[#{label.zdb0200.card.restart}]]'							
+		,monitoring:'[[#{label.zdb0200.card.monitoring}]]'
+		,monitor:'[[#{label.zdb0200.card.button.monitoring}]]'	
+	};	
 	$a.page(function() {
 		let divServiceListGrid;
 		this.init = function() {
@@ -157,7 +164,7 @@
 				var data = $('#'+$(evt.target).attr('key')).data();
 				if(!data)return;
 				if(data.status == 'gray'){
-					gCommon.alert('서비스 준비 중입니다.');
+					gCommon.alert('[[#{label.common.msg.alert.service.preparation}]]');
 					return;
 				};
 				var param = $.extend({},data,{});
@@ -167,7 +174,7 @@
 			
 			//서비스 목록 refresh 클릭
 			$('body').on('click','.proc_serviceRestart',function(evt){
-				gCommon.confirm('서비스를 재시작 하시겠습니까?',function(){
+				gCommon.confirm('[[#{label.common.msg.alert.service.restart}]]',function(){
 					var data = $('#'+$(evt.target).attr('key')).data();
 					$a.ajax({
 						url: '/zdbapi/restartService',
@@ -180,13 +187,13 @@
 					});
 				})
 			}).on('click','.proc_serviceDelete',function(evt){
-				gCommon.confirm('서비스를 삭제 하시겠습니까?',function(){
+				gCommon.confirm('[[#{label.common.msg.alert.service.delete}]]',function(){
 					var data = $('#'+$(evt.target).attr('key')).data();
 					$a.ajax({
 						url: '/zdbapi/deleteServiceInstance',
 						data:data,
 						success: function(res){
-							gCommon.alert('삭제 요청이 완료 되었습니다.',function(){
+							gCommon.alert('[[#{label.common.msg.alert.delete.completed}]]',function(){
 								//fn_getServices();
 							});
 						}
@@ -218,7 +225,7 @@
 						return '<span class="state '+value+'"></span>';
 					}},
 					//{ title:'네임스페이스', key : 'namespace', width: '100px', align: 'left'},
-					{ title:'이름', key : 'serviceName', width: '230px', align: 'left', render:function(value,data,render,mapping){
+					{ title:'[[#{label.zdb0200.grid.service.name}]]', key : 'serviceName', width: '230px', align: 'left', render:function(value,data,render,mapping){
 						let re = $('<a href="#" title="'+value+'">'+value+'</a>').on('click',function(){
 							fn_moveServiceDetail(data,false);
 						});
@@ -227,15 +234,15 @@
 						}
 						return re;
 					}, treeColumn : true},
-					{ title:'CPU', key:'cpu',width:'70px',align:'center',hidden:true},		 			
-					{ title:'Requests', key:'cpuRequest',width:'70px',align:'center',hidden:true},
-					{ title:'Limits', key:'cpuLimit',width:'70px',align:'center',hidden:true},
- 					{ title:'MEMORY', key:'memory',width:'70px',align:'center',hidden:true},	 
-					{ title:'Requests', key:'memoryRequest',width:'70px',align:'center',hidden:true},
-					{ title:'Limits', key:'memoryLimit',width:'70px',align:'center',hidden:true},
-					{ title:'데이터', key:'storageData',width:'70px',align:'center',hidden:true},
-					{ title:'백업', key:'storageBackup',width:'70px',align:'center',hidden:true},
-					{ title:'서비스종류', key : 'serviceType', width: '100px', align: 'center', render:function(value){
+					{ title:'[[#{label.zdb0200.grid.service.cpu}]]', key:'cpu',width:'70px',align:'center',hidden:true},		 			
+					{ title:'[[#{label.zdb0200.grid.cpu.request}]]', key:'cpuRequest',width:'70px',align:'center',hidden:true},
+					{ title:'[[#{label.zdb0200.grid.cpu.limit}]]', key:'cpuLimit',width:'70px',align:'center',hidden:true},
+ 					{ title:'[[#{label.zdb0200.grid.memory}]]', key:'memory',width:'70px',align:'center',hidden:true},	 
+					{ title:'[[#{label.zdb0200.grid.memory.request}]]', key:'memoryRequest',width:'70px',align:'center',hidden:true},
+					{ title:'[[#{label.zdb0200.grid.memory.limit}]]' , key:'memoryLimit',width:'70px',align:'center',hidden:true},
+					{ title:'[[#{label.zdb0200.grid.storage.data}]]', key:'storageData',width:'70px',align:'center',hidden:true},
+					{ title:'[[#{label.zdb0200.grid.storage.backup}]]', key:'storageBackup',width:'70px',align:'center',hidden:true},
+					{ title:'[[#{label.zdb0200.grid.service.type}]]', key : 'serviceType', width: '100px', align: 'center', render:function(value){
 						let img = {
 							mariadb:'<img src="/styles/images/mariadb16.png" width="16px">',
 							redis:'<img src="/styles/images/redis16.jpg" width="16px">'
@@ -243,41 +250,41 @@
 						let re = img[value]; 
 						if(re) return re;						
 					}},
-					{ title:'버전', key : 'version', width: '110px', align: 'center'},
-					{ title:'구동시간', key : 'elapsedTime', width: '80px', align: 'center'},
-					{ title:'생성일자', key : 'crtTime', width: '150px', align: 'center',render:function(data){
+					{ title:'[[#{label.zdb0200.grid.version}]]', key : 'version', width: '110px', align: 'center'},
+					{ title:'[[#{label.zdb0200.grid.elapsed.time}]]', key : 'elapsedTime', width: '80px', align: 'center'},
+					{ title:'[[#{label.zdb0200.grid.create.time}]]', key : 'crtTime', width: '150px', align: 'center',render:function(data){
 						try{
 							return data.substring(0,10);
 						} catch (ex) {}
 						return data;
 					}},
-					{ title:'HA', key : 'clusterEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
+					{ title:'[[#{label.zdb0200.grid.ha}]]', key : 'clusterEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
 						if(data.tp == 'pod') return;
 						if(value == true){
 							return cImg.checkboxY;
 						}
 					}},
-					{ title:'Autofailover', key : 'failoverEnabled', width: '120px', align: 'center',render:function(value,data,render,mapping){
+					{ title:'[[#{label.zdb0200.grid.auto.failover}]]', key : 'failoverEnabled', width: '120px', align: 'center',render:function(value,data,render,mapping){
 						if(data.tp == 'pod') return;
 						if(value == 'on'){
 							return cImg.checkboxY;
 						}
 					}},
-					{ title:'백업', key : 'backupEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
+					{ title:'[[#{label.zdb0200.grid.backup.enabled}]]', key : 'backupEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
 						if(data.tp == 'pod') return;
 						if(value == true){
 							return cImg.checkboxY;
 						}
 					}},
-					{ title:'Public', key : 'publicEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
+					{ title:'[[#{label.zdb0200.grid.public}]]', key : 'publicEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
 						if(data.tp == 'pod') return;
 						if(value == true){
 							return cImg.checkboxY;
 						}
 					}},
-					{ title:'모니터링', key : '', width: '80px', align: 'center',render:function(value,data,render,mapping){
+					{ title:'[[#{label.zdb0200.grid.monitoring}]]', key : '', width: '80px', align: 'center',render:function(value,data,render,mapping){
 						if(data.tp == 'pod') return;
-						var re = $('<button class="btn-ico btn-viewdetail" title="'+data.serviceName+'">모니터링</button>').on('click',function(){
+						var re = $('<button class="btn-ico btn-viewdetail" title="'+data.serviceName+'">'+'[[#{label.zdb0200.grid.service.monitoring}]]'+'</button>').on('click',function(){
 							fn_moveServiceDetail(data,true);
 						});
 						return re;
@@ -306,7 +313,7 @@
 /* 				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [ {fromIndex:'cpuRequest', toIndex:'cpuLimit', title:'CPU'}
 				, {fromIndex:'memoryRequest', toIndex:'memoryLimit', title:"MEMORY"} , {fromIndex:'storageData', toIndex:'storageBackup', title:"스토리지"}]}); */
 				
-				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [  {fromIndex:'storageData', toIndex:'storageBackup', title:"스토리지"}]});
+				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [  {fromIndex:'storageData', toIndex:'storageBackup', title:"[[#{label.zdb0200.grid.service.storage}]]"}]});
 			}
 			let p = nTreeDt.map(function(dt){
 				return {namespace:dt.namespace,serviceType:dt.serviceType,serviceName:dt.serviceName};
@@ -458,7 +465,9 @@
 						statusMessage:ob.statusMessage||'',
 						tagList:ob.tags
 					};
-				var tDiv = $(gfn_getServiceTemplate(data));
+			
+
+				var tDiv = $(gfn_getServiceTemplate(data,gMsg));
 				dispServiceDiv.append(tDiv);
 				gCommon.setDataAttrs(tDiv.find('.Panel-content[link]'),data);
 			};
@@ -502,7 +511,7 @@
 			gCommon.removeOverlay();
 		}
 		function fn_displayTags(){
-			var tagDiv = $('#tagArea').html('<span class="tag">태그:</span> <span class="Label white" data-id="all">모든태그</span>'); 
+			var tagDiv = $('#tagArea').html('<span class="tag">'+'[[#{label.zdb0200.tag.top}]]'+'</span> <span class="Label white" data-id="all">'+ '[[#{label.zdb0200.tag.all}]]' +'</span>'); 
 			if(gTagList){
 				for(var i = 0 ; i < gTagList.length;i++){
 					var tag = gTagList[i];

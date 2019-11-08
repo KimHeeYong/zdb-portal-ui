@@ -40,6 +40,19 @@ public class ZdbController {
 		ModelAndView mav = new ModelAndView();
 		return mav;
 	}
+
+	/**
+	 * 2019.11.08.  추가
+	 * @author kumocomms
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/zdbcom/errorAlert")
+	public ModelAndView errorAlert(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView();
+		return mav;
+	}
+	
 	/**
 	 * 2019.07.05.  추가
 	 * @author kumocomms

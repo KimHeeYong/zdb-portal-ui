@@ -105,7 +105,7 @@
 		<div id="loading">
 			<div id="loading-image">
 				<img src="/styles/images/ajax-loader.gif" alt="Loading..." />
-				<p id="loading-message"></p>
+				<p th:text="#{label.common.msg.loading}" id="loading-message"></p>
 			</div>
 		</div>
 		<div class="lnb-wrap db-lnb">
@@ -134,6 +134,10 @@
 			</nav>
 		</div>
 		<!-- //lnb -->
+		<!--  -->
+		<span id="gSelectAll" name="gSelectAll" th:text="#{label.common.select.all}" style="display:none;"></span>
+		<span id="gSystemError" name="gSystemError" th:text="#{label.common.msg.alert.system.error}" style="display:none;"></span>	
+		<span id="gChangeSetting" name="gChangeSetting" th:text="#{label.common.msg.alert.chage.setting}" style="display:none;"></span>		
 		<!-- contents -->
 		<th:block layout:fragment="content"> </th:block>
 	</div>

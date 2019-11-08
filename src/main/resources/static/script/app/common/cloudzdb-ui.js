@@ -70,7 +70,7 @@ var gCommon = $a.page(function(){
 			    	if(res.status == 0){
 		    			location.href = location.href;
 			    	}else{
-			    		gCommon.alert('시스템 에러가 발생하였습니다. <br/>');
+			    		gCommon.alert($("#gSystemError").text());
 			    	}
 			    },
 			    beforeSend:function(bopt){
@@ -78,7 +78,7 @@ var gCommon = $a.page(function(){
 			    	if(opt && opt.loadingMessage){
 			    		loadingMessage = opt.loadingMessage;
 			    	};
-			    	$('#loading-message').html(loadingMessage);
+			    	//$('#loading-message').html(loadingMessage);
 			    	gIgnoreOverlay = opt.ignoreOverlay;
 			    },
 			    complete:function(copt){
@@ -89,8 +89,10 @@ var gCommon = $a.page(function(){
 			    }
 			};
 			var option = $.extend({},defOpt,opt);
+		
 			let errMessage = '서비스가 일시적으로 사용이 불가능 합니다.<br/> 장기간 현상이 발생할 경우에 '+
 		      '<a href="https://support.cloudz.co.kr/support/tickets/new" target="_blank">티켓</a>을 통해서 <br/>접수를 해주시기 바랍니다.';
+
 			if(opt.success){
 				option.success = function(res){
 					if(res && res.result && (res.result.resultCode == 'exception')){
@@ -98,7 +100,13 @@ var gCommon = $a.page(function(){
 						if(re.indexOf('java.lang')> -1){
 							re = errMessage; 
 						}
-						gCommon.alert(re);							
+						// error 메세지 다국어 지원을 위한 추가 로직 (2019-11-08)
+						if(re == errMessage){
+							gCommon.errorAlert();		
+						}else{
+							gCommon.alert(re);		
+						}
+											
 					}else if(res && res.result && (res.result.code == 4)){
 						let re = res.result.message|| errMessage;
 						if(re.indexOf('java.lang')> -1){
@@ -106,7 +114,13 @@ var gCommon = $a.page(function(){
 						} else {
 							re = res.result.message;
 						}
-						gCommon.alert(re);													
+						// error 메세지 다국어 지원을 위한 추가 로직 (2019-11-08)
+						if(re == errMessage){
+							gCommon.errorAlert();		
+						}else{
+							gCommon.alert(re);		
+						}
+												
                         opt.success(res);
 					}else{
 						opt.success(res);
@@ -182,6 +196,8 @@ var gCommon = $a.page(function(){
 		let deferred = $.Deferred();
 		var defOpt = {incAll:true,incAdminAll:false};
 		var opt = $.extend({},defOpt,options);
+		
+		console.log(opt);
 		//return selector.setDataSource([{id:'fsk-db',text:'fsk-db'}]); //dwtemp
 		$a.ajax({
 			url: '/zdbapi/getNamespaces',
@@ -204,13 +220,13 @@ var gCommon = $a.page(function(){
 						if(gIsClusterAdmin){
 							namespaceList.push({
 								id:G_NAMESPACE_ALL,
-								text:"전체"
+								text:$("#gSelectAll").text()
 							});
 						}
 					} else if(opt.incAll){
 						namespaceList.push({
 							id:G_NAMESPACE_ALL,
-							text:"전체"
+							text:$("#gSelectAll").text()
 						});
 					}
 				};
@@ -414,7 +430,7 @@ var gCommon = $a.page(function(){
 	this.credentialConfirm = function(option){
 		let defOpt = {
 		        url: "/zdb02/zdb0200p03",
-		        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면'},
+		        data:{credential:$("#credential").val(), msg:$('#gChangeSetting').text()},
 		        iframe: false,
 		        width: 500,
 		        height: 300,
@@ -434,7 +450,7 @@ var gCommon = $a.page(function(){
 	this.credentialApiConfirm = function(option){
 		let defOpt = {
 		        url: "/zdbcom/credentialConfirm",
-		        data:{namespace:option.data.namespace ,serviceType:option.data.serviceType ,serviceName:option.data.serviceName, msg:'설정을 변경하시려면'},
+		        data:{namespace:option.data.namespace ,serviceType:option.data.serviceType ,serviceName:option.data.serviceName, msg:$('#gChangeSetting').text()},
 		        iframe: false,
 		        width: 500,
 		        height: 300,
@@ -454,7 +470,7 @@ var gCommon = $a.page(function(){
 	this.adminPwConfirm = function(option){
 		let defOpt = {
 		        url: "/zdb02/zdb0200p10",
-		        data:{password:'1234', msg:'설정을 변경하시려면'},
+		        data:{password:'1234', msg:$('#gChangeSetting').text()},
 		        iframe: false,
 		        width: 500,
 		        height: 300,
@@ -476,6 +492,29 @@ var gCommon = $a.page(function(){
 		if(isAlertPopExists)return;
 		let defOpt = {
 		        url: "/zdbcom/alert",
+		        data:message,
+		        iframe: false,	        
+		        width: 500,
+		        height: 230,
+		        title : '',
+		        callback: function(){
+		        	isAlertPopExists = false;
+		        	if(fnCallback){
+		        		fnCallback();
+		        	}
+		        }
+		    };
+		let opt = $.extend({},defOpt,option);
+		gPopData = {};
+		gPopData.message = message;
+		isAlertPopExists = true;
+		$a.popup(opt);
+	};
+	
+	this.errorAlert = function(message,fnCallback,option){
+		if(isAlertPopExists)return;
+		let defOpt = {
+		        url: "/zdbcom/errorAlert",
 		        data:message,
 		        iframe: false,	        
 		        width: 500,
