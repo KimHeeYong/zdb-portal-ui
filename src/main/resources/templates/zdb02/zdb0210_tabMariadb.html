@@ -325,7 +325,7 @@ let appMariadb = {
 					return re;
 				}
 			},				
-			message: { nodata: gMessage.gridNodata },
+			message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' },
 			autoColumnIndex : true,
 			columnMapping : [
 					{ key : 'Id', title : 'Id', width : '50px', align : 'center',tooltip:false},
@@ -424,7 +424,7 @@ let appMariadb = {
 				{ title:'접근 HOST', key : 'host' , width: '120px', align: 'left' ,editable:true,allowEdit:function(value,data){
 					return data._state.added == true;
 				}}
-			], message: { nodata: gMessage.gridNodata }
+			], message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' }
 		}).on('click','.bodycell',function(e){
 			let evObj = AlopexGrid.parseEvent(e); //선택된 ROW 데이터 
 			/* 선택된 사용자의 변경 사항 체크 로직 변경 (2019-09-25) */
@@ -489,7 +489,7 @@ let appMariadb = {
 				},editedValue: function(cell, data, render, mapping, grid) {
 					return $(cell).find('input').val();
 				}}
-			], message: { nodata: gMessage.gridNodata }				
+			], message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' }				
 		}).on('dataSelectEnd',function(e){
 		
 /* 			let eObj = appMariadb['data']['editPrivileges']  ;
@@ -682,7 +682,7 @@ let appMariadb = {
 					}
 					return true;
 				}}
-			], message: { nodata: gMessage.gridNodata }
+			], message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' }
 		}).on('cellEditInvalid ', function(e){
 			setTimeout(function(evt){
 				let evObj = AlopexGrid.parseEvent(e);
@@ -744,7 +744,7 @@ let appMariadb = {
 		
 		this.gridStatusVariables = $('#gridStatusVariables').alopexGrid({
 			height:450,
-			message: { nodata: gMessage.gridNodata },
+			message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' },
 			autoColumnIndex : true,
 			columnMapping : [
 				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
@@ -758,7 +758,7 @@ let appMariadb = {
 		
 		this.gridSystemVariables = $('#gridSystemVariables').alopexGrid({
 			height:450,
-			message: { nodata: gMessage.gridNodata },
+			message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' },
 			autoColumnIndex : true,
 			columnMapping : [
 				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
@@ -816,7 +816,7 @@ let appMariadb = {
 				,expandedKey : 'expandedCategory'
 			},			
 			height:450,
-			message: { nodata: gMessage.gridNodata },
+			message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' },
 			autoColumnIndex : true,
 			columnMapping : [
 				{ key : 'status' , title : '', width:'50px',excludeFitWidth:true,hidden:true},
@@ -905,8 +905,8 @@ let appMariadb = {
 							if(dt.valid == false)return;
 							let newList = AlopexGrid.trimData(appMariadb.gridMyCnf.alopexGrid('dataGet',{dataColumn:true}));
 							
-							if(cloudUtil.isEmpty(dt.name)||cloudUtil.isEmpty(dt.value) || dt.name == gMessage.selectAddColumn){
-								gCommon.alert(gMessage.selectAddColumn);return;
+							if(cloudUtil.isEmpty(dt.name)||cloudUtil.isEmpty(dt.value) || dt.name == '[[#{label.common.msg.validator.select.add.columne}]]'){
+								gCommon.alert('[[#{label.common.msg.validator.select.add.columne}]]');return;
 							}
 					
 							newList.push({
@@ -1045,7 +1045,7 @@ let appMariadb = {
 		
 			let dbv = appMariadb['data']['databaseVariables'];
 			let comboList = dbv[data.category].comboList;
-			let re = $('<div class="Divselect wd250" style="top:-5px;height:32px;"><select><option value="">'+gMessage.selectAddColumn+'</option></select><span></div>');
+			let re = $('<div class="Divselect wd250" style="top:-5px;height:32px;"><select><option value="">'+'[[#{label.common.msg.validator.select.add.columne}]]'+'</option></select><span></div>');
 			for(let i = 0 ; i < comboList.length;i++){
 				let o = comboList[i];
 				re.find('select').append($('<option/>',{text:o.alias,value:o.name}));
@@ -1361,6 +1361,10 @@ let appMariadb = {
 						if(list.length > 0){						
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
 							appMariadb.mariaContent.find('form[name=formUserRole]').zdbui_setContents(privilegesMap);
+							
+							// admin@% 의 * 스키마일 경우 권한 변경이 안되도록 수정 (2019-11-08)
+							if(user == "admin" && host == "%" && schema == "*")	appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').attr('disabled',true);
+							
 						}else{
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
 						}
