@@ -1338,7 +1338,7 @@ let appMariadb = {
 			})
 		}, 
 		getUserPrivileges: function(pUser ,pHost , pSchema){
-		
+			console.log("getUserPrivileges");
 			/* UserRoleList 조회 성공시 셋팅 -> 함수 호출시 조회로 변경   */
 			let d = (appMariadb.gridUser.alopexGrid('dataGet',{_state :{selected:true}})[0]||{});
 			let user = d.user||'';
@@ -1360,13 +1360,15 @@ let appMariadb = {
 						
 						if(list.length > 0){						
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
-							appMariadb.mariaContent.find('form[name=formUserRole]').zdbui_setContents(privilegesMap);
-							
-							// admin@% 의 * 스키마일 경우 권한 변경이 안되도록 수정 (2019-11-08)
-							if(user == "admin" && host == "%" && schema == "*")	appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').attr('disabled',true);
-							
+							appMariadb.mariaContent.find('form[name=formUserRole]').zdbui_setContents(privilegesMap);							
 						}else{
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').prop('checked',false);
+						}
+						// admin@% 의 * 스키마일 경우 권한 변경이 안되도록 수정 (2019-11-08)						
+						if(user == "admin" && host == "%" && schema == "*" )	{
+							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').attr('disabled',true);
+						}else{
+							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').attr('disabled',false);
 						}
 					}	
 				}
