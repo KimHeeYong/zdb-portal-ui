@@ -192,7 +192,7 @@ public class ZdbApiService{
 				}
 			}
 			
-			if("ko".equals(locale)) locale = "kr"  ;
+//			if("ko".equals(locale)) locale = "kr"  ;
 			headers.set("Accept-Language",locale);
 			
 			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
