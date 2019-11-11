@@ -142,12 +142,6 @@ public class ZdbRestConnector extends RestTemplate{
 			headers.set("enabled", userInfo.getEnabled() == null ? "false" : userInfo.getEnabled()+"");
 			headers.set("zdbAdmin", userInfo.getZdbAdmin() == null ? "false" : userInfo.getZdbAdmin()+"");
 			// Session Locale 값 적용 (2019-10-31)
-			// server쪽 한국어 코드는 kr을 사용해서 header로 보낼때는 kr로 보내야 함
-			//String locale = (String) session.getAttribute("acceptLanguage") ;
-			if("ko".equals(locale)) locale = "kr"  ;
-			//if("ko".equals(locale)) locale = "ko_KR"  ;
-			//else if("en".equals(locale)) locale = "en_US"  ; 
-
 			headers.set("Accept-Language",locale);
 		}
 	}
