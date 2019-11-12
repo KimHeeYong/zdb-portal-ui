@@ -10,9 +10,13 @@
 					</colgroup>				
 					<tr>
 						<td colspan="2">
-							추가 되는 백업스토리지는 <span data="backupDiskSize"></span>Gi(데이터 저장 공간 <span data="diskSize"></span>의 1.5배)이며,<br/>
-							백업스토리지 추가시 즉시 DB가 재기동 됩니다.<br/>
-							백업스토리지 추가를 위해 Credential 을 입력해주세요.						
+							<span th:text="#{label.zdb0200.p08.msg.notice.first}"></span>
+							<span data="backupDiskSize"></span>
+							<span th:text="#{label.zdb0200.p08.msg.notice.second}"></span> 
+							<span data="diskSize"></span>
+							<span th:text="#{label.zdb0200.p08.msg.notice.third}"></span> <br/>
+							<span th:text="#{label.zdb0200.p08.msg.notice.fourth}"></span><br/>
+							<span th:text="#{label.zdb0200.p08.msg.notice.fifth}"></span>
 						</td>
 					</tr>
 					<tr>
@@ -29,8 +33,8 @@
 	</div>
 	<!--button-->
 	<div class="popup-btn__wrap" style="width:100%">
-		<button class="Button btn bg-gray ok">저장</button>
-		<button class="Button btn bg-gray no">취소</button>
+		<button th:text="#{label.common.button.save}" class="Button btn bg-gray ok"></button>
+		<button th:text="#{label.common.button.cancel}" class="Button btn bg-gray no"></button>
 	</div>
 	<!--//button-->
 </div>
@@ -45,14 +49,14 @@ $a.page(function() {
     	
     	form.validator({
 		    elements :{ 'credential': {rule:{required:true,equalTo:param.credential}} },
-		    message:{ 'equalTo': "credential이 일치하지 않습니다." }
+		    message:{ 'equalTo': '[[#{label.zdb0200.p08.credential.equal}]]'}
 		});    	
 		$('[data-show-service-type*='+gParam.serviceType+']').show();
 		$('button.ok').click(function(){
 			if(!form.validate()){
 				return;
 			}
-			gCommon.confirm('백업디스크를 추가 하시겠습니까?',function(){
+			gCommon.confirm('[[#{label.zdb0200.p08.confirm.add.backup.disk}]]',function(){
 				let p = $.extend({},gParam,{backupDiskSize:backupDiskSize})
 				$a.ajax({
 					url:'/zdbapi/addBackupDisk',

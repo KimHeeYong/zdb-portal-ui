@@ -8,23 +8,23 @@
 						<col style="width:120px;"></col>
 						<col style="width:200px;"></col>
 					</colgroup>
-					<div>Credential 변경</div>
+					<div><span th:text="#{label.zdb0200.p01.title}"></span></div>
 					<tr>
-						<td>현재 Credential :</td>
+						<td th:text="#{label.zdb0200.p01.credential}"></td>
 						<td>
 							<input class="Textinput" type="password" id="credential" name="credential"></input> 
 							<p data-for="credential" class="warn-text"></p>
 						</td>
 					</tr>
 					<tr>
-						<td>새 Credential :</td>
+						<td th:text="#{label.zdb0200.p01.credential.new}"></td>
 						<td>
 							<input class="Textinput" type="password" id="newCredential" name="newCredential"></input> 
 							<p data-for="newCredential" class="warn-text"></p>
 						</td>
 					</tr>
 					<tr>
-						<td>새 Credential 확인:</td>
+						<td th:text="#{label.zdb0200.p01.credential.new.confirm}"></td>
 						<td>
 							<input class="Textinput" type="password" id="newCredentialConfirm" name="newCredentialConfirm"></input> 
 							<p data-for="newCredentialConfirm" class="warn-text"></p>
@@ -37,8 +37,8 @@
 		</div>
 		<!--button-->
 		<div class="popup-btn__wrap" style="width:100%" >
-			<button class="Button btn credentialSave">저장</button>
-			<button class="Button btn popClose">닫기</button>
+			<button th:text="#{label.zdb0200.p01.button.save}" class="Button btn credentialSave"></button>
+			<button th:text="#{label.zdb0200.p01.button.close}" class="Button btn popClose"></button>
 		</div>
 	</div>
 </div>
@@ -49,22 +49,22 @@ $a.page(function() {
     	var form = $('form[name=credentialPopForm]');
     	form.validator({
 		    elements :{ 
-		        'credential': {rule:{required:true,equalTo:param.credential},message:{equalTo:'credential이 일치하지 않습니다.'}},
+		        'credential': {rule:{required:true,equalTo:param.credential},message:{equalTo:'[[#{label.zdb0200.p01.credential.equal}]]'}},
 		        'newCredential': {rule:{required:true}},
-		        'newCredentialConfirm': {rule:{required:true,equalTo:'#newCredential'},message:{equalTo:'새 Credential 과 일치하지 않습니다.'}}		        	
+		        'newCredentialConfirm': {rule:{required:true,equalTo:'#newCredential'},message:{equalTo:'[[#{label.zdb0200.p01.new.credential.equal}]]'}}		        	
 		    }
 		});	
     	$('.credentialSave').on('click',function(){
     		if(!form.validate()){
 				return;
 			};
-			gCommon.confirm('credential을 변경 하시겠습니까?',function(){
+			gCommon.confirm('[[#{label.zdb0200.p01.confirm.credential}]]',function(){
 				var data = $.extend({},param,{newPassword:form.find('#newCredential').val()});
 				$a.ajax({
 					url: '/zdbapi/setNewPassword',
 					data:data,
 					success: function(res){
-						gCommon.alert('정상적으로 변경되었습니다.',function(){
+						gCommon.alert('[[#{label.zdb0200.p01.confirm.credential.success}]]',function(){
 							$a.close('Y');
 						});
 					}

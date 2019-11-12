@@ -1,13 +1,13 @@
 <div class="popup-wrap">
 	<div class="popup-mcontents">
 		<div class="popup-text">
-			<div>백업을 실행하시겠습니까?</div>
+			<div><span th:text="#{label.zdb0200.p06.msg.title}" ></span></div>
 			<div class="hide" data-show-service-type="mariadb">
-				백업방식 : 
+				<span  th:text="#{label.zdb0200.p06.title}" ></span>
 				<div class="Divselect" id="backupType" name="backupType" style="height: 35px;width:125px; padding-top: 1px !important;">
 					<select>
-						<option value="FULL">바이너리백업</option>
-						<option value="DUMP">덤프백업</option>
+						<option th:text="#{label.zdb0200.p06.full}" value="FULL"></option>
+						<option th:text="#{label.zdb0200.p06.dump}" value="DUMP"></option>
 					</select>
 					<span></span>
 				</div>
@@ -16,8 +16,8 @@
 	</div>
 	<!--button-->
 	<div class="popup-btn__wrap" style="width:100%">
-		<button class="Button btn bg-gray ok">확인</button>
-		<button class="Button btn bg-gray no">취소</button>
+		<button th:text="#{label.common.button.confirm}" class="Button btn bg-gray ok">확인</button>
+		<button th:text="#{label.common.button.cancel}" class="Button btn bg-gray no">취소</button>
 	</div>
 	<!--//button-->
 </div>

@@ -83,7 +83,6 @@ function gfn_getReadyCondition(pod){
 //서비스 템플릿
 function gfn_getServiceTemplate(ob,msg){    
 	var guid = gCommon.getUid();
-	console.log(msg);
 	var template = '' 
 			+'	<div class="Panel service-panel">                                                        '
 			+'		<div class="Panel-content" link id="'+guid+'">'
@@ -135,7 +134,7 @@ function gfn_getServiceTemplate(ob,msg){
 }
 
 //상세 서비스 템플릿
-function gfn_getServiceDetailTemplate(ob){
+function gfn_getServiceDetailTemplate(ob,msg){
 	var template = '' 
 		+'			<div class="Panel-content">'
 		+'				<div class="state {{status}}"></div>'
@@ -148,18 +147,18 @@ function gfn_getServiceDetailTemplate(ob){
 		+'					<dd>'
 		+'						<div class="tag-wrap">'
 		+'							{{tags}}'
-		+'							<button class="Label add-label tagAdd">추가</button>'
+		+'							<button class="Label add-label tagAdd">'+msg['add']+'</button>'
 		+'					        <span class="add-label__input hide"><input type="hidden"/><input class="Textinput tagAddInput" name="tagN" autocomplete="false"></input></span>'
 		+'						</div>'
 		+'					</dd>'
 		+'					<ul class="time-info">'
-		+'						<li>생성일시: <span>{{crtTime}}</span> </li>'
-		+'						<li>구동시간: <span>{{elapsedTime}}</span> </li>'
+		+'						<li>'+msg['createTime']+': <span>{{crtTime}}</span> </li>'
+		+'						<li>'+msg['elapsedTime']+': <span>{{elapsedTime}}</span> </li>'
 		+'					</ul>'
 		+'				</dl>'
 		+'				<div class="service-btn__wrap">'
-		+'					<button class="Button nobg-btn btn-refresh hide">재시작</button>'
-		+'					<button class="Button nobg-btn btn-viewdetail hide">상세보기</button>'
+		+'					<button class="Button nobg-btn btn-refresh hide">'+msg['restart']+'</button>'
+		+'					<button class="Button nobg-btn btn-viewdetail hide">'+msg['detail']+'</button>'
 		+'				</div>'
 		+'			</div>'
 	for(var key in ob){
