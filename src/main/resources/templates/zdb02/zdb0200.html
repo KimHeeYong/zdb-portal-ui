@@ -255,7 +255,12 @@
 						if(re) return re;						
 					}},
 					{ title:'[[#{label.zdb0200.grid.version}]]', key : 'version', width: '110px', align: 'center'},
-					{ title:'[[#{label.zdb0200.grid.age}]]', key : 'elapsedTime', width: '80px', align: 'center'},
+					{ title:'[[#{label.zdb0200.grid.age}]]', key : 'elapsedTime', width: '80px', align: 'center',render:function(data){
+						try{
+							return data[0][0]+data[0][1];
+						} catch (ex) {}
+						return data;
+					}},
 					{ title:'[[#{label.zdb0200.grid.create.time}]]', key : 'crtTime', width: '150px', align: 'center',render:function(data){
 						try{
 							return data.substring(0,10);
@@ -465,7 +470,7 @@
 						status:ob.status,
 						version:ob.version,
 						updTime:ob.updTime,
-						elapsedTime:ob.elapsedTime,
+						elapsedTime:ob.elapsedTime[0][0]+ob.elapsedTime[0][1],
 						statusMessage:ob.statusMessage||'',
 						tagList:ob.tags
 					};
