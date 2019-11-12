@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-    <title>서비스 상세</title>
+    <title th:text="#{label.zdb0210.title.header}"></title>
 </th:block>
 <th:block layout:fragment="page_css">
 	<link rel="stylesheet" href="/styles/css/nouislider.min.css">
@@ -42,7 +42,7 @@
 		</ul>
 	</div>
 	<div class="back-list" id="backServices">
-		<a href="#"><span>목록으로 돌아가기</span></a>
+		<a href="#"><span th:text="#{label.zdb0210.top.tolist}"></span></a>
 	</div>
 </div>
 <div class="contents-box info-box">
@@ -56,29 +56,29 @@
 			<div class="Panel-content">
 				<div style="float: left;word-break:break-all;font-size: 14px;" id="divInfoMsg"></div>
 				<div class="config-wrap" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >
-					<button class="btn-ico btn-refresh" id="restartService" title="재시작">재시작 </button>
-					<button class="Button btn-ico__typeb btn-trash" id="deleteService" title="삭제">삭제</button>
+					<button th:text="#{label.zdb0210.top.restart}" class="btn-ico btn-refresh" id="restartService" th:title="#{label.zdb0210.top.restart}"  ></button>
+					<button th:text="#{label.zdb0210.top.delete}" class="Button btn-ico__typeb btn-trash" id="deleteService" th:title="#{label.zdb0210.top.delete}"  ></button>
 				</div>
 			</div>
 			<div class="Panel-content">
 				<ul class="config-info" id="configInfo">
 					<li>
-						<strong>할당 CPU<span class="ico_title" id="AllocatedCPUTooltip"></span> : </strong>
+						<strong><span th:text="#{label.zdb0210.top.allocated.cpu}"></span><span class="ico_title" id="AllocatedCPUTooltip"></span> : </strong>
 						<span data="cpu"></span>
 						<div class="Tooltip" data-base="#AllocatedCPUTooltip" id="AllocatedCPUTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 					<li>
-						<strong>할당 메모리<span class="ico_title" id="AllocatedMemoryTooltip"></span> : </strong>
+						<strong><span th:text="#{label.zdb0210.top.allocated.memory}"></span><span class="ico_title" id="AllocatedMemoryTooltip"></span> : </strong>
 						<span data="memory"></span>
 						<div class="Tooltip" data-base="#AllocatedMemoryTooltip" id="AllocatedMemoryTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 					<li>
-						<strong>스토리지<span class="ico_title" id="StorageTooltip"></span> : </strong>
+						<strong><span th:text="#{label.zdb0210.top.storage}"></span><span class="ico_title" id="StorageTooltip"></span> : </strong>
 						<span data="disk"></span>
 						<div class="Tooltip" data-base="#StorageTooltip" id="StorageTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
 					<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
-						<strong>스토리지 QoS<span class="ico_title" id="StorageQoSTooltip"></span> : 	</strong>
+						<strong><span th:text="#{label.zdb0210.top.storage.qos}"></span><span class="ico_title" id="StorageQoSTooltip"></span> : 	</strong>
 						<span data="storageClass"></span>
 						<div class="Tooltip" data-base="#StorageQoSTooltip" id="StorageQoSTooltipMsg" data-position="bottom" data-animation="fade"></div>
 					</li>
@@ -89,25 +89,25 @@
 	<!-- tab wrap -->
 	<div class="Tabs db-tabs" id="zdbServiceTabs">
 		<ul>
-			<li data-content="#tabService">서비스 정보</li>
-			<li data-content="#tabScale" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}">스케일</li>
-			<li data-content="#tabMonitor">모니터링</li>
-			<li data-content="#tabBackup" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}">백업</li>
-			<li data-content="#tabEvent">이벤트</li>
+			<li th:text="#{label.zdb0210.tap.title.service}"  data-content="#tabService"></li>
+			<li th:text="#{label.zdb0210.tap.title.scale}"  data-content="#tabScale" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"></li>
+			<li th:text="#{label.zdb0210.tap.title.mornitoring}"  data-content="#tabMonitor"></li>
+			<li th:text="#{label.zdb0210.tap.title.backup}"  data-content="#tabBackup" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"></li>
+			<li th:text="#{label.zdb0210.tap.title.event}"  data-content="#tabEvent"></li>
 <!-- 			<li data-content="#tabUser">사용자</li> -->
 <!-- 			<li data-content="#tabDatabase" th:if="${#request.getParameter('serviceType')=='mariadb'}" >Database</li> -->
- 			<li data-content="#tabSystem" th:if="${#request.getParameter('serviceType')!='mariadb'}" >환경설정</li>
-			<li data-content="#tabLog" th:if="${#request.getParameter('serviceType')=='mariadb'}" >로그</li>
+ 			<li th:text="#{label.zdb0210.tap.title.system}"  data-content="#tabSystem" th:if="${#request.getParameter('serviceType')!='mariadb'}" ></li>
+			<li th:text="#{label.zdb0210.tap.title.log}"  data-content="#tabLog" th:if="${#request.getParameter('serviceType')=='mariadb'}" ></li>
 <!-- 			<li data-content="#tabProcess">프로세스</li> -->
- 			<li data-content="#tabMariadb" th:if="${#request.getParameter('serviceType')=='mariadb'}">관리</li> 
+ 			<li th:text="#{label.zdb0210.tap.title.mariadb}"  data-content="#tabMariadb" th:if="${#request.getParameter('serviceType')=='mariadb'}"></li> 
 		</ul>
 		<!-- 서비스 정보 PageID: ZDB-02-10R -->
 		<div id="tabService">
 			<!-- accordion wrap-->
 			<ul class="cp-accordion">
 				<li>
-					<h3 class="form-title">Connection</h3>
-					<div class="Tooltip hide" data-base="#failoverTooltip">Master DB가 장애로 서비스가 불가능한 상태가 되면,<br/> failover를 수행하여 slave DB를 master DB로 승격시켜<br/> 서비스 다운타임을 최소화 합니다.</div>
+					<h3 th:text="#{label.zdb0210.tap.service.form.title}" class="form-title">Connection</h3>
+					<div class="Tooltip hide" data-base="#failoverTooltip"><span th:text="#{label.zdb0210.tap.service.tooltip.first}" ></span><br/><span th:text="#{label.zdb0210.tap.service.tooltip.second}" ></span><br/> <span th:text="#{label.zdb0210.tap.service.tooltip.third}" ></span></div>
 					<div class="accor-contents__wrap">
 						<form name="formService">
 						<table id="connectionInfoTable" class="Table Form-type">
@@ -117,117 +117,117 @@
 							</colgroup>
 							<tbody>
 								<tr>
-									<th>Credential</th>
+									<th th:text="#{label.zdb0210.tap.service.credential}">Credential</th>
 									<td>
 										<input id="credential" name="credential" class="Textinput" type="password" autocomplete="off"/>
 										<span class="input-pw"></span>
-										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="togglePwd">보기</button>
-										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialCopy">복사</button>
-										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialUpdate">변경</button>
-										<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
+										<button th:text="#{label.zdb0210.tap.service.credential.button.toggle}" class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="togglePwd"></button>
+										<button th:text="#{label.zdb0210.tap.service.credential.button.copy}" class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialCopy"></button>
+										<button th:text="#{label.zdb0210.tap.service.credential.button.update}" class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialUpdate"></button>
+										<span th:text="#{label.zdb0210.tap.service.msg.copy}" class="Color-warning hide connectionInfoCopyed"></span>
 									</td>	
 								</tr>
 								<tr>
-									<th> 접속포트</th>
+									<th th:text="#{label.zdb0210.tap.service.port}"></th>
 									<td data="port" th:if="${#request.getParameter('serviceType')} == 'redis'"> </td>
 									<td th:if="${#request.getParameter('serviceType')} != 'redis'">
 										<input type="text" class="Textinput" name="port" id="port">
-										<button class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="portUpdate">변경</button>
+										<button th:text="#{label.zdb0210.tap.service.port.update}" class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="portUpdate"></button>
 										<p data-for="port" class="warn-text"></p>
 									</td>
 								</tr>
 								<tr>                                                                                                 
-					               	<th rowspan="2">Private Network</th>      
+					               	<th th:text="#{label.zdb0210.tap.service.private.network}" rowspan="2"></th>      
 					               	<td>                                                                 
-										<span class="info-cnt__title">Master</span>
+										<span th:text="#{label.zdb0210.tap.service.private.master}" class="info-cnt__title"></span>
 										<div class="info-radio__wrap">
-											<label class="ImageRadio"> <input class="Radio" name="con1" value="connectionString" checked="checked">Connection String </label>
-											<label class="ImageRadio"> <input class="Radio" name="con1" value="connectionLine">Command Line </label>
+											<label class="ImageRadio"> <input th:text="#{label.zdb0210.tap.service.private.connection.string}" class="Radio" name="con1" value="connectionString" checked="checked"></label>
+											<label class="ImageRadio"> <input th:text="#{label.zdb0210.tap.service.private.command.line}" class="Radio" name="con1" value="connectionLine"></label>
 										</div>
 										<div class="info-input__wrap connectionString">	
 						               		<input class="Textinput" name="privatemasterConnectionString" readonly="readonly"></input>     
-						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" th:title="#{label.zdb0210.tap.service.private.button.title.copy}" ></button>
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">	
 						               		<input type="text" class="Textinput" name="privatemasterConnectionLine" readonly="readonly"></input>     
-						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                         
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" th:title="#{label.zdb0210.tap.service.private.button.title.copy}" ></button>                         
 						               	</div>
 						               	<div class="fl hide" id="divFailoverArea">
             				           		<div id="divFailoverBtn" class="hide">
-							               		<button class="Button btn" id="failoverTooltip">Failover</button>
+							               		<button th:text="#{label.zdb0210.tap.service.private.failover}" class="Button btn" id="failoverTooltip"></button>
 						               		</div>
 						               		<div id="divFailbackBtn" class="hide">
-						               			<button class="Button btn">Failback</button>
-						               			<span class="Tooltip hide">서비스 L/B를 Master DB 로 복원합니다.</span>
+						               			<button th:text="#{label.zdb0210.tap.service.private.button.failback}" class="Button btn"></button>
+						               			<span th:text="#{label.zdb0210.tap.service.private.tooltip.failback}" class="Tooltip hide"></span>
 						               		</div>
 						               	</div>	
-						               	<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>
+						               	<span th:text="#{label.zdb0210.tap.service.msg.copy}" class="Color-warning hide connectionInfoCopyed"></span>
 					               	</td>                                                                                         
 				                </tr>
 				                <tr class="slaveConnection">
 					               	<td>
-					               		<span class="info-cnt__title">Slave</span>
+					               		<span th:text="#{label.zdb0210.tap.service.private.slave}" class="info-cnt__title"></span>
 										<div class="info-radio__wrap">
-											<label class="ImageRadio"> <input class="Radio" name="con2" value="connectionString" checked="checked">Connection String </label>
-											<label class="ImageRadio"> <input class="Radio" name="con2" value="connectionLine">Command Line </label>
+											<label class="ImageRadio"> <input th:text="#{label.zdb0210.tap.service.public.connection.string}" class="Radio" name="con2" value="connectionString" checked="checked"></label>
+											<label class="ImageRadio"> <input th:text="#{label.zdb0210.tap.service.public.command.line}" class="Radio" name="con2" value="connectionLine"></label>
 										</div>					               		
 					               		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="privateslaveConnectionString" readonly="readonly"></input>     
-						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                          
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" th:title="#{label.zdb0210.tap.service.private.button.title.copy}"></button>                          
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">
 						               		<input type="text" class="Textinput" name="privateslaveConnectionLine" readonly="readonly"></input>     
-						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                          
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" th:title="#{label.zdb0210.tap.service.private.button.title.copy}"></button>                          
 						               	</div>	
-					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
+					               		<span th:text="#{label.zdb0210.tap.service.msg.copy}" class="Color-warning hide connectionInfoCopyed"></span>                                                                                      
 					               	</td>                  
 				                </tr>
 			                </tbody>
 			                <tbody class="publicConnectionInfo publicNetworkTbody hide">
 								<tr>                                                                                                 
-					               	<th rowspan="2">Public Network</th>                                                                       
+					               	<th th:text="#{label.zdb0210.tap.service.public.network}"  rowspan="2"></th>                                                                       
 					               	<td>       
-					               	    <span class="info-cnt__title">Master</span>
+					               	    <span th:text="#{label.zdb0210.tap.service.public.master}"  class="info-cnt__title"></span>
 										<div class="info-radio__wrap">
-											<label class="ImageRadio"> <input class="Radio" name="con3" value="connectionString" checked="checked">Connection String </label>
-											<label class="ImageRadio"> <input class="Radio" name="con3" value="connectionLine">Command Line </label>
+											<label class="ImageRadio"> <input th:text="#{label.zdb0210.tap.service.public.connection.string}" class="Radio" name="con3" value="connectionString" checked="checked"></label>
+											<label class="ImageRadio"> <input th:text="#{label.zdb0210.tap.service.public.command.line}" class="Radio" name="con3" value="connectionLine"></label>
 										</div>
         						   		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="publicmasterConnectionString" readonly="readonly"></input>     
-						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button> 
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" th:title="#{label.zdb0210.tap.service.private.button.title.copy}"></button> 
 						               	</div>
 						               	<div class="info-input__wrap connectionLine hide">                                                                   
 						               		<input type="text" class="Textinput" name="publicmasterConnectionLine" readonly="readonly"></input>     
-						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                         
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" th:title="#{label.zdb0210.tap.service.private.button.title.copy}"></button>                         
 						               	</div>	
-						               	<button class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"  title="Public Network 삭제">삭제</button>
-					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
+						               	<button th:text="#{label.zdb0210.tap.service.public.delete}"  class="Button btn-ico__typeb btn-trash" id="publicNetworkDelete"  th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"  th:title="#{label.zdb0210.tap.service.public.title.del}"></button>
+					               		<span th:text="#{label.zdb0210.tap.service.msg.copy}" class="Color-warning hide connectionInfoCopyed"></span>                                                                                      
 					               	</td>                                                                                         
 				                </tr>
 				                <tr class="slaveConnection">
 					               	<td>
-					               	    <span class="info-cnt__title">Slave</span>
+					               	    <span th:text="#{label.zdb0210.tap.service.public.slave}"  class="info-cnt__title">Slave</span>
 										<div class="info-radio__wrap">
-											<label class="ImageRadio"> <input class="Radio" name="con4" value="connectionString" checked="checked">Connection String </label>
-											<label class="ImageRadio"> <input class="Radio" name="con4" value="connectionLine">Command Line </label>
+											<label class="ImageRadio"> <input th:text="#{label.zdb0210.tap.service.public.connection.string}" class="Radio" name="con4" value="connectionString" checked="checked"></label>
+											<label class="ImageRadio"> <input th:text="#{label.zdb0210.tap.service.public.command.line}" class="Radio" name="con4" value="connectionLine"></label>
 										</div>					               	
 		               	           		<div class="info-input__wrap connectionString">                                                                                                  
 						               		<input class="Textinput" name="publicslaveConnectionString" readonly="readonly"></input>      
-						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>                          
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" th:title="#{label.zdb0210.tap.service.private.button.title.copy}"></button>                          
 						               	</div> 
 						               	<div class="info-input__wrap connectionLine hide">                                                                                              
 						               		<input type="text" class="Textinput" name="publicslaveConnectionLine" readonly="readonly"></input>     
-						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" title="clipboard복사"></button>
+						               		<button class="Button btn-ico__typeb btn-clipboard connectionStringCopy" th:title="#{label.zdb0210.tap.service.private.button.title.copy}"></button>
 						               	</div>	                          
-					               		<span class="Color-warning hide connectionInfoCopyed">복사되었습니다.</span>                                                                                      
+					               		<span th:text="#{label.zdb0210.tap.service.msg.copy}" class="Color-warning hide connectionInfoCopyed"></span>                                                                                      
 					               	</td>                  
 				                </tr>
 			                </tbody>
 			                <tbody class="publicConnectionInfoNone publicNetworkTbody hide" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >
 								<tr>                                                                                                 
-					               	<th>Public Network</th>                                                                       
+					               	<th th:text="#{label.zdb0210.tap.service.public.network}"></th>                                                                       
 					               	<td>       
-					               	    <button class="Button btn" id="publicNetworkCreate">Public Network생성</button>                                                                                 
+					               	    <button  th:text="#{label.zdb0210.tap.service.public.network.add}" class="Button btn" id="publicNetworkCreate"></button>                                                                                 
 					               	</td>                                                                                         
 				                </tr>
 			                </tbody>
@@ -236,7 +236,7 @@
 					</div>
 				</li>
 				<li id="divFailover" class="hide">
-					<h3 class="form-title">Failover</h3>
+					<h3 th:text="#{label.zdb0210.tap.service.failover.title}" class="form-title"></h3>
 					<div class="accor-contents__wrap">
 						<table class="Table Form-type">
 							<colgroup>
@@ -245,7 +245,7 @@
 							</colgroup>
 							<tbody>
 								<tr>
-									<th>Auto Failover</th>
+									<th th:text="#{label.zdb0210.tap.service.auto.failover}"></th>
 									<td width="120">
 										<div id="divFailoverRunning" class="fl mr30">
 											<img src="/styles/images/rotation_ani.gif" style="width: 20px;height: 20px;">
@@ -263,9 +263,9 @@
 									</td>    
 									<td>
 										<div class="fl">
-											<b>※ Master 노드 장애발생시 임계 시간동안 서비스가 복구되지 않을 경우 자동으로 Slave 노드로 서비스를 전환합니다.</b><br>
-											<b>※ 실행조건 : 5초 주기 5회 실패시</b><br>
-	                                        <b>※ 최초 설정 변경시 서비스가 재시작 됩니다.</b>
+											<b><span th:text="#{label.zdb0210.tap.service.auto.failover.msg.first}"  ></span></b><br>
+											<b><span th:text="#{label.zdb0210.tap.service.auto.failover.msg.second}" ></span></b><br>
+	                                        <b><span th:text="#{label.zdb0210.tap.service.auto.failover.msg.third}" ></span></b>
 										</div>                                       
 									</td> 								
 								</tr>
@@ -274,7 +274,7 @@
 					</div>
 				</li>
 				<li>
-					<h3 class="form-title">Resource</h3>
+					<h3 th:text="#{label.zdb0210.tap.service.resource}" class="form-title"></h3>
 					<div class="accor-contents__wrap">
 						<div id="gridResource" class="grid"></div>
 						<!-- <div class="Tooltip" id="replicationTooltip" data-position="bottom|left"></div> -->
@@ -289,7 +289,7 @@
 			<!-- accordion wrap-->
 			<ul>
 				<li>
-					<h3 class="form-title">Scale Up/Down</h3>
+					<h3 th:text="#{label.zdb0210.tap.scale.form.title}" class="form-title"></h3>
 					<div class="accor-contents__wrap">
 						<table class="Table Form-type">
 							<colgroup>
@@ -298,12 +298,12 @@
 							</colgroup>
 							<tbody>
 								<tr>
-									<th class="Valign-top">리소스</th>
+									<th th:text="#{label.zdb0210.tap.scale.top.title}" class="Valign-top"></th>
 									<td class="overflow-hidden">
 										<div class="info-wrap">
 											<div class="info-radio__wrap">
-												<label class="ImageRadio"> <input class="Radio" name="scaleType" value="progress" checked="checked">리소스선택</label>
-												<label class="ImageRadio"> <input class="Radio" name="scaleType" value="custom">사용자입력</label>
+												<label class="ImageRadio"> <input th:text="#{label.zdb0210.tap.scale.radio.progress}" class="Radio" name="scaleType" value="progress" checked="checked"></label>
+												<label class="ImageRadio"> <input th:text="#{label.zdb0210.tap.scale.radio.custom}" class="Radio" name="scaleType" value="custom"></label>
 											</div>
 											<p class="memory-title">&nbsp;</p>
 											<div class="info-wrap ht60">
@@ -332,12 +332,12 @@
 							</tbody>
 						</table>
 						<div class="btn-wrap__right">
-							<button class="Button btn bg-red" id="updateScaleUp">적용하기</button>
+							<button th:text="#{label.zdb0210.tap.scale.button.scaleup}" class="Button btn bg-red" id="updateScaleUp"></button>
 						</div>
 					</div>
 				</li>
 				<li th:if="${#request.getParameter('serviceType')} == 'redis'" id="divScaleOut">
-					<h3 class="form-title">Scale In/Out</h3>
+					<h3 th:text="#{label.zdb0210.tap.scale.redis.form.title}" class="form-title"></h3>
 					<div class="accor-contents__wrap">
 						<table class="Table Form-type">
 							<colgroup>
@@ -346,7 +346,7 @@
 							</colgroup>
 							<tbody>
 								<tr>
-									<th class="Valign-top" >Read-Only Slave 수</th>
+									<th th:text="#{label.zdb0210.tap.scale.redis.top.title}" class="Valign-top" ></th>
 									<td>
 										<div id="clusterSlaveCountSpinner" class="Spinner" data-min="1" data-max="1" data-step="1">
 										    <input id="clusterSlaveCount" name="clusterSlaveCount" value="1">
@@ -358,7 +358,7 @@
 							</tbody>
 						</table>
 						<div class="btn-wrap__right">
-							<button class="Button btn bg-red" id="updateScaleOut">적용하기</button>
+							<button th:text="#{label.zdb0210.tap.scale.button.scaleout}" class="Button btn bg-red" id="updateScaleOut"></button>
 						</div>	
 					</div>		
 				</li>
@@ -462,37 +462,37 @@
 			</ul>
 		</div>
 		<div id="tabBackup"  style="display:none;">
-			<h3 class="form-title">백업</h3>
+			<h3 th:text="#{label.zdb0210.tap.backup.form.title}"  class="form-title"></h3>
            	<!-- tab contents info detail-->
          	<form name="backupForm" method="post">
            	<div class="ctn-info__wrap" style="border-bottom:0px;">
          		<div class="mr30 wd300 fl info-list">
-         			<span class="config-title">백업설정 :</span>
+         			<span th:text="#{label.zdb0210.tap.backup.top.backup.enabled.title}"  class="config-title"></span>
 					<div class="onoff-wrap"><button class="Button btn-off" data-target="useYn">OFF</button></div>
 					<div class="hide">
 						<select name="useYn"> <option value="Y">Y</option> <option value="N">N</option> </select>
 					</div>									
 				</div>	           	
-				<div class="mr30 wd300 fl info-list"><span class="config-title">보관기간:</span> 
+				<div class="mr30 wd300 fl info-list"><span th:text="#{label.zdb0210.tap.backup.top.store.period.title}"  class="config-title"></span> 
 					<div class="Spinner" data-min="0" data-max="7" data-step="1" id="storePeriodSpinner">
-					    <input id="storePeriod" name="storePeriod" value="1" style="width:40px;text-align:left;">일&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					    <input id="storePeriod" name="storePeriod" value="1" style="width:40px;text-align:left;"><span th:text="#{label.zdb0210.tap.backup.top.store.period.day}" ></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					    <a class="Up"></a>
 					    <a class="Down"></a>
 					</div>
 				</div>
 				<div class="mr30 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
-						<span class="config-title">전체백업 수행주기: </span>
+						<span th:text="#{label.zdb0210.tap.backup.top.schedule.day.title}" class="config-title"></span>
 						<div class="Divselect" id="scheduleDay" name="scheduleDay">
 							<select>
-								<option value="0">매일 수행</option>
-								<option value="2">매주 월요일</option>
-								<option value="3">매주 화요일</option>
-								<option value="4">매주 수요일</option>
-								<option value="5">매주 목요일</option>
-								<option value="6">매주 금요일</option>
-								<option value="7">매주 토요일</option>
-								<option value="1">매주 일요일</option>
+								<option th:text="#{label.zdb0210.tap.backup.top.schedule.day.everyday}" value="0"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.schedule.day.mon}" value="2"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.schedule.day.tue}" value="3"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.schedule.day.wed}" value="4"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.schedule.day.thur}" value="5"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.schedule.day.fri}" value="6"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.schedule.day.sat}" value="7"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.schedule.day.sun}" value="1"></option>
 							</select>
 							<span></span>
 						</div>
@@ -514,15 +514,15 @@
 				
 				<div class="mr30 wd300 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
-						<span class="config-title">증분 백업:</span>
+						<span th:text="#{label.zdb0210.tap.backup.top.increment.period.title}" class="config-title"></span>
 						<div class="Divselect" id="incrementPeriod" name="incrementPeriod">
 							<select>
-								<option value="0">미사용</option>
-								<option value="1">1시간</option>
-								<option value="2">2시간</option>
-								<option value="6">6시간</option>
-								<option value="12">12시간</option>
-								<option value="24">24시간</option>								
+								<option th:text="#{label.zdb0210.tap.backup.top.increment.period.hour.unused}" value="0"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.increment.period.hour.one}" value="1"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.increment.period.hour.two}"value="2"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.increment.period.hour.six}" value="6"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.increment.period.hour.twelve}" value="12"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.increment.period.hour.twenty.four}" value="24"></option>								
 							</select>
 							<span></span>
 						</div>
@@ -530,41 +530,41 @@
 				</div>
 				<div class="mr30 wd300 fl info-list">
 					<div class="hide fl mr30" data-show-service-type="mariadb">
-						<span class="config-title">수행모드 <span class="ico_question" id="throttleYnTooltip"></span> : </span>
+						<span th:text="#{label.zdb0210.tap.backup.top.throttle.title}" class="config-title"><span class="ico_question" id="throttleYnTooltip"></span> : </span>
 						<span data="disk"></span>
 						<div class="Tooltip" data-base="#throttleYnTooltip" id="throttleYnTooltipMsg" style="color:#ffffff;" data-position="bottom" data-animation="fade"></div>	
 						<div class="Divselect" id="throttleYn" name="throttleYn">
 							<select>
-								<option value="N">정상모드</option>
-								<option value="Y">저속모드</option>
+								<option th:text="#{label.zdb0210.tap.backup.top.throttle.normal}" value="N"></option>
+								<option th:text="#{label.zdb0210.tap.backup.top.throttle.low.speed}" value="Y"></option>
 							</select>
 							<span></span>
 						</div>
 					</div>
 				</div>	
 				<div class="fr info-list">	
-					<button class="Button btn bg-red Disabled fr" id="saveSchedule">수정</button>	
+					<button th:text="#{label.zdb0210.tap.backup.top.button.save}" class="Button btn bg-red Disabled fr" id="saveSchedule"></button>	
 				</div>				
 			</div>          	
           	<div class="mt10" style="height:40px;">
 				<div class="info-list__select fr">
 					<div class="fl hide" id="divClusterEnabled" style="margin-right:4px;" th:if="${session.userInfo.clusterRole=='cluster-admin'}">
-						<button class="Button btn ml1 fl"id="restoreToPoint" style="margin-right:4px;">복원하기</button>					
-						<button class="Button btn ml1"id="purgeBinlog">Binlog 정리</button>
+						<button th:text="#{label.zdb0210.tap.backup.top.button.restore}" class="Button btn ml1 fl"id="restoreToPoint" style="margin-right:4px;"></button>					
+						<button th:text="#{label.zdb0210.tap.backup.top.button.binlog}" class="Button btn ml1"id="purgeBinlog"></button>
 					</div>
 					
 					<div class="fl" id="divAddBackup" style="margin-right:4px;">	
-						<button class="Button btn hide" id="addBackupDisk">백업디스크 추가</button>
-						<button class="Button btn hide" id="removeBackupDisk">백업디스크 제거</button>
+						<button th:text="#{label.zdb0210.tap.backup.top.button.add.disk}" class="Button btn hide" id="addBackupDisk"></button>
+						<button th:text="#{label.zdb0210.tap.backup.top.button.del.disk}" class="Button btn hide" id="removeBackupDisk"></button>
 					</div>
-					<button class="Button btn ml1" id="deleteBackup">삭제</button>
-					<button class="Button btn ml1" id="abortedBackup">백업 수행 중지</button>
-					<button class="Button btn ml1" id="updateBackup">지금 백업하기</button>
-					<button class="Button btn ml1" id="searchBackup">조회</button>	
+					<button th:text="#{label.zdb0210.tap.backup.top.button.delete}" class="Button btn ml1" id="deleteBackup"></button>
+					<button th:text="#{label.zdb0210.tap.backup.top.button.terminate}" class="Button btn ml1" id="abortedBackup"></button>
+					<button th:text="#{label.zdb0210.tap.backup.top.button.backup}" class="Button btn ml1" id="updateBackup"></button>
+					<button th:text="#{label.zdb0210.tap.backup.top.button.search}" class="Button btn ml1" id="searchBackup"></button>	
 				</div>	          	
           	</div>
            	<div class="info-list__select mt10 hide" data-show-service-type="mariadb">
-           		<input class="Checkbox" type="checkbox" id="backupSearchType" checked="checked"/>증분백업포함
+           		<input th:text="#{label.zdb0210.tap.backup.top.button.include.incremental}" class="Checkbox" type="checkbox" id="backupSearchType" checked="checked"/>
 				<!-- button class="Button btn-search" id="searchBackup">검색</button-->
            	</div>
           	</form>
@@ -573,7 +573,7 @@
             <div class="Tooltip" id="backupTooltip" data-position="bottom"></div>
 		</div>
 		<div id="tabEvent"  style="display:none;">
-			<h3 class="form-title">이벤트</h3>
+			<h3 th:text="#{label.zdb0210.tap.event.form.title}" class="form-title"></h3>
            		<form name="eventForm" method="post">
            		<div class="ctn-info__wrap">
 					<div class="info-list select-date Daterange" data-selectyear="true" data-selectmonth="true">
@@ -607,7 +607,7 @@
 					<!-- 20190822 -->
 						<div class="Divselect" style="width: 250px" id="type" name="type">
 							<select>
-								<option value="-">전 체</option>
+								<option th:text="#{label.common.select.all}" value="-"></option>
 								<option value="BACKUP">	Backup	</option>
 								<option value="BACKUPSCHEDULE">	Backup Management	</option>
 								<option value="BACKUPDISK">	Backup Storage	</option>
@@ -631,11 +631,13 @@
 							</select>
 							<span></span>
 						</div>
-						<input name="keyword" class="Textinput srcinput" placeholder="검색어를 입력하세요."/><button class="Button btn-search" id="searchEvent">검색</button>
+						<input name="keyword" class="Textinput srcinput" th:placeholder="#{label.common.search.message}"/>
+						<button th:text="#{label.common.button.search}" class="Button btn-search" id="searchEvent"></button>
 					</div>
            		</div>
 	           	<div class="info-list__select mt10 hide" data-show-service-type="mariadb">
-	           		<input class="Checkbox" type="checkbox" id="backupEventExceptYn" name="backupEventExceptYn" />백업 이벤트 포함
+	           		<input th:text="#{label.zdb0210.tap.event.backup.event.except}" class="Checkbox" type="checkbox" id="backupEventExceptYn" name="backupEventExceptYn" /> 
+	           		<!-- <span  ></span> -->
 					<!-- button class="Button btn-search" id="searchBackup">검색</button-->
 	           	</div>           		
            		</form>
@@ -682,7 +684,7 @@
 			<ul>
 				<li th:if="${#request.getParameter('serviceType')=='redis'}">
 					<div class="accor-contents__wrap">
-					<h3 class="form-title">Network  <span class="fr"><button class="Button btn" style="margin-top:-4px;" id="popVariables">설정 보기</button></span></h3>
+					<h3  th:text="#{label.zdb0210.tap.system.form.title}" class="form-title"><span class="fr"><button th:text="#{label.zdb0210.tap.system.button.setting}" class="Button btn" style="margin-top:-4px;" id="popVariables"></button></span></h3>
 						<table class="Table Form-type">
 							<colgroup>
 								<col style="width: 250px;"> </col>
@@ -690,32 +692,32 @@
 							</colgroup>
 							<tbody>
 								<tr>
-									<th>timeout <span class="ico_title" id="iconTimeout"></span></th>
+									<th><span th:text="#{label.zdb0210.tap.system.title.timeout}" ></span> <span class="ico_title" id="iconTimeout"></span></th>
 									<td> 
 										<input type="text" id="timeout" name="timeout" class="Textinput"/>
-										<span class="info-text">범위 : 0 ~ 3,600</span>
+										<span th:text="#{label.zdb0210.tap.system.range.timeout}" class="info-text"></span>
 										<p data-for="timeout" class="warn-text"></p>
 									</td>
 								</tr>
 								<tr>
-									<th>tcp-keepalive<span class="ico_title" id="iconTcpKeepalive"></span></th>
+									<th><span th:text="#{label.zdb0210.tap.system.title.tcp.keepalive}" ></span> <span class="ico_title" id="iconTcpKeepalive"></span></th>
 									<td> 
 										<input type="text" id="tcp-keepalive" name="tcp-keepalive" class="Textinput"/>
-										<span class="info-text">범위 : 0 ~ 3,600</span>
+										<span  th:text="#{label.zdb0210.tap.system.range.tcp.keepalive}" class="info-text"></span>
 										<p data-for="tcp-keepalive" class="warn-text"></p>
 									</td>
 								</tr>
 							</tbody>
 						</table>
 						<div class="Tooltip" data-base="#iconTimeout" data-position="right" data-animation="fade">
-							Redis 서버에 연결된 Client가 timeout 시간(초) 동안 아무 명령이 없으면 접속을 끊습니다.
-							<br>timeout 값이 0인 경우, 아무 명령이 없어도 접속을 끊지 않습니다.
+							<span th:text="#{label.zdb0210.tap.system.tooltip.timeout.first}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.timeout.second}" ></span>
 						</div>
 						<div class="Tooltip" data-base="#iconTcpKeepalive" data-position="right" data-animation="fade">
-							Redis 서버가 tcp-keepalive 시간(초)마다 Client의 상태를 확인하여 아무 응답이 없으면 접속을 끊습니다.
-							<br>tcp-keepalive 값이 0인 경우, 아무 응답이 없어도 접속을 끊지 않습니다.
+							<span th:text="#{label.zdb0210.tap.system.tooltip.tcp.keepalive.first}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.tcp.keepalive.second}" ></span>
 						</div>
-						<h3 class="form-title">Memory Management</h3>
+						<h3 th:text="#{label.zdb0210.tap.system.title.memory.management}"  class="form-title"></h3>
 						<table class="Table Form-type">
 							<colgroup>
 								<col style="width: 250px;"> </col>
@@ -723,7 +725,10 @@
 							</colgroup>
 							<tbody>
 								<tr>
-									<th>maxmemory-policy<span class="ico_title" id="iconMaxmemoryPolicy"></span></th>
+									<th>
+										<span th:text="#{label.zdb0210.tap.system.title.memory.policy}" ></span>
+										<span class="ico_title" id="iconMaxmemoryPolicy"></span>
+									</th>
 									<td> 
 										<div class="Divselect" style="width: 200px" id="maxmemory-policy" name="maxmemory-policy">
 										<select>
@@ -739,27 +744,30 @@
 									</td>
 								</tr>
 								<tr>
-									<th>maxmemory-samples<span class="ico_title" id="iconMaxmemorySamples"></span></th>
+									<th>
+										<span  th:text="#{label.zdb0210.tap.system.title.memory.samples}" ></span>
+										<span class="ico_title" id="iconMaxmemorySamples"></span>
+									</th>
 									<td>
 										<input type="text" id="maxmemory-samples" name="maxmemory-samples" class="Textinput"/>
-										<span class="info-text">범위 : 1 ~ 10</span>
+										<span th:text="#{label.zdb0210.tap.system.range.memory.samples}" class="info-text"></span>
 										<p data-for="maxmemory-samples" class="warn-text"></p>
 									</td>
 								</tr>	
 							</tbody>
 						</table>
 						<div class="Tooltip" data-base="#iconMaxmemoryPolicy" data-position="right" data-animation="fade">
-							메모리 관리에 대한 정책을 선택합니다.
-							<br>‣ noeviction: 기존 데이터를 삭제하지 않습니다. 메모리 한계에 도달하면 OOM 오류 반환하며, 새 데이터가 저장되지 않습니다.
-							<br>‣ allkeys-lru: 전체 키에 대하여 LRU 알고리즘으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
-							<br>‣ volatile-lru: expire set을 가진 키에 대하여 LRU 알고리즘으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
-							<br>‣ allkeys-random: 전체 키에 대하여 랜덤으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
-							<br>‣ volatile-random: expire set을 가진 키에 대하여 랜덤으로 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
-							<br>‣ volatile-ttl: expire set을 가진 키에 대하여 TTL이 짧은 것부터 데이터를 삭제하여 공간을 확보하고, 새 데이터를 저장합니다.
+							<span th:text="#{label.zdb0210.tap.system.tooltip.memory.policy.first}" ></span>sdfsdfsfd
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.memory.policy.second}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.memory.policy.third}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.memory.policy.fourth}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.memory.policy.fifth}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.memory.policy.sixth}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.memory.policy.seventh}" ></span>
 						</div>
 						<div class="Tooltip" data-base="#iconMaxmemorySamples" data-position="right" data-animation="fade">
-							메모리를 절약하기 위해서, LRU 알고리즘 수행 시 검사를 위한 샘플의 크기를 선택합니다.
-							<br>낮을 수록 메모리를 절약 할 수 있습니다.
+							<span th:text="#{label.zdb0210.tap.system.tooltip.memory.samples.first}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.memory.samples.second}" ></span>						
 						</div>
 					    <h3 class="form-title">Slow Log</h3>
 						<table class="Table Form-type">
@@ -772,7 +780,7 @@
 									<th>slowlog-log-slower-than<span class="ico_title" id="iconSlowlogLST"></span></th>
 									<td>
 										<input type="text" id="slowlog-log-slower-than" name="slowlog-log-slower-than" class="Textinput"/>
-										<span class="info-text">범위 : -1 ~ 12000</span>
+										<span th:text="#{label.zdb0210.tap.system.range.slowlog.lst}" class="info-text"></span>
 										<p data-for="slowlog-log-slower-than" class="warn-text"></p>
 									</td>
 								</tr>
@@ -780,19 +788,19 @@
 									<th>slowlog-max-len<span class="ico_title" id="iconSlowlogMaxLen"></span></th>
 									<td>
 										<input type="text" id="slowlog-max-len" name="slowlog-max-len" class="Textinput"/>
-										<span class="info-text">범위 : 1 ~ 256</span>
+										<span th:text="#{label.zdb0210.tap.system.range.slowlog.max.len}" class="info-text"></span>
 										<p data-for="slowlog-max-len" class="warn-text"></p>
 									</td>
 								</tr>	
 							</tbody>
 						</table>
 						<div class="Tooltip" data-base="#iconSlowlogLST" data-position="right" data-animation="fade">
-							slowlog-log-slower-than 값으로 설정된 시간(밀리초) 이상 소요되는 명령을 Slowlog로 기록합니다.
-							<br>값이 0인 경우 모든 명령을 기록합니다.
-							<br>값이 음수인 경우 아무런 명령을 기록하지 않습니다.
+							<span th:text="#{label.zdb0210.tap.system.tooltip.slowlog.lst.first}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.slowlog.lst.second}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.slowlog.lst.third}" ></span>										
 						</div>
 						<div class="Tooltip" data-base="#iconSlowlogMaxLen" data-position="right" data-animation="fade">
-							slowlog의 최대 개수를 지정합니다.
+							<span th:text="#{label.zdb0210.tap.system.tooltip.slowlog.max.len.first}" ></span>
 						</div>
 					    <h3 class="form-title">Event Notification</h3>
 						<table class="Table Form-type">
@@ -810,19 +818,19 @@
 							</tbody>
 						</table>
 						<div class="Tooltip" data-base="#iconNotifyKeyspaceEvents" data-position="right" data-animation="fade">
-							Redis의 Keyspace Event에 대한 Notification 기능을 설정합니다.
-							<br>‣ " ": notification 비활성화
-							<br>‣ K: Keyspace 이벤트, published with __keyspace@__ prefix.
-							<br>‣ E: Keyevent 이벤트, published with __keyevent@__ prefix.
-							<br>‣ g: 데이터 타입이 지정돼 있지 않은 일반 명령어(예: DEL, EXPIRE, RENAME 등)
-							<br>‣ $: String 명령어
-							<br>‣ l: List 명령어
-							<br>‣ s: Set 명령어
-							<br>‣ h: Hash 명령어
-							<br>‣ z: Sorted set 명령어
-							<br>‣ x: Expired 이벤트 (events generated every time a key expires)
-							<br>‣ e: Evicted 이벤트 (events generated when a key is evicted for maxmemory)
-							<br>‣ A: 혼합 옵션 (예: "AKE"는 모든 이벤트를 의미함)
+							<span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.first}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.second}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.third}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.fourth}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.fifth}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.sixth}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.seventh}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.eighth}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.ninth}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.tenth}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.eleventh}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.twelfth}" ></span>
+							<br><span th:text="#{label.zdb0210.tap.system.tooltip.event.notification.thirteenth}" ></span>													
 						</div>
 						<div id="divAdvancedConfig">
 							<h3 class="form-title">Advanced Config</h3>
@@ -836,7 +844,7 @@
 										<th>hash-max-ziplist-entries<span class="ico_title" id="iconHashMZE"></span></th>
 										<td>	
 											<input type="text" id="hash-max-ziplist-entries" name="hash-max-ziplist-entries" class="Textinput"/>
-											<span class="info-text">범위 : 0 ~ 65535</span>
+											<span th:text="#{label.zdb0210.tap.system.range.hash.ziplist.entries}" class="info-text"></span>
 											<p data-for="hash-max-ziplist-entries" class="warn-text"></p>
 										</td>
 									</tr>
@@ -844,7 +852,7 @@
 										<th>hash-max-ziplist-value<span class="ico_title" id="iconHashMZV"></span></th>
 										<td>
 											<input type="text" id="hash-max-ziplist-value" name="hash-max-ziplist-value" class="Textinput"/>
-											<span class="info-text">범위 : 0 ~ 65535</span>
+											<span th:text="#{label.zdb0210.tap.system.range.hash.ziplist.value}" class="info-text"></span>
 											<p data-for="hash-max-ziplist-value" class="warn-text"></p>
 										</td>
 									</tr>	
@@ -852,7 +860,7 @@
 										<th>list-max-ziplist-size<span class="ico_title" id="iconListMZS"></span></th>
 										<td>
 											<input type="text" id="list-max-ziplist-size" name="list-max-ziplist-size" class="Textinput"/>
-											<span class="info-text">범위 : -5 ~ 5</span>
+											<span th:text="#{label.zdb0210.tap.system.range.list.ziplist.size}" class="info-text"></span>
 											<p data-for="list-max-ziplist-size" class="warn-text"></p>
 										</td>
 									</tr>	
@@ -860,7 +868,7 @@
 										<th>zset-max-ziplist-entries<span class="ico_title" id="iconZsetMZE"></span></th>
 										<td>
 											<input type="text" id="zset-max-ziplist-entries" name="zset-max-ziplist-entries" class="Textinput"/>
-											<span class="info-text">범위 : 0 ~ 65535</span>
+											<span th:text="#{label.zdb0210.tap.system.range.zset.ziplist.entries}" class="info-text"></span>
 											<p data-for="zset-max-ziplist-entries" class="warn-text"></p>
 										</td>
 									</tr>	
@@ -868,20 +876,20 @@
 										<th>zset-max-ziplist-value<span class="ico_title" id="iconZsetMZV"></span></th>
 										<td>
 											<input type="text" id="zset-max-ziplist-value" name="zset-max-ziplist-value" class="Textinput"/>
-											<span class="info-text">범위 : 0 ~ 65535</span>
+											<span th:text="#{label.zdb0210.tap.system.range.zset.ziplist.value}" class="info-text"></span>
 											<p data-for="zset-max-ziplist-value" class="warn-text"></p>
 										</td>
 									</tr>	
 								</tbody>
 							</table>
 							<div class="Tooltip" data-base="#iconHashMZE" data-position="right" data-animation="fade">
-								Hash의 Field 개수를 설정합니다. 값이 512일 때, Filed 수가 512개 이하이면 Zip list로 저장됩니다.
+								<span th:text="#{label.zdb0210.tap.system.tooltip.hash.ziplist.entries.first}" ></span>
 							</div>
 							<div class="Tooltip" data-base="#iconHashMZV" data-position="right" data-animation="fade">
-								값(String)의 크기를 설정합니다. 값이 64일 때, 값의 크기가 64Byte 이하이면 Zip list로 저장됩니다.
+								<span th:text="#{label.zdb0210.tap.system.tooltip.hash.ziplist.value.first}" ></span>
 							</div>
 							<div class="Tooltip" data-base="#iconListMZS" data-position="right" data-animation="fade">
-								Zip list의 크기를 설정합니다.
+								<span th:text="#{label.zdb0210.tap.system.tooltip.list.ziplist.size.first}" ></span>
 								<br>‣ -5 : max size 64 kb
 								<br>‣ -4 : max size 32 kb
 								<br>‣ -3 : max size 16 kb
@@ -892,14 +900,14 @@
 								<br>‣ n : entries n
 							</div>
 							<div class="Tooltip" data-base="#iconZsetMZE" data-position="right" data-animation="fade">
-								Sorted Set에 포함된 멤버의 개수 기준을 설정합니다.
-								<br>값이 128일 때, Sorted Set에 포함된 멤버의 개수가 128보다 크면 Skip list로,
-								<br>아니면 Zip list로 인코딩 됩니다.
+								<span th:text="#{label.zdb0210.tap.system.tooltip.zset.ziplist.entries.first}" ></span>
+								<br><span th:text="#{label.zdb0210.tap.system.tooltip.zset.ziplist.entries.second}" ></span>
+								<br><span th:text="#{label.zdb0210.tap.system.tooltip.zset.ziplist.entries.third}" ></span>
 							</div>
 							<div class="Tooltip" data-base="#iconZsetMZV" data-position="right" data-animation="fade">
-								Sorted Set의 사이즈의 기준을 설정합니다.
-								<br>값이 64일 때, Sorted Set에 포함된 요소 중 가장 긴 요소의 길이가 이 값보다 크면 Skip list로, 
-								<br>아니면 Zip list로 인코딩 됩니다.
+								<span th:text="#{label.zdb0210.tap.system.tooltip.zset.ziplist.value.first}" ></span>
+								<br><span th:text="#{label.zdb0210.tap.system.tooltip.zset.ziplist.value.second}" ></span>
+								<br><span th:text="#{label.zdb0210.tap.system.tooltip.zset.ziplist.value.third}" ></span>
 							</div>
 						</div>
 			            <div class="btn-wrap__right">
@@ -927,7 +935,7 @@
 			</form>
 		</div>
 		<div id="tabLog" style="display:none;">
-			<h3 class="form-title">로그</h3>
+			<h3 th:text="#{label.zdb0210.tap.log.form.title}" class="form-title"></h3>
 			<div class="tabs-contents">
 				<div class="mt10">
 					<div class="info-list select-date Daterange" data-selectyear="true" data-selectmonth="true">
@@ -941,11 +949,11 @@
 							<div class="Calendar" id="logEndDate"></div>
 						</div>
 					</div>
-					<label class="ImageRadio af-radio-text"><input class="Radio" name="logType" checked="checked" value="error">에러로그</label>
-					<label class="ImageRadio af-radio-text"><input class="Radio" name="logType" value="query">Slow Query</label>
+					<label class="ImageRadio af-radio-text"><input th:text="#{label.zdb0210.tap.log.radio.error}" class="Radio" name="logType" checked="checked" value="error"></label>
+					<label class="ImageRadio af-radio-text"><input th:text="#{label.zdb0210.tap.log.radio.slow.query}" class="Radio" name="logType" value="query"></label>
 					<span class="ml20"></span>
-					<button class="Button btn" id="btnSearchLog">조회</button>
-					<button class="Button btn" id="btnDownloadLog">다운로드</button>
+					<button th:text="#{label.zdb0210.tap.log.button.search.log}" class="Button btn" id="btnSearchLog"></button>
+					<button th:text="#{label.zdb0210.tap.log.button.download.log}" class="Button btn" id="btnDownloadLog"></button>
 				</div>
 				<div>
 					<div style="width:100%;overflow: scroll" class="mt10">
@@ -956,7 +964,7 @@
 		</div>		
 		
 		<div id="tabProcess" style="display:none;" >
-			<h3 class="form-title">프로세스</h3>
+			<h3 th:text="#{label.zdb0210.tap.process.form.title}" class="form-title"></h3>
 			<div class="tabs-contents">
 				<div id="gridProcess"></div>
 			</div>		
@@ -981,6 +989,13 @@
 				,"CREADENTIAL":"Service Management","BINLOG":"Binlog Management"};
 	var gBackupChkBoxArr = ["ACCEPTED","DATA_BACKUP_DOING","DATA_BACKUP_COMPLETE","DATA_BACKUP_FAILED","DATA_ARCHIVE_DOING","DATA_ARCHIVE_COMPLETE","DATA_ARCHIVE_FAILED","DATA_UPLOAD_DOING","DATA_UPLOAD_COMPLETE","DATA_UPLOAD_FAILED","ABORTED","FAILED"]; 
 	var gBackupLogArr = ["ACCEPTED","DATA_BACKUP_DOING","DATA_BACKUP_FAILED","ABORTED","FAILED"]; 
+	var gCardMsg = {elapsedTime:'[[#{label.zdb0210.top.card.elapsed.time}]]'
+		,createTime:'[[#{label.zdb0210.top.card.create.time}]]'
+		,add:'[[#{label.zdb0210.top.card.tag.add}]]'
+		,restart:'[[#{label.zdb0210.top.card.restart}]]'							
+		,detail:'[[#{label.zdb0210.top.card.detail}]]'
+	};	
+	
 	
 	$a.page(function() {
 		this.init = function() {
@@ -1034,7 +1049,7 @@
 
 			$('#deleteService').on('click',function(){
  				gCommon.credentialConfirm({
-			        data:{credential:$("#credential").val(),msg:'서비스를 삭제하시려면',okBtnMsg:'삭제'},
+			        data:{credential:$("#credential").val(),msg:'[[#{label.common.msg.cofirm.service.delete}]]',okBtnMsg:'[[#{label.common.msg.cofirm.service.delete.ok.button}]]'},
 			        callback : function(res){
 			        	let data = $.extend({},gParam);
 			        	let alertRules = [];
@@ -1046,7 +1061,7 @@
 							success: function(res){
 								
 								// alert 창의 확인 버튼 클릭 후 페이지 이동하도록 수정 적용 (2019-10-25)
-								gCommon.alert('삭제 요청이 완료 되었습니다.',function(){
+								gCommon.alert('[[#{label.common.msg.alert.delete.completed}]]',function(){
 									gCommon.movePage('/zdb02/zdb0200',{selectedNamespace:gSelectedNamespace});		
 								});
 							}
@@ -1056,7 +1071,7 @@
 			});
 			$('#restartService').on('click',function(){
 				gCommon.credentialConfirm({
-			        data:{credential:$("#credential").val(),msg:'서비스를 재시작 하시려면',okBtnMsg:'재시작'},
+			        data:{credential:$("#credential").val(),msg:'[[#{label.common.msg.cofirm.service.restart}]]',okBtnMsg:'[[#{label.common.msg.cofirm.service.restart.ok.button}]]'},
 			        callback : function(res){
 						$a.ajax({
 							url: '/zdbapi/restartService',
@@ -1071,7 +1086,7 @@
 			//서비스 목록내 태그 삭제
 			$('body').on('click','button.tagDel',function(){
 				var ob = $(this).prev();
-				gCommon.confirm('선택한 태그를 삭제하시겠습니까?',function(){
+				gCommon.confirm('[[#{label.common.msg.cofirm.tag.delete}]]',function(){
 					var data = gCommon.findObjectByKeyOb(gTagList,{id:ob.data('id')});
 					data = $.extend({},data,{serviceName:data.releaseName});
 					$a.ajax({
@@ -1115,7 +1130,7 @@
 			});	
 			formService.validator({
 			    elements :{ 
-			         port: { rule:{required:true,checkPort:''} , message:{checkPort:'포트는 3306, 10000~39999 허용'} }
+			         port: { rule:{required:true,checkPort:''} , message:{checkPort:'[[#{label.common.msg.validator.check.port}]]'} }
 			    }
 			});						
 			$('#togglePwd').on('click',function(){
@@ -1160,7 +1175,7 @@
 			$('#portUpdate').on('click',function(){
 				if(!formService.validate())return;
 				gCommon.credentialConfirm({
-			        data:{credential:$("#credential").val(),msg:'서비스 포트를 변경 하시려면',okBtnMsg:'변경'},
+			        data:{credential:$("#credential").val(),msg:'[[#{label.common.msg.cofirm.port.update}]]',okBtnMsg:'[[#{label.common.msg.cofirm.port.update.ok.button}]]'},
 			        callback : function(res){
 						$a.ajax({
 							url: '/zdbapi/changePort',
@@ -1193,7 +1208,7 @@
 					{   title: 'Restart',
 						processor:function(data,$cell,grid){
 							gCommon.credentialConfirm({
-								data:{credential:$("#credential").val(),msg:'재시작 하시려면',okBtnMsg:'재시작'},
+								data:{credential:$("#credential").val(),msg:'[[#{label.common.msg.cofirm.restart}]]',okBtnMsg:'[[#{label.common.msg.cofirm.restart.ok.button}]]'},
 						        callback : function(res){
 						        	if(res == "Y"){
 										var param = {
@@ -1222,7 +1237,7 @@
 					{   title: "Start" ,
 						processor: function(data, $cell, grid) {
 							gCommon.credentialConfirm({
-						        data:{credential:$("#credential").val(), msg:'서비스 시작 하시려면', okBtnMsg:'서비스 시작'},
+						        data:{credential:$("#credential").val(), msg:'[[#{label.common.msg.cofirm.service.start}]]', okBtnMsg:'[[#{label.common.msg.cofirm.service.start.ok.button}]]'},
 						        callback : function(res){
 									$a.ajax({
 										url: '/zdbapi/serviceOn',
@@ -1243,7 +1258,7 @@
 					{   title: "Shutdown" ,
 						processor: function(data, $cell, grid) {
 							gCommon.credentialConfirm({
-						        data:{credential:$("#credential").val(), msg:'서비스를 종료 하시려면', okBtnMsg:'서비스 종료'},
+						        data:{credential:$("#credential").val(), msg:'[[#{label.common.msg.cofirm.service.terminate}]]', okBtnMsg:'[[#{label.common.msg.cofirm.service.terminate.ok.button}]]'},
 						        callback : function(res){
 									$a.ajax({
 										url: '/zdbapi/serviceOff',
@@ -1267,7 +1282,7 @@
 							if(data.condition && data.condition.status == 'True'){
 								window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podName="+data.name);
 							}else{
-								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
+								gCommon.alert('[[#{label.zdb0210.tap.service.grid.msg.alert}]]');
 							}
 						},
 						use: function(data,$cell,grid){
@@ -1280,7 +1295,7 @@
 							if(data.condition && data.condition.status == 'True'){
 								window.open("/zdb02/zdb0200p02?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podName="+data.name);
 							}else{
-								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
+								gCommon.alert('[[#{label.zdb0210.tap.service.grid.msg.alert}]]');
 							}
 						},
 						use: function(data,$cell,grid){
@@ -1293,7 +1308,7 @@
 							if(data.condition && data.condition.status == 'True'){
 								window.open("/zdb02/zdb0200p04?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&podName="+data.name);
 							}else{
-								gCommon.alert('서비스 이용이 가능할 때 조회할 수 있습니다');
+								gCommon.alert('[[#{label.zdb0210.tap.service.grid.msg.alert}]]');
 							}
 						},
 						use: function(data,$cell,grid){
@@ -1328,7 +1343,7 @@
 										} else if (replicationStatus == 'error') {
 											return '<div id="replicationTooltip" class="state red"></div>';
 										} else if(replicationStatus == 'over') {
-											return '<div id="replicationTooltip">조회 실패</div>';
+											return '<div id="replicationTooltip">'+'[[#{label.zdb0210.tap.service.grid.msg.replication.failed}]]'+'</div>';
 										} 
 									}
 								} 
@@ -1410,13 +1425,13 @@
 								var elapsedSeconds = different / secondsInMilli;
 								
 								if (elapsedDays > 0) {
-									return Math.floor(elapsedDays) + "일";
+									return Math.floor(elapsedDays) +' '+'[[#{label.common.msg.trans.time.day}]]';
 								} else if (elapsedHours > 0) {
-									return Math.floor(elapsedHours) + "시간";
+									return Math.floor(elapsedHours) +' '+'[[#{label.common.msg.trans.time.hour}]]';
 								} else if (elapsedMinutes > 0) {
-									return Math.floor(elapsedMinutes) + "분";
+									return Math.floor(elapsedMinutes) +' '+'[[#{label.common.msg.trans.time.minutes}]]';
 								} else if (elapsedSeconds > 0) {
-									return Math.floor(elapsedSeconds) + "초";
+									return Math.floor(elapsedSeconds) +' '+'[[#{label.common.msg.trans.time.seconds}]]';
 								} else {
 									return "-";
 								}
@@ -1435,7 +1450,7 @@
 						return re;
 					}},
 					//{ title:'Name', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
-					{ title:'이름', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
+					{ title:'[[#{label.zdb0210.tap.service.grid.name}]]', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
 						if(data.colspanCol){
 							return isSlowLogHidden ? 'log' : 'slowLog';
 						};
@@ -1449,12 +1464,12 @@
 						return re;
 					}},
 					//{ title:'Replicas', key : 'replicas' , width: '70px', align: 'center'},
-					{ title:'인스턴스 수', key : 'replicas' , width: '100px', align: 'center'},
+					{ title:'[[#{label.zdb0210.tap.service.grid.replicas}]]', key : 'replicas' , width: '100px', align: 'center'},
 					//{ title:'Replication', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
-					{ title:'복제', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
+					{ title:'[[#{label.zdb0210.tap.service.grid.replication}]]', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
 					}},
 					//{ title:'Role', key : 'role' , width: '90px', align: 'center', render : function(value, data){
-					{ title:'역할', key : 'role' , width: '90px', align: 'center', render : function(value, data){
+					{ title:'[[#{label.zdb0210.tap.service.grid.role}]]', key : 'role' , width: '90px', align: 'center', render : function(value, data){
 						
 						let re = '';
 						let roleIcon = {
@@ -1498,9 +1513,9 @@
 						return re;
 					}},
 					//{ title:'Node', key : 'node' , width: '130px', align: 'center'},
-					{ title:'노드', key : 'node' , width: '130px', align: 'center'},
+					{ title:'[[#{label.zdb0210.tap.service.grid.node}]]', key : 'node' , width: '130px', align: 'center'},
 					//{ title:'Disk(Gi)', key : 'disk' , width: '140px', align: 'center',tooltip : function(value, data, mapping){
-					{ title:'데이터 Disk', key : 'disk' , width: '140px', align: 'center', tooltip : function(value, data, mapping){
+					{ title:'[[#{label.zdb0210.tap.service.grid.disk}]]', key : 'disk' , width: '140px', align: 'center', tooltip : function(value, data, mapping){
 						if(data.diskUpdateTime){
 							var isValid = moment(data.diskUpdateTime,'YYYYMMDDHHmmss').isValid();
 							if(isValid) {
@@ -1516,12 +1531,12 @@
 							}
 						};
 					}},
-					{ title:'백업 Disk', key : 'backupStorage' , width: '120px', align: 'center', hidden: true, render : {type: "setBackupStorage"
+					{ title:'[[#{label.zdb0210.tap.service.grid.backup.storage}]]', key : 'backupStorage' , width: '120px', align: 'center', hidden: true, render : {type: "setBackupStorage"
 					}},
-					{ title:'CPU(m)', key : 'cpu' , width: '120px', align: 'center'},
-					{ title:'Memory(Mi)', key : 'memory' , width: '180px', align: 'center'},
+					{ title:'[[#{label.zdb0210.tap.service.grid.cpu}]]', key : 'cpu' , width: '120px', align: 'center'},
+					{ title:'[[#{label.zdb0210.tap.service.grid.memory}]]', key : 'memory' , width: '180px', align: 'center'},
 					//{ title:'Last Uptime', key : 'lastTransitionTime' , width: '150px', align: 'center', render: function(value,data){
-					{ title:'기간', key : 'lastTransitionTime' , width: '150px', align: 'center', render : {type: "setTerm"}, tooltip : function(value, data, mapping){
+					{ title:'[[#{label.zdb0210.tap.service.grid.last.transition.time}]]', key : 'lastTransitionTime' , width: '150px', align: 'center', render : {type: "setTerm"}, tooltip : function(value, data, mapping){
 						var lTT = data.condition? data.condition.lastTransitionTime : '';
 						if(lTT){
 							var d = moment(lTT,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss');
@@ -1531,11 +1546,11 @@
 							return 'Last Transition Time : '+dLT;
 						}
 					}},
-					{ title:'Action',key:'restart',width:'60px', align: 'center',hidden:(!gIsClusterAdmin&&!gIsZdbAdmin),render: function( value, data, render, mapping,cell){
+					{ title:'[[#{label.zdb0210.tap.service.grid.action}]]',key:'restart',width:'60px', align: 'center',hidden:(!gIsClusterAdmin&&!gIsZdbAdmin),render: function( value, data, render, mapping,cell){
 						return getGridContextButton();
 					}},
 					//{ title:'Log',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
-					{ title:'로그',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
+					{ title:'[[#{label.zdb0210.tap.service.grid.log}]]',key:'log',width:'50px', align: 'center',render: function( value, data, render, mapping){
 						if(!data.isPod)return'';
 						return getGridContextButton();
 					}}
@@ -1784,7 +1799,7 @@
 							var dataStorage = null;
 							
 							if(gService.serviceType == 'redis' && gService.purpose != 'DATA' && gService.persistentVolumeClaims.length == 0){
-								ob.disk = '사용안함';
+								ob.disk = '[[#{label.common.select.unused}]]';
 							} else if(dl && dl[ob.name]){
 								if(dl[ob.name].length == 1) {
 									dataStorage = dl[ob.name][0];
@@ -1798,7 +1813,7 @@
 										}
 									}
 								} else if(dl[ob.name].length == 0) {
-									ob.disk = '사용안함';
+									ob.disk = '[[#{label.common.select.unused}]]';
 								}
 								
 								if(dataStorage != null) {
@@ -1854,7 +1869,7 @@
 					$('#configInfo').zdbui_setContents(
 							{ cpu:resorceSpec.cpu||''
 							 ,memory:resorceSpec.memory||''
-							 ,disk:totalStorage==0?'사용안함':cloudUtil.convertDiskSize(totalStorage)||''
+							 ,disk:totalStorage==0?'[[#{label.common.select.unused}]]':cloudUtil.convertDiskSize(totalStorage)||''
 							 ,storageClass:gServiceScale.storageClass
 							}
 						);
@@ -2081,7 +2096,7 @@
 					crtTime:ob.crtTime,
 					elapsedTime:ob.elapsedTime,
 					tagList:ob.tags
-				}));
+				},gCardMsg));
 			};
 			
 			$('#connectionInfoTable').find(':radio[name^=con]').on('change',function(){
@@ -2091,15 +2106,16 @@
 				var target = e.target.id == "credentialCopy" ? $('#credential') : $(this).prev();
 				var msg = '';
 				if(target.val() == ''){
-					msg = '복사할 내용이 없습니다.';	
+					msg = '[[#{label.zdb0210.tap.service.confirm.msg.no.content}]]';	
 				}else{
 					gCommon.copyToClipboard(target);
 					if(target.get(0).id == 'credential'){
-						msg = 'Credential이 복사되었습니다';
+						//msg = 'Credential이 복사되었습니다';
+						msg = '[[#{label.zdb0210.tap.service.msg.credential.copy}]]';
 					}else if(target.get(0).name.indexOf('ConnectionString')>-1){
-					    msg = 'Connection String이 복사되었습니다.';
+					    msg = '[[#{label.zdb0210.tap.service.confirm.msg.copy.string}]]';
 					}else{
-					    msg = 'Connection Line이 복사되었습니다.';
+					    msg = '[[#{label.zdb0210.tap.service.confirm.msg.copy.line}]]';
 					}
 				}
 				var ob = $(this).parent().parent().find(".connectionInfoCopyed").html(msg).show();
@@ -2108,7 +2124,7 @@
 				},1000);
 			})			
 			tabService.find('#publicNetworkDelete').on('click',function(){
-				if(gCommon.confirm('Public Network 서비스 삭제시 </br> 외부연동이 단절됩니다. <br/> 삭제하시겠습니까?',function(){
+				if(gCommon.confirm('[[#{label.zdb0210.tap.service.confirm.msg.del.public}]]'.replaceAll('\n','<br>'),function(){
 					$a.ajax({
 						url: '/zdbapi/deletePublicService',
 						data:gParam,
@@ -2118,10 +2134,10 @@
 							});
 						}
 					});
-				},{okBtnMsg:"삭제"}));
+				},{okBtnMsg:'[[#{label.zdb0210.tap.service.confirm.msg.del.public.ok.btn}]]'}));
 			});
 			tabService.find('#publicNetworkCreate').on('click',function(){
-				if(gCommon.confirm('Public Network를 추가 하시겠습니까?',function(){
+				if(gCommon.confirm('[[#{label.zdb0210.tap.service.confirm.msg.add.public}]]',function(){
 					$a.ajax({
 						url: '/zdbapi/createPublicService',
 						data:gParam,
@@ -2132,7 +2148,7 @@
 							}); 
 						}
 					});
-				},{okBtnMsg:"추가"}));
+				},{okBtnMsg:'[[#{label.zdb0210.tap.service.confirm.msg.add.public.ok.btn}]]'}));
 			});
 			tabService.find('.onoff-wrap > button').click(function(e){
 				e.preventDefault();
@@ -2142,25 +2158,25 @@
 				};				
 			
 				let param = $.extend({},gParam,{enable:isEnable == 'Y'});
-				let msg = "Auto Failover 기능을 적용합니다.<br>처음적용시 서비스가 재시작 됩니다." ;
+				let msg = '[[#{label.zdb0210.tap.service.alert.msg.autofailover.apply.first}]]'.replaceAll('\n','<br>') ;
 				let aStatefulSets = gService.statefulSets ;
-				let btnMsg = "적용";  // 버튼 텍스트 변수 추가 (2019-10-08)
+				let btnMsg = '[[#{label.zdb0210.tap.service.alert.msg.autofailover.apply.ok.btn}]]';  // 버튼 텍스트 변수 추가 (2019-10-08)
 				for(let a in aStatefulSets){
 					let aStatefulSet = aStatefulSets[a] ; 
 					let aLabels = aStatefulSet.metadata.labels ;
 					if(aLabels.component == "master"){
 						if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "true"  ){
-							msg = "Auto Failover 기능을 해제합니다." ;
-							btnMsg = "해제";
+							msg ='[[#{label.zdb0210.tap.service.alert.msg.autofailover.clear}]]';
+							btnMsg = '[[#{label.zdb0210.tap.service.alert.msg.autofailover.clear.ok.btn}]]';
 						}else if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "false"  ){	
-							msg = "Auto Failover 기능을 적용합니다." ;
+							msg = '[[#{label.zdb0210.tap.service.alert.msg.autofailover.apply}]]';
 						} 
 					}
 				}
 			
  				gCommon.confirm(msg,function(yn){
 					gCommon.credentialConfirm({
-				        data:{credential:$("#credential").val(), msg:'설정을 변경하시려면', okBtnMsg:btnMsg},
+				        data:{credential:$("#credential").val(), msg:'[[#{label.zdb0210.tap.service.alert.msg.autofailover.update}]]', okBtnMsg:btnMsg},
 				        callback : function(res){
 							$a.ajax({
 								url: '/zdbapi/updateAutoFailoverEnable',
@@ -2185,7 +2201,7 @@
 			tabService.find('#divFailoverBtn button').on('click',function(e){
 				e.preventDefault();
 				gCommon.credentialConfirm({
-					data:{credential:$("#credential").val(), msg:'failover 수행을 하시려면', okBtnMsg:'변경'},
+					data:{credential:$("#credential").val(), msg:'[[#{label.zdb0210.tap.service.alert.msg.failover.apply}]]', okBtnMsg:'[[#{label.zdb0210.tap.service.alert.msg.failover.apply.ok.btn}]]'},
 					callback : function(res){
 						$a.ajax({
 							url: '/zdbapi/serviceChangeMasterToSlave',
@@ -2202,7 +2218,7 @@
 			tabService.find('#divFailbackBtn button').on('click',function(e){
 				e.preventDefault();
 				gCommon.credentialConfirm({
-					data:{credential:$("#credential").val(), msg:'failback 수행을 하시려면', okBtnMsg:'변경'},
+					data:{credential:$("#credential").val(), msg:'[[#{label.zdb0210.tap.service.alert.msg.failback.apply}]]', okBtnMsg:'[[#{label.zdb0210.tap.service.alert.msg.failback.apply}]]'},
 					callback : function(res){
 						$a.ajax({
 							url: '/zdbapi/serviceChangeSlaveToMaster',
@@ -2441,12 +2457,12 @@
 				}
 			});
 			
-			let throttleYnTooltipMsg = "백업 수행되는 속도를 저속으로 제어하는 모드 입니다.<br>백업 수행되는 중에 데이터베이스 서비스의 영향을 최소화 합니다." ; 
+			let throttleYnTooltipMsg = "[[#{label.zdb0210.tap.backup.msg.tooltip.throttle}]]".replaceAll('\n','</br>');  
 			$('#throttleYnTooltipMsg').html(throttleYnTooltipMsg).tooltip();
 			
 			$('button#saveSchedule').on('click',function(){
 				if(backupStatus=='I'){
-					gCommon.confirm('백업 설정을 수정 하시겠습니까?',function(){
+					gCommon.confirm('[[#{label.zdb0210.tap.backup.msg.confirm.schedule}]]',function(){
 						fn_saveSchedule();				
 					});
 				}else if(backupStatus=='Y'){
@@ -2457,17 +2473,17 @@
 			$('button#deleteBackup').on('click',function(){
 				let dt = AlopexGrid.trimData(gridBackup.alopexGrid('dataGet',{_state:{selected:true}}));
 				if(dt.length == 0){
-					gCommon.alert('선택된 백업 데이터가 없습니다.');
+					gCommon.alert('[[#{label.zdb0210.tap.backup.msg.alert.no.date}]]');
 					return;
 				}
-				gCommon.confirm('선택한 백업을 삭제 하시겠습니까?',function(){
+				gCommon.confirm('[[#{label.zdb0210.tap.backup.msg.confirm.del.backup}]]',function(){
 					$a.ajax({
 						url: '/zdbapi/deleteBackup',
 						method:'put',
 						data:{data:JSON.stringify(dt)},
 						success: function(res){
 							if(res.result.code!='4'){
-								gCommon.alert('백업 삭제를 요청하였습니다.');
+								gCommon.alert('[[#{label.zdb0210.tap.backup.msg.alert.del.backup}]]');
 								fn_getBackupInfo();
 							};
 						}
@@ -2489,7 +2505,7 @@
 								data:$.extend({},gParam,{type:res.backupType}),
 								success: function(res){
 									if(res.result.code!='4'){
-										gCommon.alert('즉시 백업을 요청하였습니다.');
+										gCommon.alert('[[#{label.zdb0210.tap.backup.msg.alert.immediate.backup}]]');
 										fn_getBackupInfo();
 									};
 								}
@@ -2501,7 +2517,7 @@
 			$('button#abortedBackup').on('click',function(){
 				let guid = gCommon.getUid();
 				gCommon.credentialConfirm({
-			        data:{credential:$("#credential").val(),msg:'백업을 중지하시려면',okBtnMsg:'중지'},
+			        data:{credential:$("#credential").val(),msg:'[[#{label.zdb0210.tap.backup.msg.cofirm.terminate.backup}]]',okBtnMsg:'[[#{label.zdb0210.tap.backup.msg.cofirm.terminate.backup.ok.button}]]'},
 			        callback : function(res){
 						$a.ajax({
 							url:'/zdbapi/abortBackup',
@@ -2518,7 +2534,7 @@
 			$('button#restoreToPoint').on('click',function(){
 				// failoverEnabled 에 의한 메세지 처리 로직 추가 (2019-10-24)				
 				if(gService.failoverEnabled !='off' ){
-					gCommon.alert('Auto Failover 가 활성화 되어 있는 상태에서 복원하기 기능을 사용할 수 없습니다.<br>Auto Failover 비활성한 이후에 진행해 주시기 바랍니다.',null,{width:800,height:250});
+					gCommon.alert('[[#{label.zdb0210.tap.backup.msg.alert.restore.auto.failover}]]'.replaceAll('\n','</br>'),null,{width:800,height:250});
 					return;
 				}
 
@@ -2538,9 +2554,9 @@
 			});
 			// Binlog 정리 버튼 추가 2019-10-18
 			$('button#purgeBinlog').on('click',function(){
-				let popMsg = ' Binlog 정리를 통해서 서버의 디스크 용량을 줄일 수 있습니다. </br>';
-				popMsg += ' 정리된 Binlog는 Object Storage에 압축하여 저장됩니다. </br>';
-				popMsg += ' 현재 사용하는 Binlog는 정리대상에 포함되지 않습니다.</br>';
+				let popMsg = '[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.first}]]'+'</br>';
+				popMsg += '[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.second}]]'+'</br>';
+				popMsg += '[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.third}]]'+'</br>';
 				gCommon.confirmYn(popMsg,function(yn){
 					if(yn == "Y"){
 						// Binlog 정리 버튼 API 호출 로직 추가 2019-10-21
@@ -2553,7 +2569,7 @@
 							}
 						}); 		
 					}			
-				},{okBtnMsg:'Binlog 정리' , vWidth : 600 , vHeight:350 });
+				},{okBtnMsg:'[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.ok.btn}]]' , vWidth : 600 , vHeight:350 });
 			});
 			$('button#addBackupDisk').on('click',function(){
 				/*backupdisk-test*/
@@ -2581,7 +2597,7 @@
 			$('button#removeBackupDisk').on('click',function(){
 				
 				gCommon.credentialConfirm({
-			        data:{credential:$("#credential").val(),msg:'백업 디스크를 제거하시려면',okBtnMsg:'제거'},
+			        data:{credential:$("#credential").val(),msg:'[[#{label.zdb0210.tap.backup.msg.cofirm.delete.backup}]]',okBtnMsg:'[[#{label.zdb0210.tap.backup.msg.cofirm.delete.backup.ok.button}]]'},
 			        callback : function(res){
 						$a.ajax({
 							url:'/zdbapi/removeBackupDisk',
@@ -2596,10 +2612,10 @@
 			        }
 			    });	
 			})			
-			let downloadTitle = '복원/다운로드';
+			let downloadTitle = '[[#{label.zdb0210.tap.backup.title.restore.download}]]';
 			let bakcupLogShow = true;
 			if(gParam.serviceType == cServiceType.redis){
-				downloadTitle = '다운로드';
+				downloadTitle = '[[#{label.zdb0210.tap.backup.title.download}]]';
 				// backup log  버튼 활성화 여부  bakcupLogShow = false; -> true 로 변경 (2019-07-04)
 				bakcupLogShow = true;
 			}
@@ -2621,7 +2637,7 @@
 					}
 				},				
 				contextMenu : [
-					{   title: '결과',
+					{   title: '[[#{label.zdb0210.tap.backup.gird.popup.result}]]',
 						processor:function(data,$cell,grid){
 						
 							$a.ajax({
@@ -2631,17 +2647,17 @@
 									let ob = res.backupResult;
 								
 									let r = '<table><colgroup><col class="wd200"></col><col width="*"></col></colgroup>'
-										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '<tr><th class="tl">백업범위(LSN)</th><td class="tl">' + ob.backupScope + '</td></tr>' 
-									 	if(!cloudUtil.isEmpty(ob.fromBackup)) r+='<tr><th class="tl">기준이 되는 백업</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.archiveFileSize)) r+='<tr><th class="tl">압축파일크기</th><td class="tl">' + ob.archiveFileSize  +'</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.backupTime)) r+='<tr><th class="tl">백업 소요시간</th><td class="tl">' + ob.backupTime  + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.archiveTime)) r+='<tr><th class="tl">압축 소요시간</th><td class="tl">' + ob.archiveTime  + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.uploadTime)) r+='<tr><th class="tl">업로드 소요시간</th><td class="tl">' + ob.uploadTime  + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.binlogBackupTime)) r+='<tr><th class="tl">빈로그 백업 시간</th><td class="tl">' + ob.binlogBackupTime  + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.binlogUploadTime)) r+='<tr><th class="tl">빈로그 백업 업로드 시간</th><td class="tl">' + ob.binlogUploadTime  + '</td></tr>' 
-										if(!cloudUtil.isEmpty(ob.binlogPurgeTime)) r+='<tr><th class="tl">빈로그 정리 시간</th><td class="tl">' + ob.binlogPurgeTime  + '</td></tr>'
+										if(!cloudUtil.isEmpty(ob.backupScope)) r+= '<tr><th class="tl">'+'[[#{label.zdb0210.tap.backup.gird.popup.result.backup.scope}]]'+'</th><td class="tl">' + ob.backupScope + '</td></tr>' 
+									 	if(!cloudUtil.isEmpty(ob.fromBackup)) r+='<tr><th class="tl">'+'[[#{label.zdb0210.tap.backup.gird.popup.result.from.backup}]]'+'</th><td class="tl">' + ob.fromBackup + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.archiveFileSize)) r+='<tr><th class="tl">'+'[[#{label.zdb0210.tap.backup.gird.popup.result.archive.file.size}]]'+'</th><td class="tl">' + ob.archiveFileSize  +'</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.backupTime)) r+='<tr><th class="tl">'+'[[#{label.zdb0210.tap.backup.gird.popup.result.backup.time}]]'+'</th><td class="tl">' + ob.backupTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.archiveTime)) r+='<tr><th class="tl">'+'[[#{label.zdb0210.tap.backup.gird.popup.result.archive.time}]]'+'</th><td class="tl">' + ob.archiveTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.uploadTime)) r+='<tr><th class="tl">'+'[[#{label.zdb0210.tap.backup.gird.popup.result.upload.time}]]'+'</th><td class="tl">' + ob.uploadTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.binlogBackupTime)) r+='<tr><th class="tl">'+'[[#{label.zdb0210.tap.backup.gird.popup.result.binlog.backup.time}]]'+'</th><td class="tl">' + ob.binlogBackupTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.binlogUploadTime)) r+='<tr><th class="tl">'+'[[#{label.zdb0210.tap.backup.gird.popup.result.binlog.upload.time}]]'+'</th><td class="tl">' + ob.binlogUploadTime  + '</td></tr>' 
+										if(!cloudUtil.isEmpty(ob.binlogPurgeTime)) r+='<tr><th class="tl">'+'[[#{label.zdb0210.tap.backup.gird.popup.result.binlog.purge.time}]]'+'</th><td class="tl">' + ob.binlogPurgeTime  + '</td></tr>'
 																				
-										if(ob.status =='DATA_ARCHIVE_FAILED' || ob.status =='DATA_UPLOAD_FAILED' ) r+= '<tr><th class="tl">재수행</th><td class="tc"><button class="btn-ico btn-refresh" onClick="retryBackup(\'' + data.backupId + '\')" title="재수행">재수행 </button></td></tr>';
+										if(ob.status =='DATA_ARCHIVE_FAILED' || ob.status =='DATA_UPLOAD_FAILED' ) r+= '<tr><th class="tl">'+'[[#{label.zdb0210.tap.backup.gird.popup.result.button.re.execute}]]'+'</th><td class="tc"><button class="btn-ico btn-refresh" onClick="retryBackup(\'' + data.backupId + '\')" title="'+'[[#{label.zdb0210.tap.backup.gird.popup.result.button.re.execute}]]'+'">'+'[[#{label.zdb0210.tap.backup.gird.popup.result.button.re.execute}]]'+' </button></td></tr>';
 										r+= '</table>';  
 									gCommon.backupAlert(r,null,{width:600,height:450});
 								}
@@ -2651,7 +2667,7 @@
 							return bakcupLogShow && $cell.data('alopexgrid-key')=="log"
 						}
 					},
-					{   title: '로그',
+					{   title: '[[#{label.zdb0210.tap.backup.gird.popup.log}]]',
 						processor:function(data,$cell,grid){
 							//console.log('로그');	
 							window.open("/zdb02/zdb0200p07?namespace="+gService.namespace+"&serviceName="+gService.serviceName+"&backupId="+data.backupId+'&time='+cloudUtil.dtFormat(data.startDatetime));
@@ -2664,13 +2680,13 @@
 				height: 400,
 				columnMapping : [
 					{ key:'check',width:'30px',selectorColumn : true},
-					{ title:'백업유형', key : 'type' , width: '100px', align: 'center',tooltip:false ,render:function(value,data,render,mapping){						
+					{ title:'[[#{label.zdb0210.tap.backup.gird.title.type}]]', key : 'type' , width: '100px', align: 'center',tooltip:false ,render:function(value,data,render,mapping){						
 						let t = '';
 						switch(value){
-						    case 'INCR': t = '증분백업'; break;
-						    case 'DUMP': t= '덤프백업'; break;
-						    case 'FULL': t = '전체백업'; break;
-						    default : t = '즉시백업'; break;
+						    case 'INCR': t = '[[#{label.zdb0210.tap.backup.gird.title.type.incr}]]'; break;
+						    case 'DUMP': t= '[[#{label.zdb0210.tap.backup.gird.title.type.dump}]]'; break;
+						    case 'FULL': t = '[[#{label.zdb0210.tap.backup.gird.title.type.full}]]'; break;
+						    default : t = '[[#{label.zdb0210.tap.backup.gird.title.type.backup}]]'; break;
 						}
 						let reBtn = '<button class="Button gridbtn btn TooltipEvt">'+t+'</button>';
 						if(data.scheduleYn == "N"){
@@ -2678,78 +2694,78 @@
 						}
 						return reBtn ;
 					}},
-					{ title:'시작시간', key : 'startDatetime' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat},
-					{ title:'완료시간', key : 'completeDatetime' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat},
-					{ title:'상태', key : 'status' , width: '160px', align: 'center' , tooltip:false , render:function(value,data,render,mapping){
-						let re = "백업 수행중"; 
+					{ title:'[[#{label.zdb0210.tap.backup.gird.title.start.time}]]', key : 'startDatetime' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat},
+					{ title:'[[#{label.zdb0210.tap.backup.gird.title.comp.time}]]', key : 'completeDatetime' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat},
+					{ title:'[[#{label.zdb0210.tap.backup.gird.title.status}]]', key : 'status' , width: '160px', align: 'center' , tooltip:false , render:function(value,data,render,mapping){
+						let re = "[[#{label.zdb0210.tap.backup.gird.title.status.doing.backup}]]"; 
 						//2019-10-24
 						if(value ==  "OK"){
-							re = "수행완료"; 
+							re = "[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]";
 						}else if(value ==  "DOING"){
-							re = "수행중"; 
+							re = "[[#{label.zdb0210.tap.backup.gird.title.status.doing}]]"; 
 						}else if(value ==  "FAILED"){
-							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 실패 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.failed}]]'+' <span class="ico_title" style="padding-top:33px;"/></a>' ;
 						}else if(value ==  "ABORTED"){
-							re = "백업수행중지";
+							re = "[[#{label.zdb0210.tap.backup.gird.title.status.aborted}]]"; 
 						}else if(value ==  "ACCEPTED"){
-							re = "백업 수행중"; 
+							re = "[[#{label.zdb0210.tap.backup.gird.title.status.doing.backup}]]"; 
 						}else if(value ==  "DATA_BACKUP_DOING"){
-							re = "백업 수행중"; 
+							re = "[[#{label.zdb0210.tap.backup.gird.title.status.doing.backup}]]"; 
 						}else if(value ==  "DATA_BACKUP_COMPLETE"){
-							if(gService.backupDiskUsed) re = "수행완료"; 
-							else re = "백업 완료"; 
+							if(gService.backupDiskUsed) re = "[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]"; 
+							else re = "[[#{label.zdb0210.tap.backup.gird.title.status.complete.backup}]]";
 						}else if(value ==  "DATA_BACKUP_FAILED"){
-							re = "백업실패"; 	
+							re = "[[#{label.zdb0210.tap.backup.gird.title.status.failed.backup}]]";	
 						}else if(value ==  "DELETED"){
-							re = "백업삭제"; 
+							re = "[[#{label.zdb0210.tap.backup.gird.title.status.delete.backup}]]";
 						}else if(value ==  "DATA_ARCHIVE_DOING"){
-							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
-							else re = "압축수행중"; 
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re = "[[#{label.zdb0210.tap.backup.gird.title.status.doing.archive}]]";
 						}else if(value ==  "DATA_ARCHIVE_COMPLETE"){
-							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
-							else re = "압축완료"; 
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re = "[[#{label.zdb0210.tap.backup.gird.title.status.complete.archive}]]";
 						}else if(value ==  "DATA_ARCHIVE_FAILED"){
-							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
-							else re = "압축실패";  	
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re = "[[#{label.zdb0210.tap.backup.gird.title.status.failed.archive}]]";
 						}else if(value ==  "DATA_UPLOAD_DOING"){
-							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
-							else re = "업로드 수행중"; 
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re ="[[#{label.zdb0210.tap.backup.gird.title.status.doing.upload}]]";
 						}else if(value ==  "DATA_UPLOAD_COMPLETE"){
-							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
-							else re = "업로드 완료"; 
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re = "[[#{label.zdb0210.tap.backup.gird.title.status.complete.upload}]]";
 						}else if(value ==  "DATA_UPLOAD_FAILED"){
-							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
-							else re = "업로드 실패"; 
+							if(gService.backupDiskUsed) re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;
+							else re = "[[#{label.zdb0210.tap.backup.gird.title.status.failed.upload}]]";
 						}else if(value ==  "BINLOG_BACKUP_DOING" && gService.clusterEnabled){
-							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;							 
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;							 
 						}else if(value ==  "BINLOG_BACKUP_COMPLETE"  && gService.clusterEnabled){
-							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;
 						}else if(value ==  "BINLOG_BACKUP_FAILED" && gService.clusterEnabled){
-							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;							 
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;							 
 						}else if(value ==  "BINLOG_UPLOAD_DOING"  && gService.clusterEnabled){
-							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;
 						}else if(value ==  "BINLOG_UPLOAD_COMPLETE" && gService.clusterEnabled){
-							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;							 
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;							 
 						}else if(value ==  "BINLOG_UPLOAD_FAILED"  && gService.clusterEnabled){
-							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;
 						}else if(value ==  "BINLOG_PURGE_DOING" && gService.clusterEnabled){
-							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;							 
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;							 
 						}else if(value ==  "BINLOG_PURGE_COMPLETE"  && gService.clusterEnabled){
-							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt">'+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;
 						}else if(value ==  "BINLOG_PURGE_FAILED" && gService.clusterEnabled){
-							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> 수행완료 <span class="ico_title" style="padding-top:33px;"/></a>' ;							 
+							re = '<a id="'+data._index.id+mapping.key+'" class="TooltipEvt"> '+'[[#{label.zdb0210.tap.backup.gird.title.status.complete}]]'+'<span class="ico_title" style="padding-top:33px;"/></a>' ;							 
 						}
 						
 						return re
 					}},
-					{ title:'백업범위(LSN)', key : '' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat,render:function(value,data){
+					{ title:'[[#{label.zdb0210.tap.backup.gird.title.backup.scope}]]', key : '' , width: '160px', align: 'center',tooltip:false ,render:cloudUtil.dtFormat,render:function(value,data){
 						let  re = data.fromLsn +' ~ '+data.toLsn ; 
 				  		if(data.type == "DUMP" || data.status == "ABORTED"|| data.status == "DOING"){
 				  			re = ' - ' ;
 				  		}
 						return re;
 					}},
-					{ title:'파일사이즈', key : 'fileSize' , width: '80px', align: 'center',tooltip:false , render:function(value,data,render,mapping){
+					{ title:'[[#{label.zdb0210.tap.backup.gird.title.file.size}]]', key : 'fileSize' , width: '80px', align: 'center',tooltip:false , render:function(value,data,render,mapping){
 						var val = '';
 						if(value < 1024 ) {
 							val = value +'B';
@@ -2777,10 +2793,10 @@
 						return re;
 					}},
 					{ title:downloadTitle, key : 'archiveFileSize' , width: '100px', align: 'center',excludeFitWidth:true,tooltip:false ,render:function(value,data,render,mapping){
-						let t = '다운로드';
+						let t = '[[#{label.zdb0210.tap.backup.gird.title.download}]]';
 						//console.log(data.type);
 						if(['FULL','INCR'].indexOf(data.type) > -1){
-							t = '복원';
+							t = '[[#{label.zdb0210.tap.backup.gird.title.restore}]]';
 						}
 						let d = '';
 						if(data.status != 'OK' || gService.failoverEnabled !='off'){
@@ -2808,7 +2824,7 @@
 				],
 				footer: {
 					footerMapping: [
-						{ columnIndex: "deleteDatetime", title:'백업 파일 사이즈 합계: ', align:'center'},
+						{ columnIndex: "deleteDatetime", title:'[[#{label.zdb0210.tap.backup.gird.title.footer.sum}]] ', align:'center'},
 						{ columnIndex: "fileSize", align:'center',render:function(value,data,render,mapping){
 							let rawData = AlopexGrid.trimData(value);
 							let totalValue = new BigNumber(0);
@@ -2846,35 +2862,35 @@
 						val = val.replaceAll('\n','</br>');
 				
 					if(value ==  "DATA_ARCHIVE_DOING"){
-						val = "압축수행중"; 
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.doing.archive}]]";
 					}else if(value ==  "DATA_ARCHIVE_COMPLETE"){
-						val = "압축완료"; 
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.complete.archive}]]";
 					}else if(value ==  "DATA_ARCHIVE_FAILED"){
-						val = "압축실패";  	
+						val ="[[#{label.zdb0210.tap.backup.gird.title.status.failed.archive}]]";
 					}else if(value ==  "DATA_UPLOAD_DOING"){
-						val = "업로드 수행중"; 
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.doing.upload}]]";
 					}else if(value ==  "DATA_UPLOAD_COMPLETE"){
-						val = "업로드 완료"; 
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.complete.upload}]]";
 					}else if(value ==  "DATA_UPLOAD_FAILED"){
-						val = "업로드 실패"; 
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.failed.upload}]]";
 					}else if(value ==  "BINLOG_BACKUP_DOING"){
-						val = " binlog 백업 수행중"; 							 
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.binlog.doing.backup}]]";						 
 					}else if(value ==  "BINLOG_BACKUP_COMPLETE"){
-						val = " binlog 백업수행완료"; 		
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.binlog.complete.backup}]]";	
 					}else if(value ==  "BINLOG_BACKUP_FAILED"){
-						val = " binlog 백업실패"; 									 
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.binlog.failed.backup}]]";							 
 					}else if(value ==  "BINLOG_UPLOAD_DOING"){
-						val = " binlog 업로드 수행중"; 		
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.binlog.doing.upload}]]";	
 					}else if(value ==  "BINLOG_UPLOAD_COMPLETE" ){
-						val = " binlog 업로드 완료"; 									 
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.binlog.complete.upload}]]";								 
 					}else if(value ==  "BINLOG_UPLOAD_FAILED"){
-						val = " binlog 업로드 실패"; 		
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.binlog.failed.upload}]]";	
 					}else if(value ==  "BINLOG_PURGE_DOING"){
-						val = " binlog 정리 수행중"; 									 
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.binlog.doing.purge}]]";							 
 					}else if(value ==  "BINLOG_PURGE_COMPLETE" ){
-						val = " binlog 정리 성공"; 		
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.binlog.complete.purge}]]";
 					}else if(value ==  "BINLOG_PURGE_FAILED"){
-						val = " binlog 정리 실패"; 									 
+						val = "[[#{label.zdb0210.tap.backup.gird.title.status.binlog.failed.purge}]]";								 
 					}
 					
 					$tooltip.html(val); 
@@ -2882,7 +2898,7 @@
 					$tooltip.open();	
 				}else if(mapping.key === 'type'  ) { //&& data.scheduleYn == "N"
 					
-					var val = '사용자 백업'||'';
+					var val = '[[#{label.zdb0210.tap.backup.gird.type.user.backup}]]'||'';
 					$tooltip.html(val.replaceAll('\n','</br>')); 
 					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
 					$tooltip.open();	
@@ -2892,7 +2908,7 @@
 				
 			});			
 			function setBackupUseYnEvt(val){
-				var msg = val == 'Y'? '백업 설정을 활성화 하시겠습니까?': '백업 설정을 비활성화 하시겠습니까?';
+				var msg = val == 'Y'? '[[#{label.zdb0210.tap.backup.gird.msg.backup.enabled}]]': '[[#{label.zdb0210.tap.backup.gird.msg.backup.disabled}]]';
 				gCommon.confirm(msg,function(yn){
 					if(yn == 'Y'){
 						setOnOffButton('useYn',val);
@@ -2912,15 +2928,15 @@
 			function setBackupBtnEnable(){
 				if(backupStatus=='Y'){
 					backupForm.find('#saveSchedule').setEnabled(true);
-					backupForm.find('#saveSchedule').text('수정');
+					backupForm.find('#saveSchedule').text('[[#{label.zdb0210.tap.backup.top.button.save}]]');
 					setBackupCompEnable('N')
 				}else if(backupStatus=='N'){
 					backupForm.find('#saveSchedule').setEnabled(false);
-					backupForm.find('#saveSchedule').text('수정');
+					backupForm.find('#saveSchedule').text('[[#{label.zdb0210.tap.backup.top.button.save}]]');
 					setBackupCompEnable('N')
 				}else if(backupStatus=='I'){
 					backupForm.find('#saveSchedule').setEnabled(true);
-					backupForm.find('#saveSchedule').text('적용');
+					backupForm.find('#saveSchedule').text('[[#{label.zdb0210.tap.backup.top.button.apply}]]');
 					setBackupCompEnable('Y')
 				}
 			};
@@ -2991,7 +3007,7 @@
 					data:param,
 					success: function(res){
 						if(res.result.code == '0'){
-							gCommon.alert('백업 설정이 수정되었습니다.',function(){
+							gCommon.alert('[[#{label.zdb0210.tap.backup.gird.msg.backup.update}]]',function(){
 								fn_getBackupScheduleInfo();
 							});
 						}else{
@@ -3051,8 +3067,8 @@
 				}else{
 					gCommon.credentialConfirm({
 				        data:{credential:$("#credential").val(),
-				        	  msg:'서비스를 (' + cloudUtil.dtFormat(data.acceptedDatetime) + ')시점으로 복원 하시려면',
-				        	  okBtnMsg:'복원'},
+				        	  msg:'[[#{label.zdb0210.tap.backup.gird.msg.confirm.restore.first}]]' + cloudUtil.dtFormat(data.acceptedDatetime) + '[[#{label.zdb0210.tap.backup.gird.msg.confirm.restore.second}]]',
+				        	  okBtnMsg:'[[#{label.zdb0210.tap.backup.gird.msg.confirm.restore.ok.btn}]]'},
 				        width: 550,
 				        callback : function(res){
 							$a.ajax({
@@ -3060,7 +3076,7 @@
 								data:data,
 								success: function(res){
 									if(res.result.code!='4'){
-										gCommon.alert('복원 요청이 완료 되었습니다.');
+										gCommon.alert('[[#{label.zdb0210.tap.backup.gird.msg.restore.request}]]');
 									}
 								}
 							})
@@ -3094,10 +3110,10 @@
 						}
 						return re;
 					},excludeFitWidth:true},
-					{ title:'일시', key : 'endTime' , width: '170px', align: 'left',render:function(value){
+					{ title:'[[#{label.zdb0210.tap.event.grid.endtime}]]', key : 'endTime' , width: '170px', align: 'left',render:function(value){
 						return cloudUtil.dtFormat(value);
 					},excludeFitWidth:true},
-					{ title:'타입', key : 'type' , width: '170px', align: 'left',render:function(value){
+					{ title:'[[#{label.zdb0210.tap.event.grid.type}]]', key : 'type' , width: '170px', align: 'left',render:function(value){
 						var result = value ;
 					
  						for(var iType in gEventType){
@@ -3105,9 +3121,9 @@
 						} 
 						return result;
 					},excludeFitWidth:true},					
-					{ title:'이벤트', key : 'operation' , width: '180px', align: 'left'},
-					{ title:'메세지', key : 'resultMessage' , width: '600px', align: 'left',inlineStyle: {'padding-left':'10px','padding-right':'10px'},tooltip:false,render: {type: "evtMsgTooltip"}},
-					{ title:'UserName', key : 'userId' , width: '250px', align: 'left'}
+					{ title:'[[#{label.zdb0210.tap.event.grid.event}]]', key : 'operation' , width: '180px', align: 'left'},
+					{ title:'[[#{label.zdb0210.tap.event.grid.message}]]', key : 'resultMessage' , width: '600px', align: 'left',inlineStyle: {'padding-left':'10px','padding-right':'10px'},tooltip:false,render: {type: "evtMsgTooltip"}},
+					{ title:'[[#{label.zdb0210.tap.event.grid.username}]]', key : 'userId' , width: '250px', align: 'left'}
 				],
 				message: {
 					nodata: '[[#{label.common.msg.validator.grid.nodata}]]'

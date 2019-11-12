@@ -57,6 +57,21 @@
 			});	
 		}
 	});
+	
+	function gChgLocale(val){
+
+		var indexLocation  = location.href ; 
+		if(indexLocation.indexOf('&locale=') != -1 || indexLocation.indexOf('?locale=') != -1){
+			indexLocation = indexLocation.substring(0 , indexLocation.length - 2)+val;
+		}else{
+			if(indexLocation.indexOf('?') != -1){
+				indexLocation = indexLocation+"&locale="+val;
+			}else{
+				indexLocation = indexLocation+"?locale="+val;
+			}
+		}
+		location.href= indexLocation;
+	}
 	</script>
 	<script type="text/javascript" th:inline="javascript">
 		/*<![CDATA[*/
@@ -84,7 +99,7 @@
 					<li><a th:href="${@environment.getProperty('cloudzcp.url')} + |/my/pwd|"><span th:text="#{label.common.dropmenu.my.pwd}" ></span><span class="newpop"></span></a></li>
 					<li><a th:href="${@environment.getProperty('cloudzcp.url')} + |/|"><span th:text="#{label.common.dropmenu.my.zcp}" ></span><span class="newpop"></span></a></li>
 					<li th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true }" ><a href="/zdb06/zdb0600"><span th:text="#{label.common.dropmenu.my.default.settings}" ></span></a></li>
-					<li>				
+<!-- 					<li>				
 						<div>
 							<select name="gSelchgLocale" id="gSelchgLocale" style="height: 23px;width:170px;border:none;font-size:15px;color:#666666;font-family:'NotoKrR';">
 								<option th:text="#{label.common.button.select.locale}" value=""></option>
@@ -92,12 +107,23 @@
 								<option th:text="#{label.common.button.select.english}" value="en"></option>
 							</select>				
 						</div>	
-					</li>
+					</li> -->
 					<li id="logout"><span th:text="#{label.common.dropmenu.my.logout}" ></span></li>
 				</ul>
 			</div>
 		</div>
 		<!-- /utils -->
+		<!-- locale  -->
+		<div class="header-locales">
+			<a class="locale" th:text="#{label.common.button.select.locale}"></a>		
+			<div class="locale-menus">
+				<ul class="dropmenu-list">
+					<li> <span th:text="#{label.common.button.select.korean}" onclick="gChgLocale('ko');"></span></li>
+					<li> <span th:text="#{label.common.button.select.english}" onclick="gChgLocale('en');"></span></li>
+				</ul>			
+			</div>
+		</div>	
+		<!-- /locale  -->	
 	</header>
 	<!-- //header -->
 	<!-- main-contents -->

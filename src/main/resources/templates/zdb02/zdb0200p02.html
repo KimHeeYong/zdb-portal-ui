@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>로그 팝업</title>	
+	<title th:text="#{label.zdb0200.p02.title}" >로그 팝업</title>	
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<!-- alopexui_theme default -->
 	<link rel="stylesheet" href="/styles/css/alopex/alopex-ui-default.css">
@@ -69,7 +69,7 @@
 					title = gParam.namespace+" > "+ gParam.serviceName +" > "+ gParam.podName + " server log";
 				}
 				$('title,#title').html(title);
-				$('#title').append('<button class="btn-ico btn-refresh" id="popLogRefresh" alt="새로고침" style="margin-right:15px;float:right;"></button>');
+				$('#title').append('<button class="btn-ico btn-refresh" id="popLogRefresh" alt="'+'[[#{label.common.button.refresh}]]'+'" style="margin-right:15px;float:right;"></button>');
 				$('#log').html('');
 				$a.ajax({
 					url: '/zdbapi/getPodLog',

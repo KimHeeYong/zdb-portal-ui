@@ -6,7 +6,7 @@
 			<input class="Textinput" type="hidden" id="confirm" name="confirm"></input>			
 			<div> 
 				<div id="divMsg"></div>
-				<div> 관리자 비밀번호</div>
+				<div><span th:text="#{label.zdb0200.p10.title}"></span></div>
 				<input class="Textinput" type="password" id="password" name="password"></input> 
 				<p data-for="confirm" class="warn-text"></p>
 			</div>
@@ -14,7 +14,7 @@
 		<!--button-->
 		<div class="popup-btn__wrap" style="width:100%">
 			<button class="Button btn ok" id="btnOk"></button>
-			<button class="Button btn popClose">취소</button>
+			<button th:text="#{label.common.button.cancel}"  class="Button btn popClose"></button>
 		</div>			
 		</div>
 
@@ -27,14 +27,14 @@ $a.page(function() {
     	var form = $('form[name=passwordPopForm]');
     	form.find('#divMsg').html(param.msg||'');
     	var okBtn = $('.popup-btn__wrap').find('#btnOk'); 
-    	okBtn.html(param.okBtnMsg||'확인');
+    	okBtn.html(param.okBtnMsg||'[[#{label.common.button.confirm}]]');
    	
     	form.validator({
 		    elements :{ 
 		        'confirm': {rule:{required:true,equalTo:"true"}}
 		    },
 		    message:{
-		    	'equalTo': "비밀번호가 일치하지 않습니다."
+		    	'equalTo': '[[#{label.zdb0200.p10.password.equal}]]'
 		    }
 		});	
     	

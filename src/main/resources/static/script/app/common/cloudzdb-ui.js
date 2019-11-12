@@ -41,11 +41,31 @@ $a.page(function(){
 		$(user).click(function(e){
 			e.preventDefault();
 			if(userBox.css('display') === 'none') {
+				localeBox.hide();
+				$(locale).removeClass('close');
 				userBox.show();
 				$(user).addClass('close');
 			} else {
 				userBox.hide();
 				$(user).removeClass('close');
+			}
+		});
+		
+		//locale box click event
+		var locale = $('.locale');
+		var localeBox = $('.locale-menus');
+		localeBox.hide();
+		$(locale).click(function(e){
+			e.preventDefault();
+			if(localeBox.css('display') === 'none') {
+				userBox.hide();
+				$(user).removeClass('close');
+				
+				localeBox.show();
+				$(locale).addClass('close');
+			} else {
+				localeBox.hide();
+				$(locale).removeClass('close');
 			}
 		});
 	}

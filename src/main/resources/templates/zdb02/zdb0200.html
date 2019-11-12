@@ -60,8 +60,8 @@
 		<div data-list-type="grid" class="hide">
 			<div class="btn-wrap">
 				<div class="btn-right">
-					<button th:text="#{label.zdb0200.grid.unfold}" class="Button btn sm" id="btnExpandAll" style="margin-bottom: 3px;"></button>
-					<button th:text="#{label.zdb0200.grid.fold}" class="Button btn sm" id="btnCollapseAll" style="margin-bottom: 3px;"></button>
+					<button th:text="#{label.zdb0200.grid.extend}" class="Button btn sm" id="btnExpandAll" style="margin-bottom: 3px;"></button>
+					<button th:text="#{label.zdb0200.grid.collapse}" class="Button btn sm" id="btnCollapseAll" style="margin-bottom: 3px;"></button>
 				</div>
 			</div>	
 			<div id="divServiceListGrid">
@@ -97,7 +97,7 @@
 	var gTagList = [];
 	var gSelectedListType = 'card'; 
 	var gExpandServiceList = [];
-	var gMsg = {elapsedTime:'[[#{label.zdb0200.card.elapsed.time}]]'
+	var gMsg = {elapsedTime:'[[#{label.zdb0200.grid.age}]]'
 		,add:'[[#{label.zdb0200.card.add}]]'
 		,del:'[[#{label.zdb0200.card.delete}]]'
 		,restart:'[[#{label.zdb0200.card.restart}]]'							
@@ -226,15 +226,19 @@
 					}},
 					//{ title:'네임스페이스', key : 'namespace', width: '100px', align: 'left'},
 					{ title:'[[#{label.zdb0200.grid.service.name}]]', key : 'serviceName', width: '230px', align: 'left', render:function(value,data,render,mapping){
+						
+						
 						let re = $('<a href="#" title="'+value+'">'+value+'</a>').on('click',function(){
 							fn_moveServiceDetail(data,false);
 						});
 						if(data.tp == 'pod'){
 							re = value;
+							
+							console.log(data);
 						}
 						return re;
 					}, treeColumn : true},
-					{ title:'[[#{label.zdb0200.grid.service.cpu}]]', key:'cpu',width:'70px',align:'center',hidden:true},		 			
+					{ title:'[[#{label.zdb0200.grid.cpu}]]', key:'cpu',width:'70px',align:'center',hidden:true},		 			
 					{ title:'[[#{label.zdb0200.grid.cpu.request}]]', key:'cpuRequest',width:'70px',align:'center',hidden:true},
 					{ title:'[[#{label.zdb0200.grid.cpu.limit}]]', key:'cpuLimit',width:'70px',align:'center',hidden:true},
  					{ title:'[[#{label.zdb0200.grid.memory}]]', key:'memory',width:'70px',align:'center',hidden:true},	 
@@ -251,7 +255,7 @@
 						if(re) return re;						
 					}},
 					{ title:'[[#{label.zdb0200.grid.version}]]', key : 'version', width: '110px', align: 'center'},
-					{ title:'[[#{label.zdb0200.grid.elapsed.time}]]', key : 'elapsedTime', width: '80px', align: 'center'},
+					{ title:'[[#{label.zdb0200.grid.age}]]', key : 'elapsedTime', width: '80px', align: 'center'},
 					{ title:'[[#{label.zdb0200.grid.create.time}]]', key : 'crtTime', width: '150px', align: 'center',render:function(data){
 						try{
 							return data.substring(0,10);
@@ -313,7 +317,7 @@
 /* 				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [ {fromIndex:'cpuRequest', toIndex:'cpuLimit', title:'CPU'}
 				, {fromIndex:'memoryRequest', toIndex:'memoryLimit', title:"MEMORY"} , {fromIndex:'storageData', toIndex:'storageBackup', title:"스토리지"}]}); */
 				
-				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [  {fromIndex:'storageData', toIndex:'storageBackup', title:"[[#{label.zdb0200.grid.service.storage}]]"}]});
+				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [  {fromIndex:'storageData', toIndex:'storageBackup', title:"[[#{label.zdb0200.grid.storage}]]"}]});
 			}
 			let p = nTreeDt.map(function(dt){
 				return {namespace:dt.namespace,serviceType:dt.serviceType,serviceName:dt.serviceName};

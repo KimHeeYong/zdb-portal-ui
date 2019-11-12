@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -39,6 +41,8 @@ public class ZdbRestConnector extends RestTemplate{
 	SecurityService securityService;
 	@Autowired
 	HttpServletRequest request ;
+	@Autowired
+	MessageSource messageSource;
 	
 	
 	@Override
@@ -57,6 +61,22 @@ public class ZdbRestConnector extends RestTemplate{
 		}
 		addHeaderSession(tempHeaders);
 		
+		Cookie[] cookies = request.getCookies();
+		String locale = "ko";
+		
+		if(cookies != null) {
+			for(Cookie cookie : cookies) {
+				if("Accept-Language".equals(cookie.getName())) {
+					try {
+						locale = URLDecoder.decode(cookie.getValue(),"UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
 		HttpEntity<?> newRequestEntity = new HttpEntity<>(tempBody,tempHeaders);
 		ResponseEntity<T> result = null;
 		try {			
@@ -65,11 +85,11 @@ public class ZdbRestConnector extends RestTemplate{
 			ZdbRestDTO resultMap = new Gson().fromJson(e.getResponseBodyAsString(), ZdbRestDTO.class);
 			result = new ResponseEntity(resultMap, e.getStatusCode());
 		} catch(ResourceAccessException e) {
-			throw new ResourceAccessException("API서버 연결 중 오류가 발생하였습니다."); 
+			throw new ResourceAccessException(messageSource.getMessage("label.java.msg.api.error", null, new Locale(locale))); 
 		} catch(Exception e) {
 			try {
 				e.printStackTrace();
-				throw new Exception("알수 없는 오류가 발생 하였습니다.");
+				throw new Exception(messageSource.getMessage("label.java.msg.unknown.error", null, new Locale(locale)));
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
