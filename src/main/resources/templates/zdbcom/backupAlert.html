@@ -6,15 +6,15 @@
 	</div>
 	<!--button-->
 	<div class="popup-btn__wrap" style="width:100%">
-		<button class="Button btn bg-gray ok">확인</button>
+		<button th:text="#{label.common.button.ok}" class="Button btn bg-gray ok"></button>
 	</div>
 	<!--//button-->
 </div>
 <script type="text/javascript">
 $a.page(function() {
 	this.init = function() {
-		//var sTitle = "백업 수행 결과1" ;
-		var sTitle =  '<span class="session-text__md orange">백업 수행 결과</span>' ;
+		//var sTitle = "백업 수행 결과1" ; 백업 수행 결과
+		var sTitle =  '<span class="session-text__md orange">'+'[[#{label.common.msg.alert.title.backup}]]'+'</span>' ;
 		$('.dialog_header').html(sTitle);
 		
 		$('#divAlertPop #message').html(gPopData.message);

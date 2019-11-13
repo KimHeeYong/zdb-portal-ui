@@ -1,13 +1,18 @@
 package com.skcc.cloudz.zdb.portal.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -60,6 +65,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ZdbApiController {
 
 	@Autowired ZdbApiService zdbApiService;
+	@Autowired MessageSource messageSource;
 	
 	@RequestMapping(value="getNamespaces", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE }, method = RequestMethod.GET)
 	@ResponseBody
@@ -68,8 +74,26 @@ public class ZdbApiController {
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
 		List<Namespace> namespaces = zdbApiService.getNamespaces(param); 
+		// namespace 없을 경우 에러 메세지 코드화 (2019-11-13)
 		if(namespaces == null || namespaces.size() < 1) {
-			throw new ZdbPortalException("네임스페이스가 존재하지 않습니다.<br>네임스페이스 등록 및 권한 할당이 필요합니다.");
+			Cookie[] cookies = request.getCookies();
+			String locale = "ko";
+			
+			if(cookies != null) {
+				for(Cookie cookie : cookies) {
+					if("Accept-Language".equals(cookie.getName())) {
+						try {
+							locale = URLDecoder.decode(cookie.getValue(),"UTF-8");
+						} catch (UnsupportedEncodingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+
+			//throw new ZdbPortalException("네임스페이스가 존재하지 않습니다.<br>네임스페이스 등록 및 권한 할당이 필요합니다.");
+			throw new ZdbPortalException(messageSource.getMessage("label.java.msg.namespace.undefined.error", null, new Locale(locale)));
 		}
 		mav.addObject(IResult.NAMESPACES ,namespaces);
 		return mav;
@@ -975,8 +999,27 @@ public class ZdbApiController {
 		ModelAndView mav = new ModelAndView(CommonConstants.JSON_VIEW);
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		List<Namespace> namespaces = zdbApiService.getMigrationBackup(param); 
+		
+		// namespace 없을 경우 에러 메세지 코드화 (2019-11-13)
 		if(namespaces == null || namespaces.size() < 1) {
-			throw new ZdbPortalException("네임스페이스가 존재하지 않습니다.<br>네임스페이스 등록 및 권한 할당이 필요합니다.");
+			Cookie[] cookies = request.getCookies();
+			String locale = "ko";
+			
+			if(cookies != null) {
+				for(Cookie cookie : cookies) {
+					if("Accept-Language".equals(cookie.getName())) {
+						try {
+							locale = URLDecoder.decode(cookie.getValue(),"UTF-8");
+						} catch (UnsupportedEncodingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+
+			//throw new ZdbPortalException("네임스페이스가 존재하지 않습니다.<br>네임스페이스 등록 및 권한 할당이 필요합니다.");
+			throw new ZdbPortalException(messageSource.getMessage("label.java.msg.namespace.undefined.error", null, new Locale(locale)));
 		}
 		mav.addObject(IResult.NAMESPACES ,namespaces);
 		
