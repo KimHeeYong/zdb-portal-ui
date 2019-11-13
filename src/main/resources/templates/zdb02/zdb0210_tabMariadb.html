@@ -5,12 +5,12 @@
 				<div style="width:180px;" class="dtc" id="divMariaMenu">
 					<ul class="dropmenu-list bbn">
 <!-- 						<li data-menu="databaseStatus">서버상태</li> -->	  
-					    <li class="selected"  data-menu="connection">클라이언트 커넥션</li>
-						<li data-menu="userRole">사용자 및 권한관리</li>
-						<li data-menu="database">Database</li>								
-						<li data-menu="statusVariables">상태 변수</li>
-						<li data-menu="systemVariables">시스템 변수</li>
-						<li data-menu="myCnf">환경설정</li>
+					    <li class="selected"  data-menu="connection"><span th:text="#{label.zdb0210.tap.maria.menu.connect}"></span></li>
+						<li data-menu="userRole"><span th:text="#{label.zdb0210.tap.maria.menu.user.role}"></span></li>
+						<li data-menu="database"><span th:text="#{label.zdb0210.tap.maria.menu.database}"></span></li>								
+						<li data-menu="statusVariables"><span th:text="#{label.zdb0210.tap.maria.menu.status.variables}"></span></li>
+						<li data-menu="systemVariables"><span th:text="#{label.zdb0210.tap.maria.menu.system.variables}"></span></li>
+						<li data-menu="myCnf"><span th:text="#{label.zdb0210.tap.maria.menu.my.cnf}"></span></li>
 					</ul>
 				</div>
 				<div id="divMariaContent">
@@ -84,8 +84,8 @@
 							</table>
 						</div> -->
 						<div data-menu="connection" class="accor-contents__wrap" >
-							<h3 class="form-title2">클라이언트 커넥션
-								<button class="Button btn fr" id="btnReloadConnection" style="margin-bottom: 3px;">새로고침</button>
+							<h3 th:text="#{label.zdb0210.tap.maria.menu.connect}" class="form-title2">
+								<button th:text="#{label.common.button.refresh}" class="Button btn fr" id="btnReloadConnection" style="margin-bottom: 3px;"></button>
 							</h3>							
 							<table class="Table Form-type" > 
 								<colgroup>
@@ -124,15 +124,15 @@
 							<div id="gridConnection" class="mt30"></div>
 						</div>
 						<div data-menu="userRole" class="hide"  style=" min-width: 950px; ">
-							<h3 class="form-title2">사용자 및 권한 관리
-								<button class="Button btn fr" id="btnReloadUserRole" style="margin-bottom: 3px;">새로고침</button>
+							<h3 th:text="#{label.zdb0210.tap.maria.menu.user.role}" class="form-title2">
+								<button th:text="#{label.common.button.refresh}"  class="Button btn fr" id="btnReloadUserRole" style="margin-bottom: 3px;"></button>
 							</h3>
 							<div class="mt20">
 							<div class="fl" style="width:330px;">
 								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
-									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnAddUser">추가</button>
-									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnDeleteUser">삭제</button>
-									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnDeletePrivileges">권한 회수</button>
+									<button th:text="#{label.common.button.add}" class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnAddUser"></button>
+									<button th:text="#{label.common.button.del}" class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnDeleteUser"></button>
+									<button th:text="#{label.common.button.del.privileges}" class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnDeletePrivileges"></button>
 								</div>
 								<div id="gridUser" class="mt30"></div>
 							</div>
@@ -141,7 +141,7 @@
 							</div>
 							<div style="width:280px;margin-top:25px;overflow: hidden">
 								<form name="formUserRole">
-								Object 권한변경
+								<span th:text="#{label.zdb0210.tap.maria.title.user.object}"></span>
 								<div class="item-wrap2" style="height:155px;">
 									<ul>
 										<li><input class="Checkbox" type="checkbox" name="select" value="Y">SELECT</li>
@@ -152,7 +152,7 @@
 										<li><input class="Checkbox" type="checkbox" name="showView" value="Y">SHOW VIEW</li>
 									</ul>
 								</div>
-								DDL 권한변경
+								<span th:text="#{label.zdb0210.tap.maria.title.user.ddl}"></span>
 								<div class="item-wrap2" style="height:250px;">
 									<ul>
 										<li><input class="Checkbox" type="checkbox" name="create" value="Y">CREATE</li>
@@ -167,7 +167,7 @@
 										<li><input class="Checkbox" type="checkbox" name="trigger" value="Y">TRIGGER</li>
 									</ul>
 								</div>
-								Other 권한변경
+								<span th:text="#{label.zdb0210.tap.maria.title.user.other}"></span>
 								<div class="item-wrap2" style="height:90px">
 									<ul>
  										<li><input class="Checkbox" type="checkbox" name="grantOption" value="Y">GRANT OPTION</li>
@@ -177,56 +177,56 @@
 								</div>
 								</form>
 								<div class="fr mt10" style="margin-bottom: 3px;margin-right:30px;">
-									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"  id="btnSavePrivileges">적용</button>
+									<button th:text="#{label.common.button.apply}" class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}"  id="btnSavePrivileges"></button>
 								</div>																 	
 							 </div>
 							</div>
 						</div>
 						<div data-menu="statusVariables" class="hide">
-							<h3 class="form-title2" >상태 변수
-								<button class="Button btn fr" id="btnReloadStatusVariables" style="margin-bottom: 3px;">새로고침</button>
+							<h3  th:text="#{label.zdb0210.tap.maria.menu.status.variables}" class="form-title2" >
+								<button th:text="#{label.common.button.refresh}"  class="Button btn fr" id="btnReloadStatusVariables" style="margin-bottom: 3px;"></button>
 							</h3>
 							<div class="search-wrap tr fi mt20">
-								<input id="txtStatusVariablesFilter" name="txtStatusVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
+								<input id="txtStatusVariablesFilter" name="txtStatusVariablesFilter" class="Textinput srcinput" th:placeholder="#{label.common.search.message}">
 							</div>
 							<div id="gridStatusVariables"></div>
 						</div>
 						<div data-menu="systemVariables" class="hide">
-							<h3 class="form-title2" >시스템 변수
-								<button class="Button btn fr" id="btnReloadSystemVariables" style="margin-bottom: 3px;">새로고침</button>
+							<h3  th:text="#{label.zdb0210.tap.maria.menu.system.variables}" class="form-title2" >
+								<button th:text="#{label.common.button.refresh}"  class="Button btn fr" id="btnReloadSystemVariables" style="margin-bottom: 3px;"></button>
 							</h3>						
 							<div class="search-wrap tr fi mt20" >
-								<input id="txtSystemVariablesFilter" name="txtSystemVariablesFilter" class="Textinput srcinput" placeholder="검색어를 입력하세요.">
+								<input id="txtSystemVariablesFilter" name="txtSystemVariablesFilter" class="Textinput srcinput" th:placeholder="#{label.common.search.message}">
 							</div>
 							<div id="gridSystemVariables"></div>
 						</div>
 						<div data-menu="myCnf" class="hide">
-							<h3 class="form-title2">환경설정
-								<button class="Button btn fr" id="btnReloadMyCnf" style="margin-bottom: 3px;">새로고침</button>
+							<h3  th:text="#{label.zdb0210.tap.maria.menu.my.cnf}" class="form-title2">
+								<button th:text="#{label.common.button.refresh}"  class="Button btn fr" id="btnReloadMyCnf" style="margin-bottom: 3px;"></button>
 							</h3>
 							<div class="btn-wrap">
 								<div class="btn-right">
 									<div class="Divselect" id="selCategory" name="selCategory">
 										<select>
-											<option value="">전체</option>
+											<option th:text="#{label.common.select.all}" value=""></option>
 										</select>
 										<span></span>
 									</div>
-									<button class="Button btn bg-red" id="btnSaveMyCnf" style="margin-bottom: 3px;" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >저장</button>
+									<button th:text="#{label.common.button.save}" class="Button btn bg-red" id="btnSaveMyCnf" style="margin-bottom: 3px;" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" ></button>
 								</div>
 							</div>								
 							<div id="gridMyCnf"></div>
 						</div>
 						<div data-menu="database" class="hide"  style=" min-width: 950px; ">
-							<h3 class="form-title2">Database 목록
-								<button class="Button btn fr" id="btnReloadDatabase" style="margin-bottom: 3px;">새로고침</button>
+							<h3 th:text="#{label.zdb0210.tap.maria.title.database}" class="form-title2">
+								<button th:text="#{label.common.button.refresh}"  class="Button btn fr" id="btnReloadDatabase" style="margin-bottom: 3px;"></button>
 							</h3>
 							<div class="mt20">
 							<div class="fl" style="width:330px;">
 								<div class="fr" style="margin-bottom: 3px;;margin-right:10px;">
-									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnAddDatabase">추가</button>
-									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnDeleteDatabase">삭제</button>
-									<button class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnSaveDatabase">저장</button>
+									<button th:text="#{label.common.button.add}" class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnAddDatabase"></button>
+									<button th:text="#{label.common.button.del}" class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnDeleteDatabase"></button>
+									<button th:text="#{label.common.button.save}" class="Button btn sm" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="btnSaveDatabase"></button>
 								</div>
 								<div id="gridDatabase" class="mt30"></div>
 							</div>													
@@ -343,12 +343,12 @@ let appMariadb = {
 						}
 
 						if(data.User != "system user" &&  data.Host != "local" ){   //User: system user 등일 경우 종료버튼 지우기 & Host: local 일때 종료버튼 지우기 적용
-							return $('<button class="Button sm '+disabled+'">종료</button>').on('click',function(){
+							return $('<button class="Button sm '+disabled+'">'+'[[#{label.zdb0210.tap.maria.alert.msg.process.terminate.ok.btn}]]'+'</button>').on('click',function(){
 								if($(this).hasClass('Disabled')){
 									return;
 								}
 								gCommon.credentialConfirm({
-							        data:{credential:$("#credential").val(),msg:'프로세스를 종료하시려면',okBtnMsg:'종료'},
+							        data:{credential:$("#credential").val(),msg:'[[#{label.zdb0210.tap.maria.alert.msg.process.terminate}]]',okBtnMsg:'[[#{label.zdb0210.tap.maria.alert.msg.process.terminate.ok.btn}]]'},
 							        callback : function(res){
 										$a.ajax({
 											url: '/zdbapi/killProcess',
@@ -421,7 +421,7 @@ let appMariadb = {
 						return (value||'').replace(/./g,'*');
 					}
 				},
-				{ title:'접근 HOST', key : 'host' , width: '120px', align: 'left' ,editable:true,allowEdit:function(value,data){
+				{ title:'[[#{label.zdb0210.tap.maria.user.grid.title.host}]]', key : 'host' , width: '120px', align: 'left' ,editable:true,allowEdit:function(value,data){
 					return data._state.added == true;
 				}}
 			], message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' }
@@ -435,7 +435,7 @@ let appMariadb = {
 
 			if(sIdx != evObj.data._index.row){
 				let fData = gridUser.alopexGrid('dataGet', {_index:{row:sIdx}})[0]; 
-				let msg = '변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?' ;
+				let msg = '[[#{label.zdb0210.tap.maria.user.confirm.msg.continue}]]' ;
 				if(fData._state.edited || fData._state.added){
 					gCommon.confirmYn(msg,function(yn){
 						if(yn == "N"){
@@ -507,7 +507,7 @@ let appMariadb = {
 			/* 선택된 스키마의 변경 사항 체크 로직 변경 (2019-09-25) */
 			if(scIdx != evObj.data._index.row){
 				let fData = gridUserSchema.alopexGrid('dataGet', {_index:{row:scIdx}})[0]; 
-				let msg = '변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?' ;
+				let msg = '[[#{label.zdb0210.tap.maria.user.confirm.msg.continue}]]' ;
 				let vEdited = false;
 
 				// 1. 변경된 권한 정보가 있는지 체크 한다. 
@@ -553,7 +553,7 @@ let appMariadb = {
 			}
 
 			let vEdited = false;
-			let msg = '변경 중인 내용은 취소 됩니다. 계속 하시겠습니까?' ;
+			let msg = '[[#{label.zdb0210.tap.maria.user.confirm.msg.continue}]]' ;
 
 			for(let m in dt){
 				let data = dt[m];
@@ -619,7 +619,7 @@ let appMariadb = {
 		tabUser.find('#btnDeleteUser').on('click',function(e){
 			let dg = gridUser.alopexGrid( 'dataGet' , {_state:{selected:true}});
 			if(dg.length == 0){
-				gCommon.alert('선택된 행이 없습니다.');return;
+				gCommon.alert('[[#{label.zdb0210.tap.maria.user.alert.msg.no.selected}]]');return;
 			};
 			let dt = dg[0];
 			if(dt && dt._state.added == true){
@@ -629,7 +629,7 @@ let appMariadb = {
 				return;
 			}
 			if(dt.user == 'admin' && dt.host == '%'){
-				gCommon.alert('admin 계정은 삭제 할 수 없습니다.');return;
+				gCommon.alert('[[#{label.zdb0210.tap.maria.user.alert.msg.admin.del}]]');return;
 			}
 			appMariadb.deleteDbUser();
 		});
@@ -695,7 +695,7 @@ let appMariadb = {
 					return;
 				}
  				if(col == 1){
- 					gCommon.alert('DATABASE명을 입력하세요');
+ 					gCommon.alert('[[#{label.zdb0210.tap.maria.database.alert.msg.enter.name}]]');
 				} 
 				appMariadb.gridDatabase.alopexGrid('focusCell', opt);
 				setTimeout(function(){
@@ -724,11 +724,11 @@ let appMariadb = {
 			appMariadb.gridDatabase.alopexGrid('endRowInlineEdit');
 			let dg = appMariadb.gridDatabase.alopexGrid( 'dataGet' , {_state:{selected:true}});
 			if(dg.length == 0){
-				gCommon.alert('선택된 행이 없습니다.');return;
+				gCommon.alert('[[#{label.zdb0210.tap.maria.user.alert.msg.no.selected}]]');return;
 			};
 			let dt = dg[0];
 			if(false){
-				gCommon.alert('삭제 할 수 없습니다.');return;
+				gCommon.alert('[[#{label.zdb0210.tap.maria.database.alert.msg.unable.delete}]]');return;
 			}
 			let d = dt._state.deleted ? 'dataUndelete' : 'dataDelete'; 
 			appMariadb.gridDatabase.alopexGrid(d,{_state: {selected:true}}); 
@@ -747,8 +747,8 @@ let appMariadb = {
 			message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' },
 			autoColumnIndex : true,
 			columnMapping : [
-				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key : 'value', title : '값', width : '200px', align : 'right',excludeFitWidth:true},
+				{ key : 'name', title : '[[#{label.zdb0210.tap.maria.status.grid.title.name}]]', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key : 'value', title : '[[#{label.zdb0210.tap.maria.status.grid.title.value}]]', width : '200px', align : 'right',excludeFitWidth:true},
 				{ key:''}
 			]
 		});			
@@ -761,8 +761,8 @@ let appMariadb = {
 			message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' },
 			autoColumnIndex : true,
 			columnMapping : [
-				{ key : 'name', title : '변수명', width : '500px', align : 'left',excludeFitWidth:true },
-				{ key : 'value', title : '값', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key : 'name', title : '[[#{label.zdb0210.tap.maria.variables.grid.title.name}]]', width : '500px', align : 'left',excludeFitWidth:true },
+				{ key : 'value', title : '[[#{label.zdb0210.tap.maria.variables.grid.title.value}]]', width : '500px', align : 'left',excludeFitWidth:true },
 				{ key:''}
 			]
 		});				
@@ -822,8 +822,8 @@ let appMariadb = {
 				{ key : 'status' , title : '', width:'50px',excludeFitWidth:true,hidden:true},
 				{ key : 'proc', title : '', width : '70px', align : 'left',render: mycnfRender,excludeFitWidth:true },
 				{ key : 'category', title : 'category', width : '200px', align : 'left',hidden:true,excludeFitWidth:true },
-				{ key : 'name', title : '변수명', width : '300px', align : 'left',tooltip:renderDefaultValue ,treeColumn : false ,render:mycnfRender ,editable:mycnfEditable,excludeFitWidth:true},
-				{ key : 'value', title : '값', width : '300px', align : 'left',render:mycnfRender,editable:mycnfEditable,editedValue: function(cell, data, render, mapping, grid) {
+				{ key : 'name', title : '[[#{label.zdb0210.tap.maria.mycnf.grid.title.name}]]', width : '300px', align : 'left',tooltip:renderDefaultValue ,treeColumn : false ,render:mycnfRender ,editable:mycnfEditable,excludeFitWidth:true},
+				{ key : 'value', title : '[[#{label.zdb0210.tap.maria.mycnf.grid.title.value}]]', width : '300px', align : 'left',render:mycnfRender,editable:mycnfEditable,editedValue: function(cell, data, render, mapping, grid) {
 //					$(cell).find('select,input').css('color','black');
 					
 					let re = $(cell).find('select,input').val();
@@ -838,7 +838,7 @@ let appMariadb = {
 					data.valid = re;
 					return re;
 				},excludeFitWidth:true},
-				{ key : '', title : '범위', width : '250px', align : 'left',render:renderValue,tooltip:renderValue},				
+				{ key : '', title : '[[#{label.zdb0210.tap.maria.mycnf.grid.title.range}]]', width : '250px', align : 'left',render:renderValue,tooltip:renderValue},				
 				//{ key : 'defaultValue', title : '기본값', width : '200px', align : 'left' },
 				//{ key : 'variableComment', title : '설명', width : '300px', align : 'left' },
 				{ key : 'sort',hidden:true}
@@ -849,7 +849,7 @@ let appMariadb = {
 				var opt = evObj.data;
 				var mapping = evObj.mapping;
 				var col = mapping.columnIndex;
-				var msg = '입력값을 확인하세요.';
+				var msg = '[[#{label.zdb0210.tap.maria.mycnf.grid.alert.input.value}]]';
 
 				if(opt._state.deleted == true){
 					return;
@@ -894,7 +894,7 @@ let appMariadb = {
 					break;
 				case 'proc':
 					if(isAddVariableColumn){
-						re = $('<button class="Button btn sm">추가</button>').on('click',function(e){
+						re = $('<button class="Button btn sm">'+'[[#{label.common.button.add}]]'+'</button>').on('click',function(e){
 							appMariadb.gridMyCnf.alopexGrid('endRowInlineEdit');
 							appMariadb.gridMyCnf.alopexGrid('dataGet');
 							let evt = AlopexGrid.parseEvent(e);
@@ -916,7 +916,7 @@ let appMariadb = {
 							appMariadb.gridMyCnf.alopexGrid('focusCell',{category:dt.category,name:dt.name});
 						});
 					} else if(!cloudUtil.isEmpty(data.category)){
-						re = $('<button class="Button btn sm">삭제</button>').on('click',function(e){
+						re = $('<button class="Button btn sm">'+'[[#{label.common.button.del}]]'+'</button>').on('click',function(e){
 							appMariadb.gridMyCnf.alopexGrid('endRowInlineEdit');
 							let evt = AlopexGrid.parseEvent(e);
 							let dt = evt.data;
@@ -1367,8 +1367,10 @@ let appMariadb = {
 						// admin@% 의 * 스키마일 경우 권한 변경이 안되도록 수정 (2019-11-08)						
 						if(user == "admin" && host == "%" && schema == "*" )	{
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').attr('disabled',true);
+							$('#btnDeletePrivileges').hide();
 						}else{
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').attr('disabled',false);
+							$('#btnDeletePrivileges').show();
 						}
 					}	
 				}
@@ -1435,7 +1437,7 @@ let appMariadb = {
 			let d = (appMariadb.gridUser.alopexGrid('dataGet',{_state :{selected:true}})[0]||{});
  			let dg = appMariadb.gridUser.alopexGrid( 'dataGet' , {_state:{selected:true}});
 			if(dg.length == 0){
-				gCommon.alert('선택된 사용자가 없습니다.');return;
+				gCommon.alert('[[#{label.zdb0210.tap.maria.user.alert.msg.no.selected.user}]]');return;
 			}; 			
 			
 			let user = d.user||'';
@@ -1445,7 +1447,7 @@ let appMariadb = {
 			
  			let dsc = appMariadb.gridUserSchema.alopexGrid( 'dataGet' , {_state:{selected:true}});
 			if(dsc.length == 0){
-				gCommon.alert('선택된 스키마가 없습니다.');return;
+				gCommon.alert('[[#{label.zdb0210.tap.maria.user.alert.msg.no.selected.schema}]]');return;
 			}; 	
 			
 			let schema = (appMariadb.gridUserSchema.alopexGrid('dataGet',{_state :{selected:true}})[0]||{}).name;
@@ -1487,33 +1489,33 @@ let appMariadb = {
 
 			if(editChk){
 				if(cloudUtil.isEmpty(user)){
-					gCommon.alert('USER를 입력하세요.');
+					gCommon.alert('[[#{label.zdb0210.tap.maria.mycnf.alert.msg.enter.user}]]');
 					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
 					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=1] input').focus().trigger('click');;
 					return;
 				}
 
 				if(state == 'I' && cloudUtil.isEmpty(password)){
-					gCommon.alert('PASSWORD를 입력하세요.');
+					gCommon.alert('[[#{label.zdb0210.tap.maria.mycnf.alert.msg.enter.pwd}]]');
 					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
 					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=2] input').focus().trigger('click');;
 					return;
 				}
 				
 				if(cloudUtil.isEmpty(host)){
-					gCommon.alert('HOST를 입력하세요.');
+					gCommon.alert('[[#{label.zdb0210.tap.maria.mycnf.alert.msg.enter.host}]]');
 					appMariadb.gridUser.alopexGrid('startRowInlineEdit')
 					appMariadb.gridUser.find('.bodycell[data-alopexgrid-rowindex=0][data-alopexgrid-columnindex=3] input').focus().trigger('click');;
 					return;
 				}			
 			}else{
 				if(cloudUtil.isEmpty(password)){ // 2-1 선택된 user의 패스워드가 있는지 여부를 체크 한다.   
-					gCommon.alert('저장 할 데이터가 없습니다.');
+					gCommon.alert('[[#{label.zdb0210.tap.maria.mycnf.alert.msg.no.data}]]');
 					return;
 				} 
 			}
 
-			gCommon.confirm('저장 하시 겠습니까?',function(){
+			gCommon.confirm('[[#{label.zdb0210.tap.maria.mycnf.confirm.msg.save}]]',function(){
 				let param = $.extend({},gParam,{
 					userPrivileges : {
 						grantee:grantee,
@@ -1556,7 +1558,7 @@ let appMariadb = {
 			let schema = (appMariadb.gridUserSchema.alopexGrid('dataGet',{_state :{selected:true}})[0]||{}).name;
 			let grantee = ('\''+user+'\'@\''+host+'\'');
 			
-			gCommon.confirm('선택된 사용자의 권한을 삭제 하시 겠습니까?',function(){
+			gCommon.confirm('[[#{label.zdb0210.tap.maria.mycnf.confirm.msg.delete}]]',function(){
 				let param = $.extend({},gParam,{
 					userPrivileges : {
 						grantee:grantee
@@ -1590,7 +1592,7 @@ let appMariadb = {
 			let user = d.user||'';
 			let host = d.host||'';
 		
-			gCommon.confirm('선택된 사용자를 삭제 하시 겠습니까?',function(){
+			gCommon.confirm('[[#{label.zdb0210.tap.maria.mycnf.confirm.msg.delete.user}]]',function(){
 				let param = $.extend({},gParam,{
 					state:'D',
 					user : user,
