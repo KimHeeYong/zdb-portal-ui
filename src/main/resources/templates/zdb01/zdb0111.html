@@ -71,7 +71,7 @@
 								<td> <span class="info-text__typec">Redis</span></td>
 							</tr>
 							<tr>
-								<th th:text="#{label.zdb0110.table.service.name}" ><span class="asterisk">*</span></th>
+								<th><span th:text="#{label.zdb0110.table.service.name}" ></span><span class="asterisk">*</span></th>
 								<td>
 									<input class="Textinput" type="text" id="serviceName" name="serviceName"> 
 									<span data-for="serviceName" class="info-text"></span>
@@ -128,7 +128,7 @@
 								</td>
 							</tr>							
 							<tr>
-								<th  th:text="#{label.zdb0110.table.allocation.memory}" class="ht140"><span class="asterisk">*</span></th>
+								<th class="ht140"><span  th:text="#{label.zdb0110.table.allocation.memory}" ></span><span class="asterisk">*</span></th>
 								<td>
 									<div class="info-wrap">
 										<div class="info-wrap ht60">
@@ -147,14 +147,14 @@
 								<td> <span class="info-text__typec">MariaDB</span></td>
 							</tr>
 							<tr>
-								<th th:text="#{label.zdb0110.table.service.name}"><span class="asterisk">*</span></th>
+								<th><span th:text="#{label.zdb0110.table.service.name}"></span><span class="asterisk">*</span></th>
 								<td>
 									<input class="Textinput" type="text" id="serviceName" name="serviceName" valid-key="lowAlpaNumDash"> 
 									<span data-for="serviceName" class="info-text"></span>
 								</td>
 							</tr>
 							<tr>
-								<th th:text="#{label.zdb0110.table.db.name}"> <span class="asterisk">*</span></th>
+								<th><span th:text="#{label.zdb0110.table.db.name}"></span> <span class="asterisk">*</span></th>
 								<td>
 									<input class="Textinput" type="text" id="dbName" name="dbName">
 									<span data-for="dbName" class="info-text"></span>
@@ -191,8 +191,8 @@
 								<td>
 									<div class="onoff-wrap" id="backupOnOff"><button class="Button btn-off">OFF</button></div>
 									<div class="hide">
-										<input th:text="#{label.common.select.use}" type="radio" name="backupEnabled" value="true" checked="checked">
-										<input th:text="#{label.common.select.unused}" type="radio" name="backupEnabled" value="false"/>
+										<input th:text="#{label.common.select.enabled}" type="radio" name="backupEnabled" value="true" checked="checked">
+										<input th:text="#{label.common.select.disabled}" type="radio" name="backupEnabled" value="false"/>
 									</div>
 								</td>
 							</tr>						
@@ -226,7 +226,7 @@
 								</td>
 							</tr>					
 							<tr>
-								<th  th:text="#{label.zdb0110.table.allocation.memory}" class="ht140"><span class="asterisk">*</span></th>
+								<th class="ht140"><span th:text="#{label.zdb0110.table.allocation.memory}"></span><span class="asterisk">*</span></th>
 								<td>
 									<div class="info-wrap">
 										<div class="info-wrap ht60">
@@ -246,7 +246,7 @@
 								</td>
 							</tr>		
 							<tr>
-								<th th:text="#{label.zdb0110.table.allocation.disk}"><span class="asterisk">*</span></th>
+								<th> <span th:text="#{label.zdb0110.table.allocation.disk}"></span><span class="asterisk">*</span></th>
 								<td>
 									<div class="Divselect wd150" id="diskSizeCombo" name="diskSizeCombo">
 										<select id="diskSizeSel" name="diskSizeSel">
@@ -260,7 +260,7 @@
 								</td>
 							</tr>
 							<tr>
-								<th th:text="#{label.zdb0110.table.storage.class}"><span class="asterisk">*</span></th>
+								<th> <span th:text="#{label.zdb0110.table.storage.class}"></span><span class="asterisk">*</span></th>
 								<td id="storagetd">
 									<div class="Divselect wd150" id="storageClass" name="storageClass">
 										<select id="storageClassSel" name="storageClassSel">

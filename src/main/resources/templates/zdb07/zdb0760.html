@@ -240,24 +240,24 @@
 					
 					
 					if(cloudUtil.isEmpty(backupCombo)){
-						gCommon.alert('Backup Date 를 선택해 주세요..');return;
+						gCommon.alert('[[#{label.zdb0760.msg.alert.backup.date}]]');return;
 					};
 					
 					
 					if(cloudUtil.isEmpty(tNameSpace)){
-						gCommon.alert('대상 Namespace 를 선택해 주세요.');return;
+						gCommon.alert('[[#{label.zdb0760.msg.alert.namespace.select}]]');return;
 					};
 					
 					if(cloudUtil.isEmpty(tServiceName)){
-						gCommon.alert('대상 Service 를 선택해 주세요.');return;
+						gCommon.alert('[[#{label.zdb0760.msg.alert.service.select}]]');return;
 					};
 					
 					if(tNameSpace == sNameSpace && tServiceName == sServiceName ){
-						gCommon.alert('동일한 Service 입니다.<br> 대상 Service 를 다시 선택해 주세요.');return;
+						gCommon.alert('[[#{label.zdb0760.msg.alert.service.reselect}]]'.replaceAll('\n','<br>'));return;
 					}
 					
 					e.preventDefault();
-					gCommon.confirm('Migration 작업수행을 하시 겠습니까?',function(){
+					gCommon.confirm('[[#{label.zdb0760.msg.confirm.migration}]]',function(){
 						var data = {namespace:tNameSpace,serviceType:vServiceTpe,serviceName:tServiceName,backupId:backupCombo.val()};
 						
 						$a.ajax({

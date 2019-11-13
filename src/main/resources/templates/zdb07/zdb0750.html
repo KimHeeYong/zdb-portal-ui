@@ -188,7 +188,7 @@
  					gCommon.confirmYn(msg,function(yn){
  						if(yn == "Y"){
 							gCommon.credentialApiConfirm({
-						        data:{namespace:data.namespace ,serviceType:data.serviceType ,serviceName:data.serviceName, msg:'설정을 변경하시려면', okBtnMsg:btnMsg},
+						        data:{namespace:data.namespace ,serviceType:data.serviceType ,serviceName:data.serviceName, msg:'[[#{label.common.msg.alert.chage.setting}]]', okBtnMsg:btnMsg},
 						        callback : function(res){
 						        	if(res == null){
 						        		re = res || {};

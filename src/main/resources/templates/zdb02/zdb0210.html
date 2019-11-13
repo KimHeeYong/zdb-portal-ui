@@ -121,7 +121,7 @@
 									<td>
 										<input id="credential" name="credential" class="Textinput" type="password" autocomplete="off"/>
 										<span class="input-pw"></span>
-										<button th:text="#{label.zdb0210.tap.service.credential.button.toggle}" class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="togglePwd"></button>
+										<button th:text="#{label.common.button.show}" class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="togglePwd"></button>
 										<button th:text="#{label.zdb0210.tap.service.credential.button.copy}" class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialCopy"></button>
 										<button th:text="#{label.zdb0210.tap.service.credential.button.update}" class="Button line-btn" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" id="credentialUpdate"></button>
 										<span th:text="#{label.zdb0210.tap.service.msg.copy}" class="Color-warning hide connectionInfoCopyed"></span>
@@ -466,21 +466,21 @@
            	<!-- tab contents info detail-->
          	<form name="backupForm" method="post">
            	<div class="ctn-info__wrap" style="border-bottom:0px;">
-         		<div class="mr30 wd300 fl info-list">
+         		<div class="mr30 wd350 fl info-list">
          			<span th:text="#{label.zdb0210.tap.backup.top.backup.enabled.title}"  class="config-title"></span>
 					<div class="onoff-wrap"><button class="Button btn-off" data-target="useYn">OFF</button></div>
 					<div class="hide">
 						<select name="useYn"> <option value="Y">Y</option> <option value="N">N</option> </select>
 					</div>									
 				</div>	           	
-				<div class="mr30 wd300 fl info-list"><span th:text="#{label.zdb0210.tap.backup.top.store.period.title}"  class="config-title"></span> 
+				<div class="mr30 wd350 fl info-list"><span th:text="#{label.zdb0210.tap.backup.top.store.period.title}"  class="config-title"></span> 
 					<div class="Spinner" data-min="0" data-max="7" data-step="1" id="storePeriodSpinner">
 					    <input id="storePeriod" name="storePeriod" value="1" style="width:40px;text-align:left;"><span th:text="#{label.zdb0210.tap.backup.top.store.period.day}" ></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					    <a class="Up"></a>
 					    <a class="Down"></a>
 					</div>
 				</div>
-				<div class="mr30 fl info-list">
+				<div class="mr30 wd350 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
 						<span th:text="#{label.zdb0210.tap.backup.top.schedule.day.title}" class="config-title"></span>
 						<div class="Divselect" id="scheduleDay" name="scheduleDay">
@@ -498,7 +498,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="mr30 wd300 fl info-list">
+				<div class="mr30 wd350 fl info-list">
 					<!-- <span class="config-title">전체 백업 시간:</span> -->
 					<div class="Spinner Time" data-locale="en" id="startTime" data-hours="24H" data-bind="time:date">
 					    <input data-hour>
@@ -512,12 +512,12 @@
           	</div>	
 			<div class="ctn-info__wrap" style="border-top:0px;">
 				
-				<div class="mr30 wd300 fl info-list">
+				<div class="mr30 wd350 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
 						<span th:text="#{label.zdb0210.tap.backup.top.increment.period.title}" class="config-title"></span>
 						<div class="Divselect" id="incrementPeriod" name="incrementPeriod">
 							<select>
-								<option th:text="#{label.zdb0210.tap.backup.top.increment.period.hour.unused}" value="0"></option>
+								<option th:text="#{label.common.select.disabled}" value="0"></option>
 								<option th:text="#{label.zdb0210.tap.backup.top.increment.period.hour.one}" value="1"></option>
 								<option th:text="#{label.zdb0210.tap.backup.top.increment.period.hour.two}"value="2"></option>
 								<option th:text="#{label.zdb0210.tap.backup.top.increment.period.hour.six}" value="6"></option>
@@ -528,7 +528,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="mr30 wd300 fl info-list">
+				<div class="mr30 wd350 fl info-list">
 					<div class="hide fl mr30" data-show-service-type="mariadb">
 						<span th:text="#{label.zdb0210.tap.backup.top.throttle.title}" class="config-title"><span class="ico_question" id="throttleYnTooltip"></span> : </span>
 						<span data="disk"></span>
@@ -911,13 +911,13 @@
 							</div>
 						</div>
 			            <div class="btn-wrap__right">
-				        	<button class="Button btn bg-red" id="saveVariables" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >적용하기</button>
+				        	<button th:text="#{label.zdb0760.button.apply}" class="Button btn bg-red" id="saveVariables" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" ></button>
 				        </div>
 					</div>
 				</li>
 				
 				<li th:if="${#request.getParameter('serviceType')=='mariadb'}">
-					<h3 class="form-title">Parameter <span class="fr"><button class="Button btn" style="margin-top:-4px;" id="popVariables">설정 보기</button></span></h3>
+					<h3 class="form-title">Parameter <span class="fr"><button th:text="#{label.common.button.show.setting}" class="Button btn" style="margin-top:-4px;" id="popVariables"></button></span></h3>
 					<div class="accor-contents__wrap">	
 						<table id="serviceConfigTable" class="Table Form-type">
 							<colgroup>
@@ -927,7 +927,7 @@
 							<tbody> </tbody>
 						</table>
 			            <div class="btn-wrap__right">
-				        	<button class="Button btn bg-red" id="saveVariables" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" >적용하기</button>
+				        	<button th:text="#{label.zdb0760.button.apply}" class="Button btn bg-red" id="saveVariables" th:if="${session.userInfo.clusterRole=='cluster-admin' || session.userInfo.zdbAdmin == true}" ></button>
 				        </div>						
 					</div>
 				</li>
@@ -989,7 +989,7 @@
 				,"CREADENTIAL":"Service Management","BINLOG":"Binlog Management"};
 	var gBackupChkBoxArr = ["ACCEPTED","DATA_BACKUP_DOING","DATA_BACKUP_COMPLETE","DATA_BACKUP_FAILED","DATA_ARCHIVE_DOING","DATA_ARCHIVE_COMPLETE","DATA_ARCHIVE_FAILED","DATA_UPLOAD_DOING","DATA_UPLOAD_COMPLETE","DATA_UPLOAD_FAILED","ABORTED","FAILED"]; 
 	var gBackupLogArr = ["ACCEPTED","DATA_BACKUP_DOING","DATA_BACKUP_FAILED","ABORTED","FAILED"]; 
-	var gCardMsg = {elapsedTime:'[[#{label.zdb0210.top.card.elapsed.time}]]'
+	var gCardMsg = {elapsedTime:'[[#{label.common.button.age}]]'
 		,createTime:'[[#{label.zdb0210.top.card.create.time}]]'
 		,add:'[[#{label.zdb0210.top.card.tag.add}]]'
 		,restart:'[[#{label.zdb0210.top.card.restart}]]'							
@@ -2218,7 +2218,7 @@
 			tabService.find('#divFailbackBtn button').on('click',function(e){
 				e.preventDefault();
 				gCommon.credentialConfirm({
-					data:{credential:$("#credential").val(), msg:'[[#{label.zdb0210.tap.service.alert.msg.failback.apply}]]', okBtnMsg:'[[#{label.zdb0210.tap.service.alert.msg.failback.apply}]]'},
+					data:{credential:$("#credential").val(), msg:'[[#{label.zdb0210.tap.service.alert.msg.failback.apply}]]', okBtnMsg:'[[#{label.zdb0210.tap.service.alert.msg.failback.apply.ok.btn}]]'},
 					callback : function(res){
 						$a.ajax({
 							url: '/zdbapi/serviceChangeSlaveToMaster',
@@ -2569,7 +2569,7 @@
 							}
 						}); 		
 					}			
-				},{okBtnMsg:'[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.ok.btn}]]' , vWidth : 600 , vHeight:350 });
+				},{okBtnMsg:'[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.ok.btn}]]' , vWidth : 800 , vHeight:350 });
 			});
 			$('button#addBackupDisk').on('click',function(){
 				/*backupdisk-test*/
@@ -2584,7 +2584,7 @@
 				        data:$.extend({},gParam,{credential:$("#credential").val(),diskSize:diskSize}),
 				        url: '/zdb02/zdb0200p08',
 				        iframe: false,
-				        width: 500,
+				        width: 600,
 				        height: 320,
 				        title : '',
 				        callback : function(res){
@@ -2792,7 +2792,7 @@
 				  		}
 						return re;
 					}},
-					{ title:downloadTitle, key : 'archiveFileSize' , width: '100px', align: 'center',excludeFitWidth:true,tooltip:false ,render:function(value,data,render,mapping){
+					{ title:downloadTitle, key : 'archiveFileSize' , width: '150px', align: 'center',excludeFitWidth:true,tooltip:false ,render:function(value,data,render,mapping){
 						let t = '[[#{label.zdb0210.tap.backup.gird.title.download}]]';
 						//console.log(data.type);
 						if(['FULL','INCR'].indexOf(data.type) > -1){
@@ -3633,7 +3633,7 @@
 			});
 			tabLog.find('#btnDownloadLog').on('click',function(){
 				if(lastLogData.logType==null){
-					gCommon.alert('조회된 데이터가 없습니다.');
+					gCommon.alert('[[#{label.common.msg.alert.search.no.data}]]');
 				}
 				let fileName = lastLogData.logType+'Log-'+moment().format("YYYYMMDDHHmmss")+'.txt';
 				download($('#divLog').html(), fileName, "text/plain");
@@ -3648,7 +3648,7 @@
 					url: '/zdbapi/getFileLog',
 					data:param,
 					success:function(res){
-						let re = res.fileLog||'데이터가 없습니다.'
+						let re = res.fileLog||'[[#{label.common.msg.validator.grid.nodata}]]'
 						$('#divLog').html(re);
 						lastLogData.logType = param.logType; 
 						lastLogData.startDate = param.startDate;						

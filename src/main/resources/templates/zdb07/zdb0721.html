@@ -53,8 +53,8 @@
 									</div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="PodHealthCheck-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="PodHealthCheck-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="PodHealthCheck-useYn" value="Y"/><span th:text="#{label.common.select.enabled}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="PodHealthCheck-useYn" value="N" checked="checked"/><span th:text="#{label.common.select.disabled}"></span></label> 
 								</td>
 								<td colspan="2">	
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="PodHealthCheck-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
@@ -69,8 +69,8 @@
 									</div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="ContainerHealthCheck-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ContainerHealthCheck-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="ContainerHealthCheck-useYn" value="Y"/><span th:text="#{label.common.select.enabled}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ContainerHealthCheck-useYn" value="N" checked="checked"/><span th:text="#{label.common.select.disabled}"></span></label> 
 								</td>
 								<td colspan="2">	
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="ContainerHealthCheck-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label>
@@ -85,8 +85,8 @@
 									</div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="DBHealthCheck-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label>
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="DBHealthCheck-useYn" value="N" checked="checked" /><span th:text="#{label.zdb0721.table.unused}"></span></label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="DBHealthCheck-useYn" value="Y"/><span th:text="#{label.common.select.enabled}"></span></label>
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="DBHealthCheck-useYn" value="N" checked="checked" /><span th:text="#{label.common.select.disabled}"></span></label> 
 								</td>
 								<td colspan="2">	
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="DBHealthCheck-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
@@ -101,8 +101,8 @@
 									<div th:text="#{label.zdb0721.tooltip.cpu}" class="Tooltip" data-base="#cpuTooltip" data-position="right" data-animation="fade"></div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="CPUUsage-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="CPUUsage-useYn" value="N" checked="checked" /><span th:text="#{label.zdb0721.table.unused}"></span></label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="CPUUsage-useYn" value="Y"/><span th:text="#{label.common.select.enabled}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="CPUUsage-useYn" value="N" checked="checked" /><span th:text="#{label.common.select.disabled}"></span></label> 
 								</td>
 								<td>	
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="CPUUsage-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
@@ -129,8 +129,8 @@
 									<div th:text="#{label.zdb0721.tooltip.memory}" class="Tooltip" data-base="#memoryTooltip" data-position="right" data-animation="fade"></div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="MemoryUsage-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label>
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="MemoryUsage-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="MemoryUsage-useYn" value="Y"/><span th:text="#{label.common.select.enabled}"></span></label>
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="MemoryUsage-useYn" value="N" checked="checked"/><span th:text="#{label.common.select.disabled}"></span></label> 
 								</td>
 								<td>	
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="MemoryUsage-priority" value="P4" checked="checked"/><span th:text="#{label.zdb0721.table.low}"></span></label> 
@@ -157,8 +157,8 @@
 									<div th:text="#{label.zdb0721.tooltip.connections}" class="Tooltip" data-base="#connectionTooltip" data-position="right" data-animation="fade"></div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="Connections-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="Connections-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label>
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="Connections-useYn" value="Y"/><span th:text="#{label.common.select.enabled}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="Connections-useYn" value="N" checked="checked"/><span th:text="#{label.common.select.disabled}"></span></label>
 								</td>
 								<td>	
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="Connections-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
@@ -185,8 +185,8 @@
 									<div th:utext="#{label.zdb0721.tooltip.slowquery}" class="Tooltip" data-base="#slowQueryTooltip" data-position="right" data-animation="fade"></div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="SlowQueries-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="SlowQueries-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="SlowQueries-useYn" value="Y"/><span th:text="#{label.common.select.enabled}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="SlowQueries-useYn" value="N" checked="checked"/><span th:text="#{label.common.select.disabled}"></span></label> 
 								</td>
 								<td>	
 									<label class="ImageRadio"><input class="Radio" type="radio" name="SlowQueries-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
@@ -212,8 +212,8 @@
 									<div th:utext="#{label.zdb0721.tooltip.status}" class="Tooltip" data-base="#statusTooltip" data-position="right" data-animation="fade"></div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationStatus-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationStatus-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationStatus-useYn" value="Y"/><span th:text="#{label.common.select.enabled}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationStatus-useYn" value="N" checked="checked"/><span th:text="#{label.common.select.disabled}"></span></label> 
 								</td>
 								<td colspan="2">	
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationStatus-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
@@ -228,8 +228,8 @@
 									<div th:utext="#{label.zdb0721.tooltip.delay}" class="Tooltip" data-base="#delayTooltip" data-position="right" data-animation="fade"></div>
 								</th>
 								<td>
-									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationDelay-useYn" value="Y"/><span th:text="#{label.zdb0721.table.use}"></span></label> 
-									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationDelay-useYn" value="N" checked="checked"/><span th:text="#{label.zdb0721.table.unused}"></span></label> 
+									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationDelay-useYn" value="Y"/><span th:text="#{label.common.select.enabled}"></span></label> 
+									<label class="ImageRadio Margin-left-40"> <input class="Radio" type="radio" name="ReplicationDelay-useYn" value="N" checked="checked"/><span th:text="#{label.common.select.disabled}"></span></label> 
 								</td>
 								<td>	
 									<label class="ImageRadio"> <input class="Radio" type="radio" name="ReplicationDelay-priority" value="P4" checked="checked" /><span th:text="#{label.zdb0721.table.low}"></span></label> 
@@ -286,7 +286,7 @@
 					let type = item.name.split('-')[0];
 					valElements[type+'-value2'] = {
 						rule : {required:true,ifRequire:item.name},
-						message : {ifRequire:'임계치를 입력하세요.'}
+						message : {ifRequire:'[[#{label.zdb0721.msg.enter.threshold}]]'}
 					}
 				});
 				
@@ -361,14 +361,14 @@
 		    		data.alertRules = JSON.stringify(alertRules);
 
 		    		
- 					gCommon.confirm('저장 하시겠습니까?',function(){
+ 					gCommon.confirm('[[#{label.zdb0600.msg.alert.save}]]',function(){
 						$a.ajax({
 			    			url : '/zdbapi/updateAlertRule',
 			    			method : 'put',
 			    			data : data,
 		    				success:function(res){
 		    					if(res.result.code == '0000'){
-		    						gCommon.alert('저장되었습니다.');
+		    						gCommon.alert('[[#{label.common.msg.alert.save.success}]]');
 		    						fn_getAlertRule();
 		    					}
 		    				}

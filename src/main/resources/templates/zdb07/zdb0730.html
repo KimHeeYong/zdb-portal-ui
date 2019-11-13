@@ -76,19 +76,19 @@
 							let alt = '';
 							if(data.backupStatus=='YELLOW'){
 								status = 'yellow';
-								alt = '최근 백업이 존재하지 않습니다';
+								alt = '[[#{label.zdb0730.grid.msg.alt.yellow}]]';
 							} else if(data.backupStatus=='GREEN'){
 								status = 'green';
-								alt = '백업이 정상적으로 수행되고 있습니다';
+								alt = '[[#{label.zdb0730.grid.msg.alt.green}]]';
 							} else if(data.backupStatus=='RED'){
 								status = 'red';
-								alt = '최근 백업이 실패 했습니다';
+								alt = '[[#{label.zdb0730.grid.msg.alt.red}]]';
 							} else if(data.backupStatus=='GREY'){
 								status = 'grey';
-								alt = '수행된 백업이 존재하지 않거나, 백업이 설정되어 있지 않습니다.';
+								alt = '[[#{label.zdb0730.grid.msg.alt.grey}]]';
 							} else if(data.backupStatus=='DOING'){
 								status = 'green blinking';
-								alt = '백업이 수행되는 중입니다';
+								alt = '[[#{label.zdb0730.grid.msg.alt.doing}]]';
 							} 
 							let re = '<div class="state '+status+'" title="'+alt+'"></div>';
 							
@@ -112,7 +112,7 @@
 							let re = img[value]; 
 							if(re) return re;	
 						}},
-						{ title:'[[#{label.zdb0730.grid.backup.disk}]]'.replaceAll('\n','<br>'), key : 'backupDiskInfo' , width: '100px', align: 'center',render:function(value){
+						{ title:'[[#{label.zdb0730.grid.backup.disk}]]'.replaceAll('\n','<br>'), key : 'backupDiskInfo' , width: '150px', align: 'center',render:function(value){
 							let re = value;
 /* 							if(value == 'Y')re='사용';
 							if(value == 'N')re='미사용'; */
@@ -184,7 +184,7 @@
 							} */
 							return re;
 						}},
-						{ title:'[[#{label.zdb0730.grid.full.backup.cycle}]]'.replaceAll('\n','<br>'), key : 'backupExecType' , width: '100px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
+						{ title:'[[#{label.zdb0730.grid.full.backup.cycle}]]'.replaceAll('\n','<br>'), key : 'backupExecType' , width: '120px',headerStyleclass: 'border-left' , inlineStyle: {'border-left':'1px solid #dddddd'},align: 'center'},
 						{ title:'[[#{label.zdb0730.grid.full.backup.start.time}]]'.replaceAll('\n','<br>'), key : 'startTime' , width: '110px',excludeFitWidth:true, align: 'center', inlineStyle: {padding: '0'} ,render:function(value){
 							if(cloudUtil.isEmpty(value)) {
 								value = '01:00' ;
@@ -370,7 +370,7 @@
 				})				
 				function fn_saveSchedule(){
 					gridSchedule.alopexGrid('endRowInlineEdit');
-					gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+					gCommon.confirm('[[#{label.zdb0210.tap.maria.mycnf.confirm.msg.save.data}]]',function(){
 						//let data = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
 						let data = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{_state: {edited:true}},{_state: {added:true}},{_state: {deleted:true}}));					
 						 if(data.length > 0){

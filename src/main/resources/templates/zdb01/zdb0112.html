@@ -204,8 +204,8 @@ $a.page(function() {
 				cpu:sliderConstants.cpu.value[gParam.podSpecIdx],
 				serviceName:gParam.serviceName,
 				exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
-				backupEnabledStr:(gParam.backupEnabled=='true'?'[[#{label.common.select.use}]]':'[[#{label.common.select.unused}]]'),
-				clusterEnabledStr:(gParam.clusterEnabled=='true'?'[[#{label.common.select.use}]]':'[[#{label.common.select.unused}]]'),
+				backupEnabledStr:(gParam.backupEnabled=='true'?'[[#{label.common.select.enabled}]]':'[[#{label.common.select.disabled}]]'),
+				clusterEnabledStr:(gParam.clusterEnabled=='true'?'[[#{label.common.select.enabled}]]':'[[#{label.common.select.disabled}]]'),
 				storageIops:gParam.storageIops,
 				kindOfStorage:gParam.kindOfStorage,
 				storageClass:gParam.storageClass
@@ -218,8 +218,8 @@ $a.page(function() {
 				cpu:sliderConstants.cpu.value[gParam.podSpecIdx],
 				serviceName:gParam.serviceName,
 				exposeTypeStr: gParam.exposeType.charAt(0).toUpperCase() + gParam.exposeType.slice(1) + '',
-				backupEnabledStr:(gParam.backupEnabled=='true'?'[[#{label.common.select.use}]]':'[[#{label.common.select.unused}]]'),
-				clusterEnabledStr:(gParam.clusterEnabled=='true'?'[[#{label.common.select.use}]]':'[[#{label.common.select.unused}]]'),
+				backupEnabledStr:(gParam.backupEnabled=='true'?'[[#{label.common.select.enabled}]]':'[[#{label.common.select.disabled}]]'),
+				clusterEnabledStr:(gParam.clusterEnabled=='true'?'[[#{label.common.select.enabled}]]':'[[#{label.common.select.disabled}]]'),
 				storageClass:(cStorageClassConstants[gParam.storageClass])
 			});
 		}

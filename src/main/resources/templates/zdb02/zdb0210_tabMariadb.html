@@ -84,7 +84,8 @@
 							</table>
 						</div> -->
 						<div data-menu="connection" class="accor-contents__wrap" >
-							<h3 th:text="#{label.zdb0210.tap.maria.menu.connect}" class="form-title2">
+							<h3  class="form-title2">
+								<span th:text="#{label.zdb0210.tap.maria.menu.connect}"></span>
 								<button th:text="#{label.common.button.refresh}" class="Button btn fr" id="btnReloadConnection" style="margin-bottom: 3px;"></button>
 							</h3>							
 							<table class="Table Form-type" > 
@@ -124,7 +125,8 @@
 							<div id="gridConnection" class="mt30"></div>
 						</div>
 						<div data-menu="userRole" class="hide"  style=" min-width: 950px; ">
-							<h3 th:text="#{label.zdb0210.tap.maria.menu.user.role}" class="form-title2">
+							<h3 class="form-title2">
+								<span th:text="#{label.zdb0210.tap.maria.menu.user.role}"></span>
 								<button th:text="#{label.common.button.refresh}"  class="Button btn fr" id="btnReloadUserRole" style="margin-bottom: 3px;"></button>
 							</h3>
 							<div class="mt20">
@@ -183,7 +185,8 @@
 							</div>
 						</div>
 						<div data-menu="statusVariables" class="hide">
-							<h3  th:text="#{label.zdb0210.tap.maria.menu.status.variables}" class="form-title2" >
+							<h3 class="form-title2" >
+								<span   th:text="#{label.zdb0210.tap.maria.menu.status.variables}" ></span>							
 								<button th:text="#{label.common.button.refresh}"  class="Button btn fr" id="btnReloadStatusVariables" style="margin-bottom: 3px;"></button>
 							</h3>
 							<div class="search-wrap tr fi mt20">
@@ -192,7 +195,8 @@
 							<div id="gridStatusVariables"></div>
 						</div>
 						<div data-menu="systemVariables" class="hide">
-							<h3  th:text="#{label.zdb0210.tap.maria.menu.system.variables}" class="form-title2" >
+							<h3 class="form-title2" >
+								<span  th:text="#{label.zdb0210.tap.maria.menu.system.variables}" ></span>								
 								<button th:text="#{label.common.button.refresh}"  class="Button btn fr" id="btnReloadSystemVariables" style="margin-bottom: 3px;"></button>
 							</h3>						
 							<div class="search-wrap tr fi mt20" >
@@ -201,7 +205,8 @@
 							<div id="gridSystemVariables"></div>
 						</div>
 						<div data-menu="myCnf" class="hide">
-							<h3  th:text="#{label.zdb0210.tap.maria.menu.my.cnf}" class="form-title2">
+							<h3>
+								<span th:text="#{label.zdb0210.tap.maria.menu.my.cnf}" class="form-title2"></span>								
 								<button th:text="#{label.common.button.refresh}"  class="Button btn fr" id="btnReloadMyCnf" style="margin-bottom: 3px;"></button>
 							</h3>
 							<div class="btn-wrap">
@@ -218,7 +223,8 @@
 							<div id="gridMyCnf"></div>
 						</div>
 						<div data-menu="database" class="hide"  style=" min-width: 950px; ">
-							<h3 th:text="#{label.zdb0210.tap.maria.title.database}" class="form-title2">
+							<h3 class="form-title2">
+								<span th:text="#{label.zdb0210.tap.maria.title.database}"></span>									
 								<button th:text="#{label.common.button.refresh}"  class="Button btn fr" id="btnReloadDatabase" style="margin-bottom: 3px;"></button>
 							</h3>
 							<div class="mt20">
@@ -325,6 +331,7 @@ let appMariadb = {
 					return re;
 				}
 			},				
+			autoResize:true,			
 			message: { nodata: '[[#{label.common.msg.validator.grid.nodata}]]' },
 			autoColumnIndex : true,
 			columnMapping : [
@@ -334,36 +341,51 @@ let appMariadb = {
 					{ key : 'db', title : 'DB', width : '100px', align : 'center',tooltip:false },
 					{ key : 'Command', title : 'Command', width : '100px', align : 'center',tooltip:false },
 					{ key : 'Time', title : 'Time', width : '100px', align : 'center',tooltip:false},
-					{ key : 'State', title : 'State', width : '250px', align : 'center',tooltip:true },  
+					{ key : 'State', title : 'State', width : '500px', align : 'center',tooltip:true },  
 					{ key : 'Info', title : 'Info', width : '100px', align : 'left' ,tooltip:true},
-					{ key : '', title : '', width : '50px', align : 'center',tooltip:false,render:function(value,data){
+					{ key : '', title : '', width : '70px', align : 'center',tooltip:false,render:function(value,data){
+						
+						let re = '';
+						let state = (data.State||'').toLowerCase();
+						let time = (data.Time || 0);
+
+					//	if(!fn_isSystemProcess(data)){  // 2019-08-06 클라이언트 커넥션 하이라이트 적용 (2019-08-06)
+
+											
 						let disabled = '';
 						if(fn_isSystemProcess(data) == true){
 							disabled = 'Disabled';
 						}
 
 						if(data.User != "system user" &&  data.Host != "local" ){   //User: system user 등일 경우 종료버튼 지우기 & Host: local 일때 종료버튼 지우기 적용
-							return $('<button class="Button sm '+disabled+'">'+'[[#{label.zdb0210.tap.maria.alert.msg.process.terminate.ok.btn}]]'+'</button>').on('click',function(){
-								if($(this).hasClass('Disabled')){
-									return;
-								}
-								gCommon.credentialConfirm({
-							        data:{credential:$("#credential").val(),msg:'[[#{label.zdb0210.tap.maria.alert.msg.process.terminate}]]',okBtnMsg:'[[#{label.zdb0210.tap.maria.alert.msg.process.terminate.ok.btn}]]'},
-							        callback : function(res){
-										$a.ajax({
-											url: '/zdbapi/killProcess',
-											data:$.extend({},gParam,{pid:data.Id,podName:gService.podName}),
-											success: function(res){
-												if(res.result.code == '0'){
-												//	appMariadb.getConnection();
-													appMariadb.getProcesses();
-													appMariadb.getDatabaseConnection();
+							if( state.indexOf('waiting for') > -1 || 
+									   (state.indexOf('sending data') > -1 && time >= 10) ||
+									   (state.indexOf('updating') > -1 && time >= 10) ||
+									   (state == 'copying to tmp table on disk')){
+								return false;
+							}else{
+								return $('<button class="Button sm '+disabled+'">'+'[[#{label.zdb0210.tap.maria.alert.msg.process.terminate.ok.btn}]]'+'</button>').on('click',function(){
+									if($(this).hasClass('Disabled')){
+										return;
+									}
+									gCommon.credentialConfirm({
+								        data:{credential:$("#credential").val(),msg:'[[#{label.zdb0210.tap.maria.alert.msg.process.terminate}]]',okBtnMsg:'[[#{label.zdb0210.tap.maria.alert.msg.process.terminate.ok.btn}]]'},
+								        callback : function(res){
+											$a.ajax({
+												url: '/zdbapi/killProcess',
+												data:$.extend({},gParam,{pid:data.Id,podName:gService.podName}),
+												success: function(res){
+													if(res.result.code == '0'){
+													//	appMariadb.getConnection();
+														appMariadb.getProcesses();
+														appMariadb.getDatabaseConnection();
+													}
 												}
-											}
-										})
-							        }
-							    });
-							});
+											})
+								        }
+								    });
+								});
+							}
 						}else{
 							return false;
 						}
