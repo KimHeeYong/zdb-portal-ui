@@ -34,10 +34,19 @@
 	<script type="text/javascript" src="/script/app/common/cloudzdb-validator.js?v=20190430"></script>	
 	<th:block layout:fragment="page_js"></th:block>
 	<script type="text/javascript">
+
+	/* alopex 다국어 설정 추가 (2019-11-14) */
+	$a.setup({
+		locale:  $.cookie('Accept-Language')
+	})
+	
 	$a.page(function() {
 		this.init = function() {
 			$('#gSelchgLocale').on('change',function(){
-
+				
+				//this.value
+				console.log('[[${session.acceptLanguage}]]');
+				
 				var indexLocation  = location.href ; 
 				if(indexLocation.indexOf('&locale=') != -1 || indexLocation.indexOf('?locale=') != -1){
 					indexLocation = indexLocation.substring(0 , indexLocation.length - 2)+this.value;

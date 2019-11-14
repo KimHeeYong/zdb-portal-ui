@@ -269,7 +269,7 @@
 				});
 			}
 			function updateDefaultAlertRule(data){
-				gCommon.confirm('기본 알람 규칙으로 설정 하시겠습니까?</br> <span style="font-size:15px;color:red;text-align:center;"> ※ 임계치의 수정은 설정에서 가능합니다.</span>',function(){
+				gCommon.confirm('[[#{label.zdb0720.msg.alert.default.first}]]'+'</br> <span style="font-size:15px;color:red;text-align:center;">'+'[[#{label.zdb0720.msg.alert.default.second}]]'+'</span>',function(){
 					//(임계치의 수정은 설정에서 가능합니다.)
 					$a.ajax({
 						url:'/zdbapi/updateDefaultAlertRule',
@@ -286,7 +286,7 @@
 				let alertRules = [];
 				data.alertRules = JSON.stringify(alertRules);
 				
- 				gCommon.confirm('전체 해제 처리 하시겠습니까?',function(){
+ 				gCommon.confirm('[[#{label.zdb0720.msg.alert.update.alert.rule}]]',function(){
 					$a.ajax({
 						url:'/zdbapi/updateAlertRule',
 						method:'put',

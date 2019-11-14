@@ -480,7 +480,7 @@
 					    <a class="Down"></a>
 					</div>
 				</div>
-				<div class="mr30 wd350 fl info-list">
+				<div class="mr30 fl info-list">
 					<div class="hide fl" data-show-service-type="mariadb">
 						<span th:text="#{label.zdb0210.tap.backup.top.schedule.day.title}" class="config-title"></span>
 						<div class="Divselect" id="scheduleDay" name="scheduleDay">
@@ -498,7 +498,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="mr30 wd350 fl info-list">
+				<div class="mr30 fl info-list">
 					<!-- <span class="config-title">전체 백업 시간:</span> -->
 					<div class="Spinner Time" data-locale="en" id="startTime" data-hours="24H" data-bind="time:date">
 					    <input data-hour>
@@ -530,7 +530,7 @@
 				</div>
 				<div class="mr30 wd350 fl info-list">
 					<div class="hide fl mr30" data-show-service-type="mariadb">
-						<span th:text="#{label.zdb0210.tap.backup.top.throttle.title}" class="config-title"><span class="ico_question" id="throttleYnTooltip"></span> : </span>
+						<span class="config-title"><span th:text="#{label.zdb0210.tap.backup.top.throttle.title}" ></span><span class="ico_question" id="throttleYnTooltip"></span> : </span>
 						<span data="disk"></span>
 						<div class="Tooltip" data-base="#throttleYnTooltip" id="throttleYnTooltipMsg" style="color:#ffffff;" data-position="bottom" data-animation="fade"></div>	
 						<div class="Divselect" id="throttleYn" name="throttleYn">
@@ -2274,7 +2274,7 @@
 			$('#updateScaleUp').on('click',function(){
 				if($(this).hasClass('Disabled'))return;
 				
-				if(gCommon.confirm('Scale Up/Down이 수행되면 서비스가 재시작됩니다. 계속 진행하시겠습니까?',function(){
+				if(gCommon.confirm('[[#{label.zdb0210.tap.scale.confirm.msg.scale.update}]]',function(){
 					var data = $.extend({},gParam,{});
 					var scaleType = $('#tabScale').find('input[name=scaleType]:checked').val();
 					if(scaleType == 'custom'){
@@ -2300,7 +2300,7 @@
 			});
 			$('#updateScaleOut').on('click',function(){
 				if($(this).hasClass('Disabled'))return;
-				if(gCommon.confirm('Slave 갯수를 '+$('input[name=clusterSlaveCount]').val()+' 개로 변경하시겠습니까?',function(){
+				if(gCommon.confirm('[[#{label.zdb0210.tap.scale.confirm.msg.slave.update.first}]]'+$('input[name=clusterSlaveCount]').val()+'[[#{label.zdb0210.tap.scale.confirm.msg.slave.update.second}]]',function(){
 					var data = $.extend({},gParam,{
 						clusterSlaveCount:$('input[name=clusterSlaveCount]').val()
 					});
@@ -2309,7 +2309,7 @@
 						data:data,
 						success: function(res){
 							if(res.result.code!='4'){
-								gCommon.alert('스케일 정보를 수정 요청 하였습니다.');
+								gCommon.alert('[[#{label.zdb0210.tap.scale.alert.msg.scale.update}]]');
 							};
 						}
 					});
