@@ -205,8 +205,8 @@
 							<div id="gridSystemVariables"></div>
 						</div>
 						<div data-menu="myCnf" class="hide">
-							<h3>
-								<span th:text="#{label.zdb0210.tap.maria.menu.my.cnf}" class="form-title2"></span>								
+							<h3 class="form-title2">
+								<span th:text="#{label.zdb0210.tap.maria.menu.my.cnf}"></span>								
 								<button th:text="#{label.common.button.refresh}"  class="Button btn fr" id="btnReloadMyCnf" style="margin-bottom: 3px;"></button>
 							</h3>
 							<div class="btn-wrap">
@@ -274,7 +274,7 @@ let appMariadb = {
 			ob.addClass('selected');
 			let menuName = $(ob).data('menu');
 			if(gService.status == 'red' && menuName !='myCnf'){
-				gCommon.alert('서비스가 동작중이지 않아 사용할 수 없습니다.');
+				gCommon.alert('[[#{label.zdb0210.tap.maria.mycnf.alert.msg.not.running}]]');
 				return;
 			}
 			appMariadb.initMenu(menuName);
@@ -1802,7 +1802,7 @@ let appMariadb = {
 			
 
 			
-			gCommon.confirm("설정을 변경하시겠습니까?",function(){
+			gCommon.confirm("[[#{label.zdb0210.tap.maria.mycnf.confirm.msg.configure}]]",function(){
 				let param = $.extend({},gParam,{databaseVariables:JSON.stringify(dt)});
 		
 				$a.ajax({
@@ -1811,7 +1811,7 @@ let appMariadb = {
 					data:param,
 					success:function(res){
 						if(res.result.code == 0){
-							gCommon.alert('설정이 변경되었습니다.');
+							gCommon.alert('[[#{label.zdb0210.tap.maria.mycnf.alert.msg.configure}]]');
 							appMariadb.getMyCnfList();
 						}
 					}
@@ -1895,7 +1895,7 @@ let appMariadb = {
 						return;
 					}
 				}
-				gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+				gCommon.confirm('[[#{label.zdb0210.tap.maria.mycnf.confirm.msg.save.data}]]',function(){
 					$a.ajax({
 						url: '/zdbapi/saveDatabase',
 						method:'put',
