@@ -315,7 +315,7 @@
 												</div>
 												<div id="divScaleCustom" class="hide">
 													<form id="scaleForm" name="scaleForm">
-													<div class="wd200 fl">
+													<div class="wd300 fl">
 														CPU : <input type="text" class="Textinput wd100" id="scaleCpu" name="scaleCpu"/> m
 														<p data-for="scaleCpu" class="warn-text"></p>
 													</div>
@@ -530,7 +530,7 @@
 				</div>
 				<div class="mr30 wd350 fl info-list">
 					<div class="hide fl mr30" data-show-service-type="mariadb">
-						<span class="config-title"><span th:text="#{label.zdb0210.tap.backup.top.throttle.title}" ></span><span class="ico_question" id="throttleYnTooltip"></span> : </span>
+						<span class="config-title"><span th:text="#{label.zdb0210.tap.backup.top.throttle.title}" ></span><span class="ico_title" id="throttleYnTooltip"></span> : </span>
 						<span data="disk"></span>
 						<div class="Tooltip" data-base="#throttleYnTooltip" id="throttleYnTooltipMsg" style="color:#ffffff;" data-position="bottom" data-animation="fade"></div>	
 						<div class="Divselect" id="throttleYn" name="throttleYn">
@@ -935,7 +935,8 @@
 			</form>
 		</div>
 		<div id="tabLog" style="display:none;">
-			<h3 th:text="#{label.zdb0210.tap.log.form.title}" class="form-title"></h3>
+<!-- 			<h3 th:text="#{label.zdb0210.tap.log.form.title}" class="form-title"></h3> -->
+			<h3 class="form-title"></h3> 
 			<div class="tabs-contents">
 				<div class="mt10">
 					<div class="info-list select-date Daterange" data-selectyear="true" data-selectmonth="true">
@@ -1554,6 +1555,8 @@
 						if(!data.isPod)return'';
 						return getGridContextButton();
 					}}
+				],headerGroup: [
+					{fromIndex:"disk", toIndex:"memory", headerStyleclass: 'cols-color'  , title:'Data Storage'}
 				],
 			});
 			//서비스 정보 조회
@@ -2274,7 +2277,7 @@
 			$('#updateScaleUp').on('click',function(){
 				if($(this).hasClass('Disabled'))return;
 				
-				if(gCommon.confirm('[[#{label.zdb0210.tap.scale.confirm.msg.scale.update}]]',function(){
+				if(gCommon.confirm('[[#{label.zdb0210.tap.scale.confirm.msg.scale.update}]]'.replaceAll('\n','</br>'),function(){
 					var data = $.extend({},gParam,{});
 					var scaleType = $('#tabScale').find('input[name=scaleType]:checked').val();
 					if(scaleType == 'custom'){

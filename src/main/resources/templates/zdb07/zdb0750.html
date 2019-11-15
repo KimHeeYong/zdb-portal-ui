@@ -243,7 +243,7 @@
 				})				
 				function fn_saveSchedule(){
 					gridFailover.alopexGrid('endRowInlineEdit');
-					gCommon.confirm('변경된 정보를 저장하시겠습니까?',function(){
+					gCommon.confirm('[[#{label.zdb0210.tap.maria.mycnf.confirm.msg.save.data}]]',function(){
 						let data = AlopexGrid.trimData(gridFailover.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
 						if(data.length > 0){
 							for(let i in data){

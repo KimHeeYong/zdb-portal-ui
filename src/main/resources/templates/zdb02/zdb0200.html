@@ -285,7 +285,7 @@
 							return cImg.checkboxY;
 						}
 					}},
-					{ title:'[[#{label.zdb0200.grid.public}]]', key : 'publicEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
+					{ title:'[[#{label.zdb0200.grid.public}]]'.replaceAll('\n','</br>'), key : 'publicEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
 						if(data.tp == 'pod') return;
 						if(value == true){
 							return cImg.checkboxY;
@@ -321,8 +321,7 @@
 			}else{
 /* 				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [ {fromIndex:'cpuRequest', toIndex:'cpuLimit', title:'CPU'}
 				, {fromIndex:'memoryRequest', toIndex:'memoryLimit', title:"MEMORY"} , {fromIndex:'storageData', toIndex:'storageBackup', title:"스토리지"}]}); */
-				
-				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [  {fromIndex:'storageData', toIndex:'storageBackup', title:"[[#{label.zdb0200.grid.storage}]]"}]});
+				divServiceListGrid.alopexGrid('updateOption', {headerGroup: [  {fromIndex:'storageData', toIndex:'storageBackup', headerStyleclass: 'cols-color' ,title:"[[#{label.zdb0200.grid.storage}]]"}]});
 			}
 			let p = nTreeDt.map(function(dt){
 				return {namespace:dt.namespace,serviceType:dt.serviceType,serviceName:dt.serviceName};
