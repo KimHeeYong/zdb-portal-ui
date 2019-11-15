@@ -100,25 +100,25 @@
 								<tr>
 									<th>Threads Connected </th>
 									<td data="Threads_connected"></td>
-									<th>Threads running </th>
+									<th>Threads Running </th>
 									<td data="Threads_running"></td>
-									<th>Threads created </th>
+									<th>Threads Created </th>
 									<td data="Threads_created"></td>
 								</tr>
 								<tr>
-									<th>Threads cached </th>
+									<th>Threads Cached </th>
 									<td data="Threads_cached"></td>
-									<th>Connection errors </th>
+									<th>Connection Errors </th>
 									<td data="Connection_errors_max_connections"></td>
 									<th>Total Connections </th>
 									<td data="Connections"></td>
 								</tr>
 								<tr>
-									<th>Max connections </th>
+									<th>Max Connections </th>
 									<td data="max_connections"></td>
-									<th>Aborted clients </th>
+									<th>Aborted Clients </th>
 									<td data="Aborted_clients"></td>
-									<th>Aborted connects </th>
+									<th>Aborted Connects </th>
 									<td data="Aborted_connects"></td>
 								</tr>
 							</table>
@@ -1390,9 +1390,11 @@ let appMariadb = {
 						if(user == "admin" && host == "%" && schema == "*" )	{
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').attr('disabled',true);
 							$('#btnDeletePrivileges').hide();
+							$('#btnSavePrivileges').hide();
 						}else{
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').attr('disabled',false);
 							$('#btnDeletePrivileges').show();
+							$('#btnSavePrivileges').show();
 						}
 					}	
 				}

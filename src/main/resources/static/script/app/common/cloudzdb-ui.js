@@ -398,7 +398,7 @@ var gCommon = $a.page(function(){
 	    $a.popup({
 	        url: "/zdbcom/confirm",
 	        iframe: false,
-	        width: 500,
+	        width: 550,
 	        height: 300,
 	        title : '',
 	        callback : function(res){

@@ -2583,3 +2583,7 @@
 .alopexgrid .headercell.border-left {
 	border-left: 1px solid #e2e2e2;
 }
+
+.alopexgrid .headercell.cols-color{
+	color: 1px solid #444444;
+}

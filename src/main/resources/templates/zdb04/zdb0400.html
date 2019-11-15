@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/content_layout">
 <th:block layout:fragment="page_head">
-	<title th:text="#{label.zdb0720.title.header}"></title>
+	<title th:text="#{label.zdb0400.title.header}"></title>
 </th:block>
 <th:block layout:fragment="content">
 	<!-- location -->
@@ -15,7 +15,7 @@
 	</div>
 	<div class="contents-box">
 		<div class="top-area">
-           <h2 th:text="#{label.zdb0720.title.top}"  class="title"></h2>
+           <h2 th:text="#{label.zdb0400.title.top}"  class="title"></h2>
 		</div>
 		<div class="accor-contents__wrap">
 			<!-- tab contents info detail-->
@@ -96,9 +96,9 @@
 								return value = value.replace('PersistentVolumeClaim','PVC').replace('PersistentVolume','PV');
 							};
 						}},
-						{ title:'name', key : 'name' , width: '160px', align: 'left'},
-						{ title:'reason', key : 'reason' , width: '110px', align: 'left'},
-						{ title:'message', key : 'message' , width: '400px', align: 'left'}
+						{ title:'Name', key : 'name' , width: '160px', align: 'left'},
+						{ title:'Reason', key : 'reason' , width: '110px', align: 'left'},
+						{ title:'Message', key : 'message' , width: '400px', align: 'left'}
 					],
 					message: {
 						nodata: '[[#{label.common.msg.validator.grid.nodata}]]'
