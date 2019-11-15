@@ -641,7 +641,7 @@ $a.page(function() {
 				$('#storageClass').show();
 				$('form[name=serviceForm]').validator({
 					elements : {
-				 		'storageIops':{rule:{required:false},message:{required:'[[#{label.zdb0110.msg.validator.storage.qos.false}]]'}}
+				 		'storageIops':{rule:{required:true}}
 					}
 				});
 			}
