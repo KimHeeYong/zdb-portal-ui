@@ -667,6 +667,7 @@
 	margin: 5px;
 	vertical-align: middle;
 	font-size: 12px;
+	color: #444444;
 }
 
 /* Header Group colspan별 디자인*/
@@ -2585,5 +2586,5 @@
 }
 
 .alopexgrid .headercell.cols-color{
-	color: 1px solid #444444;
+	color:#444444;
 }

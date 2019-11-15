@@ -1451,7 +1451,7 @@
 						return re;
 					}},
 					//{ title:'Name', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
-					{ title:'[[#{label.zdb0210.tap.service.grid.name}]]', key : 'name', width : '300px', align: 'left', colspanTo : function(value, data, mapping) {
+					{ title:'[[#{label.zdb0210.tap.service.grid.name}]]', key : 'name', width : '250px', align: 'left', colspanTo : function(value, data, mapping) {
 						if(data.colspanCol){
 							return isSlowLogHidden ? 'log' : 'slowLog';
 						};
@@ -1465,7 +1465,7 @@
 						return re;
 					}},
 					//{ title:'Replicas', key : 'replicas' , width: '70px', align: 'center'},
-					{ title:'[[#{label.zdb0210.tap.service.grid.replicas}]]', key : 'replicas' , width: '100px', align: 'center'},
+					{ title:'[[#{label.zdb0210.tap.service.grid.replicas}]]', key : 'replicas' , width: '70px', align: 'center'},
 					//{ title:'Replication', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
 					{ title:'[[#{label.zdb0210.tap.service.grid.replication}]]', key : 'replication' , width:(gParam.serviceType=='redis'?'0':'90px'), align: 'center', tooltip: false, render : {type: "replicationStatus"
 					}},
@@ -1556,7 +1556,7 @@
 						return getGridContextButton();
 					}}
 				],headerGroup: [
-					{fromIndex:"disk", toIndex:"memory", headerStyleclass: 'cols-color'  , title:'Data Storage'}
+					{fromIndex:"disk", toIndex:"backupStorage", headerStyleclass: 'cols-color'  , title:'Data Storage'}
 				],
 			});
 			//서비스 정보 조회
