@@ -1164,8 +1164,8 @@
 			        data:param,
 			        iframe: false,
 			        width: 500,
-			        height: 400,
-			        title : '',
+			        height: 336,
+			        title : '[[#{label.zdb0200.p01.title}]]',
 			        callback : function(res){
 			        	if(res == "Y"){
 			        		$('#zdbServiceTabs').setTabByContent('#tabService');
@@ -2499,8 +2499,8 @@
 			        data:gParam,
 			        iframe: false,
 			        width: 500,
-			        height: 300,
-			        title : '',
+			        height: 350,
+			        title : $('#updateBackup').text(),
 			        callback : function(res){
 			        	if(res.result == 'Y'){
 			        		$a.ajax({
@@ -2546,8 +2546,8 @@
 			        url: '/zdb02/zdb0200p11',
 			        iframe: false,
 			        width: 600,
-			        height: 320,
-			        title : '',
+			        height: 440,
+			        title : $('#restoreToPoint').text(),
 			        callback : function(res){
 			        	if(res.result.code=='0'){
 			        		fn_getServiceFirst(); 	        		
@@ -2589,7 +2589,7 @@
 				        iframe: false,
 				        width: 600,
 				        height: 320,
-				        title : '',
+				        title : $('#addBackupDisk').text(),
 				        callback : function(res){
 				        	if(res.result.code=='0'){
 				        		fn_getServiceFirst(); 	        		
@@ -3070,7 +3070,7 @@
 				}else{
 					gCommon.credentialConfirm({
 				        data:{credential:$("#credential").val(),
-				        	  msg:'[[#{label.zdb0210.tap.backup.gird.msg.confirm.restore.first}]]' + cloudUtil.dtFormat(data.acceptedDatetime) + '[[#{label.zdb0210.tap.backup.gird.msg.confirm.restore.second}]]',
+				        	  msg:'[[#{label.zdb0210.tap.backup.gird.msg.confirm.restore.first}]]'.replaceAll('\n','<br>') + cloudUtil.dtFormat(data.acceptedDatetime) + '[[#{label.zdb0210.tap.backup.gird.msg.confirm.restore.second}]]'.replaceAll('\n','<br>'),
 				        	  okBtnMsg:'[[#{label.zdb0210.tap.backup.gird.msg.confirm.restore.ok.btn}]]'},
 				        width: 550,
 				        callback : function(res){

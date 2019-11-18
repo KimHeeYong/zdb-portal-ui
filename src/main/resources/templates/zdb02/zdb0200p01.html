@@ -5,10 +5,9 @@
 			<div> 
 				<table class="Table Form-type">
 					<colgroup>
-						<col style="width:120px;"></col>
+						<col style="width:200px;"></col>
 						<col style="width:200px;"></col>
 					</colgroup>
-					<div><span th:text="#{label.zdb0200.p01.title}"></span></div>
 					<tr>
 						<td th:text="#{label.zdb0200.p01.credential}"></td>
 						<td>
@@ -35,12 +34,13 @@
 			</div>
 			</form>
 		</div>
-		<!--button-->
-		<div class="popup-btn__wrap" style="width:100%" >
-			<button th:text="#{label.zdb0200.p01.button.save}" class="Button btn credentialSave"></button>
-			<button th:text="#{label.zdb0200.p01.button.close}" class="Button btn popClose"></button>
-		</div>
+
 	</div>
+	<!--button-->
+	<div class="popup-btn__wrap" style="width:100%;background: #ffffff;" >
+		<button th:text="#{label.zdb0200.p01.button.save}" class="Button btn credentialSave"></button>
+		<button th:text="#{label.zdb0200.p01.button.close}" class="Button btn popClose"></button>
+	</div>	
 </div>
 
 <script type="text/javascript">

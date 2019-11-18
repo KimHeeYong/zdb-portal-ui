@@ -176,7 +176,7 @@
 						let aLabels = aStatefulSet.metadata.labels ;
 						if(aLabels.component == "master"){
 							if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "true"  ){
-								msg = "[[#{label.zdb0750.msg.clear}]]" ;
+								msg = "[[#{label.zdb0750.msg.apply}]]" ;
 								btnMsg = "[[#{label.zdb0750.grid.button.clear}]]";
 							}else if(!cloudUtil.isEmpty(aLabels['zdb-failover-enable']) && aLabels['zdb-failover-enable'] == "false"  ){	
 								msg = "[[#{label.zdb0750.msg.apply}]]" ;
@@ -202,7 +202,7 @@
 						        }
 						    });
  						}
-					},{ vWidth : 550 , vHeight:300 }); 
+					},{ vWidth : 500 , vHeight:340 }); 
 					
 					return deferred.promise(); 
 				}

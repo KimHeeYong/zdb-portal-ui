@@ -399,8 +399,8 @@ var gCommon = $a.page(function(){
 	        url: "/zdbcom/confirm",
 	        iframe: false,
 	        width: 550,
-	        height: 300,
-	        title : '',
+	        height: 340,
+	        title : $('#gConfirmPopupTitle').text() ,
 	        callback : function(res){
 	        	if(res == "Y"){
 	        		trueCallback(res);
@@ -423,7 +423,8 @@ var gCommon = $a.page(function(){
 		gPopData.noBtnMsg = opt.noBtnMsg; 
 
 		let vWidth = 500 ;
-		let vHeight = 300 ;
+		let vHeight = 340 ;
+		let vTitle = $('#gConfirmPopupTitle').text() ;
 		
 		if(opt.vWidth != null && opt.vWidth != '' ){
 			vWidth =  opt.vWidth ;
@@ -433,13 +434,17 @@ var gCommon = $a.page(function(){
 			vHeight =  opt.vHeight ;
 		}
 		
+		if(opt.vTitle != null && opt.vTitle != '' ){
+			vTitle =  opt.vTitle ;
+		}
+		
 		
 	    $a.popup({
 	        url: "/zdbcom/confirm",
 	        iframe: false,
 	        width: vWidth,
 	        height: vHeight,
-	        title : '',
+	        title : vTitle,
 	        callback : function(res){
 	        	callback(res);
 	        	isConfirmPopExists = false;
@@ -448,14 +453,15 @@ var gCommon = $a.page(function(){
 	    isConfirmPopExists = true;
 	};	
 	this.credentialConfirm = function(option){
+		console.log($("#gCredentialConfirmTitle").val());
 		let defOpt = {
 		        url: "/zdb02/zdb0200p03",
 		        data:{credential:$("#credential").val(), msg:$('#gChangeSetting').text()},
 		        iframe: false,
 		        width: 500,
-		        height: 300,
+		        height: 330,
 		        movable:true,
-		        title : ''
+		        title : $("#gCredentialConfirmTitle").text()
 		    };		
 		let opt = $.extend({},defOpt,option);
 		if(opt.callback){
@@ -475,7 +481,7 @@ var gCommon = $a.page(function(){
 		        width: 500,
 		        height: 300,
 		        movable:true,
-		        title : ''
+		        title : $("#gCredentialConfirmTitle").text()
 		    };		
 		let opt = $.extend({},defOpt,option);
 		if(opt.callback){
@@ -515,8 +521,8 @@ var gCommon = $a.page(function(){
 		        data:message,
 		        iframe: false,	        
 		        width: 500,
-		        height: 230,
-		        title : '',
+		        height: 350,
+		        title : $('#gAlertPopupTitle').text(),
 		        callback: function(){
 		        	isAlertPopExists = false;
 		        	if(fnCallback){

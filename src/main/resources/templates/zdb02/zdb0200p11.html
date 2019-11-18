@@ -1,14 +1,14 @@
 <div class="popup-wrap">
 	<div>
 		<div class="popup-text">
-			<div>
+			<div style="margin-top:20px;margin-bottom:20px;">
 				<span style="color:red;" id="pTitleSpan" name="pTitleSpan"></span>		
 			</div>					
 			<form id="backupDiskForm" name="backupDiskForm">
 			<div>
 				<table class="Table Form-type">
 					<colgroup>
-						<col style="width: 130px;"> </col>
+						<col style="width: 160px;"> </col>
 						<col></col>
 					</colgroup>				
 					<tr>
@@ -20,12 +20,12 @@
 								    <div class="Calendar" id="restoreTargetDate"></div>
 								</div>
 								<div class="Spinner Time" data-locale="en" id="restoreTargetTime" name="restoreTargetTime" data-hours="24H" data-bind="time:date">
-								    <input data-hour>
+								    <input data-hour style="height:99% ;">
 								    <span data-seperator>:</span>
-								    <input data-minute>
-								    <input data-ampm>
-								    <a class="Up"></a>
-								    <a class="Down"></a>
+								    <input data-minute style="height:99% ;">
+								    <input data-ampm style="height:99% ;">
+								    <a class="Up" style="right:1px ;"></a>
+								    <a class="Down" style="right:1px ;"></a>
 								</div>
 							</div>
 						</td>
@@ -34,10 +34,15 @@
 						<th th:text="#{label.zdb0200.p11.title.credential}"></th>
 						<td>
 							<input class="Textinput" type="password" id="credential" name="credential"></input> 
-							<p data-for="credential" class="warn-text"></p>
-							<span th:text="#{label.zdb0200.p11.msg.credential.location}" style="font-size:13px;color:blue;" id="msgSpan" name="msgSpan" ></span>									
 						</td>
 					</tr>
+					<tr>
+						<th></th>
+						<td>
+							<p data-for="credential" class="warn-text"></p>
+							<span th:text="#{label.zdb0200.p11.msg.credential.location}" style="font-size:13px;color:blue;" id="msgSpan" name="msgSpan" ></span>									
+						</td>					
+					</tr>					
 				</table>
 			</div>
 			</form>
@@ -76,9 +81,6 @@ $a.page(function() {
 		$('button.ok').click(function(){
 			paramDt = moment($('#restoreTargetDate').val()+$('#restoreTargetTime').getData().date.replace(/(AM|PM)/,''),'YYYY-MM-DDHH24 : mm').format('YYYYMMDDHHmm');
 			validToDt = moment().subtract(1,'hour').format('YYYYMMDDHH')+'59';
-
-	 		
-	 		console.log(paramDt+":"+validToDt+":"+validFromDt);
 			
 			if(cloudUtil.parseInt(paramDt) < cloudUtil.parseInt(validFromDt)){
 				$('#msgSpan').html('[[#{label.zdb0200.p11.msg.span.base.date}]]');
@@ -87,9 +89,6 @@ $a.page(function() {
 				$('#msgSpan').html('[[#{label.zdb0200.p11.msg.span.current.time}]]');
 				return ;
 			}else if($('#credential').val() != param.credential ){
-				
-				console.log(param.credential+':'+$('#credential').val());
-				
 				//$('#msgSpan').html('credential이 일치하지 않습니다.');
 				return ;
 			}

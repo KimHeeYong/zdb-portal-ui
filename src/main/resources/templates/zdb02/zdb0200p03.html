@@ -1,23 +1,24 @@
 <div class="popup-wrap">
-	<div class="popup-mcontents">
+	<div class="popup-mcontents" style="background:#ffffff;">
 		<div class="popup-cont">
 			<form id="credentialPopForm" name="credentialPopForm">
-			<div> 
-				<div id="divMsg"></div>
-				<div><span th:text="#{label.zdb0200.p03.msg.credential.input}" ></span> </div>
+					
+			<div>
+				<div id="divMsg"></div>	
+				<div><span th:text="#{label.zdb0200.p03.msg.credential.input}" ></span></div>
 				<input class="Textinput" type="password" id="credential" name="credential"></input> 
 				<p data-for="credential" class="warn-text"></p>
+				</div>
 				<span th:text="#{label.zdb0200.p03.msg.credential.location}"  style="font-size:13px;color:blue;"></span>				
-			</div>
-			</form>
-		<!--button-->
-		<div class="popup-btn__wrap" style="width:100%">
-			<button class="Button btn ok" id="btnOk"></button>
-			<button th:text="#{label.common.button.close}" class="Button btn popClose"></button>
-		</div>			
-		</div>
 
+			</form>
+		</div>
 	</div>
+	<!--button-->
+	<div class="popup-btn__wrap" style="width:100%;background:#ffffff;">
+		<button class="Button btn ok" id="btnOk"></button>
+		<button th:text="#{label.common.button.close}" class="Button btn popClose"></button>
+	</div>		
 </div>
 
 <script type="text/javascript">

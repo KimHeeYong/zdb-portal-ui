@@ -2266,7 +2266,7 @@ a.view-detail:active {
 	width: calc(100% - 40px);
 	margin: 20px auto; 
 	height: 328px;
-	background: #f9f9f9;
+	/*background: #f9f9f9; */
 }
 .popup-contents__typeb {
 	width: calc(100% - 40px);
@@ -2277,15 +2277,15 @@ a.view-detail:active {
 	display: table;
 	width: calc(100% - 40px);
 	margin: 20px auto; 
-	height: 188px;
-	background: #f9f9f9;
+	height: 188px; 
+	/*background: #f9f9f9; */
 }
 .popup-alert {
 	display: table;
 	width: calc(100% - 40px);
 	margin: 0px auto; 
 	height: 130px;
-	background: #f9f9f9;
+	/*background: #f9f9f9; */
 }
 .popup-text {
 	display: table-cell;
@@ -2337,7 +2337,7 @@ a.view-detail:active {
 	padding: 10px 0;
 	text-align: center;
 	border-top: 1px solid #dddddd;
-	background: #f9f9f9;
+	/* background: #f9f9f9; */
 }
 .asterisk {
 	padding: 0 5px 0 2px;
