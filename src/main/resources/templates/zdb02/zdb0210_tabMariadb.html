@@ -438,7 +438,7 @@ let appMariadb = {
 						/* 2019-11-15*/
 						let fData = gridUserSchema.alopexGrid('dataGet', {_index:{row:scIdx}})[0]; 
 
-						if(data.user !='admin' && data.host !='%' && fData.name !='*' ){
+						if(data.user !='admin' && data.host !='%'){
 							return '<div><input type="password" class="alopexgrid-default-renderer" value="'+ (value||'') +'" maxlength="15"/></div>'; 
 						}else{
 							gCommon.alert('[[#{label.zdb0210.tap.maria.user.alert.msg.admin.update}]]');
