@@ -435,8 +435,15 @@ let appMariadb = {
 				}},
 				{ title:'Password', key :'password' , width: '100px', align: 'left' ,editable:{type:'text'}
 					,editable: function(value, data) {
+						/* 2019-11-15*/
+						let fData = gridUserSchema.alopexGrid('dataGet', {_index:{row:scIdx}})[0]; 
 
-						return '<div><input type="password" class="alopexgrid-default-renderer" value="'+ (value||'') +'" maxlength="15"/></div>'; 
+						if(data.user !='admin' && data.host !='%' && fData.name !='*' ){
+							return '<div><input type="password" class="alopexgrid-default-renderer" value="'+ (value||'') +'" maxlength="15"/></div>'; 
+						}else{
+							gCommon.alert('[[#{label.zdb0210.tap.maria.user.alert.msg.admin.update}]]');
+							return '' ;
+						}
 					},editedValue: function(cell, data, render, mapping, grid) {
 						return $(cell).find('input').val();
 					},render:function(value,data){
@@ -1390,11 +1397,9 @@ let appMariadb = {
 						if(user == "admin" && host == "%" && schema == "*" )	{
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').attr('disabled',true);
 							$('#btnDeletePrivileges').hide();
-							$('#btnSavePrivileges').hide();
 						}else{
 							appMariadb.mariaContent.find('form[name=formUserRole] input:checkbox').attr('disabled',false);
 							$('#btnDeletePrivileges').show();
-							$('#btnSavePrivileges').show();
 						}
 					}	
 				}
@@ -1476,6 +1481,12 @@ let appMariadb = {
 			
 			let schema = (appMariadb.gridUserSchema.alopexGrid('dataGet',{_state :{selected:true}})[0]||{}).name;
 			let grantee = ('\''+user+'\'@\''+host+'\'');
+			
+			/* 2019-11-15 - admin 의 * schema 일 경우 update 처리가 안되게 적용  */
+			if(user == "admin" && host == "%" && schema == "*" )	{
+				gCommon.alert('[[#{label.zdb0210.tap.maria.user.alert.msg.admin.update}]]');
+				return;
+			}
 			
 			// 1. 변경된 권한 정보가 있는지 체크 한다. 
 			let editChk = false;				
