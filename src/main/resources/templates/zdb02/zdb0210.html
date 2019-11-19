@@ -1802,7 +1802,7 @@
 							var dataStorage = null;
 							
 							if(gService.serviceType == 'redis' && gService.purpose != 'DATA' && gService.persistentVolumeClaims.length == 0){
-								ob.disk = '[[#{label.common.select.unused}]]';
+								ob.disk = '[[#{label.common.select.disabled}]]';
 							} else if(dl && dl[ob.name]){
 								if(dl[ob.name].length == 1) {
 									dataStorage = dl[ob.name][0];
@@ -1816,7 +1816,7 @@
 										}
 									}
 								} else if(dl[ob.name].length == 0) {
-									ob.disk = '[[#{label.common.select.unused}]]';
+									ob.disk = '[[#{label.common.select.disabled}]]';
 								}
 								
 								if(dataStorage != null) {
@@ -1872,7 +1872,7 @@
 					$('#configInfo').zdbui_setContents(
 							{ cpu:resorceSpec.cpu||''
 							 ,memory:resorceSpec.memory||''
-							 ,disk:totalStorage==0?'[[#{label.common.select.unused}]]':cloudUtil.convertDiskSize(totalStorage)||''
+							 ,disk:totalStorage==0?'[[#{label.common.select.disabled}]]':cloudUtil.convertDiskSize(totalStorage)||''
 							 ,storageClass:gServiceScale.storageClass
 							}
 						);
@@ -2301,22 +2301,32 @@
 					});
 				}));
 			});
+			
 			$('#updateScaleOut').on('click',function(){
 				if($(this).hasClass('Disabled'))return;
-				if(gCommon.confirm('[[#{label.zdb0210.tap.scale.confirm.msg.slave.update.first}]]'+$('input[name=clusterSlaveCount]').val()+'[[#{label.zdb0210.tap.scale.confirm.msg.slave.update.second}]]',function(){
-					var data = $.extend({},gParam,{
-						clusterSlaveCount:$('input[name=clusterSlaveCount]').val()
-					});
-					$a.ajax({
-						url: '/zdbapi/updateScaleOut',
-						data:data,
-						success: function(res){
-							if(res.result.code!='4'){
-								gCommon.alert('[[#{label.zdb0210.tap.scale.alert.msg.scale.update}]]');
-							};
-						}
-					});
-				}));
+				var msg = '[[#{label.zdb0210.tap.scale.confirm.msg.slave.update.first}]]'
+							+$('input[name=clusterSlaveCount]').val()
+							+'[[#{label.zdb0210.tap.scale.confirm.msg.slave.update.second}]]'
+							;
+				
+				gCommon.confirmYn(msg,function(yn){
+					if(yn == "Y"){
+						var data = $.extend({},gParam,{
+							clusterSlaveCount:$('input[name=clusterSlaveCount]').val()
+						});
+						$a.ajax({
+							url: '/zdbapi/updateScaleOut',
+							data:data,
+							success: function(res){
+								if(res.result.code!='4'){
+									var alertMsg = '[[#{label.zdb0210.tap.scale.alert.msg.scale.update}]]' ; 
+									gCommon.alertTrans(alertMsg);
+								};
+							}
+						});
+					}
+				});	
+				//},{ vWidth : vWidth , vHeight:340 });
 			});
 			
 			//레디스 경우 최대 노드 카운트를 가져온다
@@ -2572,7 +2582,7 @@
 							}
 						}); 		
 					}			
-				},{okBtnMsg:'[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.ok.btn}]]' , vWidth : 800 , vHeight:350 });
+				},{okBtnMsg:'[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.ok.btn}]]'});
 			});
 			$('button#addBackupDisk').on('click',function(){
 				/*backupdisk-test*/
@@ -3508,9 +3518,10 @@
 				if(dbConfigForm.find('[data-for]:visible.invalid').length > 0){
 					return;
 				};
-				let msg = '시스템 변수를 변경하시겠습니까?';
+				let msg = '[[#{label.zdb0210.tap.system.msg.confirm.save.variables}]]';
 				if(gParam.serviceType != cServiceType.redis){
-					msg +='</br> <span class="Color-warning">* 변경된 설정값은 서비스 재기동 후 적용 됩니다.<br>재기동을 원하시면 재시작 버튼을 실행하세요.</span>';
+					msg +='</br> <span class="Color-warning">* '+'[[#{label.zdb0210.tap.system.msg.confirm.save.variables.first}]]'+
+					'<br>'+'[[#{label.zdb0210.tap.system.msg.confirm.save.variables.second}]]'+'</span>';
 				};
 				if(gCommon.confirm(msg,function(){
 					var param = $.extend({},gParam, dbConfigForm.serializeObject());
@@ -3522,7 +3533,7 @@
 								$('#zdbServiceTabs').setTabByContent('#tabService');
 							});
 						},
-						loadingMessage:'환경설정 적용중입니다.'
+						loadingMessage:'[[#{label.zdb0210.tap.system.msg.alert.loading.message}]]'
 					});
 				}));
 			});
@@ -3769,10 +3780,10 @@
 		return zero + n;
 	}
 	
-	function retryBackup(backupId) {
+ 	function retryBackup(backupId) {
 		$a.close('Y');
 	
-		let popMsg = '재수행 하시겠습니까??';
+		let popMsg = '[[#{label.zdb0210.tap.backup.msg.cofirm.restart.backup}]]';
 
 		gCommon.confirmYn(popMsg,function(yn){
 			if(yn == "Y"){
@@ -3786,7 +3797,7 @@
 					}
 				}); 		
 			}			
-		},{okBtnMsg:'재수행' , vWidth : 500 , vHeight:300 }); 
-	}
+		},{okBtnMsg:'[[#{label.zdb0210.tap.backup.msg.cofirm.restart.backup.ok.button}]]'}); 
+	} 
 
 </script>

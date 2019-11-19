@@ -423,21 +423,25 @@ var gCommon = $a.page(function(){
 		gPopData.noBtnMsg = opt.noBtnMsg; 
 
 		let vWidth = 500 ;
-		let vHeight = 340 ;
+		let vHeight = 180 ;
 		let vTitle = $('#gConfirmPopupTitle').text() ;
+		let arrMsg = message.split('</br>');
 		
 		if(opt.vWidth != null && opt.vWidth != '' ){
 			vWidth =  opt.vWidth ;
+		}else{
+			vWidth =  gCommon.getTextWidth(message) + 180;
 		}
 		
 		if(opt.vHeight != null && opt.vHeight != '' ){
 			vHeight =  opt.vHeight ;
+		}else{
+			vHeight = vHeight + ((arrMsg.length)  * 20);
 		}
 		
 		if(opt.vTitle != null && opt.vTitle != '' ){
 			vTitle =  opt.vTitle ;
 		}
-		
 		
 	    $a.popup({
 	        url: "/zdbcom/confirm",
@@ -451,7 +455,9 @@ var gCommon = $a.page(function(){
 	        }
 	    });
 	    isConfirmPopExists = true;
-	};	
+	};
+	
+	
 	this.credentialConfirm = function(option){
 		console.log($("#gCredentialConfirmTitle").val());
 		let defOpt = {
@@ -537,6 +543,54 @@ var gCommon = $a.page(function(){
 		$a.popup(opt);
 	};
 	
+	
+	this.alertTrans = function(message,fnCallback,option){
+		if(isAlertPopExists)return;
+		
+		let vWidth = 500 ;
+		let vHeight = 180 ;
+		let vTitle = $('#gAlertPopupTitle').text() ;
+		let arrMsg = message.split('</br>');
+		
+		if(option != undefined && option.vWidth != null && option.vWidth != '' ){
+			vWidth =  option.vWidth ;
+		}else{
+			vWidth =  gCommon.getTextWidth(message) + 180;
+		}
+		
+		if(option != undefined && option.vHeight != null && option.vHeight != '' ){
+			vHeight =  option.vHeight ;
+		}else{
+			vHeight = vHeight + ((arrMsg.length)  * 20);
+		}
+		
+		console.log(vWidth+":"+vHeight);
+		
+		if(option != undefined  && option.vTitle != null && option.vTitle != '' ){
+			vTitle =  option.vTitle ;
+		}
+		
+		let defOpt = {
+		        url: "/zdbcom/alert",
+		        data:message,
+		        iframe: false,	        
+		        width: vWidth,
+		        height: vHeight,
+		        title : vTitle,
+		        callback: function(){
+		        	isAlertPopExists = false;
+		        	if(fnCallback){
+		        		fnCallback();
+		        	}
+		        }
+		    };
+		let opt = $.extend({},defOpt,option);
+		gPopData = {};
+		gPopData.message = message;
+		isAlertPopExists = true;
+		$a.popup(opt);
+	};
+	
 	this.errorAlert = function(message,fnCallback,option){
 		if(isAlertPopExists)return;
 		let defOpt = {
@@ -582,6 +636,31 @@ var gCommon = $a.page(function(){
 		isAlertPopExists = true;
 		$a.popup(opt);
 	};	
+	
+	this.getTextWidth = function(text, font){
+		
+		let arrMsg = text.split('</br>');
+		let compareText = '';
+		if(arrMsg.length > 0 ){
+			for(var i in arrMsg){
+				if(arrMsg[i].length > compareText.length){
+					compareText = arrMsg[i];
+				}	
+			}
+			text = compareText ;
+		}		
+		
+		if(font == null || font == '' || font == 'undefined' ) {
+			font = 'normal normal 400 normal 19.95px / 33px NotoKrR' ;
+		}
+
+	    var canvas = this.canvas ||
+	        (this.canvas = document.createElement("canvas"));
+	    var context = canvas.getContext("2d");
+	    context.font = font;
+	    var metrics = context.measureText(text);
+	    return metrics.width;
+	};
 });
 
 $.fn.extend({ 

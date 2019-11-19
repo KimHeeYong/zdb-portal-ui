@@ -1,5 +1,5 @@
 <div class="popup-wrap">
-	<div class="popup-mcontents"  style="background:#ffffff;">
+	<div class="popup-mcontents-fluid"  style="background:#ffffff;">
 		<div class="popup-text">
 			<span id="message"></span>
 		</div>
@@ -18,6 +18,8 @@ $a.page(function() {
 		let repMsg = msg.replaceAll("\n","<br>");
 		
 		$('#message').html(repMsg);
+		
+		console.log( $("#message").css("font"));
 		
 		//$('#message').html(gPopData.message);
 		if(gPopData.okBtnMsg){
