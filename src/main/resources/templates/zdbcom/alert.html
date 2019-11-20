@@ -14,7 +14,10 @@
 <script type="text/javascript">
 $a.page(function() {
 	this.init = function() {
-		$('#divAlertPop #message').html(gPopData.message);
+		let msg = gPopData.message ;
+		let repMsg = msg.replaceAll("\n","<br>");
+		
+		$('#divAlertPop #message').html(repMsg);
 		$('#divAlertPop button.ok').click(function(){
 			$a.close('Y');
 		});

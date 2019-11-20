@@ -285,7 +285,7 @@
 							return cImg.checkboxY;
 						}
 					}},
-					{ title:'[[#{label.zdb0200.grid.public}]]'.replaceAll('\n','</br>'), key : 'publicEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
+					{ title:'[[#{label.zdb0200.grid.public}]]'.replaceAll('\n','<br>'), key : 'publicEnabled', width: '60px', align: 'center',render:function(value,data,render,mapping){
 						if(data.tp == 'pod') return;
 						if(value == true){
 							return cImg.checkboxY;

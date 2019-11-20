@@ -399,13 +399,17 @@ var gCommon = $a.page(function(){
 		let vWidth = 500 ;
 		let vHeight = 180 ;
 		let vTitle = $('#gConfirmPopupTitle').text() ;
-		let arrMsg = message.split('</br>');
+		let arrMsg = message.split('<br>');
 		
 		vWidth =  gCommon.getTextWidth(message) + 180;
 		vHeight = vHeight + ((arrMsg.length)  * 20);
 		
-		if(vWidth > 1280){
-			vWidth = 1280 ;
+		if(vWidth > 1024){
+			if(arrMsg.length < 2){
+				let divWidth = Number(vWidth) / 1024 ;
+				vHeight += 20 * Math.round(divWidth) ;
+			}
+			vWidth = 1024 ;
 		}
 		
 		if(vHeight > 600){
@@ -442,7 +446,7 @@ var gCommon = $a.page(function(){
 		let vWidth = 500 ;
 		let vHeight = 180 ;
 		let vTitle = $('#gConfirmPopupTitle').text() ;
-		let arrMsg = message.split('</br>');
+		let arrMsg = message.split('<br>');
 		
 		if(opt.vWidth != null && opt.vWidth != '' ){
 			vWidth =  opt.vWidth ;
@@ -456,8 +460,12 @@ var gCommon = $a.page(function(){
 			vHeight = vHeight + ((arrMsg.length)  * 20);
 		}
 		
-		if(vWidth > 1280){
-			vWidth = 1280 ;
+		if(vWidth > 1024){
+			if(arrMsg.length < 2){
+				let divWidth = Number(vWidth) / 1024 ;
+				vHeight += 20 * Math.round(divWidth) ;
+			}
+			vWidth = 1024 ;
 		}
 		
 		if(vHeight > 600){
@@ -551,19 +559,24 @@ var gCommon = $a.page(function(){
 		let vWidth = 500 ;
 		let vHeight = 180 ;
 		let vTitle = $('#gAlertPopupTitle').text() ;
-		let arrMsg = message.split('</br>');
+		let arrMsg = message.split('<br>');
 
 		vWidth =  gCommon.getTextWidth(message) + 180;
 		vHeight = vHeight + ((arrMsg.length)  * 20);
 		
-		if(vWidth > 1280){
-			vWidth = 1280 ;
+		if(vWidth > 1024){
+			console.log(arrMsg.length);
+			if(arrMsg.length < 2){
+				let divWidth = Number(vWidth) / 1024 ;
+				vHeight += 20 * Math.round(divWidth) ;
+			}
+			vWidth = 1024 ;
 		}
 		
 		if(vHeight > 600){
 			vHeight = 600 ;
 		}
-		
+	
 		let defOpt = {
 		        url: "/zdbcom/alert",
 		        data:message,
@@ -592,7 +605,7 @@ var gCommon = $a.page(function(){
 		let vWidth = 500 ;
 		let vHeight = 180 ;
 		let vTitle = $('#gAlertPopupTitle').text() ;
-		let arrMsg = message.split('</br>');
+		let arrMsg = message.split('<br>');
 		
 		if(option != undefined && option.vWidth != null && option.vWidth != '' ){
 			vWidth =  option.vWidth ;
@@ -606,8 +619,12 @@ var gCommon = $a.page(function(){
 			vHeight = vHeight + ((arrMsg.length)  * 20);
 		}
 	
-		if(vWidth > 1280){
-			vWidth = 1280 ;
+		if(vWidth > 1024){
+			if(arrMsg.length < 2){
+				let divWidth = Number(vWidth) / 1024 ;
+				vHeight += 20 * Math.round(divWidth) ;
+			}
+			vWidth = 1024 ;
 		}
 		
 		if(vHeight > 600){
@@ -687,7 +704,7 @@ var gCommon = $a.page(function(){
 	
 	this.getTextWidth = function(text, font){
 		
-		let arrMsg = text.split('</br>');
+		let arrMsg = text.split('<br>');
 		let compareText = '';
 		if(arrMsg.length > 0 ){
 			for(var i in arrMsg){

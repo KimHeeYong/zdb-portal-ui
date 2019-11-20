@@ -1666,9 +1666,9 @@
 					//let t = $('<div class="Tooltip"></div>').html(msg);
 					//infoMsg.after(t);
 					//$a.convert(t);
-					let m = msg.split('</br>');
+					let m = msg.split('<br>');
 					if(m && m.length > 1){
-						msg = m[0]+'</br>'+m[1];
+						msg = m[0]+'<br>'+m[1];
 					}
 				}
 				infoMsg.html(msg);
@@ -2277,7 +2277,7 @@
 			$('#updateScaleUp').on('click',function(){
 				if($(this).hasClass('Disabled'))return;
 				
-				if(gCommon.confirm('[[#{label.zdb0210.tap.scale.confirm.msg.scale.update}]]'.replaceAll('\n','</br>'),function(){
+				if(gCommon.confirm('[[#{label.zdb0210.tap.scale.confirm.msg.scale.update}]]'.replaceAll('\n','<br>'),function(){
 					var data = $.extend({},gParam,{});
 					var scaleType = $('#tabScale').find('input[name=scaleType]:checked').val();
 					if(scaleType == 'custom'){
@@ -2470,7 +2470,7 @@
 				}
 			});
 			
-			let throttleYnTooltipMsg = "[[#{label.zdb0210.tap.backup.msg.tooltip.throttle}]]".replaceAll('\n','</br>');  
+			let throttleYnTooltipMsg = "[[#{label.zdb0210.tap.backup.msg.tooltip.throttle}]]".replaceAll('\n','<br>');  
 			$('#throttleYnTooltipMsg').html(throttleYnTooltipMsg).tooltip();
 			
 			$('button#saveSchedule').on('click',function(){
@@ -2547,7 +2547,7 @@
 			$('button#restoreToPoint').on('click',function(){
 				// failoverEnabled 에 의한 메세지 처리 로직 추가 (2019-10-24)				
 				if(gService.failoverEnabled !='off' ){
-					gCommon.alert('[[#{label.zdb0210.tap.backup.msg.alert.restore.auto.failover}]]'.replaceAll('\n','</br>'),null,{width:800,height:250});
+					gCommon.alert('[[#{label.zdb0210.tap.backup.msg.alert.restore.auto.failover}]]'.replaceAll('\n','<br>'),null,{width:800,height:250});
 					return;
 				}
 
@@ -2567,9 +2567,9 @@
 			});
 			// Binlog 정리 버튼 추가 2019-10-18
 			$('button#purgeBinlog').on('click',function(){
-				let popMsg = '[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.first}]]'+'</br>';
-				popMsg += '[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.second}]]'+'</br>';
-				popMsg += '[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.third}]]'+'</br>';
+				let popMsg = '[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.first}]]'+'<br>';
+				popMsg += '[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.second}]]'+'<br>';
+				popMsg += '[[#{label.zdb0210.tap.backup.msg.confirm.purge.binlog.third}]]'+'<br>';
 				gCommon.confirmYn(popMsg,function(yn){
 					if(yn == "Y"){
 						// Binlog 정리 버튼 API 호출 로직 추가 2019-10-21
@@ -2872,7 +2872,7 @@
 					//2019-10-24	
 					var value = data['status']||'';
 					var val = data['reason']||'';
-						val = val.replaceAll('\n','</br>');
+						val = val.replaceAll('\n','<br>');
 				
 					if(value ==  "DATA_ARCHIVE_DOING"){
 						val = "[[#{label.zdb0210.tap.backup.gird.title.status.doing.archive}]]";
@@ -2912,7 +2912,7 @@
 				}else if(mapping.key === 'type'  ) { //&& data.scheduleYn == "N"
 					
 					var val = '[[#{label.zdb0210.tap.backup.gird.type.user.backup}]]'||'';
-					$tooltip.html(val.replaceAll('\n','</br>')); 
+					$tooltip.html(val.replaceAll('\n','<br>')); 
 					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
 					$tooltip.open();	
 				} else{
@@ -3149,7 +3149,7 @@
 
 				if (mapping.key === 'resultMessage' && data.history!=null){
 					var val = data['history']||'';
-					$tooltip.html(val.replaceAll('\n','</br>')); 
+					$tooltip.html(val.replaceAll('\n','<br>')); 
 					$tooltip.attr('data-base', '#'+data._index.id + mapping.key);  
 					$tooltip.open();	
 				}else {
@@ -3520,7 +3520,7 @@
 				};
 				let msg = '[[#{label.zdb0210.tap.system.msg.confirm.save.variables}]]';
 				if(gParam.serviceType != cServiceType.redis){
-					msg +='</br> <span class="Color-warning">* '+'[[#{label.zdb0210.tap.system.msg.confirm.save.variables.first}]]'+
+					msg +='<br> <span class="Color-warning">* '+'[[#{label.zdb0210.tap.system.msg.confirm.save.variables.first}]]'+
 					'<br>'+'[[#{label.zdb0210.tap.system.msg.confirm.save.variables.second}]]'+'</span>';
 				};
 				if(gCommon.confirm(msg,function(){
