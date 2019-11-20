@@ -44,7 +44,7 @@ public class SessionUserDataInterceptor extends HandlerInterceptorAdapter{
 		}
 		
 		session.setAttribute(CommonConstants.ACCEPT_LANGUAGE_CAMEL, locale);
-		session.setAttribute(CommonConstants.ACCEPT_LANGUAGE, locale);
+		// session.setAttribute(CommonConstants.ACCEPT_LANGUAGE, locale);
 		
 		if(session.getAttribute(CommonConstants.USER_INFO)== null) {
 			OpenIdConnectUserDetailsVo userInfo = securityService.getUserDetails();

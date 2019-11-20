@@ -359,19 +359,20 @@ $a.page(function() {
 			});	
 		}
 		var form = $('form[name=serviceForm]');
-		form.validator({// form에 validator 할 경우
+ 		form.validator({// form에 validator 할 경우
 		    elements :{ // 아래와같이 input,select의 name 값으로 각기 다른 validator 적용가능.
-		        "serviceName" : {
+ 		        "serviceName" : {
 		            rule:{required:true,checkRule:gValid.serviceName.rule},
 		            message:{checkRule:'[[#{label.zdb0110.msg.validator.service.name}]]',required:'[[#{label.common.msg.validator.required}]]'}
 		         }
-		       ,"dbName" : {
+ 		       , 
+ 		       "dbName" : {
 		            rule:{required:true,checkRule:gValid.dbName.rule},
 		            message:{checkRule:'[[#{label.zdb0110.msg.validator.db.name}]]' 
 		            	    ,required:'[[#{label.common.msg.validator.required}]]' }
 		        }
 		       , 'diskSize':{rule:{required:true,min:20,max:12000},message:{min:'[[#{label.zdb0110.msg.validator.disk.size.min}]]', max:'[[#{label.zdb0110.msg.validator.disk.size.max}]]',required:'[[#{label.common.msg.validator.required}]]'}}
-		       , 'diskSizeSel':{rule:{required:true},message:{required:'[[#{label.zdb0110.msg.validator.disk.size.sel}]]'}}
+		       , 'diskSizeSel':{rule:{required:true},message:{required:'[[#{label.zdb0110.msg.validator.disk.size.sel}]]'}} 
 		    }
 		}).find('input[name=serviceName]').on('keyup',function(){
 			setDefaultServiceName();
@@ -407,6 +408,9 @@ $a.page(function() {
 		$('#btnNext').on('click',function(){                          
 			var param = $.extend({},gParam,form.serializeObject());
 			param.namespace = gSelectedNamespace;
+			
+			console.log(param);
+			
 			if(!form.validate()){
 				gCommon.alert('[[#{label.common.msg.validator.not.valid.input}]]');
 				return;
@@ -635,13 +639,18 @@ $a.page(function() {
 				$('#storageClass').hide();
 				$('#storageIops').show().val('');
 				$('span[data-for=storageIops]').show();
+				$('form[name=serviceForm]').validator({
+					elements : {
+				 		'storageIops':{rule:{required:true}}
+					}
+				});				
 			}else{
 				$('#storageIops').hide().val('');
 				$('span[data-for=storageIops]').hide();
 				$('#storageClass').show();
 				$('form[name=serviceForm]').validator({
 					elements : {
-				 		'storageIops':{rule:{required:true}}
+				 		'storageIops':{rule:{required:false}}
 					}
 				});
 			}

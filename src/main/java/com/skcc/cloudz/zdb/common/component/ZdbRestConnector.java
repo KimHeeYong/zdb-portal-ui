@@ -79,6 +79,7 @@ public class ZdbRestConnector extends RestTemplate{
 		
 		HttpEntity<?> newRequestEntity = new HttpEntity<>(tempBody,tempHeaders);
 		ResponseEntity<T> result = null;
+
 		try {			
 			result = super.exchange(url, method, newRequestEntity, responseType, uriVariables);
 		} catch (HttpStatusCodeException e) {
@@ -163,6 +164,7 @@ public class ZdbRestConnector extends RestTemplate{
 			headers.set("zdbAdmin", userInfo.getZdbAdmin() == null ? "false" : userInfo.getZdbAdmin()+"");
 			// Session Locale 값 적용 (2019-10-31)
 			headers.set("Accept-Language",locale);
+
 		}
 	}
 }

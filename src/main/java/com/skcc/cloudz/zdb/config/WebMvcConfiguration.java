@@ -54,8 +54,6 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter implements WebM
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
     	LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
-    	
-    	System.out.println("localeChangeInterceptor===="+lci.getParamName());
     	lci.setParamName("locale");
     	return lci;
     }    
@@ -64,8 +62,6 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter implements WebM
     public void addInterceptors(InterceptorRegistry registry) {
     	String[] pageUrlPattern = {"/zdb*/**"};
     	String[] ajaxAndComPattern = {"/zdbapi/**","/zdbcom/**"};
-    	
-    	System.out.println("addInterceptors====");
     	
         registry.addInterceptor(localeChangeInterceptor());    	
         registry.addInterceptor(addOnServiceMetaDataInterceptor())        	
