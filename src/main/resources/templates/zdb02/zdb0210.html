@@ -3045,6 +3045,9 @@
 						if(gFirstTime == '' ){
 							$('#restoreToPoint').addClass('Disabled');	
 							$('#restoreToPoint').prop('disabled',true);
+						}else{
+							$('#restoreToPoint').removeClass('Disabled');	
+							$('#restoreToPoint').prop('disabled',false);
 						}
 						
 						if(gParam.serviceType != cServiceType.redis){
