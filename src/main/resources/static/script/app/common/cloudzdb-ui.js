@@ -395,12 +395,29 @@ var gCommon = $a.page(function(){
 		gPopData.message = message;
 		gPopData.okBtnMsg = opt.okBtnMsg; 
 		gPopData.noBtnMsg = opt.noBtnMsg; 
+		
+		let vWidth = 500 ;
+		let vHeight = 180 ;
+		let vTitle = $('#gConfirmPopupTitle').text() ;
+		let arrMsg = message.split('</br>');
+		
+		vWidth =  gCommon.getTextWidth(message) + 180;
+		vHeight = vHeight + ((arrMsg.length)  * 20);
+		
+		if(vWidth > 1280){
+			vWidth = 1280 ;
+		}
+		
+		if(vHeight > 600){
+			vHeight = 600 ;
+		}
+		
 	    $a.popup({
 	        url: "/zdbcom/confirm",
 	        iframe: false,
-	        width: 550,
-	        height: 340,
-	        title : $('#gConfirmPopupTitle').text() ,
+	        width: vWidth,
+	        height: vHeight,
+	        title : vTitle ,
 	        callback : function(res){
 	        	if(res == "Y"){
 	        		trueCallback(res);
@@ -437,6 +454,14 @@ var gCommon = $a.page(function(){
 			vHeight =  opt.vHeight ;
 		}else{
 			vHeight = vHeight + ((arrMsg.length)  * 20);
+		}
+		
+		if(vWidth > 1280){
+			vWidth = 1280 ;
+		}
+		
+		if(vHeight > 600){
+			vHeight = 600 ;
 		}
 		
 		if(opt.vTitle != null && opt.vTitle != '' ){
@@ -522,12 +547,29 @@ var gCommon = $a.page(function(){
 	let isAlertPopExists = false;
 	this.alert = function(message,fnCallback,option){
 		if(isAlertPopExists)return;
+		
+		let vWidth = 500 ;
+		let vHeight = 180 ;
+		let vTitle = $('#gAlertPopupTitle').text() ;
+		let arrMsg = message.split('</br>');
+
+		vWidth =  gCommon.getTextWidth(message) + 180;
+		vHeight = vHeight + ((arrMsg.length)  * 20);
+		
+		if(vWidth > 1280){
+			vWidth = 1280 ;
+		}
+		
+		if(vHeight > 600){
+			vHeight = 600 ;
+		}
+		
 		let defOpt = {
 		        url: "/zdbcom/alert",
 		        data:message,
 		        iframe: false,	        
-		        width: 500,
-		        height: 350,
+		        width: vWidth,
+		        height: vHeight,
 		        title : $('#gAlertPopupTitle').text(),
 		        callback: function(){
 		        	isAlertPopExists = false;
@@ -563,8 +605,14 @@ var gCommon = $a.page(function(){
 		}else{
 			vHeight = vHeight + ((arrMsg.length)  * 20);
 		}
+	
+		if(vWidth > 1280){
+			vWidth = 1280 ;
+		}
 		
-		console.log(vWidth+":"+vHeight);
+		if(vHeight > 600){
+			vHeight = 600 ;
+		}
 		
 		if(option != undefined  && option.vTitle != null && option.vTitle != '' ){
 			vTitle =  option.vTitle ;
