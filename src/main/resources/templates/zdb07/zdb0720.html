@@ -269,17 +269,19 @@
 				});
 			}
 			function updateDefaultAlertRule(data){
-				gCommon.confirm('[[#{label.zdb0720.msg.alert.default.first}]]'+'<br> <span style="font-size:15px;color:red;text-align:center;">'+'[[#{label.zdb0720.msg.alert.default.second}]]'+'</span>',function(){
+				gCommon.confirmYn('[[#{label.zdb0720.msg.alert.default.first}]]'+'<br> <span style="font-size:15px;color:red;text-align:center;">'+'[[#{label.zdb0720.msg.alert.default.second}]]'+'</span>',function(yn){
+					if(yn == "Y"){
 					//(임계치의 수정은 설정에서 가능합니다.)
-					$a.ajax({
-						url:'/zdbapi/updateDefaultAlertRule',
-						method:'put',
-						data:data,
-						success:function(res){
-							getAllServices();							
-							getAlertRules();
-						}
-					})
+						$a.ajax({
+							url:'/zdbapi/updateDefaultAlertRule',
+							method:'put',
+							data:data,
+							success:function(res){
+								getAllServices();							
+								getAlertRules();
+							}
+						});
+					}
 				});
 			}
 			function updateAlertRule(data){

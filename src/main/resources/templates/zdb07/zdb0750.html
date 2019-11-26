@@ -167,7 +167,7 @@
 					let re = {};					
 					
 					/* 메세지 처리 상태 세분화 (2019-10-07) */
-					let msg = "[[#{label.zdb0750.msg.first}]]" ;  // confirm massage 처리 순서 바꿈(2019-07-25)
+					let msg = "[[#{label.zdb0750.msg.first}]]".replaceAll('\n','<br>') ;  // confirm massage 처리 순서 바꿈(2019-07-25)
 
 					let aStatefulSets = data.statefulSets ;
 					let btnMsg = "[[#{label.zdb0750.grid.button.apply}]]" ; //버튼 텍스트 변수 추가 (2019-10-08)
@@ -183,7 +183,7 @@
 							} 
 						}
 					}
-					
+
 					/* parameter : namespace , serviceType , serviceName , credetial(popup에서 입력받음)  */
  					gCommon.confirmYn(msg,function(yn){
  						if(yn == "Y"){

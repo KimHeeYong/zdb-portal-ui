@@ -370,7 +370,7 @@
 				})				
 				function fn_saveSchedule(){
 					gridSchedule.alopexGrid('endRowInlineEdit');
-					gCommon.confirm('[[#{label.zdb0210.tap.maria.mycnf.confirm.msg.save.data}]]',function(){
+					gCommon.confirm('[[#{label.zdb0730.confirm.msg.save.data}]]',function(){
 						//let data = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{state:'E'},{state:'A'},{state:'D'}));
 						let data = AlopexGrid.trimData(gridSchedule.alopexGrid('dataGet',{_state: {edited:true}},{_state: {added:true}},{_state: {deleted:true}}));					
 						 if(data.length > 0){

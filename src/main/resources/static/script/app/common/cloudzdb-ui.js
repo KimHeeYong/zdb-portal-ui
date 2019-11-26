@@ -216,8 +216,7 @@ var gCommon = $a.page(function(){
 		let deferred = $.Deferred();
 		var defOpt = {incAll:true,incAdminAll:false};
 		var opt = $.extend({},defOpt,options);
-		
-		console.log(opt);
+
 		//return selector.setDataSource([{id:'fsk-db',text:'fsk-db'}]); //dwtemp
 		$a.ajax({
 			url: '/zdbapi/getNamespaces',
@@ -490,9 +489,7 @@ var gCommon = $a.page(function(){
 	    isConfirmPopExists = true;
 	};
 	
-	
 	this.credentialConfirm = function(option){
-		console.log($("#gCredentialConfirmTitle").val());
 		let defOpt = {
 		        url: "/zdb02/zdb0200p03",
 		        data:{credential:$("#credential").val(), msg:$('#gChangeSetting').text()},
@@ -565,7 +562,6 @@ var gCommon = $a.page(function(){
 		vHeight = vHeight + ((arrMsg.length)  * 20);
 		
 		if(vWidth > 1024){
-			console.log(arrMsg.length);
 			if(arrMsg.length < 2){
 				let divWidth = Number(vWidth) / 1024 ;
 				vHeight += 20 * Math.round(divWidth) ;
@@ -708,8 +704,10 @@ var gCommon = $a.page(function(){
 		let compareText = '';
 		if(arrMsg.length > 0 ){
 			for(var i in arrMsg){
-				if(arrMsg[i].length > compareText.length){
-					compareText = arrMsg[i];
+				var sourceTxt = arrMsg[i] ;
+				sourceTxt = sourceTxt.replace(/(<([^>]+)>)/ig,"");
+				if(sourceTxt.length > compareText.length){
+					compareText = sourceTxt;
 				}	
 			}
 			text = compareText ;
@@ -724,6 +722,7 @@ var gCommon = $a.page(function(){
 	    var context = canvas.getContext("2d");
 	    context.font = font;
 	    var metrics = context.measureText(text);
+
 	    return metrics.width;
 	};
 });
