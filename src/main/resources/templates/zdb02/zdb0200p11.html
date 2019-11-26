@@ -79,9 +79,9 @@ $a.page(function() {
 		});  
 
 		$('button.ok').click(function(){
-			paramDt = moment($('#restoreTargetDate').val()+$('#restoreTargetTime').getData().date.replace(/(AM|PM)/,''),'YYYY-MM-DDHH24 : mm').format('YYYYMMDDHHmm');
+			paramDt = moment($('#restoreTargetDate').val()+$('#restoreTargetTime').getData().date.replace(/(AM|PM)/,''),'YYYY-MM-DDHH : mm').format('YYYYMMDDHHmm');
 			validToDt = moment().subtract(1,'hour').format('YYYYMMDDHH')+'59';
-			
+		
 			if(cloudUtil.parseInt(paramDt) < cloudUtil.parseInt(validFromDt)){
 				$('#msgSpan').html('[[#{label.zdb0200.p11.msg.span.base.date}]]');
 				return ;
@@ -93,6 +93,7 @@ $a.page(function() {
 				return ;
 			}
 
+			if(!form.validate())return;
 	 		
 			gCommon.confirm('[[#{label.zdb0200.p11.msg.confirm.restore}]]',function(){
 				let p = $.extend({},gParam,{restoreTargetDate:paramDt})

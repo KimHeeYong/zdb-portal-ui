@@ -125,7 +125,7 @@ public class ZdbApiController {
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
 		List<ServiceOverview> services = zdbApiService.getServices(param);
-		List<Tag> tags = zdbApiService.getTags(param);
+		List<Tag> tags = zdbApiService.getTags(param);		
 		mav.addObject(IResult.SERVICEOVERVIEWS,services);
 		mav.addObject(IResult.TAGS,tags);
 		return mav;
@@ -167,6 +167,30 @@ public class ZdbApiController {
 		Map<String,String> param = RequestUtil.getMapFromRequest(request);
 		
 		ZdbRestDTO result = zdbApiService.restartService(param);
+		
+		/*  // server 에서 넘어온 메세지 코드로 메세지 처리 할때 사용 로직 
+		Cookie[] cookies = request.getCookies();
+		String locale = "ko";
+		
+		if(cookies != null) {
+			for(Cookie cookie : cookies) {
+				if("Accept-Language".equals(cookie.getName())) {
+					try {
+						locale = URLDecoder.decode(cookie.getValue(),"UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
+		if(result.getMessageCode() != null && result.getMessageCode() != "" ) {
+			result.setMessage(messageSource.getMessage(result.getMessageCode(), null, new Locale(locale)));
+		}*/
+		
+		
+		
 		mav.addObject(CommonConstants.RESULT ,result);
 		return mav;
 	}

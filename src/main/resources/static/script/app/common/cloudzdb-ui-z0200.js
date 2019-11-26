@@ -82,7 +82,7 @@ function gfn_getReadyCondition(pod){
 
 //서비스 템플릿
 function gfn_getServiceTemplate(ob,msg){    
-	var guid = gCommon.getUid();
+	var guid = gCommon.getUid();	
 	var template = '' 
 			+'	<div class="Panel service-panel">                                                        '
 			+'		<div class="Panel-content" link id="'+guid+'">'
