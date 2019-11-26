@@ -434,9 +434,8 @@
 		//서비스 목록 조회 && 태그 조회
 		function fn_getServices(){
 			var client = gZdbsocket.getConnect();
-			client.connect({}, function(frame){
-				client.subscribe('/services', function(res) {
-					
+			client.connect({locale:gIsLocale}, function(frame){
+				client.subscribe('/services/'+gIsLocale, function(res) {
 					var re = JSON.parse(res.body);
 					gServiceList = re.result.serviceoverviews;
 					gfn_convertServiceDatas(gServiceList);

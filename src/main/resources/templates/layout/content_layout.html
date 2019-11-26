@@ -42,11 +42,8 @@
 	
 	$a.page(function() {
 		this.init = function() {
+		//	gIsLocale = $.cookie('Accept-Language') ;
 			$('#gSelchgLocale').on('change',function(){
-				
-				//this.value
-				console.log('[[${session.acceptLanguage}]]');
-				
 				var indexLocation  = location.href ; 
 				if(indexLocation.indexOf('&locale=') != -1 || indexLocation.indexOf('?locale=') != -1){
 					indexLocation = indexLocation.substring(0 , indexLocation.length - 2)+this.value;
@@ -88,6 +85,7 @@
 		var gUserName = [[${session.userInfo.username}]];		
 		var gIsClusterAdmin = ([[${session.userInfo.clusterRole}]]) == 'cluster-admin';
 		var gIsZdbAdmin = [[${session.userInfo.zdbAdmin}]];
+		var gIsLocale = $.cookie('Accept-Language');
 
 		/*]]>*/
 	</script>

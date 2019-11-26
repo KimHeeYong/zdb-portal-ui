@@ -1593,9 +1593,8 @@
 				if(gClient!= null)return;
 				try{
 					var gClient = gZdbsocket.getConnect();
-					
-					gClient.connect({}, function(frame){
-						gClient.subscribe('/service/'+gService.serviceName, function(res) {
+					gClient.connect({locale:gIsLocale}, function(frame){
+						gClient.subscribe('/service/'+gIsLocale+'/'+gService.serviceName, function(res) {
 							var re = JSON.parse(res.body);
 							var service = gfn_convertServiceData(re.result.serviceoverview);
 							gCurrentNamespace = service.namespace;
