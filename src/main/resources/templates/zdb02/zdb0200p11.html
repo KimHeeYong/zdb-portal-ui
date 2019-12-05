@@ -74,7 +74,7 @@ $a.page(function() {
 		});  
 
 		$('button.ok').click(function(){
-			paramDt = moment($('#restoreTargetDate').val()+$('#restoreTargetTime').getData().date.replace(/(AM|PM)/,''),'YYYY-MM-DDHH24 : mm').format('YYYYMMDDHHmm');
+			paramDt = moment($('#restoreTargetDate').val()+$('#restoreTargetTime').getData().date.replace(/(AM|PM)/,''),'YYYY-MM-DDHH : mm').format('YYYYMMDDHHmm');
 			validToDt = moment().subtract(1,'hour').format('YYYYMMDDHH')+'59';
 
 	 		
